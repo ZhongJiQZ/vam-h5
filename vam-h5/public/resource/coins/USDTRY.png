@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Error>
+  <Code>NoSuchKey</Code>
+  <Message>The specified key does not exist.</Message>
+  <RequestId>64DA643A53375531328C1922</RequestId>
+  <HostId>echo-res.oss-cn-hongkong.aliyuncs.com</HostId>
+  <Key>waihui/USDTRY.png</Key>
+  <EC>0026-00000001</EC>
+</Error>
