@@ -18,8 +18,8 @@ export const TEST_PLATFORM = ['dev']
 const loadAppConfig = () => {
   let domainUrl = getMainDomain()
   window.__config = {
-    _BASE_API: import.meta.env.VITE_APP_BASE_API || `https://h5.${domainUrl}/api`,
-    _BASE_WSS: import.meta.env.VITE_APP_BASE_WSS || `wss://h5.${domainUrl}/api`,
+    _BASE_API: import.meta.env.VITE_APP_BASE_API || `https://${domainUrl}/api`,
+    _BASE_WSS: import.meta.env.VITE_APP_BASE_WSS || `wss://${domainUrl}/api`,
     _STATIC_API: import.meta.env.VITE_APP_STATIC_API || `https://static.${domainUrl}`
   }
 
