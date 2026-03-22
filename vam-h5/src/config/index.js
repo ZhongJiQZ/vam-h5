@@ -2,10 +2,10 @@ import { storageDict } from './dict'
 
 // 默认配置
 export const getMainDomain = (url = location.host) => {
-  const parts = url.split('.')
-  if (parts.length >= 2) {
-    url = parts.slice(-2).join('.')
-  }
+  // const parts = url.split('.')
+  // if (parts.length >= 2) {
+    // url = parts.slice(-2).join('.')
+  // }
   return url
 }
 /**
