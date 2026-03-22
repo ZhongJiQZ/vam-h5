@@ -382,7 +382,8 @@ const unsubscribeTrades = (firstDataRequest = false) => {
     _coinWebSocket.send({
       op: socketDict.unsubscribe,
       type: socketDict.KLINE,
-      symbol: currentCoinInfo.coin,
+      // symbol: currentCoinInfo.coin,
+      symbol: props.coinInfo.coin,
       interval: currentInterval.key
     })
     if (firstDataRequest) {
@@ -393,7 +394,8 @@ const unsubscribeTrades = (firstDataRequest = false) => {
       _coinWebSocket.send({
         op: socketDict.unsubscribe,
         type: socketDict.TRADE,
-        symbol: currentCoinInfo.coin
+        // symbol: currentCoinInfo.coin
+        symbol: props.coinInfo.coin
       })
     }
   }
