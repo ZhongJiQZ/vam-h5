@@ -6,7 +6,7 @@ name: Build and Deploy
 
 on:
   push:
-    branches: [demo]
+    branches: [main]
     paths:
       - "vam-pc/**"
   workflow_dispatch:
