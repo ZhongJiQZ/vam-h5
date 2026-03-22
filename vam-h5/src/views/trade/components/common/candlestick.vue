@@ -378,7 +378,7 @@ const subscribeClientList = []
  * @param {*} firstDataRequest
  */
 const unsubscribeTrades = (firstDataRequest = false) => {
-  if (currentCoinInfo.coin) {
+  if (currentCoinInfo.coin==props.coinInfo.coin) {
     _coinWebSocket.send({
       op: socketDict.unsubscribe,
       type: socketDict.KLINE,
