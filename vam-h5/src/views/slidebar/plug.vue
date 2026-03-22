@@ -202,8 +202,8 @@ const cuttentRight = { iconRight: [{ iconName: 'guize', clickTo: '' }] }
 const useStore = useUserStore()
 const userInfo = useStore.userInfo
 const sharkCode = userInfo?.user?.activeCode
-const shareLink = process.env.VITE_APP_PLATFORM || `https://xhqb.net/#/i&`
-//const shareLink = `${location.origin}/#/i&`
+// const shareLink = process.env.VITE_APP_PLATFORM || `https://xhqb.net/#/i&`
+const shareLink = `${location.origin}/#/i&`
 // 推广中心数据
 const showLoading = ref(true)
 const showCommissionRecords = ref(false)
