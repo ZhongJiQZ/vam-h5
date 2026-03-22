@@ -1,0 +1,64 @@
+# 自动构建并部署：bun 安装/构建，rsync 两次传输（先传资源再传 index.html 避免缓存不一致）
+# 部署环境变量在下方 deploy job 的 env 中手动配置
+# 需在仓库 Settings → Secrets → Actions 中配置：DEPLOY_SSH_KEY（SSH 私钥）
+# 注：build 与 deploy 合并为单 job，避免使用 artifacts 以规避存储配额限制
+name: Build and Deploy
+
+on:
+  push:
+    branches: [demo]
+    paths:
+      - "vam-h5/**"
+  workflow_dispatch:
+
+env:
+  BUILD_OUTPUT: dist
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: vam-h5
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.deploy == 'true')
+    environment: production
+    env:
+      DEPLOY_SSH_KEY: ${{ secrets.DEMO_KEY }}
+      DEPLOY_HOST: 45.141.58.54
+      DEPLOY_USER: root
+      DEPLOY_PORT: "22"
+      DEPLOY_PATH: /www/wwwroot/test.zonweb.vip/dist/
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build
+        run: bun run build
+
+      - name: Setup SSH key
+        run: |
+          install -m 700 -d ~/.ssh
+          echo "$DEPLOY_SSH_KEY" | base64 -d > ~/.ssh/id_ed25519 2>/dev/null || echo "$DEPLOY_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -p ${{ env.DEPLOY_PORT }} -H ${{ env.DEPLOY_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
+
+      - name: Rsync (first pass – exclude index.html)
+        run: |
+          rsync -avz -e "ssh -p ${{ env.DEPLOY_PORT }}" \
+            --exclude='index.html' \
+            ${{ env.BUILD_OUTPUT }}/ \
+            ${{ env.DEPLOY_USER }}@${{ env.DEPLOY_HOST }}:${{ env.DEPLOY_PATH }}
+
+      - name: Rsync all files
+        run: |
+          rsync -avz -e "ssh -p ${{ env.DEPLOY_PORT }}" --delete \
+            ${{ env.BUILD_OUTPUT }}/ \
+            ${{ env.DEPLOY_USER }}@${{ env.DEPLOY_HOST }}:${{ env.DEPLOY_PATH }}
