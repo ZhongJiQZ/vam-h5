@@ -14,6 +14,7 @@ const customHtmlPlugin = (mode) => {
 const generateHtml = (html, envObj) => {
   // 获取 完整标题
   let title = envObj['VITE_APP_META_TITLE']
+  title = envObj['VITE_APP_WEB_TITLE']
   // 获取 平台关键词
   let keywords = envObj['VITE_APP_META_KEYWORDS']
   // 获取 平台描述
