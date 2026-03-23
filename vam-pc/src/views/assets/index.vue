@@ -757,7 +757,10 @@ export default {
       if (Object.keys(this.platFormConfig).length > 0) {
         // console.log("val====>", val);
         // console.log("this.platFormConfig====>", this.platFormConfig);
-        this.rechargeAddress = this.platFormConfig.RECHARGE_ADDRESS[val];
+        // this.rechargeAddress = this.platFormConfig.RECHARGE_ADDRESS[val];
+        this.rechargeAddress = this.settingConfig.ASSET_COIN.find((item) => {
+          return item.coinName == val;
+        })?.coinAddress;
         let itemObj = this.settingConfig.ASSET_COIN.filter((item) => {
           return item.coinName == val;
         })[0];

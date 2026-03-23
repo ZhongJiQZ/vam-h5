@@ -68,7 +68,7 @@
         <!-- 提现地址 -->
         <div class="top">{{ _t18('withdraw_address') }}</div>
         <div class="bottom">
-          <input readonly type="text" v-model="address" :placeholder="_t18('withdraw_input')"/>
+          <input type="text" v-model="address" :placeholder="_t18('withdraw_input')"/>
         </div>
       </div>
       <div class="password">
