@@ -1,49 +1,66 @@
 <template>
-  <HeaderBar :currentName="_t18('withdraw_order')" :cuttentRight="cuttentRight"></HeaderBar>
-  <Tab :tabList="tabList" :active="curIndex" @change="changeIndex">
-    <template #tabContent>
-      <!-- 下拉刷新 -->
-      <van-pull-refresh
-        v-model="refreshing"
-        @refresh="onRefresh"
-        :loading-text="_t18(`loading`)"
-        :loosing-text="_t18(`release_refresh`)"
+  <div class="page-withdraw-order">
+    <DarkHeaderBar :title="_t18('withdraw_order')" :border_bottom="true" />
+
+    <div class="sheet">
+      <Tab
+        :tab-list="tabList"
+        :active="curIndex"
+        title-inactive-color="#969799"
+        title-active-color="#323233"
+        indicator-color="#17ac74"
+        :line-width="28"
+        :line-height="4"
+        :bold-active-tab="true"
+        class="withdraw-tab"
+        @change="changeIndex"
       >
-        <!-- 加载中动画 -->
-        <van-loading v-if="showLoading" />
-        <!-- 数据列表 -->
-        <div v-else>
-          <!-- 没有更多数据了 no_more_data 加载中  loading-->
-          <van-list
-            v-if="tabContentList.length > 0"
-            v-model:loading="loading"
-            :finished="finished"
-            :finished-text="_t18(`no_more_data`)"
-            :loading-text="_t18(`loading`)"
-            @load="onLoad"
+        <template #tabContent>
+          <van-pull-refresh
+            v-model="refreshing"
+            :loading-text="_t18('loading')"
+            :loosing-text="_t18('release_refresh')"
+            @refresh="onRefresh"
           >
-            <van-cell v-for="(item, index) in tabContentList" :key="index">
-              <OrderList :data="item"></OrderList>
-            </van-cell>
-          </van-list>
-          <!-- 数据为空 -->
-          <Nodata v-else />
-        </div>
-      </van-pull-refresh>
-    </template>
-  </Tab>
+            <van-loading v-if="showLoading" />
+            <div v-else class="list-wrap">
+              <van-list
+                v-if="tabContentList.length > 0"
+                v-model:loading="loading"
+                :finished="finished"
+                :finished-text="_t18(`no_more_data`)"
+                :loading-text="_t18(`loading`)"
+                @load="onLoad"
+              >
+                <div
+                  v-for="(item, index) in tabContentList"
+                  :key="index"
+                  class="list-row"
+                >
+                  <OrderList :data="item" card-layout />
+                </div>
+              </van-list>
+              <Nodata v-else />
+            </div>
+          </van-pull-refresh>
+        </template>
+      </Tab>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { getWithdrawList } from '@/api/account'
+import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import Tab from '@/components/Tab/index.vue'
 import OrderList from '../components/orderList.vue'
 import { _t18 } from '@/utils/public'
-const refreshing = ref(false) //下拉刷新的加载展示
-const showLoading = ref(true) //加载动画
-const loading = ref(false) //分页加载
-const finished = ref(false) //数据是否加载完成
-//下拉加载事件（初始化数据）
+
+const refreshing = ref(false)
+const showLoading = ref(true)
+const loading = ref(false)
+const finished = ref(false)
+
 const onRefresh = () => {
   refreshing.value = false
   showLoading.value = true
@@ -55,37 +72,26 @@ const onRefresh = () => {
 }
 
 const curIndex = ref(0)
-const tabList = computed(() => {
-  let list = []
-  // list = ['全部', '审核', '成功', '失败']
-  list = [
-    _t18('withdraw_tab_all', ['aams']),
-    _t18('withdraw_tab_wait'),
-    _t18('withdraw_tab_success'),
-    _t18('withdraw_tab_error')
-  ]
-  return list
-})
-/**
- * 充值记录查询
- * pageNum页码
- * pageSize每页条数
- * total总条数
- */
+const tabList = computed(() => [
+  _t18('withdraw_tab_all', ['aams']),
+  _t18('withdraw_tab_wait'),
+  _t18('withdraw_tab_success'),
+  _t18('withdraw_tab_error')
+])
+
 const pageNum = ref(1)
-const pageSize = ref(2)
+const pageSize = ref(10)
 const total = ref(0)
-const tabContentList = ref([]) //数据列表
+const tabContentList = ref([])
+
 const getList = () => {
   let params = `pageNum=${pageNum.value}&pageSize=${pageSize.value}`
-  // 排除全部时不传参数
-  if (curIndex.value != '0') {
+  if (curIndex.value !== 0) {
     params = `status=${curIndex.value - 1}&pageNum=${pageNum.value}&pageSize=${pageSize.value}`
   }
   getWithdrawList(params).then((res) => {
     if (res.code == '200') {
       setTimeout(() => {
-        // 页面加载动画，下拉刷新动画
         if (showLoading.value) {
           showLoading.value = false
         }
@@ -93,11 +99,9 @@ const getList = () => {
           refreshing.value = false
         }
       }, 200)
-      //分页加载动画
       loading.value = false
       tabContentList.value = tabContentList.value.concat(res.rows)
       total.value = res.total
-      // 数据加载完成
       if (tabContentList.value.length >= total.value) {
         finished.value = true
       }
@@ -110,10 +114,12 @@ const getList = () => {
     }
   })
 }
+
 const onLoad = () => {
   loading.value = true
   getList()
 }
+
 const changeIndex = (v) => {
   curIndex.value = v
   showLoading.value = true
@@ -121,48 +127,70 @@ const changeIndex = (v) => {
   finished.value = false
   pageNum.value = 1
   loading.value = true
-  // getList()
 }
+
 watch(
   curIndex,
   () => {
     getList()
   },
-  {
-    immediate: true
-  }
+  { immediate: true }
 )
 </script>
 
 <style lang="scss" scoped>
-.content {
-  border-bottom: 5px solid var(--ex-border-color);
-  padding: 20px 15px;
+.page-withdraw-order {
+  min-height: 100vh;
+  background: #05101a;
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
+
+.sheet {
+  min-height: calc(100vh - 60px - constant(safe-area-inset-top));
+  min-height: calc(100vh - 60px - env(safe-area-inset-top, 0px));
+  background: #fff;
+  border-radius: 20px 20px 0 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.page-withdraw-order :deep(.withdraw-tab .van-tabs__nav) {
+  background: #fff !important;
+}
+
+.page-withdraw-order :deep(.withdraw-tab .van-tabs__wrap) {
+  background: #fff;
+  border-bottom: 1px solid #ebedf0;
+}
+
+.page-withdraw-order :deep(.withdraw-tab .van-tab) {
+  font-size: 15px;
+}
+
+.page-withdraw-order :deep(.withdraw-tab .tabContent) {
+  background: #fff;
+  border-top: none;
+  min-height: calc(100vh - 60px - 48px - constant(safe-area-inset-top));
+  min-height: calc(100vh - 60px - 48px - env(safe-area-inset-top, 0px));
+  padding: 12px 0 24px;
+  box-sizing: border-box;
+}
+
+.list-wrap {
+  padding: 0 15px;
+}
+
+.list-row {
+  margin-bottom: 12px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
 .van-loading {
   text-align: center;
   padding: 30px;
-}
-.van-list {
-  min-height: calc(100vh - 60px - 44px);
-}
-:deep(.van-cell) {
-  background: var(--ex-default-background-color) !important;
-}
-:deep(.van-cell::after) {
-  border-bottom: 1px solid var(--ex-border-color) !important;
-}
-:deep(.van-tabs) {
-  background: var(--ex-home-tabbar-background-color) !important ;
-}
-:deep(.van-tabs__nav) {
-  background: var(--ex-home-tabbar-background-color) !important ;
-}
-:deep(.van-tab) {
-  color: var(--ex-home-list-ftcolor) !important;
-  background: var(--ex-home-tabbar-background-color) !important ;
-}
-:deep(.van-tab--active) {
-  color: var(--ex-home-list-ftcolor3) !important;
 }
 </style>

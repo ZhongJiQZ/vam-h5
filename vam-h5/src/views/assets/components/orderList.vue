@@ -1,6 +1,10 @@
 <template>
   <div
-    :class="['order-list-root', { 'order-list-root--card': cardLayout }]"
+    :class="[
+      'order-list-root',
+      { 'order-list-root--card': cardLayout },
+      { 'order-list-root--card--elevated': cardLayout && elevatedCard }
+    ]"
     @click="toDetail(dataValue)"
   >
     <div class="title">
@@ -73,6 +77,11 @@ const props = defineProps({
   },
   /** 充值记录卡片样式（浅灰底、金额/状态配色） */
   cardLayout: {
+    type: Boolean,
+    default: false
+  },
+  /** 浅灰列表区上的白卡片（提现记录等） */
+  elevatedCard: {
     type: Boolean,
     default: false
   }
@@ -218,6 +227,15 @@ const toDetail = (data) => {
       color: #646566 !important;
       font-weight: 400;
     }
+  }
+}
+
+.order-list-root--card.order-list-root--card--elevated {
+  background: #fff !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+
+  .usdt {
+    font-size: 32px;
   }
 }
 </style>
