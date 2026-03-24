@@ -1,14 +1,23 @@
 <!-- 充值币种列表 -->
 <template>
-  <div class="content">
-    <p>{{ _t18('coinList') }}</p>
+  <div class="recharge-list">
+    <p class="section-title">{{ _t18('coinList') }}</p>
     <div class="list">
-      <div class="listCoin" v-for="(item, index) in props.data" :key="index" @click="toClick(item)">
+      <div
+        v-for="(item, index) in props.data"
+        :key="index"
+        class="list-row"
+        role="button"
+        tabindex="0"
+        @click="toClick(item)"
+      >
         <div class="left">
-          <svg-load :name="item.icon" class="coin"></svg-load>
-          <span>{{ item.title }}</span>
+          <div class="coin-wrap">
+            <svg-load :name="item.icon" class="coin"></svg-load>
+          </div>
+          <span class="coin-name">{{ item.title }}</span>
         </div>
-        <div class="right"><svg-load name="jiantou" class="jiantou"></svg-load></div>
+        <van-icon name="arrow" class="chevron" />
       </div>
     </div>
   </div>
@@ -16,52 +25,79 @@
 
 <script setup>
 import { _t18 } from '@/utils/public'
-import { useToast } from '@/hook/useToast'
-const { _toast } = useToast()
+
 const router = useRouter()
 const props = defineProps({
   data: {
     type: Array,
-    default: []
+    default: () => []
   }
 })
-const flag = ref(true)
+
 const toClick = (item) => {
   router.push(`/recharge-apply?type=${item.title}&coin=${item.icon}`)
 }
 </script>
 
 <style lang="scss" scoped>
-* {
-  font-size: 14px;
-  color: var(--ex-default-font-color);
+.recharge-list {
+  padding: 0;
 }
-.content {
-  padding: 30px 15px 0;
-  p {
-    font-size: 16px;
-    margin-bottom: 20px;
-    text-align: left;
-  }
-  .list {
-    .listCoin {
-      margin-bottom: 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      .left,
-      .right {
-        display: flex;
-        align-items: center;
-        .coin {
-          font-size: 20px;
-          margin-right: 15px;
-        }
-        .jiantou {
-          font-size: 10px;
-        }
-      }
-    }
-  }
+
+.section-title {
+  font-size: 14px;
+  color: #969799;
+  margin: 0 0 16px;
+  text-align: left;
+  line-height: 1.4;
+}
+
+.list-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  min-height: 52px;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  flex: 1;
+}
+
+.coin-wrap {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #f7f8fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-right: 12px;
+}
+
+.coin {
+  font-size: 22px;
+}
+
+.coin-name {
+  font-size: 16px;
+  font-weight: 500;
+  color: #323233;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chevron {
+  flex-shrink: 0;
+  color: #c8c9cc;
+  font-size: 16px;
+  margin-left: 8px;
 }
 </style>
