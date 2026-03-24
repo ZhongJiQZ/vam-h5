@@ -1,116 +1,129 @@
 <!-- 提现申请 -->
 <template>
-  <DarkHeaderBar
-    :title="currentName"
-    right="withdrawOrder"
-    :border_bottom="true"
-  />
-  <Amount :amount="amount" :coin="$route.query.type?.toUpperCase()"></Amount>
-  <van-action-sheet
+  <div class="page-withdraw-apply">
+    <DarkHeaderBar
+      :title="currentName"
+      right="withdrawOrder"
+      :border_bottom="true"
+    />
+
+    <van-action-sheet
       v-model:show="showSheet"
-      @select="onSelect"
       :closeable="false"
       style="max-width: var(--ex-max-width); left: 50%; translate: -50%"
-  >
-    <div class="sheetBox">
-      <!-- 选择银行卡 -->
-      <div class="title fw-bold">{{ _t18('withdraw_select_card') }}</div>
-      <div
+    >
+      <div class="sheet-box">
+        <div class="sheet-title fw-bold">{{ _t18('withdraw_select_card') }}</div>
+        <div
           v-for="(item, index) in bankList"
           :key="index"
-          class="sheetContent"
+          class="sheet-row"
           @click="selectSheet(item)"
-      >
-        <svg-load :name="$route.query.icon" class="coin"></svg-load>
-        <div>
-          <p class="bankName">{{ item?.bankName }} <span class="scl" v-if="item?.coin">（{{ item?.coin }}）</span></p>
-          <p class="cardNumber fw-num">{{ hideBank(item?.cardNumber) }}</p>
-        </div>
-      </div>
-    </div>
-  </van-action-sheet>
-  <div class="content">
-    <div class="form">
-      <div class="coin">
-        <!-- 提现币种 -->
-        <div class="top coin-top">{{ _t18('withdraw_coin', ['bitmake']) }}
-          <span class="scl" v-if="$route.query.icon == 'card' && curBank?.coin">（{{ curBank?.coin }}）</span>
-          <span class="scl" v-else>（{{ $route.query.type }}）</span>
-        </div>
-        <div class="bottom" v-if="$route.query.icon != 'card'">
-          <div class="left">
-            <svg-load :name="$route.query.icon" class="coin"></svg-load>
-            <div class="title">{{ $route.query.type }}</div>
+        >
+          <svg-load :name="route.query.icon" class="sheet-coin" />
+          <div>
+            <p class="sheet-bank-name">
+              {{ item?.bankName }}
+              <span v-if="item?.coin" class="sheet-coin-tag">（{{ item?.coin }}）</span>
+            </p>
+            <p class="sheet-card-num fw-num">{{ hideBank(item?.cardNumber) }}</p>
           </div>
         </div>
-        <div class="bottom2" v-else @click="showSheet = true">
-          <!-- {{ curBank }} -->
-          <svg-load :name="$route.query.icon" class="coin"></svg-load>
-          <div>
-            <p class="bankName">{{ curBank?.bankName }}</p>
-            <p class="cardNumber fw-num">
+      </div>
+    </van-action-sheet>
+
+    <div class="page-body">
+      <div class="card card-asset">
+        <div v-if="route.query.icon != 'card'" class="currency-row">
+          <svg-load :name="route.query.icon" class="coin-icon" />
+          <div class="currency-main">
+            <span class="coin-code">{{ route.query.type }}</span>
+            <span class="coin-label">{{ _t18('withdraw_coin', ['bitmake']) }}</span>
+          </div>
+        </div>
+        <div
+          v-if="route.query.icon == 'card'"
+          class="currency-row currency-row--bank"
+          @click="showSheet = true"
+        >
+          <svg-load :name="route.query.icon" class="coin-icon" />
+          <div class="bank-preview">
+            <p class="bank-name">{{ curBank?.bankName }}</p>
+            <p class="card-line fw-num">
               {{ hideBank(curBank?.cardNumber || '') }}
-              <svg-load name="jiantou" class="jiantou"></svg-load>
+              <van-icon name="arrow" class="bank-chevron" />
             </p>
           </div>
         </div>
+        <div class="balance-row">
+          <p class="balance-val ff-num">{{ priceFormat(amount) }}</p>
+          <span v-if="balanceCoinLabel" class="balance-unit-pill">{{ balanceCoinLabel }}</span>
+        </div>
       </div>
-      <div class="num">
-        <!-- 提现数量 -->
-        <div class="top">{{ _t18('withdraw_num', ['bitmake']) }}</div>
-        <div class="bottom">
-          <input
-              type="number"
+
+      <div class="card card-form">
+        <div class="field">
+          <div class="field-label">{{ _t18('withdraw_num', ['bitmake']) }}</div>
+          <div class="field-box field-box--split">
+            <input
               v-model="allAmount"
+              type="number"
+              class="field-input ff-num"
               :placeholder="_t18('withdraw_input')"
-              class="ff-num"
-          />
-          <p @click="allNum()">{{ _t18('swap_all') }}</p>
+            />
+            <span class="link-all" @click="allNum">{{ _t18('swap_all') }}</span>
+          </div>
         </div>
-      </div>
-      <div class="address" v-if="$route.query.icon != 'card'">
-        <!-- 提现地址 -->
-        <div class="top">{{ _t18('withdraw_address') }}</div>
-        <div class="bottom">
-          <input type="text" v-model="address" :placeholder="_t18('withdraw_input')"/>
+
+        <div v-if="route.query.icon != 'card'" class="field">
+          <div class="field-label">{{ _t18('withdraw_address') }}</div>
+          <div class="field-box">
+            <input
+              v-model="address"
+              type="text"
+              class="field-input"
+              :placeholder="_t18('withdraw_input')"
+            />
+          </div>
         </div>
-      </div>
-      <div class="password">
-        <!-- 提现密码 -->
-        <div class="top">{{ _t18('withdraw_pwd', ['rxce']) }}</div>
-        <div class="bottom">
-          <input
-              :type="showk ? 'text' : 'password'"
+
+        <div class="field">
+          <div class="field-label">{{ _t18('withdraw_pwd', ['rxce']) }}</div>
+          <div class="field-box field-box--split">
+            <input
               v-model="password"
+              class="field-input"
+              :type="showk ? 'text' : 'password'"
               :placeholder="_t18('withdraw_input')"
-          />
-          <svg-load
+            />
+            <svg-load
               :name="showk ? 'yanjin-k' : 'yanjin-g'"
-              class="yanjing"
-              @click="showk = !showk"
-          ></svg-load>
+              class="eye-icon"
+              @click.stop="showk = !showk"
+            />
+          </div>
+        </div>
+
+        <div v-if="!['aams'].includes(_getConfig('_APP_ENV'))" class="tip-block">
+          <div class="tip-line" @click="dispatchCustomEvent('event_serviceChange')">
+            {{ _t18('withdraw_tip') }}
+            <span class="tip-service">{{ _t18('custorm_service') }}</span>
+          </div>
+          <div v-if="['coinsexpto'].includes(_getConfig('_APP_ENV'))" class="fee-line">
+            {{ _t18('withdraw_commission') }}：<span class="ff-num"
+              >{{ route.query.fee || '' }} {{ (route.query.icon || '').toString().toUpperCase() }}</span
+            >
+          </div>
+          <div v-if="!['coinsexpto'].includes(_getConfig('_APP_ENV'))" class="fee-line">
+            {{ _t18('withdraw_commission') }}：<span class="ff-num">{{ route.query.ratio }}%</span>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="tip" v-if="!['aams'].includes(_getConfig('_APP_ENV'))">
-      <!-- 温馨提示：提现会收取部分手续费，提现后24小时之内 到账，如有疑问请     联系客服-->
-      <div @click="dispatchCustomEvent('event_serviceChange')">
-        {{ _t18('withdraw_tip') }}<span class="customer">{{ _t18('custorm_service') }}</span>
-      </div>
-      <!-- 手续费 -->
-      <div v-if="['coinsexpto'].includes(_getConfig('_APP_ENV'))">
-        {{ _t18('withdraw_commission') }}：<span class="ff-num"
-      >{{ $route.query.fee || '' }} {{ $route.query.icon.toLocaleUpperCase() }}</span
-      >
-      </div>
-      <div v-else>
-        {{ _t18('withdraw_commission') }}：<span class="ff-num">{{ $route.query.ratio }}%</span>
+
+      <div class="btn-wrap" @click="submit">
+        <ButtonBar :btnValue="_t18('withdraw_require')" />
       </div>
     </div>
-  </div>
-  <div class="btnBox" @click="submit">
-    <!-- 确认提现 -->
-    <ButtonBar :btnValue="_t18('withdraw_require')"/>
   </div>
 </template>
 
@@ -122,27 +135,21 @@ import {useFreeze} from '@/hook/useFreeze'
 const {_isFreeze} = useFreeze()
 import {
   getBindCardList,
-  haveCacheAddress,
   getCacheStatus,
-  saveCacheAddress
+  saveCacheAddress,
+  withdrawSubmit
 } from '@/api/account.js'
 import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import ButtonBar from '@/components/common/ButtonBar/index.vue'
-import Amount from '../components/applyAmount.vue'
-import {withdrawSubmit} from '@/api/account'
-import {_toView} from '@/utils/public'
-import {priceFormat} from '@/utils/decimal.js'
-import {showToast} from 'vant'
-import {useUserStore} from '@/store/user/index'
-import {storeToRefs} from 'pinia'
-import {_t18} from '@/utils/public'
-import {useToast} from '@/hook/useToast'
-import {filterCoin2} from '@/utils/public'
-import {onMounted} from 'vue'
-import {useMainStore} from '@/store/index.js'
-
-const mainStore = useMainStore()
-const {_toast} = useToast()
+import { priceFormat } from '@/utils/decimal.js'
+import { showToast } from 'vant'
+import { useUserStore } from '@/store/user/index'
+import { storeToRefs } from 'pinia'
+import { _t18, _getConfig } from '@/utils/public'
+import { useToast } from '@/hook/useToast'
+import { filterCoin2 } from '@/utils/public'
+import { computed, onMounted, ref } from 'vue'
+const { _toast } = useToast()
 const userStore = useUserStore()
 userStore.getUserInfo()
 // 用户信息
@@ -163,6 +170,13 @@ const selectSheet = (item) => {
   showSheet.value = false
   curBank.value = item
 }
+
+const balanceCoinLabel = computed(() => {
+  if (route.query.icon === 'card' && curBank.value?.coin) {
+    return curBank.value.coin
+  }
+  return (route.query.type || '')?.toString() || ''
+})
 
 const amount = computed(() => {
   let data = 0
@@ -192,13 +206,11 @@ const amount = computed(() => {
   return data
 })
 
-// 获取银行卡信息
 const hideBank = (item) => {
-  let str = ''
-  var str1 = item.substring(0, 4)
-  var str2 = item.substring(item.length - 4, item.length)
-  str = str1 + ' *** *** ' + str2
-  return str
+  if (!item || String(item).length < 8) return item || ''
+  const str1 = String(item).substring(0, 4)
+  const str2 = String(item).substring(String(item).length - 4)
+  return str1 + ' *** *** ' + str2
 }
 
 const bankList = ref([])
@@ -217,12 +229,6 @@ const getCardList = async () => {
     }
   }
 }
-onMounted(() => {
-  if (route.query?.icon == 'card') {
-    getCardList()
-  }
-})
-
 const allAmount = ref('')
 const address = ref(userInfo.value?.user?.address)
 const password = ref('')
@@ -347,6 +353,9 @@ const getAddress = async () => {
   }
 }
 onMounted(() => {
+  if (route.query?.icon == 'card') {
+    getCardList()
+  }
   if (DIFF_WITHDRAW.includes(__config._APP_ENV) && route.query?.icon != 'card') {
     getAddress()
   }
@@ -354,174 +363,267 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-* {
-  font-size: 14px;
-  color: var(--ex-default-font-color);
+.page-withdraw-apply {
+  min-height: 100vh;
+  background: #05101a;
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-.content {
-  padding: 30px 15px;
+.page-body {
+  background: #f6f7fb;
+  border-radius: 20px 20px 0 0;
+  padding: 12px 15px;
+  padding-bottom: calc(24px + constant(safe-area-inset-bottom));
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
+  min-height: calc(100vh - 60px - constant(safe-area-inset-top));
+  min-height: calc(100vh - 60px - env(safe-area-inset-top, 0px));
+}
 
-  .form {
-    & > div {
-      .top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+.card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 18px 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
 
-        .right {
-          font-size: 10px;
-          color: var(--ex-font-color9);
-          text-decoration: underline;
-        }
-      }
-
-      .coin-top {
-        justify-content: left;
-      }
-
-      .bottom {
-        margin: 10px 0 20px;
-        padding: 15px 10px;
-        border: 1px solid var(--ex-border-color1);
-        border-radius: 3px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-
-        .left {
-          display: flex;
-          align-items: center;
-        }
-
-        input {
-          flex: 1;
-          background: var(--ex-default-background-color);
-        }
-
-        input::placeholder {
-          color: var(--ex-font-color5);
-        }
-
-        p {
-          color: var(--ex-font-color9);
-        }
-
-        .yanjing {
-          font-size: 16px;
-        }
-      }
-
-      .bottom2 {
-        margin: 10px 0 20px;
-        padding: 15px 10px;
-        border: 1px solid var(--ex-border-color1);
-        border-radius: 3px;
-        display: flex;
-        align-items: center;
-
-        & > div {
-          flex: 1;
-        }
-
-        .coin {
-          margin-right: 15px;
-          font-size: 20px;
-        }
-
-        .bankName {
-          margin-bottom: 10px;
-        }
-
-        .cardNumber {
-          font-size: 18px;
-          display: flex;
-          flex: 1;
-          justify-content: space-between;
-          align-items: center;
-
-          .jiantou {
-            font-size: 10px;
-          }
-        }
-      }
-    }
-
-    & > div:first-child {
-      .bottom {
-        border: 0;
-        background-color: var(--ex-div-bgColor);
-        padding: 13px 10px;
-
-        .coin {
-          font-size: 20px;
-          margin-right: 15px;
-        }
-      }
-    }
+.card-asset {
+  .currency-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #eeeeee;
+    margin-bottom: 20px;
   }
 
-  .tip {
-    div {
-      color: var(--ex-passive-font-color);
-      line-height: 1.4;
+  .currency-row--bank {
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
 
-      span.customer {
-        color: var(--ex-font-color9);
-        text-decoration: underline;
-      }
-    }
+  .coin-icon {
+    flex-shrink: 0;
+    font-size: 40px;
+  }
 
-    & > div:first-child {
-      margin-bottom: 10px;
-    }
+  .currency-main {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .coin-code {
+    font-size: 18px;
+    font-weight: 700;
+    color: #323233;
+  }
+
+  .coin-label {
+    font-size: 13px;
+    color: #969799;
+  }
+
+  .bank-preview {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .bank-name {
+    margin: 0 0 6px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #323233;
+  }
+
+  .card-line {
+    margin: 0;
+    font-size: 15px;
+    color: #323233;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .bank-chevron {
+    flex-shrink: 0;
+    color: #c8c9cc;
+    font-size: 16px;
+  }
+
+  .balance-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .balance-val {
+    margin: 0;
+    font-size: 32px;
+    font-weight: 700;
+    color: #323233;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  .balance-unit-pill {
+    font-size: 13px;
+    font-weight: 500;
+    color: #646566;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #f0f2f5;
+    line-height: 1.2;
   }
 }
 
-.btnBox {
-  padding: 20px 15px 50px;
+.card-form {
+  .field {
+    margin-bottom: 20px;
+  }
+
+  .field-label {
+    font-size: 13px;
+    color: #969799;
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+
+  .field-box {
+    display: flex;
+    align-items: center;
+    border: 1px solid #eeeeee;
+    border-radius: 10px;
+    padding: 0 14px;
+    min-height: 50px;
+    background: #fff;
+    box-sizing: border-box;
+  }
+
+  .field-box--split {
+    padding-right: 12px;
+  }
+
+  .field-input {
+    flex: 1;
+    min-width: 0;
+    height: 46px;
+    border: none;
+    background: transparent;
+    font-size: 15px;
+    color: #323233;
+    outline: none;
+
+    &::placeholder {
+      color: #c8c9cc;
+    }
+  }
+
+  .link-all {
+    flex-shrink: 0;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ex-primary-color);
+    padding: 8px 0 8px 8px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .eye-icon {
+    flex-shrink: 0;
+    font-size: 22px;
+    padding: 8px 0 8px 10px;
+    -webkit-tap-highlight-color: transparent;
+  }
 }
 
-.sheetBox {
+.tip-block {
+  margin-top: 22px;
+  padding-top: 4px;
+
+  .tip-line {
+    font-size: 13px;
+    color: #969799;
+    line-height: 1.55;
+    margin-bottom: 10px;
+  }
+
+  .tip-service {
+    color: var(--ex-primary-color);
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .fee-line {
+    font-size: 13px;
+    color: #646566;
+    line-height: 1.5;
+  }
+}
+
+.btn-wrap {
+  margin-top: 8px;
+  padding: 0 2px;
+}
+
+.page-withdraw-apply :deep(.btn-wrap > div) {
+  border-radius: 999px !important;
+  background: #05101a !important;
+  border-color: #05101a !important;
+  color: #fff !important;
+  font-weight: 500 !important;
+  padding: 14px 0 !important;
+}
+
+.sheet-box {
   padding: 0 15px 30px;
   max-height: 300px;
   overflow: auto;
+}
 
-  .title {
-    font-size: 18px;
-    padding: 30px 0 30px;
-    text-align: center;
+.sheet-title {
+  font-size: 17px;
+  padding: 24px 0 16px;
+  text-align: center;
+  color: #323233;
+}
+
+.sheet-row {
+  display: flex;
+  align-items: center;
+  padding: 14px 12px;
+  border-radius: 10px;
+  background: #f6f7fb;
+  margin-bottom: 10px;
+  -webkit-tap-highlight-color: transparent;
+
+  .sheet-coin {
+    font-size: 24px;
+    margin-right: 12px;
+    flex-shrink: 0;
   }
 
-  .sheetContent {
-    background-color: var(--ex-div-bgColor8);
-    padding: 15px 10px;
-    border-radius: 3px;
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
+  .sheet-bank-name {
+    margin: 0 0 6px;
+    font-size: 14px;
+    color: #323233;
+  }
 
-    .coin {
-      font-size: 20px;
-      margin-right: 15px;
-    }
+  .sheet-coin-tag {
+    color: #969799;
+  }
 
-    p {
-      color: var(--ex-default-font-color);
-      font-size: 14px;
-    }
-
-    .bankName {
-      margin-bottom: 10px;
-
-      .scl {
-
-      }
-    }
-
-    .cardNumber {
-      font-size: 18px;
-    }
+  .sheet-card-num {
+    margin: 0;
+    font-size: 16px;
+    color: #323233;
   }
 }
 </style>
