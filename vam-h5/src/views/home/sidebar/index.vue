@@ -1,6 +1,11 @@
 <template>
   <div class="slidebar">
-    <div class="close">
+    <div class="sidebar-top">
+      <img
+        src="@/assets/images/logo-black.png"
+        alt="Veloxam"
+        class="sidebar-logo"
+      />
       <img
         src="@/assets/images/close.png"
         alt=""
@@ -104,18 +109,30 @@ const closeSideBar = () => {
   padding-bottom: 100px;
   overflow: auto;
 }
-.close {
+.sidebar-top {
   padding: 17px 15px 20px;
   display: flex;
-  justify-content: flex-end;
-  .closeImg {
-    display: block;
-    width: 32px;
-    height: 32px;
-    object-fit: contain;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-  }
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sidebar-logo {
+  display: block;
+  height: 36px;
+  width: auto;
+  max-width: calc(100% - 40px - 12px);
+  object-fit: contain;
+}
+
+.closeImg {
+  flex-shrink: 0;
+  display: block;
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 // 未登录
@@ -158,8 +175,8 @@ const closeSideBar = () => {
 .logged-icon {
   flex-shrink: 0;
   display: block;
-  width: 28px;
-  height: 28px;
+  width: 34px;
+  height: 34px;
   object-fit: contain;
 }
 
