@@ -1,6 +1,10 @@
 <!-- 提现申请 -->
 <template>
-  <HeaderBar :currentName="currentName" :cuttentRight="cuttentRight"></HeaderBar>
+  <DarkHeaderBar
+    :title="currentName"
+    right="withdrawOrder"
+    :border_bottom="true"
+  />
   <Amount :amount="amount" :coin="$route.query.type?.toUpperCase()"></Amount>
   <van-action-sheet
       v-model:show="showSheet"
@@ -122,6 +126,7 @@ import {
   getCacheStatus,
   saveCacheAddress
 } from '@/api/account.js'
+import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import ButtonBar from '@/components/common/ButtonBar/index.vue'
 import Amount from '../components/applyAmount.vue'
 import {withdrawSubmit} from '@/api/account'
@@ -149,7 +154,6 @@ import {useRoute, useRouter} from 'vue-router'
 const route = useRoute()
 const router = useRouter()
 const currentName = _t18('withdraw', ['latcoin'])
-const cuttentRight = {iconRight: [{iconName: 'jilu', clickTo: '/withdraw-order'}]}
 const showk = ref(false)
 
 // 银行卡数据

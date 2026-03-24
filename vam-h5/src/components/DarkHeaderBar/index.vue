@@ -30,11 +30,20 @@
           <img :src="serviceIcon" alt="" class="icon-img icon-img--service" />
         </button>
         <button
-          v-else-if="right === 'rechargeOrder'"
+          v-if="right === 'rechargeOrder'"
           type="button"
           class="icon-btn"
           aria-label="recharge-order"
           @click="onRechargeOrder"
+        >
+          <img :src="rechargeOrderIcon" alt="" class="icon-img icon-img--recharge-order" />
+        </button>
+        <button
+          v-if="right === 'withdrawOrder'"
+          type="button"
+          class="icon-btn"
+          aria-label="withdraw-order"
+          @click="onWithdrawOrder"
         >
           <img :src="rechargeOrderIcon" alt="" class="icon-img icon-img--recharge-order" />
         </button>
@@ -72,7 +81,7 @@ const props = defineProps({
     default: true
   },
   /**
-   * 右侧区域：`service` 客服；`rechargeOrder` 充值记录（跳转 recharge-order）
+   * 右侧：`service` 客服；`rechargeOrder` 充值记录；`withdrawOrder` 提现记录（同充值记录图标）
    */
   right: {
     type: String,
@@ -111,6 +120,10 @@ const onService = () => {
 
 const onRechargeOrder = () => {
   router.push('/recharge-order')
+}
+
+const onWithdrawOrder = () => {
+  router.push('/withdraw-order')
 }
 </script>
 
