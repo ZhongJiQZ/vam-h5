@@ -22,21 +22,23 @@
       </div>
       <div class="currentList">
         <div
-          class="item centerItem"
-          v-for="(item, index) in dataList.filter((it, idx) => {
-            return idx < 4
-          })"
+          v-for="(item, index) in dataList.filter((it, idx) => idx < 4)"
           :key="index"
+          class="currentList-card"
+          :class="`currentList-card--${_isRFD(
+            tradeStore.allCoinPriceInfo[item.coin]?.open,
+            tradeStore.allCoinPriceInfo[item.coin]?.close
+          )}`"
           @click="linkTo(item)"
         >
-          <div class="itemTop fw-num">{{ item.showSymbol }}</div>
+          <div class="currentList-pair fw-num">{{ item.showSymbol }}</div>
           <div
             :class="[
               _isRFD(
-                tradeStore.allCoinPriceInfo[item.coin]?.openPrice,
+                tradeStore.allCoinPriceInfo[item.coin]?.open,
                 tradeStore.allCoinPriceInfo[item.coin]?.close
               ),
-              'rfd-sign itemMain fw-num'
+              'rfd-sign currentList-change fw-num'
             ]"
           >
             {{ tradeStore.allCoinPriceInfo[item.coin]?.priceChangePercent }}%
@@ -47,7 +49,7 @@
                 tradeStore.allCoinPriceInfo[item.coin]?.open,
                 tradeStore.allCoinPriceInfo[item.coin]?.close
               ),
-              'itemFooter fw-num'
+              'currentList-price fw-num'
             ]"
           >
             {{ tradeStore.allCoinPriceInfo[item.coin]?.close }}
@@ -187,50 +189,77 @@ onMounted(async () => {
     left: 50%;
     transform: translateX(-50%);
     width: calc(100% - 30px);
-    /* 减去两侧的间距 */
     box-sizing: border-box;
-    top: 120px;
-    background-color: var(--ex-home-box-background-color);
-    box-shadow: 0px 3px 10px 1px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
+    top: 112px;
     display: flex;
-    padding: 20px 0;
+    gap: 8px;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
 
-    .item {
+    .currentList-card {
       flex: 1;
+      min-width: 0;
+      min-height: 96px;
+      border-radius: 14px;
+      padding: 20px 8px;
       display: flex;
       flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
 
-      .itemTop {
-        font-size: 14px;
-        color: var(--ex-default-font-color);
-        font-weight: 400;
+      &--rise {
+        background: linear-gradient(
+          180deg,
+          #dff5eb 0%,
+          #ffffff 40%,
+          #ffffff 60%,
+          #dff5eb 100%
+        );
       }
 
-      .itemMain {
-        margin-top: 5px;
-        display: flex;
-        align-items: center;
-        font-size: 14px;
-        font-weight: 400;
-
-        .itemMainImg {
-          width: 24px;
-          height: 24px;
-          margin-right: 5px;
-        }
+      &--fall {
+        background: linear-gradient(
+          180deg,
+          #fce8ed 0%,
+          #ffffff 40%,
+          #ffffff 60%,
+          #fce8ed 100%
+        );
       }
 
-      .itemFooter {
-        display: flex;
-        font-size: 16px;
-        margin-top: 5px;
+      &--draw {
+        background: linear-gradient(
+          180deg,
+          #ebecef 0%,
+          #ffffff 40%,
+          #ffffff 60%,
+          #ebecef 100%
+        );
       }
     }
 
-    .centerItem {
-      justify-content: center;
-      align-items: center;
+    .currentList-pair {
+      font-size: 13px;
+      font-weight: 700;
+      color: #111827;
+      line-height: 1.2;
+    }
+
+    .currentList-change {
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+    }
+
+    .currentList-price {
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.2;
     }
   }
 }
