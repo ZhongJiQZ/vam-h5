@@ -12,9 +12,7 @@
         @click="toClick(item)"
       >
         <div class="left">
-          <div class="coin-wrap">
-            <svg-load :name="item.icon" class="coin"></svg-load>
-          </div>
+          <svg-load :name="item.icon" class="coin"></svg-load>
           <span class="coin-name">{{ item.title }}</span>
         </div>
         <van-icon name="arrow" class="chevron" />
@@ -69,20 +67,10 @@ const toClick = (item) => {
   flex: 1;
 }
 
-.coin-wrap {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: #f7f8fa;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  margin-right: 12px;
-}
-
 .coin {
-  font-size: 22px;
+  flex-shrink: 0;
+  font-size: 32px;
+  margin-right: 14px;
 }
 
 .coin-name {
