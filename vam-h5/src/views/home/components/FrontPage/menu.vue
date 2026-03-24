@@ -9,8 +9,9 @@
   </div>
   <div class="notice">
     <div class="itemNo">
-      <svg-load name="mengbanzu12" class="noticeImg"></svg-load>
-      <van-notice-bar class="currentNotice" :text="currentNotice" />
+      <!-- <svg-load name="mengbanzu12" class="noticeImg"></svg-load> -->
+      <!-- <van-notice-bar class="currentNotice" :text="currentNotice" /> -->
+       {{ currentNotice }}
     </div>
   </div>
   <div class="linkList">
@@ -166,9 +167,9 @@ const toRecharge = () => {
 .main {
   position: relative;
   top: -14px;
-  background:#fff;
+  background: #fff;
   border-radius: 14px 14px 0 0;
-  padding: 14px 0;
+  padding: 14px 0 4px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -178,7 +179,7 @@ const toRecharge = () => {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 20px;
+    // margin-bottom: 20px;
 
     .itemImg {
       width: 48px;
@@ -201,13 +202,18 @@ const toRecharge = () => {
 }
 
 .notice {
-  padding: 0 15px;
-
+    padding: 15px 15px 10px;
+    background: url('@/assets/images/notice-bg.png') no-repeat left center;
+    background-size: 100% 100%;
   .itemNo {
     display: flex;
     height: 35px;
     align-items: center;
+    justify-content: center;
     background: var(--ex-home-notice-bgcolor);
+    background: #0000;
+    font-size:14px;
+      
     border-radius: 20px 20px 20px 20px;
 
     .noticeImg {
@@ -227,6 +233,7 @@ const toRecharge = () => {
       font-size: 14px;
       color: var(--ex-home-notice-color);
       background: var(--ex-home-notice-bgcolor);
+      background: #0000;
     }
   }
 }
