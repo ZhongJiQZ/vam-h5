@@ -3,11 +3,12 @@
   <van-tabs
     :active="props.active"
     @clickTab="change"
-    title-inactive-color="#333"
-    title-active-color="#17AC74"
-    color="#17AC74"
+    :title-inactive-color="titleInactiveColor"
+    :title-active-color="titleActiveColor"
+    :color="indicatorColor"
     :line-width="lineWidth"
-    :class="flexBetween ? 'betweenClass' : ''"
+    :line-height="lineHeight"
+    :class="[flexBetween ? 'betweenClass' : '', boldActiveTab ? 'tab--bold-active' : '']"
   >
     <van-tab v-for="(item, index) in props.tabList" :key="index" :title="item">
       <div class="tabContent">
@@ -27,8 +28,29 @@ const props = defineProps({
     type: Number
   },
   lineWidth: {
-    type: String,
+    type: [String, Number],
     default: '16'
+  },
+  lineHeight: {
+    type: [String, Number],
+    default: '3'
+  },
+  titleInactiveColor: {
+    type: String,
+    default: '#333'
+  },
+  titleActiveColor: {
+    type: String,
+    default: '#17AC74'
+  },
+  indicatorColor: {
+    type: String,
+    default: '#17AC74'
+  },
+  /** 选中 Tab 加粗（如充值记录页） */
+  boldActiveTab: {
+    type: Boolean,
+    default: false
   },
   // 两端对齐
   flexBetween: {
@@ -56,7 +78,10 @@ watch(active2, (newValue) => {
 // }
 :deep(.van-tab--active) {
   font-weight: normal;
-  color: var(--ex-home-list-ftcolor3) !important;
+}
+
+.tab--bold-active :deep(.van-tab--active) {
+  font-weight: 600 !important;
 }
 .tabContent {
   border-top: 1px solid var(--ex-border-color);
