@@ -1,7 +1,12 @@
 <template>
   <div class="slidebar">
     <div class="close">
-      <svg-load name="guanbi" class="closeImg" @click="closeSideBar"></svg-load>
+      <img
+        src="@/assets/images/close.png"
+        alt=""
+        class="closeImg"
+        @click="closeSideBar"
+      />
     </div>
     <UserLogin v-if="isSign"></UserLogin>
     <Navigation></Navigation>
@@ -104,8 +109,12 @@ const closeSideBar = () => {
   display: flex;
   justify-content: flex-end;
   .closeImg {
-    width: 24px;
-    height: 24px;
+    display: block;
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
   }
 }
 
@@ -149,8 +158,8 @@ const closeSideBar = () => {
 .logged-icon {
   flex-shrink: 0;
   display: block;
-  width: 22px;
-  height: 22px;
+  width: 28px;
+  height: 28px;
   object-fit: contain;
 }
 
