@@ -8,11 +8,13 @@ const mainStroe = useMainStore()
 /**
  * Logo
  */
+import logo from '@/assets/images/logo.png'
 const path = computed(() => {
   let tempPath = mainStroe.getLogoList?.logo || mainStroe.getLogoList?.logoD
   if (!tempPath) {
     // tempPath = `/platform/${__config._APP_ENV}/logo.png?${_APP_VERSION}`
-    tempPath = `/platform/dev/logo.png?${_APP_VERSION}`
+    // tempPath = `/platform/dev/logo.png?${_APP_VERSION}`
+    tempPath = logo
   }
   return tempPath
 })
