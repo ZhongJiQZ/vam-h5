@@ -11,8 +11,12 @@
     <div class="itemNo">
       <!-- <svg-load name="mengbanzu12" class="noticeImg"></svg-load> -->
       <!-- <van-notice-bar class="currentNotice" :text="currentNotice" /> -->
-       {{ currentNotice }}
+      {{ currentNotice }}
     </div>
+  </div>
+  <div class="customerService" @click="dispatchCustomEvent('event_serviceChange')">
+    <img src="@/assets/images/service.png" alt="" class="customerServiceIcon" />
+    <span class="customerServiceText">{{ _t18(`home_service`) }}</span>
   </div>
   <div class="linkList">
     <div class="linkLeft">
@@ -202,9 +206,10 @@ const toRecharge = () => {
 }
 
 .notice {
-    padding: 15px 15px 10px;
-    background: url('@/assets/images/notice-bg.png') no-repeat left center;
-    background-size: 100% 100%;
+  padding: 15px 15px 10px;
+  background: url('@/assets/images/notice-bg.png') no-repeat left center;
+  background-size: 100% 100%;
+
   .itemNo {
     display: flex;
     height: 35px;
@@ -212,8 +217,8 @@ const toRecharge = () => {
     justify-content: center;
     background: var(--ex-home-notice-bgcolor);
     background: #0000;
-    font-size:14px;
-      
+    font-size: 14px;
+
     border-radius: 20px 20px 20px 20px;
 
     .noticeImg {
@@ -235,6 +240,30 @@ const toRecharge = () => {
       background: var(--ex-home-notice-bgcolor);
       background: #0000;
     }
+  }
+}
+
+.customerService {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 16px 15px 12px;
+  padding: 8px 20px;
+  background-color: #0a1118;
+  border-radius: 50px;
+
+  .customerServiceIcon {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+
+  .customerServiceText {
+    font-size: 14px;
+    color: #fff;
+    line-height: 1.2;
   }
 }
 
