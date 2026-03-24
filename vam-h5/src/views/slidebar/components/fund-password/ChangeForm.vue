@@ -3,7 +3,7 @@
 import ButtonBar from '@/components/common/ButtonBar/index.vue'
 import {updateFundPwd} from '@/api/user'
 import { showToast } from 'vant'
-import { ref, reactive } from 'vue'
+import { ref, reactive, watch } from 'vue'
 import { _t18 } from '@/utils/public'
 import { useToast } from '@/hook/useToast'
 const { _toast } = useToast()
@@ -66,7 +66,6 @@ const changePwd = () => {
   <div class="content">
     <div class="tip">{{ _t18('Old_Password') }}</div>
     <div class="input">
-      <svg-load name="mima" class="icon"></svg-load>
       <input :type="oldPwd ? 'text' : 'password'" v-model="form.oldPwd" :placeholder="_t18('login_please')" />
       <svg-load
         :name="oldPwd ? 'openeyes' : 'closeeyse'"
@@ -76,7 +75,6 @@ const changePwd = () => {
     </div>
     <div class="tip">{{ _t18('New_Password') }}</div>
     <div class="input">
-      <svg-load name="mima" class="icon"></svg-load>
       <input :type="newPwd ? 'text' : 'password'" v-model="form.newPwd" :placeholder="_t18('login_please')"/>
       <svg-load
         :name="newPwd ? 'openeyes' : 'closeeyse'"
@@ -86,7 +84,6 @@ const changePwd = () => {
     </div>
     <div class="tip">{{ _t18('Confirm_Password') }}</div>
     <div class="input">
-      <svg-load name="mima" class="icon"></svg-load>
       <input :type="NPwd ? 'text' : 'password'" v-model="form.NPwd" @input="pwdDiff" :placeholder="_t18('login_please')"/>
       <svg-load
         :name="NPwd ? 'openeyes' : 'closeeyse'"
@@ -102,7 +99,7 @@ const changePwd = () => {
 </template>
 <style lang="scss" scoped>
 .content {
-  padding: 30px 15px 0 15px;
+  padding: 0;
   .tip {
     font-size: 14px;
     color: var(--ex-font-color16);
@@ -121,13 +118,17 @@ const changePwd = () => {
     align-items: center;
     margin-bottom: 20px;
     input {
+      flex: 1;
+      min-width: 0;
       width: 100%;
       height: 100%;
       display: flex;
       align-items: center;
-      padding: 0 10px;
+      padding: 0 12px 0 0;
       font-size: 14px;
       color: var(--ex-default-font-color);
+      border: none;
+      background: transparent;
     }
   }
   .icon {

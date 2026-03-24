@@ -50,7 +50,6 @@ const submit = () => {
 <template>
   <div class="content">
     <div class="input">
-      <svg-load name="mima" class="icon"></svg-load>
       <input :type="form.pwd ? 'text' : 'password'" v-model="formData.password" />
       <svg-load :name="form.pwd ? 'openeyes' : 'closeeyse'" class="icon" @click="setVal"></svg-load>
     </div>
@@ -61,7 +60,7 @@ const submit = () => {
 </template>
 <style lang="scss" scoped>
 .content {
-  padding: 30px 15px 0 15px;
+  padding: 0;
   .input {
     padding: 0 15px;
     width: 100%;
@@ -74,13 +73,17 @@ const submit = () => {
     align-items: center;
     margin-bottom: 20px;
     input {
+      flex: 1;
+      min-width: 0;
       width: 100%;
       height: 100%;
       display: flex;
       align-items: center;
-      padding: 0 10px;
+      padding: 0 12px 0 0;
       font-size: 14px;
       color: var(--ex-default-font-color);
+      border: none;
+      background: transparent;
     }
   }
   .icon {
