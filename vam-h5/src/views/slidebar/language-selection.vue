@@ -1,53 +1,48 @@
 <template>
-  <div class="bind-card">
-    <!-- 导航条 -->
-    <HeaderBar
-      :currentName="_t18('sidebar_language')"
-      :cuttentRight="cuttentRight"
+  <div class="page-language">
+    <DarkHeaderBar
+      :title="_t18('sidebar_language')"
+      right="service"
       :border_bottom="true"
-    ></HeaderBar>
-    <!--内容-->
-    <div class="content">
-      <!-- 选择语言 -->
-      <!-- <div>{{$t('sidebar_language_title')}}</div> -->
-      <div>{{ _t18('sidebar_language') }}</div>
-      <van-radio-group v-model="checked">
+    />
+    <div class="card">
+      <div class="section-head">
+        <span class="section-title">{{ _t18('sidebar_language') }}</span>
+        <img :src="languageIcon" alt="" class="section-icon" />
+      </div>
+      <van-radio-group :model-value="checked">
         <van-radio
-          :name="index"
-          shape="square"
           v-for="(item, index) in languageList"
           :key="index"
+          :name="index"
+          shape="round"
           label-position="left"
-          :checked-color="'#17AC74'"
+          checked-color="#17ac74"
+          class="lang-row"
           @click="setLanguage(item)"
         >
-          <!-- <image-load :filePath="item.imgUrl" alt="" width="20" class="nation" v-if="item.imgUrl" /> -->
-          <!-- <svg-load v-else :name="item.dictValue" class="nation"></svg-load> -->
           {{ item.remark }}
-          <template #icon="props">
-            <svg-load :name="props.checked ? `gou-yuyan` : `gou-yuyanno`"></svg-load>
-          </template>
         </van-radio>
       </van-radio-group>
     </div>
   </div>
 </template>
+
 <script setup>
+import { computed } from 'vue'
+import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
+import languageIcon from '@/assets/images/language.png'
 import { storageDict } from '@/config/dict'
 import { useMainStore } from '@/store/index.js'
-import { computed } from 'vue'
+
 const mainStore = useMainStore()
 const current = ref(localStorage.getItem(storageDict.LANGUAGE))
-/**
- * 设置语言
- */
+
 const setLanguage = (item) => {
-  console.log("设置语言为:" + item.dictValue);
   mainStore.setLanguage(item.dictValue)
   current.value = item.dictValue
 }
 
-// const checked = ref(5)
 const checked = computed(() => {
   let temp = 0
   mainStore.languageList.forEach((item, index) => {
@@ -57,40 +52,65 @@ const checked = computed(() => {
   })
   return temp
 })
-// const languageList = reactive([
-//   { i18n: 'zh', index: '1', name: '中文', icon: 'zhongguo' },
-//   { i18n: 'ko', index: '2', name: '한국인', icon: 'hanguo' },
-//   { i18n: 'ja', index: '3', name: '日本語', icon: 'riben' },
-//   { i18n: 'en', index: '4', name: 'English', icon: 'meiguo' },
-//   { i18n: 'vi', index: '5', name: 'Tiếng Việt', icon: 'yuenan' },
-//   { i18n: 'th', index: '6', name: 'ไทย', icon: 'taiguo' }
-// ])
+
 const languageList = mainStore.languageList
-const cuttentRight = { iconRight: [{ iconName: 'kefu', clickTo: 'event_serviceChange' }] }
 </script>
+
 <style lang="scss" scoped>
-* {
-  color: var(--ex-default-font-color);
+.page-language {
+  min-height: 100vh;
+  background: #05101a;
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
-.content {
-  padding: 30px 15px;
-  text-align: left;
-  & > div {
-    font-size: 16px;
-  }
-  .van-radio {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 0 10px 0;
-    :deep(.van-radio__label) {
-      font-size: 14px;
-      color: var(--ex-default-font-color);
-    }
-  }
-  .nation {
-    font-size: 24px;
-    margin-right: 20px;
-  }
+
+.card {
+  min-height: calc(100vh - 60px - constant(safe-area-inset-top));
+  min-height: calc(100vh - 60px - env(safe-area-inset-top, 0px));
+  background: #fff;
+  border-radius: 16px 16px 0 0;
+  padding: 20px 15px 28px;
+  box-sizing: border-box;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #646566;
+}
+
+.section-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.card :deep(.lang-row.van-radio) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 0;
+  margin: 0;
+}
+
+.card :deep(.lang-row .van-radio__label) {
+  flex: 1;
+  margin-left: 0;
+  margin-right: 12px;
+  font-size: 15px;
+  color: #646566;
+  line-height: 1.4;
+}
+
+.card :deep(.lang-row .van-radio__icon) {
+  flex-shrink: 0;
 }
 </style>
