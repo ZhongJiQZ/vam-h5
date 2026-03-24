@@ -1,5 +1,5 @@
 <template>
-  <div class="content">
+  <div class="content" :class="{ 'content--card': cardSurface }">
     <div class="content1">
       <!-- 币种 -->
       <div class="left">{{ _t18('recharge_coin') }}</div>
@@ -10,9 +10,27 @@
       <div class="left">{{ _t18('recharge_status') }}</div>
       <div class="right">
         <!-- 审核中 成功 失败 -->
-        <p class="status0" v-if="props.data.status == 0">{{ _t18('recharge_waiting') }}</p>
-        <p class="status1" v-if="props.data.status == 1">{{ _t18('recharge_tab_success') }}</p>
-        <p class="status2" v-if="props.data.status == 2">{{ _t18('recharge_tab_error') }}</p>
+        <p
+          class="status0"
+          :class="{ 'st-wait': cardSurface }"
+          v-if="props.data.status == 0"
+        >
+          {{ _t18('recharge_waiting') }}
+        </p>
+        <p
+          class="status1"
+          :class="{ 'st-ok': cardSurface }"
+          v-if="props.data.status == 1"
+        >
+          {{ _t18('recharge_tab_success') }}
+        </p>
+        <p
+          class="status2"
+          :class="{ 'st-fail': cardSurface }"
+          v-if="props.data.status == 2"
+        >
+          {{ _t18('recharge_tab_error') }}
+        </p>
       </div>
     </div>
     <div class="content3">
@@ -62,6 +80,10 @@ import Copy from '@/components/common/Copy/index.vue'
 const props = defineProps({
   data: {
     type: Object
+  },
+  cardSurface: {
+    type: Boolean,
+    default: false
   }
 })
 </script>
@@ -103,6 +125,59 @@ const props = defineProps({
     margin-bottom: 15px;
     .bottom {
       font-weight: 500;
+    }
+  }
+}
+
+.content--card {
+  padding: 16px 0 0;
+
+  .content1,
+  .content2,
+  .content3 {
+    margin-bottom: 16px;
+
+    .left {
+      color: #969799;
+      font-size: 14px;
+    }
+
+    .right {
+      font-size: 14px;
+      color: #323233;
+      text-align: right;
+      max-width: 65%;
+      word-break: break-word;
+    }
+
+    .st-wait {
+      color: #1989fa !important;
+    }
+
+    .st-ok {
+      color: #17ac74 !important;
+    }
+
+    .st-fail {
+      color: #ee0a24 !important;
+    }
+  }
+
+  .content4,
+  .content5 {
+    margin-bottom: 16px;
+
+    .top {
+      color: #969799;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .bottom {
+      font-size: 14px;
+      color: #323233;
+      line-height: 1.5;
+      word-break: break-all;
     }
   }
 }
