@@ -3,7 +3,7 @@
 import { reactive, ref, computed, watch, onMounted } from 'vue'
 import { REALNAME } from '@/config'
 import { nation } from './components/nation.js'
-import HeaderBar from '@/components/HeaderBar/index.vue'
+import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import { uploadKYC } from '@/api/user'
 import Success from './components/success.vue'
 import { uploadImg } from '@/api/common/index.js'
@@ -12,6 +12,7 @@ import { storeToRefs } from 'pinia'
 import { showToast } from 'vant'
 import { _t18 } from '@/utils/public'
 import { useToast } from '@/hook/useToast'
+import cameraIcon from '@/assets/images/camera.png'
 
 const { _toast } = useToast()
 const userStore = useUserStore()
@@ -24,8 +25,6 @@ const formData = reactive({
   userName: '',
   number: ''
 })
-
-const cuttentRight = { iconRight: [{ iconName: 'kefu', clickTo: 'event_serviceChange' }] }
 
 // 是否高级认证
 const advancedAuth = ref(userInfo.value.detail?.auditStatusAdvanced)
@@ -228,143 +227,177 @@ onMounted(() => {
 </script>
 
 <template>
-  <!-- 导航条 -->
-  <HeaderBar
-    :currentName="_t18('sidebar_advanced', ['aams'])"
-    :cuttentRight="cuttentRight"
-    :border_bottom="true"
-  ></HeaderBar>
+  <div class="page-cert-advanced">
+    <DarkHeaderBar
+      :title="_t18('sidebar_advanced', ['aams'])"
+      right="service"
+      :border_bottom="true"
+    />
 
-  <div class="content" v-if="advancedAuth == '0' || advancedAuth == null">
-    <div class="tip advanced_txt">{{ _t18('advanced_txt', ['aams']) }}</div>
+    <div v-if="advancedAuth == '0' || advancedAuth == null" class="card">
+      <div class="tip advanced_txt">{{ _t18('advanced_txt', ['aams']) }}</div>
 
-    <div v-if="['coinsexpto'].includes(_getConfig('_APP_ENV'))" class="tip_info">
-      {{
-        `${_t18('advanced_certification_info_left')}${_getConfig('_APP_META_TITLE')}${_t18(
-          'advanced_certification_info_right'
-        )}`
-      }}
-    </div>
-
-    <!-- 姓名 -->
-    <div class="form" v-if="!REALNAME.includes(_getConfig('_APP_ENV'))">
-      <div class="formInput">
-        <div class="label text-ellipsis2">{{ _t18('advanced_name') }}：</div>
-        <input :placeholder="_t18('login_please')" v-model="formData.userName" class="form-input" />
-      </div>
-    </div>
-
-    <!-- 身份证 -->
-    <van-cell style="margin-top: 30px" is-link :title="title" @click="show = true" />
-    <van-action-sheet
-      v-model:show="show"
-      :actions="actions"
-      @select="onSelect"
-      style="max-width: var(--ex-max-width); left: 50%; translate: -50%"
-    >
-    </van-action-sheet>
-
-    <div class="form" v-if="!REALNAME.includes(_getConfig('_APP_ENV'))">
-      <div class="formInput">
-        <div class="label text-ellipsis2">{{ _t18('advanced_license_number') }}：</div>
-        <input
-          :placeholder="_t18('advanced_please_cardName')"
-          v-model="formData.number"
-          class="form-input"
-        />
-      </div>
-    </div>
-
-    <!-- 国家 -->
-    <van-cell style="margin-top: 30px" is-link :title="_t18(nationName)" @click="showNation = true" />
-
-    <!-- ✅ 国家选择：带标题栏搜索 -->
-    <van-action-sheet
-  v-model:show="showNation"
-  :actions="filteredNationList"
-  @select="onSelectNation"
-  style="max-width: var(--ex-max-width); left: 50%; translate: -50%"
->
-  <!-- ✅ 顶部搜索（兼容性最好） -->
-  <template #description>
-    <div class="nation-search-sticky">
-      <van-search
-        v-model="nationKeyword"
-        :placeholder="_t18('nation_search_country') || '搜索国家/代码'"
-        clearable
-        shape="round"
-        :show-action="false"
-      />
-    </div>
-  </template>
-
-  <template #action="{ action, index }">
-    <div :key="index">{{ _t18(action.title) }}</div>
-  </template>
-    </van-action-sheet>
-
-
-    <div class="upload">
-      <div class="photo">
-        {{ _t18('advanced_id_photo') }} <span class="hui">({{ _t18('advanced_make_sure') }})</span>
-      </div>
-    </div>
-
-    <div class="upload-box">
-      <div class="item">
-        <van-uploader :after-read="afterRead1" v-model="fileList1">
-          <image-load filePath="defi/delete.png" name="delete" class="img"></image-load>
-          <div class="tit">{{ _t18('upload_positive') }}</div>
-        </van-uploader>
+      <div v-if="['coinsexpto'].includes(_getConfig('_APP_ENV'))" class="tip_info">
+        {{
+          `${_t18('advanced_certification_info_left')}${_getConfig('_APP_META_TITLE')}${_t18(
+            'advanced_certification_info_right'
+          )}`
+        }}
       </div>
 
-      <div class="item">
-        <van-uploader :after-read="afterRead2" v-model="fileList2">
-          <image-load filePath="defi/delete.png" name="delete" class="img"></image-load>
-          <div class="tit">{{ _t18('upload_reverse side') }}</div>
-        </van-uploader>
-      </div>
-    </div>
-
-    <div class="btnBox" @click="submit">
-      <ButtonBar :btnValue="_t18('advanced_submit')" />
-    </div>
-  </div>
-
-  <div class="success" v-if="advancedAuth == '3'">
-    <Success :text="_t18('under_review')" :imgUrl="'defi/zhong.png'" :color="'#333'"></Success>
-  </div>
-
-  <div class="success" v-if="advancedAuth == '2'">
-    <Success :text="_t18('Audit_failure')" :imgUrl="'defi/failed.png'" :color="'#333'">
-      <template #btn>
-        <div class="btnBox" @click="reSubmit">
-          <ButtonBar :btnValue="_t18('Resubmit')" />
+      <div class="field-stack">
+        <!-- 姓名 -->
+        <div v-if="!REALNAME.includes(_getConfig('_APP_ENV'))" class="form">
+          <div class="formInput">
+            <div class="label text-ellipsis2">{{ _t18('advanced_name') }}：</div>
+            <input :placeholder="_t18('login_please')" v-model="formData.userName" class="form-input" />
+          </div>
         </div>
-      </template>
-    </Success>
-  </div>
 
-  <div class="success" v-if="advancedAuth == '1'">
-    <Success :text="_t18('advanced_success')" :imgUrl="'defi/success.png'" :color="'#333'"></Success>
+        <!-- 证件类型 -->
+        <van-cell class="cell-row" is-link :title="title" @click="show = true" />
+
+        <div v-if="!REALNAME.includes(_getConfig('_APP_ENV'))" class="form">
+          <div class="formInput">
+            <div class="label text-ellipsis2">{{ _t18('advanced_license_number') }}：</div>
+            <input
+              :placeholder="_t18('advanced_please_cardName')"
+              v-model="formData.number"
+              class="form-input"
+            />
+          </div>
+        </div>
+
+        <van-cell class="cell-row" is-link :title="_t18(nationName)" @click="showNation = true" />
+      </div>
+
+      <van-action-sheet
+        v-model:show="show"
+        :actions="actions"
+        @select="onSelect"
+        style="max-width: var(--ex-max-width); left: 50%; translate: -50%"
+      >
+      </van-action-sheet>
+
+      <van-action-sheet
+        v-model:show="showNation"
+        :actions="filteredNationList"
+        @select="onSelectNation"
+        style="max-width: var(--ex-max-width); left: 50%; translate: -50%"
+      >
+        <template #description>
+          <div class="nation-search-sticky">
+            <van-search
+              v-model="nationKeyword"
+              :placeholder="_t18('nation_search_country') || '搜索国家/代码'"
+              clearable
+              shape="round"
+              :show-action="false"
+            />
+          </div>
+        </template>
+
+        <template #action="{ action, index }">
+          <div :key="index">{{ _t18(action.title) }}</div>
+        </template>
+      </van-action-sheet>
+
+      <div class="upload">
+        <div class="photo">
+          {{ _t18('advanced_id_photo') }} <span class="hui">({{ _t18('advanced_make_sure') }})</span>
+        </div>
+      </div>
+
+      <div class="upload-box">
+        <div class="item">
+          <van-uploader :after-read="afterRead1" v-model="fileList1">
+            <img :src="cameraIcon" alt="" class="img" />
+            <div class="tit">{{ _t18('upload_positive') }}</div>
+          </van-uploader>
+        </div>
+
+        <div class="item">
+          <van-uploader :after-read="afterRead2" v-model="fileList2">
+            <img :src="cameraIcon" alt="" class="img" />
+            <div class="tit">{{ _t18('upload_reverse side') }}</div>
+          </van-uploader>
+        </div>
+      </div>
+
+      <div class="btnBox" @click="submit">
+        <ButtonBar :btnValue="_t18('advanced_submit')" />
+      </div>
+    </div>
+
+    <div v-if="advancedAuth == '3'" class="card card--result">
+      <div class="success">
+        <Success :text="_t18('under_review')" :imgUrl="'defi/zhong.png'" :color="'#333'"></Success>
+      </div>
+    </div>
+
+    <div v-if="advancedAuth == '2'" class="card card--result">
+      <div class="success">
+        <Success :text="_t18('Audit_failure')" :imgUrl="'defi/failed.png'" :color="'#333'">
+          <template #btn>
+            <div class="btnBox" @click="reSubmit">
+              <ButtonBar :btnValue="_t18('Resubmit')" />
+            </div>
+          </template>
+        </Success>
+      </div>
+    </div>
+
+    <div v-if="advancedAuth == '1'" class="card card--result">
+      <div class="success">
+        <Success :text="_t18('advanced_success')" :imgUrl="'defi/success.png'" :color="'#333'"></Success>
+      </div>
+    </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.van-cell {
-  background: var(--ex-select-background-color) !important;
-  height: 46px;
-  border-radius: 3px;
-  border: 1px solid var(--ex-select-boder-color) !important;
-  padding: 0 10px;
-  font-size: 14px;
-  color: var(--ex-select-font-color) !important;
-  display: flex;
-  align-items: center;
+.page-cert-advanced {
+  min-height: 100vh;
+  background: #05101a;
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-.van-cell:after {
-  border-bottom: 1px solid var(--ex-select-border-btmcolor) !important;
+.card {
+  min-height: calc(100vh - 60px - constant(safe-area-inset-top));
+  min-height: calc(100vh - 60px - env(safe-area-inset-top, 0px));
+  background: #fff;
+  border-radius: 16px 16px 0 0;
+  padding: 20px 15px 28px;
+  box-sizing: border-box;
+}
+
+.card--result {
+  min-height: auto;
+}
+
+.field-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.card :deep(.van-cell.cell-row) {
+  background: #f7f8fa !important;
+  height: 50px;
+  border-radius: 4px;
+  border: 1px solid #ebedf0 !important;
+  padding: 0 12px;
+  font-size: 14px;
+  color: #323233 !important;
+  display: flex;
+  align-items: center;
+  margin-top: 0;
+}
+
+.card :deep(.van-cell.cell-row::after) {
+  display: none;
 }
 
 :deep(.van-action-sheet__item) {
@@ -404,150 +437,170 @@ onMounted(() => {
   color: var(--ex-input-font-color2);
 }
 
-/* 你原来的样式保留 */
-.content {
-  padding: 30px 15px 0 15px;
+.card .tip {
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
 
-  .tip {
-    font-size: 12px;
-    color: var(--ex-tip-font-color);
-    margin-bottom: 30px;
-  }
-  .tip_info {
-    font-size: 12px;
-  }
-  .advanced_txt {
-    margin-bottom: 20px;
-    text-align: left;
-  }
+.card .tip_info {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #969799;
+  margin-bottom: 16px;
+}
 
-  .form {
-    padding-top: 5px;
+.card .advanced_txt {
+  color: #ee0a24;
+  text-align: left;
+  margin-bottom: 16px;
+}
 
-    .formInput {
-      padding: 0 10px;
-      display: flex;
-      justify-content: flex-start;
-      background: var(--ex-input-background-color2);
-      border-radius: 3px;
-      border: 1px solid var(--ex-input-border-color);
-      align-items: center;
-      margin: 20px 0;
+.card .form {
+  margin: 0;
 
-      .label {
-        min-width: 80px;
-        font-size: 14px;
-        color: var(--ex-input-label-color);
-        text-align: left;
-      }
+  .formInput {
+    padding: 0 12px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    background: #f7f8fa;
+    border-radius: 4px;
+    border: 1px solid #ebedf0;
+    min-height: 50px;
+    box-sizing: border-box;
 
-      input {
-        width: 100%;
-        height: 46px;
-        font-size: 14px;
-        background-color: var(--ex-input-background-color2);
-
-        &::placeholder {
-          color: var(--ex-input-font-color2);
-          font-size: 14px;
-        }
-      }
-    }
-  }
-
-  .upload {
-    margin: 30px 0 10px 0;
-
-    .photo {
+    .label {
+      min-width: 80px;
+      flex-shrink: 0;
       font-size: 14px;
-      color: var(--ex-default-font-color);
+      color: #323233;
+      text-align: left;
     }
 
-    span {
+    input {
+      flex: 1;
+      min-width: 0;
+      height: 48px;
       font-size: 14px;
-      color: var(--ex-passive-font-color);
-    }
-  }
+      background: transparent;
+      border: none;
+      color: #323233;
 
-  .upload-box {
-    .item {
-      height: 194px;
-      background: var(--ex-default-background-color);
-      border-radius: 3px;
-      border: 1px solid var(--ex-border-color1);
-      margin-bottom: 10px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      overflow: hidden;
-
-      .van-uploader {
-        width: 100%;
-
-        :deep(.van-uploader__wrapper) {
-          width: 100%;
-          height: 100%;
-          display: block;
-
-          .van-uploader__input-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-          }
-
-          .van-uploader__preview {
-            width: 100%;
-            height: 100%;
-            margin: auto;
-
-            .van-uploader__preview-image {
-              width: 100%;
-              height: 194px;
-            }
-          }
-
-          .van-uploader__preview-delete {
-            width: 20px;
-            height: 20px;
-
-            .van-uploader__preview-delete-icon {
-              font-size: 22px;
-            }
-          }
-        }
-      }
-
-      .img {
-        width: 50px;
-        height: 50px;
-        min-width: none;
-        min-height: none;
-        object-fit: contain;
-        margin: 50px 0 20px 0;
-      }
-
-      .tit {
-        box-sizing: border-box;
-        width: 100%;
-        text-align: center;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+      &::placeholder {
+        color: #c8c9cc;
         font-size: 14px;
-        font-weight: 400;
-        color: var(--ex-passive-font-color);
       }
     }
-  }
-
-  .btnBox {
-    width: 100%;
-    margin: 50px 0;
   }
 }
 
-.success {
-  margin: 100px 0;
+.card .upload {
+  margin: 24px 0 12px;
+
+  .photo {
+    font-size: 14px;
+    color: #323233;
+  }
+
+  .hui {
+    font-size: 14px;
+    color: #969799;
+  }
+}
+
+.card .upload-box .item {
+  height: 194px;
+  background: #fafafa;
+  border-radius: 4px;
+  border: 1px solid #ebedf0;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+
+  .van-uploader {
+    width: 100%;
+
+    :deep(.van-uploader__wrapper) {
+      width: 100%;
+      height: 100%;
+      display: block;
+
+      .van-uploader__input-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .van-uploader__preview {
+        width: 100%;
+        height: 100%;
+        margin: auto;
+
+        .van-uploader__preview-image {
+          width: 100%;
+          height: 194px;
+        }
+      }
+
+      .van-uploader__preview-delete {
+        width: 20px;
+        height: 20px;
+
+        .van-uploader__preview-delete-icon {
+          font-size: 22px;
+        }
+      }
+    }
+  }
+
+  .img {
+    display: block;
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    margin: 50px auto 20px;
+  }
+
+  .tit {
+    box-sizing: border-box;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 400;
+    color: #969799;
+  }
+}
+
+.card .btnBox {
+  width: 100%;
+  margin: 32px 0 8px;
+}
+
+.card :deep(.btnBox > div) {
+  border-radius: 999px !important;
+  background: #05101a !important;
+  border-color: #05101a !important;
+  color: #fff !important;
+}
+
+.card--result .success {
+  min-height: 100vh;
+  margin: 24px 0 32px;
+  padding: 0;
+
+  :deep(img) {
+    margin: 24px 0 0;
+  }
+
+  :deep(.text) {
+    margin: 20px 0 32px;
+  }
 }
 
 :deep(.van-action-sheet__content) {
