@@ -8,7 +8,7 @@ const mainStroe = useMainStore()
 /**
  * Logo
  */
-import logo from '@/assets/images/logo.png'
+import logo from '@/assets/images/logo-white.png'
 const path = computed(() => {
   let tempPath = mainStroe.getLogoList?.logo || mainStroe.getLogoList?.logoD
   if (!tempPath) {
@@ -26,6 +26,6 @@ const path = computed(() => {
 .logo {
   width: 40px;
   height: 40px;
-  border-radius:10px;
+  border-radius: 10px;
 }
 </style>

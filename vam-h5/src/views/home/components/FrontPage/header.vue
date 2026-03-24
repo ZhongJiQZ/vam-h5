@@ -12,7 +12,8 @@
       </van-swipe>
       <div class="top">
         <div>
-          <Logo @click="refreshPage"></Logo>
+          <!-- <Logo @click="refreshPage"></Logo> -->
+           <img src="@/assets/images/logo-white.png" class="logo" @click="refreshPage"/>
         </div>
         <div>
           <!-- <svg-load name="user" class="rightImg" @click="openSideBar"></svg-load> -->
@@ -157,6 +158,9 @@ onMounted(async () => {
     left: 50%;
     transform: translateX(-50%);
     width: calc(100% - 30px);
+    .logo{
+      height:32px;
+    }
 
     /* 减去两侧的间距 */
     .leftImg {
