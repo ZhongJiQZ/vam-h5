@@ -66,7 +66,7 @@
       </div>
       <Nodata v-else></Nodata> -->
 
-      <div v-if="showTab === 0 && headerList[0].show">
+      <div v-if="showTab === 0 && headerList[0].show" class="coin-list">
         <div v-if="currentCoinList0.length">
           <CurrencyItem
             v-for="(item, index) in currentCoinList0"
@@ -77,7 +77,7 @@
         </div>
         <Nodata v-else></Nodata>
       </div>
-      <div v-if="showTab === 1 && headerList[1].show">
+      <div v-if="showTab === 1 && headerList[1].show" class="coin-list">
         <div v-if="currentCoinList1.length">
           <CurrencyItem
             v-for="(item, index) in currentCoinList1"
@@ -88,7 +88,7 @@
         </div>
         <Nodata v-else></Nodata>
       </div>
-      <div v-if="showTab === 2 && headerList[2].show">
+      <div v-if="showTab === 2 && headerList[2].show" class="coin-list">
         <div v-if="currentCoinList2">
           <CurrencyItem
             v-for="(item, index) in currentCoinList2"
@@ -348,8 +348,8 @@ const handelShowTab = (item) => {
     align-items: center;
     // min-height: 44px;
     padding: 10px 16px;
-    margin: 0 15px 10px;
-    background-color: #f5f7fa;
+    margin: 0 15px 0px;
+    background-color: #f6f7fb;
     border-radius: 11px;
     font-size: 13px;
     font-weight: 400;
@@ -361,10 +361,15 @@ const handelShowTab = (item) => {
   .main {
     background-color: var(--ex-default-background-color);
     // padding-top: 10px;
+    .coin-list {
+      background-color: #f6f7fb;
+      border-radius: 11px;
+      margin:8px 15px;
+    }
   }
 
   .header-list {
-    padding: 15px 15px 5px;
+    padding: 15px 18px 5px;
     font-size: 12px;
     color: var(--ex-home-list-ftcolor2);
     display: flex;
