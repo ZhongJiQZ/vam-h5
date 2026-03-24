@@ -86,7 +86,7 @@ const props = defineProps({
   }
 
   p.reduce {
-    color: #323233;
+    color: #ee0a24;
   }
 
   span {
