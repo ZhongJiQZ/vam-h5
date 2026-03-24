@@ -15,7 +15,8 @@
           <Logo @click="refreshPage"></Logo>
         </div>
         <div>
-          <svg-load name="user" class="rightImg" @click="openSideBar"></svg-load>
+          <!-- <svg-load name="user" class="rightImg" @click="openSideBar"></svg-load> -->
+           <img src="@/assets/images/user.png" class="rightImg" @click="openSideBar"/>
         </div>
       </div>
     </div>
