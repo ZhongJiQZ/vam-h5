@@ -51,13 +51,11 @@ const submit = () => {
   <div class="content">
     <div class="tip">{{ _t18('login_pwd') }}</div>
     <div class="input">
-      <svg-load name="mima" class="icon"></svg-load>
       <input :type="isPwd ? 'text' : 'password'" :placeholder="_t18('login_please')" v-model="formData.newPwd"/>
       <svg-load :name="isPwd ? 'openeyes' : 'closeeyse'" class="icon" @click="isPwd=!isPwd"></svg-load>
     </div>
     <div class="tip">{{ _t18('Confirm_Password') }}</div>
     <div class="input">
-      <svg-load name="mima" class="icon"></svg-load>
       <input :type="isPwd? 'text' : 'password'" :placeholder="_t18('login_please')" v-model="formData.NPwd"
              @input="pwdDiff"/>
       <svg-load :name="isPwd? 'openeyes' : 'closeeyse'" class="icon" @click="isPwd=!isPwd"></svg-load>
@@ -72,7 +70,7 @@ const submit = () => {
 
 <style lang="scss" scoped>
 .content {
-  padding: 30px 15px 0 15px;
+  padding: 0;
 
   .tip {
     font-size: 14px;
@@ -94,13 +92,17 @@ const submit = () => {
     margin-bottom: 20px;
 
     input {
+      flex: 1;
+      min-width: 0;
       width: 100%;
       height: 100%;
       display: flex;
       align-items: center;
-      padding: 0 10px;
+      padding: 0 12px 0 0;
       font-size: 14px;
       color: var(--ex-default-font-color);
+      border: none;
+      background: transparent;
     }
   }
 

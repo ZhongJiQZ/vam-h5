@@ -112,7 +112,6 @@ const submit = () => {
     </div>
     <div class="tip">{{ _t18('forgot_newPwd') }}</div>
     <div class="input">
-      <svg-load name="mima" class="icon"></svg-load>
       <input :type="newPwd ? 'text' : 'password'" v-model="form.newPwd" />
       <svg-load
         :name="newPwd ? 'openeyes' : 'closeeyse'"
@@ -122,7 +121,6 @@ const submit = () => {
     </div>
     <div class="tip">{{ _t18('forgot_require_newPwd') }}</div>
     <div class="input">
-      <svg-load name="mima" class="icon"></svg-load>
       <input :type="NPwd ? 'text' : 'password'" v-model="form.NPwd" @input="pwdDiff" />
       <svg-load
         :name="NPwd ? 'openeyes' : 'closeeyse'"
@@ -138,7 +136,7 @@ const submit = () => {
 </template>
 <style lang="scss" scoped>
 .content {
-  padding: 30px 15px 0 15px;
+  padding: 0;
   .tip {
     font-size: 14px;
     color: var(--ex-font-color16);
@@ -158,6 +156,8 @@ const submit = () => {
     align-items: center;
     margin-bottom: 20px;
     input {
+      flex: 1;
+      min-width: 0;
       width: 100%;
       height: 100%;
       display: flex;
@@ -165,6 +165,8 @@ const submit = () => {
       padding: 0 10px;
       font-size: 14px;
       color: var(--ex-default-font-color);
+      border: none;
+      background: transparent;
     }
 
     .code-box {
