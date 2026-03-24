@@ -6,7 +6,7 @@
     </van-popup>
     <div class="carousel">
       <van-swipe :autoplay="3000" lazy-render :loop="true" :show-indicators="false">
-        <van-swipe-item v-for="(item, index) in carouselList" :key="index">
+        <van-swipe-item v-for="(item, index) in carouselList.slice(0,1)" :key="index">
           <image-load :filePath="item.imgUrl" alt="" class="carouselItem" @click="linkto(item)" />
         </van-swipe-item>
       </van-swipe>
@@ -20,38 +20,38 @@
            <img src="@/assets/images/user.png" class="rightImg" @click="openSideBar"/>
         </div>
       </div>
-    </div>
-    <div class="currentList">
-      <div
-        class="item centerItem"
-        v-for="(item, index) in dataList.filter((it, idx) => {
-          return idx < 4
-        })"
-        :key="index"
-        @click="linkTo(item)"
-      >
-        <div class="itemTop fw-num">{{ item.showSymbol }}</div>
+      <div class="currentList">
         <div
-          :class="[
-            _isRFD(
-              tradeStore.allCoinPriceInfo[item.coin]?.openPrice,
-              tradeStore.allCoinPriceInfo[item.coin]?.close
-            ),
-            'rfd-sign itemMain fw-num'
-          ]"
+          class="item centerItem"
+          v-for="(item, index) in dataList.filter((it, idx) => {
+            return idx < 4
+          })"
+          :key="index"
+          @click="linkTo(item)"
         >
-          {{ tradeStore.allCoinPriceInfo[item.coin]?.priceChangePercent }}%
-        </div>
-        <div
-          :class="[
-            _isRFD(
-              tradeStore.allCoinPriceInfo[item.coin]?.open,
-              tradeStore.allCoinPriceInfo[item.coin]?.close
-            ),
-            'itemFooter fw-num'
-          ]"
-        >
-          {{ tradeStore.allCoinPriceInfo[item.coin]?.close }}
+          <div class="itemTop fw-num">{{ item.showSymbol }}</div>
+          <div
+            :class="[
+              _isRFD(
+                tradeStore.allCoinPriceInfo[item.coin]?.openPrice,
+                tradeStore.allCoinPriceInfo[item.coin]?.close
+              ),
+              'rfd-sign itemMain fw-num'
+            ]"
+          >
+            {{ tradeStore.allCoinPriceInfo[item.coin]?.priceChangePercent }}%
+          </div>
+          <div
+            :class="[
+              _isRFD(
+                tradeStore.allCoinPriceInfo[item.coin]?.open,
+                tradeStore.allCoinPriceInfo[item.coin]?.close
+              ),
+              'itemFooter fw-num'
+            ]"
+          >
+            {{ tradeStore.allCoinPriceInfo[item.coin]?.close }}
+          </div>
         </div>
       </div>
     </div>
@@ -136,10 +136,11 @@ onMounted(async () => {
 }
 
 .carousel {
-  height: 200px;
+  position: relative;
+  height: 250px;
 
   .carouselItem {
-    height: 200px;
+    height: 250px;
     width: 100%;
     object-fit: cover;
   }
@@ -176,61 +177,61 @@ onMounted(async () => {
     }
 
     .rightImg {
-      width: 24px;
-      height: 24px;
+      width: 32px;
+      height: 32px;
     }
   }
-}
 
-.currentList {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(100% - 30px);
-  /* 减去两侧的间距 */
-  box-sizing: border-box;
-  top: 172px;
-  background-color: var(--ex-home-box-background-color);
-  box-shadow: 0px 3px 10px 1px rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
-  display: flex;
-  padding: 20px 0;
-
-  .item {
-    flex: 1;
+  .currentList {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 30px);
+    /* 减去两侧的间距 */
+    box-sizing: border-box;
+    top: 120px;
+    background-color: var(--ex-home-box-background-color);
+    box-shadow: 0px 3px 10px 1px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
     display: flex;
-    flex-direction: column;
+    padding: 20px 0;
 
-    .itemTop {
-      font-size: 14px;
-      color: var(--ex-default-font-color);
-      font-weight: 400;
-    }
-
-    .itemMain {
-      margin-top: 5px;
+    .item {
+      flex: 1;
       display: flex;
-      align-items: center;
-      font-size: 14px;
-      font-weight: 400;
+      flex-direction: column;
 
-      .itemMainImg {
-        width: 24px;
-        height: 24px;
-        margin-right: 5px;
+      .itemTop {
+        font-size: 14px;
+        color: var(--ex-default-font-color);
+        font-weight: 400;
+      }
+
+      .itemMain {
+        margin-top: 5px;
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        font-weight: 400;
+
+        .itemMainImg {
+          width: 24px;
+          height: 24px;
+          margin-right: 5px;
+        }
+      }
+
+      .itemFooter {
+        display: flex;
+        font-size: 16px;
+        margin-top: 5px;
       }
     }
 
-    .itemFooter {
-      display: flex;
-      font-size: 16px;
-      margin-top: 5px;
+    .centerItem {
+      justify-content: center;
+      align-items: center;
     }
-  }
-
-  .centerItem {
-    justify-content: center;
-    align-items: center;
   }
 }
 </style>

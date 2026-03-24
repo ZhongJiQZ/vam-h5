@@ -1,11 +1,6 @@
 <template>
   <div :class="DIFF_HOME_BANNER.includes(_getConfig('_APP_ENV')) ? 'main mainEbc' : 'main'">
-    <div
-      class="item"
-      v-for="item in menuList"
-      :key="item.img"
-      @click="routeLink(item.linkUrl, item.flag)"
-    >
+    <div class="item" v-for="item in menuList" :key="item.img" @click="routeLink(item.linkUrl, item.flag)">
       <image-load :filePath="item.imgUrl" :name="item.img" class="itemImg" />
       <div class="itemName text-ellipsis2">
         {{ _t18(`${item.key}`, ['robinhood2']) }}
@@ -111,18 +106,18 @@ const event_userInfoChange = (e) => {
 const getInfoList = async () => {
   if (tokenStatus.value) {
     let res = await getInfo()
-    if (res.code != 200) { 
-      
-    }else {
+    if (res.code != 200) {
+
+    } else {
       if (res.code == '200' && res.rows.length > 0) {
         console.log(res.rows)
         infoData.value = res.rows
         showInfoPopup.value = true
-      } 
-    } 
- }
+      }
+    }
+  }
 
- 
+
 }
 getInfoList();
 /**直播弹窗内容 */
@@ -144,7 +139,7 @@ onMounted(async () => {
       if (res.data.length > 0 && res.data[0].status == '0')
         currentNotice.value = res.data[0].noticeContent
     }
-  } catch (error) {}
+  } catch (error) { }
   document.addEventListener('event_userInfoChange', event_userInfoChange)
   getInfoList()
 })
@@ -169,7 +164,11 @@ const toRecharge = () => {
 </script>
 <style lang="scss" scoped>
 .main {
-  padding: 106px 0px 0;
+  position: relative;
+  top: -14px;
+  background:#fff;
+  border-radius: 14px 14px 0 0;
+  padding: 14px 0;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -182,12 +181,12 @@ const toRecharge = () => {
     margin-bottom: 20px;
 
     .itemImg {
-      width: 21px;
-      height: 21px;
+      width: 48px;
+      height: 48px;
     }
 
     .itemName {
-      margin-top: 5px;
+      margin-top: 10px;
       font-size: 12px;
       color: var(--ex-default-font-color);
       text-align: center;
@@ -298,14 +297,17 @@ const toRecharge = () => {
     }
   }
 }
+
 .showNoticeContent {
   min-width: 300px;
   text-align: center;
+
   .showNoticeContent_title {
     font-size: 18px;
     padding: 15px 0;
     border-bottom: 1px solid #e1e1e1;
   }
+
   .showNoticeContent_content {
     padding: 20px 15px 30px;
     max-height: 400px;
