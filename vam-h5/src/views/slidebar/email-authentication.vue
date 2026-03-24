@@ -1,49 +1,71 @@
 <!-- 绑定邮箱 -->
 <template>
-  <HeaderBar
-    :currentName="_t18('sidebar_certified')"
-    :cuttentRight="cuttentRight"
-    :border_bottom="true"
-  ></HeaderBar>
-  <div class="content-box">
-    <div class="bind-not" v-if="!bind">
-      <div class="item">
-        <div class="text">{{ _t18('login_emailCode') }}</div>
-        <div class="input">
-          <input type="text" v-model="formData.email" :placeholder="_t18('recharge_input')" />
-        </div>
-      </div>
-      <div class="item">
-        <div class="text">{{ _t18('verification_code') }}</div>
+  <div class="page-email-auth">
+    <DarkHeaderBar
+      :title="_t18('sidebar_certified')"
+      right="service"
+      :border_bottom="true"
+    />
 
-        <div class="input">
-          <input type="number" v-model="formData.code" :placeholder="_t18('recharge_input')" />
-          <div class="code-box">
-            <div class="wait-code" v-if="flag">
-              <van-count-down :time="time" format="ss" @finish="finish" />
-            </div>
-            <div class="send-code" v-else @click="handleSend">{{ _t18('login_send') }}</div>
+    <div class="card">
+      <div v-if="!bind" class="bind-not">
+        <div class="field-block">
+          <div class="field-label">{{ _t18('login_emailCode') }}：</div>
+          <div class="field-input">
+            <input
+              v-model="formData.email"
+              type="email"
+              inputmode="email"
+              autocomplete="email"
+              class="field-control"
+              :placeholder="_t18('login_emailCode')"
+            />
           </div>
         </div>
-      </div>
-      <div class="btnBox" @click="handleEmailBind">
-        <ButtonBar :btnValue="_t18('btnConfirm', ['bitmake'])" />
-      </div>
-    </div>
-    <div class="bind-yes" v-else>
-      <div class="top">
-        <img src="@/assets/defi/email.png" alt="" />
-        <div class="text">{{ _t18('email_bind_success') }}</div>
-        <div class="email">{{ _t18('email_your') }}：{{ email }}</div>
+
+        <div class="field-block">
+          <div class="field-label">{{ _t18('verification_code') }}：</div>
+          <div class="field-input field-input--code">
+            <input
+              v-model="formData.code"
+              type="text"
+              inputmode="numeric"
+              class="field-control"
+              :placeholder="_t18('recharge_input')"
+            />
+            <div class="code-side">
+              <div v-if="flag" class="code-wait">
+                <van-count-down :time="time" format="ss" @finish="finish" />
+              </div>
+              <button v-else type="button" class="send-btn" @click="handleSend">
+                {{ _t18('login_send') }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="btnBox" @click="handleEmailBind">
+          <ButtonBar :btnValue="_t18('btnConfirm', ['bitmake'])" />
+        </div>
       </div>
 
-      <div class="change-email" @click="bind = false">{{ _t18('email_update') }}</div>
-      <div class="back" @click="$router.push('/')">{{ _t18('backhome') }}</div>
+      <div v-else class="bind-yes">
+        <div class="top">
+          <img src="@/assets/defi/email.png" alt="" />
+          <div class="success-title">{{ _t18('email_bind_success') }}</div>
+          <div class="success-email">{{ _t18('email_your') }}：{{ email }}</div>
+        </div>
+
+        <div class="change-email" @click="bind = false">{{ _t18('email_update') }}</div>
+        <div class="back-home" @click="router.push('/')">{{ _t18('backhome') }}</div>
+      </div>
     </div>
   </div>
 </template>
+
 <script setup>
-import HeaderBar from '@/components/HeaderBar/index.vue'
+import { useRouter } from 'vue-router'
+import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import ButtonBar from '@/components/common/ButtonBar/index.vue'
 import { emailCode, emailBind } from '@/api/user'
 import { useUserStore } from '@/store/user/index'
@@ -51,61 +73,54 @@ import { storeToRefs } from 'pinia'
 import { showToast } from 'vant'
 import { _t18 } from '@/utils/public'
 import { useToast } from '@/hook/useToast'
+
 const { _toast } = useToast()
+const router = useRouter()
 const userStore = useUserStore()
 userStore.getUserInfo()
-// 用户信息
+
 const { userInfo } = storeToRefs(userStore)
-const cuttentRight = { iconRight: [{ iconName: 'kefu', clickTo: 'event_serviceChange' }] }
 const email = ref(userInfo.value.user?.email)
-const bind = ref(email.value)
-//表单信息
+const bind = ref(!!email.value)
+
 const formData = ref({
   email: '',
   code: ''
 })
 
-// 倒计时
 const time = ref(0)
 const flag = ref(false)
+
 const handleSend = () => {
-  // 邮箱发送验证码
   if (formData.value.email == '') {
-    // showToast('请输入邮箱地址')
     _toast('login_please_emailCode')
     return
   }
   flag.value = true
   time.value = 60 * 1000
   emailCode('BIND', formData.value.email).then((res) => {
-    
-    if (res.code == '200') {
-     
-    } else {
-      flag.value = false;
+    if (res.code != '200') {
+      flag.value = false
       showToast(res.msg)
     }
   })
 }
-// 倒计时结束
+
 const finish = () => {
   flag.value = false
 }
+
 const handleEmailBind = () => {
-  // bind.value = true
-  // email.value=formData.value.email
   if (formData.value.email == '') {
-    // showToast('请输入邮箱地址')
     _toast('login_please_emailCode')
     return
   }
   if (formData.value.code == '') {
-    // showToast('验证码')
     _toast('verification_code')
     return
   }
   emailBind(formData.value.email, formData.value.code).then((res) => {
-    if (res.code == '200') { 
+    if (res.code == '200') {
       _toast('email_bind_success')
       email.value = formData.value.email
       bind.value = true
@@ -115,130 +130,156 @@ const handleEmailBind = () => {
   })
 }
 </script>
+
 <style lang="scss" scoped>
- .send-code{
-      font-size: 14px;
-      border-radius: 5px;
-  }
-* {
-  font-size: 16px;
-  color: var(--ex-default-font-color);
+.page-email-auth {
+  min-height: 100vh;
+  background: #05101a;
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
-.header {
+
+.card {
+  min-height: calc(100vh - 60px - constant(safe-area-inset-top));
+  min-height: calc(100vh - 60px - env(safe-area-inset-top, 0px));
+  background: #fff;
+  border-radius: 16px 16px 0 0;
+  padding: 20px 15px 28px;
+  box-sizing: border-box;
+}
+
+.field-block {
+  margin-bottom: 20px;
+}
+
+.field-label {
+  font-size: 14px;
+  color: #646566;
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.field-input {
   display: flex;
-  .title {
-    margin-left: 10px;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 12px;
+  border: 1px solid #ebedf0;
+  border-radius: 8px;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.field-input--code {
+  padding-right: 8px;
+}
+
+.field-control {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  border: none;
+  background: transparent;
+  font-size: 15px;
+  color: #323233;
+  outline: none;
+
+  &::placeholder {
+    color: #c8c9cc;
   }
 }
-.content-box {
-  width: 100%;
 
-  .bind-not {
-    padding: 0 15px;
-    .item {
-      width: 100%;
+.code-side {
+  flex-shrink: 0;
+  margin-left: 8px;
+}
 
-      .text {
-        margin: 20px 0;
-        font-size: 14px;
-        color: var(--ex-default-font-color);
-      }
+.send-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #17ac74;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
 
-      .input {
-        width: 100%;
-        height: 50px;
-        padding: 0 10px;
-        border: 1px solid var(--ex-border-color1);
-        background: var(--ex-default-background-color);
-        border-radius: 3px 3px 3px 3px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+.code-wait {
+  min-width: 40px;
+  text-align: center;
+  font-size: 14px;
+  color: #17ac74;
+  padding: 0 4px;
+}
 
-        input {
-          height: 100%;
-          background: none;
-          border: none;
-          font-size: 14px;
-        }
-        .code-box {
-          min-width: 44px;
-          height: 30px;
-          background: var(--ex-div-bgColor1);
-          border-radius: 2px 2px 2px 2px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          color: var(--ex-font-color);
-          div {
-            font-size: 14px;
-            color: var(--ex-font-color);
-          }
-        }
-      }
+.page-email-auth :deep(.code-wait .van-count-down) {
+  font-size: 14px;
+  color: #17ac74;
+}
+
+.btnBox {
+  margin-top: 36px;
+}
+
+.card :deep(.btnBox > div) {
+  border-radius: 999px !important;
+  background: #05101a !important;
+  border-color: #05101a !important;
+  color: #fff !important;
+}
+
+.bind-yes {
+  .top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 24px;
+
+    img {
+      width: 132px;
+      height: 100px;
     }
-    .btnBox {
-      margin-top: 50px;
+
+    .success-title {
+      color: #323233;
+      text-align: center;
+      font-size: 16px;
+      margin: 24px 0 16px;
     }
 
-    .back {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 50px;
-      background: var(--ex-default-background-color);
-      border: 1px solid var(--ex-border-color4);
-      color: var(--ex-font-color9);
+    .success-email {
+      text-align: center;
       font-size: 14px;
+      color: #646566;
     }
   }
 
-  .bind-yes {
-    padding: 0 15px;
-    .top {
-      margin-top: 80px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      img {
-        width: 132px;
-        height: 100px;
-      }
-      .text {
-        color: var(--ex-font-color6);
-        text-align: center;
-        font-size: 16px;
-        margin: 30px 0 20px 0;
-      }
-      .email {
-        text-align: center;
-        font-size: 14px;
-        color: var(--ex-font-color17);
-      }
-    }
-    .change-email {
-      margin: 50px 0 20px 0;
-      margin: 100px 0 20px 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 50px;
-      color: var(--ex-font-color);
-      background: var(--ex-div-bgColor1);
-      font-size: 14px;
-      border-radius: 3px 3px 3px 3px;
-      opacity: 1;
-    }
-    .back {
-      font-size: 14px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 50px;
-      background: var(--ex-default-background-color);
-      border: 1px solid var(--ex-border-color4);
-      color: var(--ex-font-color9);
-    }
+  .change-email {
+    margin: 48px 0 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 48px;
+    color: #fff;
+    background: #17ac74;
+    font-size: 14px;
+    border-radius: 999px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .back-home {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 48px;
+    background: #f7f8fa;
+    border: 1px solid #ebedf0;
+    color: #646566;
+    font-size: 14px;
+    border-radius: 8px;
+    -webkit-tap-highlight-color: transparent;
   }
 }
 </style>
