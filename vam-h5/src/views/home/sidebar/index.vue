@@ -17,10 +17,16 @@
       </div>
     </div>
     <!-- 已登录 -->
-    <div v-if="isSign && !userInfo.addressFlag" class="logged" @click="exit">
-      <svg-load name="tuichu" class="loggedImg"></svg-load>
-      <!-- 退出登录 -->
-      <div>{{ _t18('layout', ['aams']) }}</div>
+    <div v-if="isSign && !userInfo.addressFlag" class="logged-wrap">
+      <button type="button" class="logged-btn" @click="exit">
+        <img
+          src="@/assets/images/logout.png"
+          alt=""
+          class="logged-icon"
+          aria-hidden="true"
+        />
+        <span class="logged-text">{{ _t18('layout', ['aams']) }}</span>
+      </button>
     </div>
 
     <!-- 退出弹窗 -->
@@ -111,23 +117,44 @@ const closeSideBar = () => {
     margin-bottom: 20px;
   }
 }
-// 登录
-.logged {
-  border-top: 1px solid var(--ex-input-boder-bgColor);
-
+// 退出登录（胶囊按钮）
+.logged-wrap {
+  // border-top: 1px solid var(--ex-input-boder-bgColor);
   margin-top: 50px;
   padding: 30px 15px;
-  font-size: 14px;
-  color: var(--ex-font-color9);
+}
+
+.logged-btn {
+  width: 100%;
   display: flex;
   align-items: center;
-  .loggedImg {
-    width: 20px;
-    height: 20px;
-    margin-right: 20px;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 999px;
+  background: #0a0f14;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  &:active {
+    opacity: 0.92;
   }
-  div {
-    color: var(--ex-font-color9);
-  }
+}
+
+.logged-icon {
+  flex-shrink: 0;
+  display: block;
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+.logged-text {
+  color: #fff;
 }
 </style>
