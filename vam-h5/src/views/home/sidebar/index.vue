@@ -175,8 +175,8 @@ const closeSideBar = () => {
 .logged-icon {
   flex-shrink: 0;
   display: block;
-  width: 34px;
-  height: 34px;
+  width: 24px;
+  height: 24px;
   object-fit: contain;
 }
 
