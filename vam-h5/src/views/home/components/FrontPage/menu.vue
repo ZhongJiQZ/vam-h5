@@ -22,7 +22,8 @@
     <div class="linkLeft">
       <!-- 快捷充币 -->
       <div class="item" @click="toRecharge">
-        <svg-load name="mengbanzu13" class="leftImg"></svg-load>
+        <!-- <svg-load name="mengbanzu13" class="leftImg"></svg-load> -->
+         <img src="@/assets/images/fast-recharge.png" alt="" class="leftImg" />
         <div class="right">
           <div class="top">{{ _t18(`home_recharge`, ['latcoin', 'aams', 'robinhood2']) }}</div>
           <!-- <div>{{ _t18(`clickto_recharge`) }}</div> -->
@@ -30,7 +31,8 @@
       </div>
       <!-- 快速提币 -->
       <div class="item rightItem" @click="$router.push('/withdraw')">
-        <svg-load name="zu29" class="leftImg"></svg-load>
+        <!-- <svg-load name="zu29" class="leftImg"></svg-load> -->
+         <img src="@/assets/images/fast-withdraw.png" alt="" class="leftImg" />
         <div class="right">
           <div class="top">{{ _t18(`quick_withdrawal`, ['latcoin', 'aams', 'robinhood2']) }}</div>
           <!-- <div>{{ _t18(`Click_withdraw_coins`) }}</div> -->
@@ -263,7 +265,8 @@ const toRecharge = () => {
 }
 
 .linkList {
-  padding: 20px 15px;
+  padding: 0 15px;
+  margin-bottom:10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -272,36 +275,39 @@ const toRecharge = () => {
     min-height: 55px;
     flex: 1;
     display: flex;
+    gap:8px;
 
     .item {
       flex: 1;
       display: flex;
       align-items: center;
       border-radius: 5px 5px 5px 5px;
-      padding: 10px 12px;
-      background: var(--ex-home-box-background-color2);
+      padding: 4px 12px;
+      // background: var(--ex-home-box-background-color2);
+      background: #f6f7fb;
 
       .leftImg {
-        width: 24px;
-        height: 24px;
-        margin-right: 10px;
+        width: 52px;
+        height: 52px;
+        margin-right: 8px;
       }
 
       .right {
         font-size: 12px;
-        color: #888888;
+        // color: #888888;
 
         .top {
           // margin-bottom: 5px;
           font-size: 14px;
-          color: var(--ex-home-font-color);
+          // color: var(--ex-home-font-color);
         }
       }
     }
 
     .rightItem {
-      margin-left: 14px;
-      background-color: var(--ex-home-box-background-color);
+      // margin-left: 14px;
+      // background-color: var(--ex-home-box-background-color);
+      background: #f6f7fb;
       border: 1px solid var(--ex-home-box-border-color);
 
       .right {
