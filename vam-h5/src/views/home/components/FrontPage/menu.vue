@@ -37,11 +37,6 @@
         </div>
       </div>
     </div>
-    <!-- 在线客服 -->
-    <div class="linkRight" @click="dispatchCustomEvent('event_serviceChange')">
-      <svg-load name="zu447" class="itemImg"></svg-load>
-      <div style="scale: 0.8; text-align: center">{{ _t18(`home_service`) }}</div>
-    </div>
     <InfoPopup :show="showInfoPopup" :data="infoData" @closeBtn="closeBtn"></InfoPopup>
     <!-- 直播弹窗 -->
     <van-popup v-model:show="showNotice" round closeable>
