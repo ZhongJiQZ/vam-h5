@@ -1,104 +1,122 @@
 <!-- 充值申请 -->
 <template>
-  <HeaderBar :currentName="currentName" :cuttentRight="cuttentRight"></HeaderBar>
-  <!-- 二维码 -->
-  <div class="erweima">
-    <QRCode :address="address"></QRCode>
-  </div>
-  <!-- 申请信息 -->
-  <div class="applyMes">
-    <div class="address">
-      <!-- 充值地址 -->
-      <p class="top">{{ _t18('recharge_address', ['bitmake']) }}({{ route.query.type }})</p>
-      <div class="bottom">
-        <Copy :data="address" :fontSize="'16px'">
-          <template #copyMsg>
-            <span class="fw-num">{{ address }}</span>
-          </template>
-        </Copy>
-      </div>
-    </div>
-    <template
-      v-if="
-        !['coinsexpto', 'rxce', 'gmtoin', 'aams', 'bitbyex', 'gmmoin'].includes(
-          _getConfig('_APP_ENV')
-        )
-      "
-    >
-      <div class="num">
-        <!-- 充值数量 -->
-        <p class="top">{{ _t18('recharge_number', ['bitmake']) }}</p>
-        <div class="bottom">
-          <input type="number" :placeholder="_t18('recharge_input')" class="ff-num" v-model="num" />
+  <div class="page-recharge-apply">
+    <DarkHeaderBar
+      :title="currentName"
+      right="rechargeOrder"
+      :border_bottom="true"
+    />
+
+    <div class="page-body">
+      <div class="qr-section">
+        <div
+          class="qr-bg"
+          :style="{ backgroundImage: `url(${rechargeApplyBg})` }"
+          aria-hidden="true"
+        />
+        <div class="qr-frame">
+          <QRCode :address="address"></QRCode>
         </div>
       </div>
-      <div class="uploadImg">
-        <!-- 上传支付详情截图 -->
-        <p class="top">{{ _t18('recharge_imgUpload', ['bitmake']) }}</p>
-        <van-uploader :after-read="afterRead" max-count="1" v-model="fileList">
+
+      <div class="applyMes">
+        <div class="address">
+          <p class="top">{{ _t18('recharge_address', ['bitmake']) }}({{ route.query.type }})</p>
           <div class="bottom">
-            <image-load filePath="defi/delete.png" name="delete" class="img"></image-load>
+            <Copy :data="address" :fontSize="'16px'">
+              <template #copyMsg>
+                <span class="fw-num">{{ address }}</span>
+              </template>
+            </Copy>
           </div>
-        </van-uploader>
+        </div>
+        <template
+          v-if="
+            !['coinsexpto', 'rxce', 'gmtoin', 'aams', 'bitbyex', 'gmmoin'].includes(
+              _getConfig('_APP_ENV')
+            )
+          "
+        >
+          <div class="num">
+            <p class="top">{{ _t18('recharge_number', ['bitmake']) }}</p>
+            <div class="bottom">
+              <input
+                v-model="num"
+                type="number"
+                class="ff-num"
+                :placeholder="_t18('recharge_input')"
+              />
+            </div>
+          </div>
+          <div class="uploadImg">
+            <p class="top">{{ _t18('recharge_imgUpload', ['bitmake']) }}</p>
+            <van-uploader v-model="fileList" max-count="1" :after-read="afterRead">
+              <div class="bottom">
+                <image-load filePath="defi/delete.png" name="delete" class="img"></image-load>
+              </div>
+            </van-uploader>
+          </div>
+        </template>
       </div>
-    </template>
+
+      <template v-if="['coinsexpto', 'rxce', 'bitbyex', 'gmmoin'].includes(_getConfig('_APP_ENV'))">
+        <div class="btn-wrap">
+          <div class="btn btn--primary" @click="_copy(address)">
+            <p>{{ _t18('copy') }}</p>
+          </div>
+        </div>
+        <div v-if="['bitbyex'].includes(_getConfig('_APP_ENV'))" class="tip-list">
+          <div v-for="(item, index) in tipList2" :key="index" class="tip">
+            {{ item.content }}
+          </div>
+        </div>
+        <div v-else class="tip-list">
+          <div v-for="(item, index) in tipList" :key="index" class="tip">
+            {{ index + 1 }}.{{ item.content }}
+          </div>
+        </div>
+      </template>
+      <template v-else-if="['gmtoin'].includes(_getConfig('_APP_ENV'))">
+        <div class="tip-list">
+          <div class="tip">{{ _t18('account_balance_info') }}</div>
+        </div>
+      </template>
+      <template v-else-if="['aams', 'gmmoin'].includes(_getConfig('_APP_ENV'))"></template>
+      <template v-else>
+        <div class="btn-wrap">
+          <div class="btn btn--primary" @click="submit">
+            <p>{{ _t18('recharge_require', ['bitmake']) }}</p>
+          </div>
+        </div>
+      </template>
+    </div>
   </div>
-  <template v-if="['coinsexpto', 'rxce', 'bitbyex', 'gmmoin'].includes(_getConfig('_APP_ENV'))">
-    <!-- 复制按钮 -->
-    <div class="btn" @click="_copy(address)">
-      <p>{{ _t18('copy') }}</p>
-    </div>
-    <!-- 充值说明列表 -->
-    <div class="tip-list" v-if="['bitbyex'].includes(_getConfig('_APP_ENV'))">
-      <div class="tip" v-for="(item, index) in tipList2" :key="index">
-        {{ item.content }}
-      </div>
-    </div>
-    <div class="tip-list" v-else>
-      <div class="tip" v-for="(item, index) in tipList" :key="index">
-        {{ index + 1 }}.{{ item.content }}
-      </div>
-    </div>
-  </template>
-  <template v-else-if="['gmtoin'].includes(_getConfig('_APP_ENV'))">
-    <div class="tip-list">
-      <div class="tip">{{ _t18('account_balance_info') }}</div>
-    </div>
-  </template>
-  <template v-else-if="['aams', 'gmmoin'].includes(_getConfig('_APP_ENV'))"> </template>
-  <template v-else>
-    <!-- 确认充值 -->
-    <div class="btn" @click="submit">
-      <p>{{ _t18('recharge_require', ['bitmake']) }}</p>
-    </div>
-  </template>
 </template>
 
 <script setup>
 import { uploadImg } from '@/api/common/index.js'
-import { rechargeSubmit, getUserRechageNewApi } from '@/api/account.js'
-import { _toView, _hideAddress, _t18, _getConfig } from '@/utils/public'
+import { rechargeSubmit } from '@/api/account.js'
+import { _toView, _t18, _getConfig } from '@/utils/public'
 import { priceFormat } from '@/utils/decimal'
 import QRCode from '@/components/common/QRCode/index.vue'
 import Copy from '@/components/common/Copy/index.vue'
+import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
+import rechargeApplyBg from '@/assets/images/recharge-apply-bg.png'
 import { showToast } from 'vant'
 import { debounce } from 'lodash'
 import { useToast } from '@/hook/useToast'
 import { useCopy } from '@/hook/useCopy'
 import { useRouter, useRoute } from 'vue-router'
 import { useMainStore } from '@/store'
-import { onMounted, reactive } from 'vue'
+import { onMounted, reactive, computed, ref } from 'vue'
 
 const { _toast } = useToast()
 const { _copy } = useCopy()
 const route = useRoute()
 const router = useRouter()
-// 充值
+
 const currentName = `${_t18('recharge', ['latcoin'])} ${route.query.type}`
-const cuttentRight = { iconRight: [{ iconName: 'jilu', clickTo: '/recharge-order' }] }
-/**
- * 充值说明
- */
+
 const tipList = reactive([
   { content: _t18('recharge_tip1') },
   { content: _t18('recharge_tip2') },
@@ -108,10 +126,10 @@ const tipList = reactive([
 const tipList2 = reactive([{ content: _t18('recharge_tip5') }])
 const num = ref('')
 const fileList = ref([])
+
 const afterRead = (file) => {
   file.status = 'uploading'
-  // 此时可以自行将文件上传至服务器
-  let formData = new FormData()
+  const formData = new FormData()
   formData.append('file', file.file)
   uploadImg(formData).then((res) => {
     res = res.data
@@ -124,23 +142,22 @@ const afterRead = (file) => {
     }
   })
 }
+
 const submit = debounce(() => {
   if (!['coinsexpto'].includes(__config._APP_ENV) && num.value == '') {
-    _toast('recharge_num') // 请填写充值数量
+    _toast('recharge_num')
     return
   }
   let filePath = ''
-  if (['coinsexpto'].includes(__config._APP_ENV)) {
-    // 特殊平台不用上传图片
-  } else {
+  if (!['coinsexpto'].includes(__config._APP_ENV)) {
     if (fileList.value.length == 0) {
-      _toast('recharge_img') // 请上传截图
+      _toast('recharge_img')
       return
     }
     const file = fileList.value[0] || {}
     filePath = file.res
     if (file.status != 'success') {
-      _toast('recharge_img_load') // 图片上传中,稍后重试
+      _toast('recharge_img_load')
       return
     }
   }
@@ -164,7 +181,7 @@ const submit = debounce(() => {
 
   rechargeSubmit(params).then((res) => {
     if (res.code == '200') {
-      _toast('recharge_success') // 充值成功
+      _toast('recharge_success')
       num.value = ''
       setTimeout(() => {
         _toView('/recharge-order')
@@ -176,87 +193,170 @@ const submit = debounce(() => {
 }, 500)
 
 const mainStore = useMainStore()
-/**
- * 充值地址
- */
-const address = computed(() => {
 
-  let rechargeObj = mainStore.getRechargeList.find((elem) => elem.coinName == route.query.type)
-  return rechargeObj.coinAddress
+const address = computed(() => {
+  const rechargeObj = mainStore.getRechargeList.find((elem) => elem.coinName == route.query.type)
+  return rechargeObj?.coinAddress ?? ''
 })
 </script>
 
 <style lang="scss" scoped>
-* {
-  font-size: 14px;
-  color: var(--ex-default-font-color);
+.page-recharge-apply {
+  min-height: 100vh;
+  background: #05101a;
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
-.erweima {
-  padding: 50px 0;
+
+.page-body {
+  min-height: calc(100vh - 60px - constant(safe-area-inset-top));
+  min-height: calc(100vh - 60px - env(safe-area-inset-top, 0px));
+  background: #f0f2f5;
+  border-radius: 16px 16px 0 0;
+  padding-bottom: 28px;
+  box-sizing: border-box;
 }
+
+.qr-section {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 16px 100px;
+  overflow: hidden;
+}
+
+.qr-bg {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: min(100%, 360px);
+  height: 220px;
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: contain;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.qr-frame {
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+  padding: 8px;
+  border: 2px solid #17ac74;
+  border-radius: 10px;
+  background: #fff;
+  box-sizing: content-box;
+}
+
+.page-recharge-apply :deep(.qr-frame .box .erweima) {
+  border-color: transparent;
+}
+
 .applyMes {
-  border-top: 1px solid var(--ex-border-color);
-  padding: 30px 15px;
+  margin: -64px 15px 0;
+  position: relative;
+  z-index: 2;
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+
   & > div {
     margin-bottom: 20px;
 
-    p {
-      color: var(--ex-passive-font-color);
-      margin-bottom: 10px;
+    &:last-child {
+      margin-bottom: 0;
     }
   }
-  .address {
-    .bottom {
-      word-break: break-all;
+
+  .top {
+    font-size: 13px;
+    color: #969799;
+    margin: 0 0 10px;
+    line-height: 1.4;
+  }
+
+  .address .bottom {
+    word-break: break-all;
+    font-size: 15px;
+    color: #323233;
+  }
+
+  .num .bottom {
+    border: 1px solid #ebedf0;
+    padding: 12px;
+    border-radius: 8px;
+    background: #fff;
+
+    input {
+      width: 100%;
+      border: none;
+      font-size: 15px;
+      color: #323233;
+      background: transparent;
+      outline: none;
+    }
+
+    input::placeholder {
+      color: #c8c9cc;
+      font-size: 14px;
     }
   }
-  .num {
-    .bottom {
-      border: 1px solid var(--ex-border-color1);
-      padding: 15px 10px;
-      border-radius: 3px;
-      input {
-        width: 100%;
-      }
-      input::placeholder {
-        color: var(--ex-font-color5);
-        font-size: 14px;
-      }
-    }
-  }
+
   .uploadImg {
     .van-uploader {
       width: 100%;
+
       :deep(.van-uploader__input-wrapper) {
         width: 100%;
       }
     }
+
     .bottom {
-      border: 1px solid var(--ex-border-color1);
-      padding: 35px 0;
+      border: 1px solid #ebedf0;
+      padding: 40px 0;
       text-align: center;
-      border-radius: 3px;
+      border-radius: 8px;
+      background: #fafafa;
+
       .img {
         font-size: 36px;
       }
     }
   }
 }
+
+.btn-wrap {
+  padding: 20px 15px 0;
+}
+
 .btn {
-  padding: 0 15px 55px;
   p {
+    margin: 0;
     text-align: center;
     padding: 14px 0;
-    color: var(--ex-font-color);
     font-size: 16px;
-    background-color: var(--ex-div-bgColor1);
-    border-radius: 3px;
+    border-radius: 999px;
+  }
+
+  &--primary p {
+    color: #fff;
+    background: #05101a;
+    font-weight: 500;
   }
 }
+
 .tip-list {
-  padding: 0 15px;
+  padding: 16px 15px 0;
+  font-size: 14px;
+  color: #646566;
+  line-height: 1.5;
+
   .tip {
-    margin-bottom: 15px;
+    margin-bottom: 12px;
   }
 }
 </style>

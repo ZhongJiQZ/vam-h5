@@ -29,6 +29,15 @@
         >
           <img :src="serviceIcon" alt="" class="icon-img icon-img--service" />
         </button>
+        <button
+          v-else-if="right === 'rechargeOrder'"
+          type="button"
+          class="icon-btn"
+          aria-label="recharge-order"
+          @click="onRechargeOrder"
+        >
+          <img :src="rechargeOrderIcon" alt="" class="icon-img icon-img--recharge-order" />
+        </button>
         <slot name="right" />
       </div>
     </header>
@@ -41,6 +50,7 @@ import { dispatchCustomEvent } from '@/utils'
 import { _back } from '@/utils/public'
 import backIcon from '@/assets/images/back.png'
 import serviceIcon from '@/assets/images/service.png'
+import rechargeOrderIcon from '@/assets/images/recharge-order.png'
 
 const router = useRouter()
 
@@ -61,7 +71,9 @@ const props = defineProps({
     type: Boolean,
     default: true
   },
-  /** 右侧区域：传 `service` 显示客服图标，其它或不传则不显示 */
+  /**
+   * 右侧区域：`service` 客服；`rechargeOrder` 充值记录（跳转 recharge-order）
+   */
   right: {
     type: String,
     default: ''
@@ -95,6 +107,10 @@ const onBack = () => {
 const onService = () => {
   emit('service')
   dispatchCustomEvent('event_serviceChange')
+}
+
+const onRechargeOrder = () => {
+  router.push('/recharge-order')
 }
 </script>
 
@@ -176,6 +192,11 @@ const onService = () => {
   .icon-img--service {
     width: 28px;
     height: 28px;
+  }
+
+  .icon-img--recharge-order {
+    width: 26px;
+    height: 26px;
   }
 }
 </style>
