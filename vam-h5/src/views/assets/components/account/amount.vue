@@ -150,7 +150,7 @@ const t18Type = (type) => {
   margin: 0;
   font-size: 14px;
   font-weight: 500;
-  color: #17ac74;
+  color: #008710;
   line-height: 1.4;
 }
 
@@ -211,8 +211,9 @@ const t18Type = (type) => {
 
 .currencyAbout {
   margin: 0 15px 12px;
-  padding: 16px 10px 20px;
+  padding: 10px 6px 12px;
   background: #eefaf8;
+  border-radius: 10px;
   display: flex;
   text-align: center;
 
@@ -232,7 +233,7 @@ const t18Type = (type) => {
   .currencyIcon {
     width: 32px;
     height: 32px;
-    margin: 0 auto 10px;
+    margin: 0 auto 6px;
     display: block;
     object-fit: contain;
   }
