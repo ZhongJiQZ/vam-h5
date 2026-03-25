@@ -10,6 +10,7 @@ import Card from './components/card.vue'
 import pledgeCoinIcon from '@/assets/images/Frame 981370.png'
 import pledgeHeaderRuleIcon from '@/assets/images/Frame 10711.png'
 import pledgeHeaderOrderIcon from '@/assets/images/recharge-order.png'
+import pledgeZhiyaImg from '@/assets/images/image 36.png'
 import { onMounted } from 'vue'
 import { rulesList } from '@/api/common/index'
 const router = useRouter()
@@ -197,7 +198,7 @@ const manual = computed(() => {
           <p class="fw-num">USDT</p>
         </div>
         <div class="fund">
-          <image-load filePath="zhiyaimg.png" name="zhiyaimg" class="zhiyaimg"></image-load>
+          <img :src="pledgeZhiyaImg" alt="" class="zhiyaimg" />
           <div class="top">
             <div class="left">
               <p class="fw-num">{{ priceFormat(showInfo.amount) || 0 }}</p>
@@ -309,29 +310,42 @@ const manual = computed(() => {
     }
   }
   .fund {
+    display: flex;
+    flex-direction: column;
     border: 1px solid rgba(255, 255, 255, 0.18);
     border-radius: 12px;
     position: relative;
+    min-height: 260px;
     background: rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
     .zhiyaimg {
       position: absolute;
-      font-size: 100px;
+      width: 120px;
+      height: auto;
+      object-fit: contain;
+      pointer-events: none;
       transform: translate(-50%, -50%);
       left: 50%;
       top: 50%;
     }
     .top,
     .bottom {
+      flex: 1;
       display: flex;
       justify-content: space-between;
+      align-items: stretch;
+      min-height: 100px;
       .left,
       .right {
-        width: 100%;
-        height: 100%;
-        padding: 25px 15px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 28px 14px;
 
         p,
         span {
@@ -341,11 +355,10 @@ const manual = computed(() => {
       }
       .right {
         border-left: 1px solid rgba(255, 255, 255, 0.12);
-        text-align: right;
       }
       p {
         font-size: 18px;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
         color: #fff;
       }
       span {
