@@ -87,13 +87,16 @@ const mainStroe = useMainStore()
 const isLoading = ref(false)
 const currentRoute = computed(() => useRoute())
 const tabbarPathNameList = computed(() =>
-  mainStroe.getTabbarList
+  [...mainStroe.getTabbarList
     .filter((elt) => {
       return elt.isOpen === true
     })
     .map((elem) => {
       return elem.key.charAt(0).toUpperCase() + elem.key.slice(1)
-    })
+    }),
+    'OrderCenter',
+    'AssetRecord'
+  ]
 )
 
 const { _toast } = useToast()
