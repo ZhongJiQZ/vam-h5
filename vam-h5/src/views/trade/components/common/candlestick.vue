@@ -242,8 +242,8 @@ dataFeedInstance.getBars = async ({ symbolInfo: coinInfo, resolution, from, firs
             open: parseFloat(elem.o),
             high: parseFloat(elem.h),
             low: parseFloat(elem.l),
-            close: parseFloat(priceFormat(elem.c)),
-            amount: parseFloat(priceFormat(elem.c)),
+            close: parseFloat((elem.c)),
+            amount: parseFloat((elem.c)),
             volume: parseFloat(elem.v),
             time: elem.T
           }
@@ -462,7 +462,7 @@ const subscribeTrades = async (params) => {
       }
       tempTrade.high = tempData.high
       tempTrade.low = tempData.low
-      tempTrade.close = Number(priceFormat(tempData.close))
+      tempTrade.close = tempData.close.toFixed(4)
       tempTrade.volume = tempData.vol
       updateDataKline(tempTrade)
     }
