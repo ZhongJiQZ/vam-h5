@@ -1,4 +1,5 @@
 <script setup>
+import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import { DIFF_ISFREEZE } from '@/config/index'
 import { useFreeze } from '@/hook/useFreeze'
 const { _isFreeze } = useFreeze()
@@ -61,143 +62,229 @@ const submit = () => {
 }
 </script>
 <template>
-  <HeaderBar :currentName="_t18('host.detail')"></HeaderBar>
-  <!-- 申购金额 -->
-  <div class="content1">
-    <div class="jine">
-      <!-- 申购金额存入资金 -->
-      <div>
-        <div>{{ _t18('pledge_Subscription_amount') }} <span>(USDT)</span></div>
-        <p @click="$router.push('/recharge')">{{ _t18('pledge_deposit_funds') }}</p>
-      </div>
-      <div class="ipt">
-        <input
-          v-model="maxAmount"
-          type="number"
-          :placeholder="`${_t18('pledge_purchasing_price', ['aams'])}`"
-          class="ff-num"
-        />
-        <p @click="maxNum()">{{ _t18('pledge_maximum') }}</p>
-      </div>
+  <div class="pledge-detail-page">
+    <DarkHeaderBar :title="_t18('host.detail')" :border_bottom="true" />
+    <div class="sheet">
+      <section class="detail-card">
+        <div class="jine">
+          <div class="jine-top">
+            <div class="jine-label">
+              {{ _t18('pledge_Subscription_amount') }} <span>(USDT)</span>
+            </div>
+            <p class="jine-deposit" @click="$router.push('/recharge')">
+              {{ _t18('pledge_deposit_funds') }}
+            </p>
+          </div>
+          <div class="ipt">
+            <input
+              v-model="maxAmount"
+              type="number"
+              :placeholder="`${_t18('pledge_purchasing_price', ['aams'])}`"
+              class="ff-num ipt-input"
+            />
+            <p class="ipt-max" @click="maxNum()">{{ _t18('pledge_maximum') }}</p>
+          </div>
+        </div>
+        <div class="shouyi">
+          <div class="shouyi-col">
+            <p class="shouyi-label">{{ _t18('pledge_quota') }}</p>
+            <p class="shouyi-value ff-num">{{ data.limitMin }}~{{ data.limitMax }}</p>
+          </div>
+          <div class="shouyi-col">
+            <p class="shouyi-label">{{ _t18('host_dailyrateof_return') }}</p>
+            <p class="shouyi-value ff-num">{{ data.minOdds }}%~{{ data.maxOdds }}%</p>
+          </div>
+          <div class="shouyi-col">
+            <p class="shouyi-label">{{ _t18('pledge_cycle') }}({{ _t18('pledge_day') }})</p>
+            <p class="shouyi-value ff-num">{{ data.days }}</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="detail-card">
+        <div class="balance-row">
+          <span class="balance-label">{{ _t18('pledge_Available_Balance') }}</span>
+          <span class="balance-value ff-num">{{ priceFormat(amount) }} USDT</span>
+        </div>
+        <div class="balance-row">
+          <span class="balance-label">{{ _t18('pledge_Available_times') }}</span>
+          <span class="balance-value ff-num" v-if="['dev'].includes(_getConfig('_APP_ENV'))">{{
+            `${data.buyPurchase}/${data.timeLimit}`
+          }}</span>
+          <span class="balance-value ff-num" v-else>{{ `${data.timeLimit}` }}</span>
+        </div>
+      </section>
+
+      <button type="button" class="detail-btn" @click="submit">
+        {{ _t18('btnConfirm', ['bitmake']) }}
+      </button>
     </div>
-    <div class="shouyi">
-      <div>
-        <p>{{ _t18('pledge_quota') }}</p>
-        <p class="ff-num">{{ data.limitMin }}~{{ data.limitMax }}</p>
-      </div>
-      <!-- 日收益率 -->
-      <div>
-        <p>{{ _t18('host_dailyrateof_return') }}</p>
-        <p class="ff-num">{{ data.minOdds }}%~{{ data.maxOdds }}%</p>
-      </div>
-      <!-- 周期(天) -->
-      <div>
-        <p>{{ _t18('pledge_cycle') }}({{ _t18('pledge_day') }})</p>
-        <p class="ff-num">{{ data.days }}</p>
-      </div>
-    </div>
-  </div>
-  <!-- 信息 -->
-  <div class="content2">
-    <div>
-      <!-- 可用余额 -->
-      <div>
-        <div class="left">{{ _t18('pledge_Available_Balance') }}</div>
-        <div class="right ff-num">{{ priceFormat(amount) }} USDT</div>
-      </div>
-      <!-- 可购次数 -->
-      <div>
-        <div class="left">{{ _t18('pledge_Available_times') }}</div>
-        <div class="right ff-num" v-if="['dev'].includes(_getConfig('_APP_ENV'))">{{ `${data.buyPurchase}/${data.timeLimit}` }}</div>
-        <div class="right ff-num" v-else>{{ `${data.timeLimit}` }}</div>
-      </div>
-      <!-- <div>
-        <div class="left">总年化率</div>
-        <div class="right ff-num">0.00%-0.00%</div>
-      </div> -->
-    </div>
-    <!-- <div class="btn" @click="$router.push('/pledge/pledgeOrder')">确定</div> -->
-    <div class="btn" @click="submit">{{ _t18('btnConfirm', ['bitmake']) }}</div>
   </div>
 </template>
 <style lang="scss" scoped>
-* {
+/* 圆角与布局对齐 recharge-detail / recharge-order */
+.pledge-detail-page {
+  min-height: 100vh;
+  background: #05101a;
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  box-sizing: border-box;
+}
+
+.sheet {
+  min-height: calc(100vh - 60px - constant(safe-area-inset-top));
+  min-height: calc(100vh - 60px - env(safe-area-inset-top, 0px));
+  background: #f5f6fa;
+  border-radius: 16px 16px 0 0;
+  padding: 20px 15px 28px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.detail-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 18px 16px;
+  margin-bottom: 12px;
+  box-sizing: border-box;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.jine-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.jine-label {
   font-size: 14px;
-  color: var(--ex-default-font-color);
-}
-.content1 {
-  border-bottom: 1px solid var(--ex-border-color);
-  padding: 20px 15px 30px;
-  .jine {
-    & > div {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      span {
-        color: var(--ex-passive-font-color);
-      }
-      p {
-        color: var(--ex-font-color9);
-      }
-    }
-    .ipt {
-      border: 1px solid var(--ex-border-color1);
-      border-radius: 3px 3px 3px 3px;
-      padding: 15px 10px;
-      margin: 10px 0;
-      input::placeholder {
-        color: var(--ex-font-color5);
-        background: var(--ex-default-background-color);
-      }
-    }
-  }
-  .shouyi {
-    padding: 20px 0 0;
-    display: flex;
-    justify-content: center;
-    & > div {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      & > p:first-child {
-        margin-bottom: 12px;
-        color: var(--ex-passive-font-color);
-      }
-      & > p:last-child {
-        font-weight: 500;
-      }
-      &:first-child {
-        align-items: flex-start;
-      }
-      &:last-child {
-        align-items: flex-end;
-      }
-    }
+  color: #888888;
+  span {
+    color: #888888;
   }
 }
-.content2 {
-  padding: 30px 15px;
-  & > div {
-    & > div {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 30px;
-      .left {
-        color: var(--ex-passive-font-color);
-      }
-      .right {
-        font-weight: 500;
-      }
-    }
-  }
-  .btn {
-    background-color: var(--ex-div-bgColor1);
-    color: var(--ex-font-color);
-    text-align: center;
-    padding: 14px 0;
-    font-size: 16px;
-    border-radius: 3px;
-  }
+
+.jine-deposit {
+  margin: 0;
+  font-size: 14px;
+  color: #17ac74;
+  font-weight: 500;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ipt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: #f5f6fa;
+  border: 1px solid #e5e6eb;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+.ipt-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 16px;
+  color: #1a1a1a;
+}
+
+.ipt-input::placeholder {
+  color: #b0b0b0;
+}
+
+.ipt-max {
+  margin: 0;
+  margin-left: 12px;
+  flex-shrink: 0;
+  font-size: 14px;
+  color: #17ac74;
+  font-weight: 500;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.shouyi {
+  display: flex;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.shouyi-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.shouyi-col:first-child {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.shouyi-col:last-child {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.shouyi-label {
+  margin: 0 0 10px;
+  font-size: 13px;
+  color: #888888;
+}
+
+.shouyi-value {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.balance-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+}
+
+.balance-row:first-child {
+  padding-top: 4px;
+}
+
+.balance-row + .balance-row {
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.balance-label {
+  font-size: 14px;
+  color: #888888;
+}
+
+.balance-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.detail-btn {
+  width: 100%;
+  margin-top: 8px;
+  padding: 14px 16px;
+  border: none;
+  border-radius: 999px;
+  background: #05101a;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 </style>
