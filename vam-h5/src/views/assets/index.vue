@@ -1,27 +1,15 @@
 <template>
-  <div>
-    <van-tabs
-      shrink
-      v-model:active="topActive"
-      title-inactive-color="#333"
-      title-active-color="#17AC74"
-      color="#17AC74"
-      line-width="16"
-      @click-tab="clickTopTab"
-    >
-      <van-tab :title="_t18('center_myasset')" name="center_myasset" />
-      <van-tab :title="_t18('center_order')" name="center_order" />
-      <van-tab :title="_t18('center_asset_flow')" name="center_asset_flow" />
-    </van-tabs>
-
-    <template v-if="topActive === 'center_myasset'">
+  <div class="assets-index">
+    <div class="assets-index__tabs-wrap">
       <van-tabs
         shrink
         v-model:active="tabActive"
-        title-inactive-color="#333"
-        title-active-color="#17AC74"
-        color="#17AC74"
-        line-width="16"
+        class="assets-index__tabs"
+        title-inactive-color="#92a4b0"
+        title-active-color="#e8f1f6"
+        color="#17ac74"
+        line-width="20"
+        line-height="3"
         @click-tab="clickInnerTab"
       >
         <van-tab
@@ -31,7 +19,8 @@
           :name="item.key"
         />
       </van-tabs>
-      <!-- handleYanjin(handleEye), handleShuaxin(handleRefresh) -->  
+    </div>
+    <div class="assets-index__panel">
       <component
         v-if="currentComp"
         :is="currentComp"
@@ -42,21 +31,18 @@
         @handleYanjin="handleYanjin"
         @handleShuaxin="handleShuaxin"
       />
-    </template>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { _t18 } from '@/utils/public'
 import { _add, priceFormat } from '@/utils/decimal'
 import Plat from './components/account/platformAccount.vue'//平台资产
 import finance from './components/account/financeAccount.vue'//理财资产
 import Contarct from './components/account/contarctAccount.vue'//合约资产
-// ✅ 直接引入两个页面组件（你截图里同目录：src/views/assets/orderCenter.vue、assetRecord.vue）
-import OrderCenter from './orderCenter.vue'
-import AssetRecord from './assetRecord.vue'
 
 import { useUserStore } from '@/store/user/index'
 import { useMainStore } from '@/store'
@@ -67,31 +53,6 @@ import { getFreezeList } from '@/api/user'
 import { DIFF_FREEZE_ASSETS } from '@/config/index'
 
 const router = useRouter()
-const route = useRoute()
-
-/** 顶部一级 Tab：默认我的资产 */
-const topActive = ref('center_myasset')
-
-const clickTopTab = (e) => {
-  if (!e?.name) return
-  if (e.name === 'center_myasset') return
-  if (e.name === 'center_order') router.push('/orderCenter')
-  if (e.name === 'center_asset_flow') router.push('/assetRecord')
-}
-// const clickTopTab = (e) => {
-//   if (!e?.name) return
-//   topActive.value = e.name // ✅ 只切状态，不跳路由
-// }
-
-watch(
-  () => route.path,
-  (p) => {
-    if (p?.includes('/orderCenter')) topActive.value = 'center_order'
-    else if (p?.includes('/assetRecord')) topActive.value = 'center_asset_flow'
-    else topActive.value = 'center_myasset'
-  },
-  { immediate: true }
-)
 
 const userStore = useUserStore()
 const mainStore = useMainStore()
@@ -226,30 +187,71 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-:deep(.van-tabs__wrap) {
-  height: 60px;
-  border-bottom: 1px solid var(--ex-border-color);
-  background: var(--ex-home-list-bgcolor) !important;
+/* 资产页顶栏：与 #05101a 同系的冷灰字、浅青白选中、品牌绿下划线 */
+$assets-top-bg: #05101a;
+$assets-tab-inactive: #92a4b0;
+$assets-tab-active: #e8f1f6;
+$assets-accent: #17ac74;
 
-  .van-tab__text {
-    font-size: 16px;
-    font-weight: normal;
+.assets-index {
+  min-height: 100vh;
+  background: #fff;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.assets-index__tabs-wrap {
+  background: $assets-top-bg;
+  padding-top: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.assets-index__tabs {
+  :deep(.van-tabs__wrap) {
+    height: 48px;
+    border-bottom: none;
+    background: transparent !important;
   }
 
-  .van-tab--shrink {
-    margin-right: 20px;
+  :deep(.van-tabs__nav) {
+    background: transparent !important;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  :deep(.van-tab) {
+    flex: none;
+    padding: 0 10px;
+    font-size: 15px;
+  }
+
+  :deep(.van-tab__text) {
+    font-weight: 400;
+  }
+
+  :deep(.van-tab--active .van-tab__text) {
+    font-weight: 600;
+    color: $assets-tab-active !important;
+  }
+
+  :deep(.van-tab:not(.van-tab--active) .van-tab__text) {
+    color: $assets-tab-inactive !important;
+  }
+
+  :deep(.van-tabs__line) {
+    bottom: 20px;
+    background: $assets-accent;
+  }
+
+  :deep(.van-tab--shrink) {
+    margin-right: 8px;
   }
 }
 
-:deep(.van-tabs__nav) {
-  background: var(--ex-home-list-bgcolor) !important;
-}
-
-:deep(.van-tab) {
-  color: var(--ex-home-list-ftcolor) !important;
-}
-
-:deep(.van-tab--active) {
-  color: var(--ex-home-list-ftcolor3) !important;
+.assets-index__panel {
+  background: #fff;
+  border-radius: 16px 16px 0 0;
+  min-height: calc(100vh - 52px);
+  box-shadow: 0 -6px 28px rgba(5, 16, 26, 0.22);
 }
 </style>

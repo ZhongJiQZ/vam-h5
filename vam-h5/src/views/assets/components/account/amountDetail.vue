@@ -1,46 +1,36 @@
 <template>
   <div class="assetDetails">
-    <div v-for="(item, index) in assetDetails" :key="index">
-      <div class="title" v-if="item.icon == 'usdt'">
-        <!-- 资产列表 -->
-        <div class="left fw-bold">{{ _t18('asset_detail', ['ebc']) }}</div>
+    <div v-if="assetDetails?.length" class="asset-list-group">
+      <div class="asset-list-bar">
+        {{ _t18('asset_detail', ['ebc']) }}
       </div>
-      <div class="details">
+      <div v-for="(item, index) in assetDetails" :key="index" class="asset-card">
         <div class="top">
-          <!-- {{ item.loge }} -->
-          <svg-load style="width:30px"  v-if="item.title == 'USDT'" :name="item.icon" class="currencyIcon"></svg-load>
-          <!-- <image-load :filePath="item.loge" v-else /> -->
-          <img :src="item.loge" style="width:30px"  v-else/>
+          <svg-load
+            v-if="item.title == 'USDT'"
+            style="width: 30px"
+            :name="item.icon"
+            class="currencyIcon"
+          />
+          <img v-else :src="item.loge" style="width: 30px" />
           <p class="fw-num">{{ item.title }}</p>
         </div>
         <div class="bottom">
           <div>
-            <!-- 可用 -->
             <p class="til">{{ _t18('asset_available') }}</p>
             <p class="num fw-num">
               {{ amountFormat(item.keyong) }}
             </p>
           </div>
           <div>
-            <!-- 占用 冻结 购买现货时委托未成交 -->
             <p class="til">
               {{ _t18('asset_occupation') }}
-            </p> 
+            </p>
             <p class="num fw-num">
               {{ amountFormat(item.zhanyong, 4) }}
             </p>
           </div>
           <div>
-            <!-- PNL -->
-            <p class="til">
-              {{ _t18('assets.PNL') }}(USDT)
-            </p> 
-            <p class="num fw-num">
-              {{ amountFormat(item.totalPnlUsdt, 2) }}
-            </p>
-          </div>
-          <div>
-            <!-- 折合 -->
             <p class="til">{{ _t18('asset_equivalent', ['bitmake', 'ebc']) }}(USDT)</p>
             <p class="num fw-num">
               {{ amountFormat(item.zhehe) }}
@@ -83,61 +73,85 @@ const amountFormat = (amount, decimal = 0) => {
 
 <style lang="scss" scoped>
 .assetDetails {
-  padding-bottom: 100px;
-  & > div {
-    padding: 20px 15px;
-    border-top: 1px solid var(--ex-border-color);
-    .title {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 20px;
-      .left {
-        color: var(--ex-font-color6);
-        font-size: 16px;
-      }
-      .yanjin {
-        font-size: 16px;
-      }
+  padding: 0 0 100px;
+}
+
+.asset-list-group {
+  margin: 0 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 12px;
+}
+
+.asset-list-bar {
+  background: #f6f7fb;
+  border-radius: 10px;
+  padding: 12px 15px;
+  font-size: 14px;
+  color: #7a8c99;
+}
+
+.asset-card {
+  background: #f6f7fb;
+  border-radius: 10px;
+  padding: 14px 15px;
+
+  .top {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+
+    img {
+      border-radius: 100%;
+      width: 22px;
+      height: 22px;
+      margin-right: 8px;
     }
-    .details {
-      .top {
-        display: flex;
-        align-items: center;
-        img {
-          border-radius: 100%;
-          width: 20px;
-          height: 20px;
-          margin-right: 5px;
-        }
-        .currencyIcon {
-          font-size: 12px;
-          margin-right: 5px;
-        }
-        P {
-          font-size: 14px;
-          color: var(--ex-font-color6);
-        }
+
+    .currencyIcon {
+      font-size: 14px;
+      margin-right: 8px;
+    }
+
+    p {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--ex-font-color6);
+    }
+  }
+
+  .bottom {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+
+    & > div {
+      flex: 1;
+      text-align: center;
+      min-width: 0;
+
+      .til {
+        margin: 0;
+        padding: 0 0 6px;
+        font-size: 12px;
+        color: var(--ex-passive-font-color);
       }
-      .bottom {
-        display: flex;
-        & > div {
-          flex: 1;
-          text-align: center;
-          .til {
-            padding: 20px 0;
-            color: var(--ex-passive-font-color);
-          }
-          .num {
-            color: var(--ex-font-color6);
-            font-size: 14px;
-          }
-          &:first-child {
-            text-align: start;
-          }
-          &:last-child {
-            text-align: end;
-          }
-        }
+
+      .num {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--ex-font-color6);
+      }
+
+      &:first-child {
+        text-align: start;
+      }
+
+      &:last-child {
+        text-align: end;
       }
     }
   }

@@ -1,12 +1,26 @@
 <template>
   <div class="userAmount">
-    <div>
-      <!-- 账户余额 -->
-      <p>{{ t18Type(type) }}{{ _t18('asset_account', ['ebc']) }}(USDT)</p>
+    <div class="balance-title-row">
+      <p class="balance-title">
+        {{ t18Type(type) }}{{ _t18('asset_account', ['ebc']) }}
+      </p>
+      <div v-if="type === 'plat'" class="header-shortcuts">
+        <button
+          v-for="(link, i) in headerLinks"
+          :key="i"
+          type="button"
+          class="header-shortcut-placeholder"
+          :aria-label="link.aria"
+          @click="_toView(link.path)"
+        />
+      </div>
+    </div>
+    <div class="balance-value-row">
+      <p class="userInfo fw-num">{{ _numberWithCommas(amount) }}</p>
+      <span class="usdt-chip">USDT</span>
       <svg-load :name="showicon" class="yanjin" @click="handleYanjin"></svg-load>
       <svg-load name="refresh" class="shuaxin" @click="handleShuaxin"></svg-load>
     </div>
-    <p class="userInfo fw-num">{{ _numberWithCommas(amount) }}</p>
   </div>
   <div class="currencyAbout">
     <div v-for="(item, index) in currencyAbout.filter((items) => {
@@ -27,6 +41,13 @@ import imgRecharge from '@/assets/images/assets/recharge.png'
 import imgWithdraw from '@/assets/images/assets/withdraw.png'
 import imgSwap from '@/assets/images/assets/swap.png'
 import imgTransfer from '@/assets/images/assets/transfer.png'
+
+const headerLinks = [
+  { path: '/myassets', aria: 'myassets' },
+  { path: '/orderCenter', aria: 'orderCenter' },
+  { path: '/assetRecord', aria: 'assetRecord' },
+]
+
 const props = defineProps({
   data: {
     type: Object
@@ -111,50 +132,106 @@ const t18Type = (type) => {
 }
 
 .userAmount {
-  // margin-top: 61px;
-  padding: 30px 15px;
-  // border-bottom: 1px solid var(--ex-border-color);
+  padding: 24px 15px 12px;
   display: flex;
   flex-direction: column;
+}
 
-  div {
-    display: flex;
-    align-items: center;
-    margin-bottom: 25px;
+.balance-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
 
-    .yanjin {
-      font-size: 14px;
-      margin-left: 15px;
-      margin-right: 15px;
-    }
+.balance-title {
+  flex: 1;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #17ac74;
+  line-height: 1.4;
+}
 
-    .shuaxin {
-      font-size: 12px;
-    }
+.header-shortcuts {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
 
-    p {
-      font-size: 14px;
-      color: var(--ex-passive-font-color);
-    }
-  }
+.header-shortcut-placeholder {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: #d5dde3;
+  flex-shrink: 0;
+  cursor: pointer;
+}
 
-  &>p {
-    font-size: 30px;
-  }
+.balance-value-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+}
+
+.userInfo {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--ex-default-font-color);
+  line-height: 1.2;
+}
+
+.usdt-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #7a8c99;
+  background: #eefaf8;
+  border-radius: 4px;
+}
+
+.yanjin {
+  font-size: 16px;
+  margin-left: auto;
+  color: var(--ex-passive-font-color);
+}
+
+.shuaxin {
+  font-size: 14px;
+  color: var(--ex-passive-font-color);
 }
 
 .currencyAbout {
-  padding: 0 5px 20px;
+  margin: 0 15px 12px;
+  padding: 16px 10px 20px;
+  background: #eefaf8;
   display: flex;
   text-align: center;
 
-  &>div {
+  & > div {
     width: 25%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  & > div > p {
+    margin: 0;
+    font-size: 12px;
+    color: var(--ex-passive-font-color);
   }
 
   .currencyIcon {
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
     margin: 0 auto 10px;
     display: block;
     object-fit: contain;
