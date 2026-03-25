@@ -20,6 +20,7 @@
         />
       </van-tabs>
     </div>
+    <div style="background:#05101a;">
     <div class="assets-index__sheet">
       <div class="assets-index__sheet-bg" aria-hidden="true" />
       <div class="assets-index__panel">
@@ -34,6 +35,7 @@
           @handleShuaxin="handleShuaxin"
         />
       </div>
+    </div>
     </div>
   </div>
 </template>
@@ -256,6 +258,8 @@ $assets-accent: #17ac74;
   position: relative;
   z-index: 0;
   min-height: calc(100vh - 64px);
+  border-radius: 16px 16px 0 0;
+  background: #fff;
 }
 
 .assets-index__sheet-bg {
@@ -265,7 +269,6 @@ $assets-accent: #17ac74;
   right: 0;
   bottom: 0;
   z-index: 0;
-  background: #fff;
   border-radius: 24px 24px 0 0;
   box-shadow: 0 -8px 32px rgba(5, 16, 26, 0.18);
   pointer-events: none;
