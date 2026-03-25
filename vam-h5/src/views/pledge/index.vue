@@ -279,14 +279,14 @@ const manual = computed(() => {
 .pledge-hero {
   margin-top: calc(-1 * (60px + constant(safe-area-inset-top)));
   margin-top: calc(-1 * (60px + env(safe-area-inset-top, 0px)));
-  padding: calc(60px + constant(safe-area-inset-top) + 8px) 0 28px;
-  padding: calc(60px + env(safe-area-inset-top, 0px) + 8px) 0 28px;
+  padding: calc(60px + constant(safe-area-inset-top) + 68px) 0 28px;
+  padding: calc(60px + env(safe-area-inset-top, 0px) + 68px) 0 28px;
   background: url('@/assets/images/pledge-bg.png') no-repeat center top;
   background-size: cover;
 }
 
 .pledge-list-wrap {
-  background: #071818;
+  background: #0a2424;
   border-radius: 22px 22px 0 0;
   margin-top: -12px;
   padding-top: 8px;

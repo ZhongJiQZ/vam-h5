@@ -90,15 +90,27 @@ const dataValue = ref(props.cardData)
     .top_right {
       min-width: 88px;
       padding: 8px 18px;
-      border: none;
-      background: rgba(255, 255, 255, 0.14);
       color: #fff;
       text-align: center;
       border-radius: 999px;
       font-size: 14px;
-      font-weight: 500;
-      box-shadow: none;
+      font-weight: 600;
+      letter-spacing: 0.02em;
       -webkit-tap-highlight-color: transparent;
+      border: none;
+      background: linear-gradient(
+        165deg,
+        rgba(255, 255, 255, 0.22) 0%,
+        rgba(255, 255, 255, 0.07) 45%,
+        rgba(255, 255, 255, 0.05) 100%
+      );
+      backdrop-filter: blur(18px) saturate(1.15);
+      -webkit-backdrop-filter: blur(18px) saturate(1.15);
+      /* 无描边：用内高光模拟玻璃上沿更亮，避免整圈线框感 */
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.65),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.18),
+        0 2px 14px rgba(0, 0, 0, 0.22);
     }
   }
   .content {
