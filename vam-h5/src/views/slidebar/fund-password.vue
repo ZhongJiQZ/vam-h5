@@ -1,6 +1,6 @@
 <script setup>
 import Success from './components/success.vue'
-import HeaderBar from '@/components/HeaderBar/index.vue'
+import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import ButtonBar from '@/components/common/ButtonBar/index.vue'
 import SetForm from './components/fund-password/SetForm.vue'
 import ChangeForm from './components/fund-password/ChangeForm.vue'
@@ -14,7 +14,6 @@ const userStore = useUserStore()
 userStore.getUserInfo()
 // 用户信息
 const { userInfo } = storeToRefs(userStore)
-const cuttentRight = { iconRight: [{ iconName: 'kefu', clickTo: 'event_serviceChange' }] }
 // 用户是否设置过资金密码(userInfo.detail?.userTardPwd)
 
 // const notPwd = ref(true)
@@ -38,11 +37,11 @@ const toCustorm = () => {
 <template>
   <div>
     <!-- 导航条 -->
-    <HeaderBar
-      :currentName="notPwd ? _t18('Change_security_password') : _t18('sidebar_tardPwd',['bitmake'])"
-      :cuttentRight="cuttentRight"
+    <DarkHeaderBar
+      :title="notPwd ? _t18('Change_security_password') : _t18('sidebar_tardPwd', ['bitmake'])"
+      right="service"
       :border_bottom="true"
-    ></HeaderBar>
+    />
 
     <!-- 没有设置资金密码 -->
     <SetForm v-if="!notPwd && success" @setPwd="setPwd"></SetForm>

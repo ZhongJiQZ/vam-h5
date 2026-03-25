@@ -1,5 +1,5 @@
 <script setup>
-import HeaderBar from '@/components/HeaderBar/index.vue'
+import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import SetForm from './components/change-password/SetForm.vue'
 import EmailForm from './components/change-password/EmailForm.vue'
 import AccountForm from './components/change-password/AccountForm.vue'
@@ -20,9 +20,6 @@ const notPwd = ref(false)
 const updateLoginPwdMethod = ref(true)
 //是否已有登录密码
 const loginPassword = ref(userInfo.value.user?.loginPassword || '')
-//导航数据
-const cuttentRight = {iconRight: [{iconName: 'kefu', clickTo: 'event_serviceChange'}]}
-
 const changeMethod = () => {
 
   // 是否绑定邮箱
@@ -38,11 +35,11 @@ const changeMethod = () => {
 <template>
   <div>
     <!-- 导航条 -->
-    <HeaderBar
-        :currentName="notPwd ? _t18('sidebar_loginPwd',['bitmake']) : _t18('password_set')"
-        :cuttentRight="cuttentRight"
-        :border_bottom="true"
-    ></HeaderBar>
+    <DarkHeaderBar
+      :title="notPwd ? _t18('sidebar_loginPwd', ['bitmake']) : _t18('password_set')"
+      right="service"
+      :border_bottom="true"
+    />
     <!-- 添加登录密码 -->
     <SetForm v-if="!loginPassword && updateLoginPwdMethod"></SetForm>
     <!-- 修改登录密码 -->
