@@ -100,6 +100,8 @@ $oc-accent: #008710;
   min-height: 100vh;
   background: #ffffff;
   padding-bottom: env(safe-area-inset-bottom, 0);
+  overflow-x: hidden;
+  overflow-y: visible;
 }
 
 .order-center__tabs-wrap {
@@ -112,6 +114,7 @@ $oc-accent: #008710;
 
 .order-center__body {
   background: $oc-top-bg;
+  overflow: visible;
 }
 
 .order-center__sheet {
@@ -120,6 +123,7 @@ $oc-accent: #008710;
   min-height: calc(100vh - 64px);
   border-radius: 16px 16px 0 0;
   background: #ffffff;
+  overflow: visible;
 }
 
 .order-center__sheet-bg {
@@ -129,7 +133,7 @@ $oc-accent: #008710;
   right: 0;
   bottom: 0;
   z-index: 0;
-  // background: #ffffff;
+  background: #ffffff;
   border-radius: 24px 24px 0 0;
   box-shadow: 0 -8px 32px rgba(5, 16, 26, 0.18);
   pointer-events: none;

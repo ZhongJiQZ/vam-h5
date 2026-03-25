@@ -1,114 +1,117 @@
 <!-- 兑换 -->
 <template>
-  <!-- 闪兑 -->
-  <HeaderBar :currentName="_t18('swap')"></HeaderBar>
-  <Amount :amount="availableAmount || 0" :coin="list1Current?.coin?.toLocaleUpperCase()"></Amount>
-  <div class="content">
-    <div class="from">
-      <input type="number" v-model="fromNum" :placeholder="_t18('swap_input')" class="ff-num" />
-      <div>
-        <!-- 全部 -->
-        <div class="left" @click="fromNum = list1Current?.amount || '0'">
-          {{ _t18('swap_all') }}
+  <div class="swap-page">
+    <DarkHeaderBar :title="_t18('swap')" :border_bottom="false" right="" />
+
+    <div class="swap-page__body">
+      <div class="swap-page__sheet">
+        <div class="swap-page__sheet-bg" aria-hidden="true" />
+        <div class="swap-page__panel">
+          <div class="swap-card">
+            <div class="swap-box swap-box--from">
+              <p class="swap-balance">
+                {{ _t18('swap_available') }}
+                <span class="swap-balance__num ff-num">{{ priceFormat(availableAmount || 0) }}</span>
+                {{ list1Current?.coin?.toLocaleUpperCase() }}
+              </p>
+              <div class="swap-row">
+                <input
+                  v-model="fromNum"
+                  type="number"
+                  class="swap-input ff-num"
+                  :placeholder="_t18('swap_input')"
+                />
+                <div class="swap-row__meta">
+                  <div class="swap-all" @click="fromNum = String(list1Current?.amount || '0')">
+                    {{ _t18('swap_all') }}
+                  </div>
+                  <span class="swap-divider">|</span>
+                  <div class="swap-coin" @click="showAction('from')">
+                    {{ list1Current?.coin?.toLocaleUpperCase() }}
+                    <div class="swap-coin__icon">
+                      <image-load
+                        v-if="list1Current?.icon?.length > 10"
+                        :filePath="list1Current?.icon"
+                        alt=""
+                        class="swap-coin__img"
+                      />
+                      <svg-load v-else :name="list1Current?.icon" class="swap-coin__svg" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="swap-fab-wrap">
+              <button type="button" class="swap-fab" aria-label="swap" @click="jiaohuan()">
+                <svg-load name="duihuan40x40" class="swap-fab__icon" />
+              </button>
+            </div>
+
+            <div class="swap-box swap-box--to">
+              <div class="swap-row">
+                <input
+                  v-model="toNum"
+                  type="number"
+                  disabled
+                  class="swap-input swap-input--to ff-num"
+                  :placeholder="_t18('swap_number')"
+                />
+                <div class="swap-row__meta">
+                  <div class="swap-coin swap-coin--solo" @click="showAction('to')">
+                    {{ list2Current?.coin?.toLocaleUpperCase() }}
+                    <div class="swap-coin__icon">
+                      <image-load
+                        v-if="list2Current?.icon?.length > 10"
+                        :filePath="list2Current?.icon"
+                        alt=""
+                        class="swap-coin__img"
+                      />
+                      <svg-load v-else :name="list2Current?.icon" class="swap-coin__svg" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <p class="swap-rate ff-num">
+                {{ _t18('swap_rateDay') }}：1
+                <span>{{ list1Current?.coin?.toLocaleUpperCase() }}</span>
+                &nbsp;≈&nbsp;<span>{{ curRate }}</span>
+                <span>{{ list2Current?.coin?.toLocaleUpperCase() }}</span>
+              </p>
+            </div>
+          </div>
+
+          <div class="swap-submit" @click="submit">
+            {{ _t18('btnConfirm', ['bitmake']) }}
+          </div>
         </div>
-        <span>|</span>
-        <!-- MIChskt 展示btc -->
-        <!-- <div
-          v-if="['gmtoin2'].includes(_getConfig('_APP_ENV'))"
-          class="right"
-          @click="showAction('from')"
+      </div>
+    </div>
+
+    <van-action-sheet
+      v-model:show="showSheet"
+      title=""
+      id="sheetPopup"
+      style="max-width: var(--ex-max-width); left: 50%; translate: -50%"
+    >
+      <div class="coinList">
+        <div
+          v-for="(item, index) in action"
+          :key="item.id"
+          class="coinItem"
+          @click="selectCoin(item, index)"
         >
-          BTC
           <div class="svgImg">
-            <img
-              :src="list1Current?.icon"
-              alt=""
-              class="iconImg"
-              v-if="list1Current?.icon?.length > 10"
-            />
-            <svg-load :name="list1Current?.icon" class="icon" v-else></svg-load>
+            <image-load v-if="item?.icon?.length > 10" :filePath="item.icon" alt="" class="iconImg" />
+            <svg-load v-else :name="item.icon" class="icon" />
           </div>
-        </div> -->
-        <!-- <div v-else class="right" @click="showAction('from')"> -->
-        <div class="right" @click="showAction('from')">
-          {{ list1Current?.coin?.toLocaleUpperCase() }}
-          <div class="svgImg">
-            <image-load
-              :filePath="list1Current?.icon"
-              alt=""
-              class="iconImg"
-              v-if="list1Current?.icon?.length > 10"
-            />
-            <svg-load :name="list1Current?.icon" class="icon" v-else></svg-load>
+          <div>
+            <p>{{ item.coin?.toLocaleUpperCase() }}</p>
           </div>
         </div>
       </div>
-    </div>
-    <!-- 交换按钮 -->
-    <div class="exchange_btn">
-      <svg-load name="duihuan40x40" class="dui" @click="jiaohuan()"></svg-load>
-      <!-- <svg-load name="duihuan40x40" class="dui"></svg-load> -->
-    </div>
-    <div class="to">
-      <!-- 兑换数量 -->
-      <input
-        type="number"
-        disabled
-        class="ff-num"
-        v-model="toNum"
-        :placeholder="_t18('swap_number')"
-      />
-      <div>
-        <div class="right" @click="showAction('to')">
-          {{ list2Current?.coin?.toLocaleUpperCase() }}
-          <div class="svgImg">
-            <image-load
-              :filePath="list2Current?.icon"
-              class="iconImg"
-              v-if="list2Current?.icon?.length > 10"
-            />
-            <svg-load :name="list2Current?.icon" class="icon" v-else></svg-load>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="rate ff-num">
-      <!-- 今日汇率 -->
-      <p>{{ _t18('swap_rateDay') }}：</p>
-      1
-      <span>{{ list1Current.coin?.toLocaleUpperCase() }}</span
-      >&nbsp;≈&nbsp;<span>{{ curRate }}</span
-      ><span>{{ list2Current.coin?.toLocaleUpperCase() }}</span>
-    </div>
+    </van-action-sheet>
   </div>
-  <!-- 确定 -->
-  <div class="btn">
-    <p @click="submit">{{ _t18('btnConfirm', ['bitmake']) }}</p>
-  </div>
-  <!-- sheet币种面板 -->
-  <van-action-sheet
-    v-model:show="showSheet"
-    title=""
-    id="sheetPopup"
-    style="max-width: var(--ex-max-width); left: 50%; translate: -50%"
-  >
-    <div class="coinList">
-      <div
-        v-for="(item, index) in action"
-        :key="item.id"
-        class="coinItem"
-        @click="selectCoin(item, index)"
-      >
-        <div class="svgImg">
-          <image-load :filePath="item.icon" alt="" class="iconImg" v-if="item?.icon?.length > 10" />
-          <svg-load :name="item.icon" class="icon" v-else></svg-load>
-        </div>
-        <div>
-          <p>{{ item.coin?.toLocaleUpperCase() }}</p>
-        </div>
-      </div>
-    </div>
-  </van-action-sheet>
 </template>
 
 <script setup>
@@ -122,30 +125,25 @@ const { _toast } = useToast()
 import { rate, toExchange } from '@/api/account'
 import { debounce } from 'lodash'
 import { priceFormat } from '@/utils/decimal.js'
-import Amount from './../components/applyAmount.vue'
-import { ref, computed, onMounted } from 'vue'
+import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useAccountStore } from '@/store/account/index'
 import { useUserStore } from '@/store/user/index'
 import { storeToRefs } from 'pinia'
 const accountStore = useAccountStore()
 const userStore = useUserStore()
 userStore.getUserInfo()
-// 用户余额信息
 const { asset } = storeToRefs(userStore)
 const { swapCoinList } = storeToRefs(accountStore)
-/**
- * 货币兑换
- * 1.用户信息货币asset.value
- * 2.兑换成什么货币swapCoinList.value
- */
-const jiaohuanFlag = ref(true) //交换按钮（true初始状态）
-const list1 = ref([]) //币种列表
+
+const jiaohuanFlag = ref(true)
+const list1 = ref([])
 const list2 = ref([])
-const list1Current = ref({}) //显示的币种列表
+const list1Current = ref({})
 const list2Current = ref({})
-const list1Coin = ref(0) //显示的币种
+const list1Coin = ref(0)
 const list2Coin = ref(0)
-// 当前币种的余额（一定取最新的）
+
 const availableAmount = computed(() => {
   let data = ''
   asset.value.forEach((item, index) => {
@@ -155,18 +153,15 @@ const availableAmount = computed(() => {
   })
   return data
 })
+
 const init = async () => {
   await accountStore.getSwapCoinList()
   let template1 = []
   asset.value.forEach((item, index) => {
-    // console.log(item,888)
     let obj = {}
     if (item.type == '1') {
       obj['id'] == index + 1
       obj['amount'] = item.availableAmount
-      // console.log(item.loge,666)
-      // obj['icon'] = item.logo
-
       if (item.symbol == 'usdt') {
         obj['coin'] = 'usdt'
         obj['icon'] = 'usdt'
@@ -174,14 +169,11 @@ const init = async () => {
       }
       if (item.symbol != 'usdt') {
         obj['coin'] = item.symbol?.replace('usdt', '').trim()
-        // obj['icon'] = item.symbol?.replace('usdt', '').trim()
         obj['icon'] = item.loge
         template1.push(obj)
       }
     }
   })
-  // **************************
-  // 兑换成什么列表添加金额
   swapCoinList.value.forEach((item, index) => {
     template1.forEach((items, indexs) => {
       if (items.coin == item.coin) {
@@ -197,7 +189,6 @@ const init = async () => {
   } else {
     list1Current.value = template1[0]
   }
-  // list1Current.value = template1[0]
   list1Coin.value = list1Current.value?.coin
   list2.value = swapCoinList.value?.filter((item, index) => {
     return item.coin != list1Current.value?.coin
@@ -207,15 +198,8 @@ const init = async () => {
   })[0]
   list2Coin.value = list2Current.value?.coin
 }
-// init()
-// onMounted(()=>{
-//
-// })
-/**
- * 汇率
- */
+
 const curRate = ref(0)
-// 获取汇率
 const getRate = (from, to) => {
   from = filterCoin(from)
   to = filterCoin(to)
@@ -233,20 +217,17 @@ const getRate = (from, to) => {
     }
   })
 }
-//面板中对上面货币更改
+
 watch([list1Coin], ([newValue], [oldValue]) => {
   if (jiaohuanFlag.value) {
-    //上面默认显示的货币
     list1.value.forEach((item, index) => {
       if (item.coin == newValue) {
         list1Current.value = item
       }
     })
-    //下面货币列表
     list2.value = swapCoinList.value.filter((item, index) => {
       return item.coin != list1Current.value.coin
     })
-    // 下面货币列表排他
     if (newValue == list2Coin.value) {
       list2Current.value = swapCoinList.value.filter((item, index) => {
         return item.coin != list1Current.value.coin
@@ -263,7 +244,6 @@ watch([list1Coin], ([newValue], [oldValue]) => {
 })
 watch([list2Coin], ([newValue], [oldValue]) => {
   if (jiaohuanFlag.value) {
-    // 下面默认显示的货币
     list2.value.forEach((item, index) => {
       if (item.coin == newValue) {
         list2Current.value = item
@@ -286,7 +266,6 @@ watch([list2Coin], ([newValue], [oldValue]) => {
     }
   }
 })
-// 监听默认显示货币，修改汇率
 watch(
   [list1Current, list2Current],
   (newValue, oldValue) => {
@@ -296,7 +275,7 @@ watch(
     deep: true
   }
 )
-// 点击交换按钮（交换上下货币列表，当前显示）
+
 const jiaohuan = () => {
   jiaohuanFlag.value = !jiaohuanFlag.value
   let tempList = list1.value
@@ -306,41 +285,25 @@ const jiaohuan = () => {
   list1Current.value = list2Current.value
   list2Current.value = tempCurrent
 }
-/**
- * sheet面板
- */
-const showSheet = ref(false) //sheet面板隐显
-const action = ref({}) //面板数据(flag:from上，to下)
-const flag = ref('from') //面板展示数据from/to
 
-/**
- * 数据处理
- * usdt->usdt
- * btc->btcusdt
- */
+const showSheet = ref(false)
+const action = ref({})
+const flag = ref('from')
+
 const filterCoin = (item) => {
   return item
-  // if (item == 'usdt') {
-  //   return item
-  // } else {
-  //   return item + 'usdt'
-  // }
 }
 
-/**
- * 兑换金额
- */
 const fromNum = ref('')
 const toNum = ref()
 watch([fromNum, curRate], () => {
   toNum.value = priceFormat(fromNum.value * curRate.value, 8)
 })
+
 onMounted(() => {
   init()
-  // getRate(list1Coin.value, list2Coin.value) //挂载完数据先执行一次
-  // console.log(list1Coin.value,list2Coin.value)
 })
-// 触发sheet面板事件(item=from/to,面板数据不同)
+
 const showAction = (item) => {
   if (item == 'from') {
     action.value = list1.value
@@ -350,7 +313,7 @@ const showAction = (item) => {
   flag.value = item
   showSheet.value = true
 }
-// sheet面板内容选择（根据flag标识，修改当前货币）
+
 const selectCoin = (item, index) => {
   showSheet.value = false
   if (flag.value == 'from') {
@@ -359,16 +322,13 @@ const selectCoin = (item, index) => {
     list2Coin.value = item.coin
   }
 }
+
 const submitForm = debounce(() => {
   if (fromNum.value <= 0) {
-    // 兑换金额不能小于0
     _toast('swap_minNum')
     return
   }
-  // 兑换金额不能超过可用金
-  // if (fromNum.value > list1Current.value.amount) {
   if (fromNum.value > availableAmount.value) {
-    // console.log(fromNum.value,list1Current.value.amount,availableAmount.value)
     _toast('swap_maxNum')
     return
   }
@@ -379,19 +339,16 @@ const submitForm = debounce(() => {
   }
   toExchange(params).then((res) => {
     if (res.code == '200') {
-      // 兑换成功，请稍后查看
       _toast('swap_success', ['aams'])
       setTimeout(() => {
         userStore.getUserInfo()
-        // init()
       }, 1000)
     } else {
       showToast(res.msg)
     }
   })
-  // console.log('兑换操作',params)
 }, 500)
-// 兑换按钮
+
 const submit = () => {
   if (DIFF_ISFREEZE.includes(__config._APP_ENV)) {
     if (_isFreeze(DIFF_ISFREEZE)) {
@@ -404,85 +361,207 @@ const submit = () => {
 </script>
 
 <style lang="scss" scoped>
-* {
+$swap-top: #05101a;
+$swap-green: #008710;
+$swap-card-bg: #f6f7fa;
+$swap-input-border: #e8e8e8;
+$swap-btn-bg: #050e17;
+
+.swap-page {
+  min-height: 100vh;
+  background: #ffffff;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.swap-page__body {
+  background: $swap-top;
+}
+
+.swap-page__sheet {
+  position: relative;
+  z-index: 0;
+  min-height: calc(100vh - 64px);
+  border-radius: 16px 16px 0 0;
+  background: #ffffff;
+}
+
+.swap-page__sheet-bg {
+  position: absolute;
+  top: -20px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  // background: #ffffff;
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 -8px 32px rgba(5, 16, 26, 0.18);
+  pointer-events: none;
+}
+
+.swap-page__panel {
+  position: relative;
+  z-index: 1;
+  background: transparent;
+  padding: 8px 15px 32px;
+}
+
+.swap-card {
+  background: $swap-card-bg;
+  border-radius: 22px;
+  padding: 20px 16px 18px;
+  box-shadow: 0 2px 14px rgba(5, 16, 26, 0.06);
+}
+
+.swap-box {
+  background: #ffffff;
+  border: 1px solid $swap-input-border;
+  border-radius: 16px;
+  padding: 12px 14px 14px;
+}
+
+.swap-balance {
+  margin: 0 0 10px;
+  font-size: 12px;
+  color: #999;
+  line-height: 1.4;
+}
+
+.swap-balance__num {
+  margin: 0 4px;
+  color: #666;
+  font-weight: 500;
+}
+
+.swap-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.swap-input {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-size: 17px;
+  font-weight: 500;
+  color: #333;
+
+  &::placeholder {
+    color: #bbb;
+    font-weight: 400;
+  }
+}
+
+.swap-input--to {
+  font-size: 22px;
+  font-weight: 700;
+  color: #111;
+}
+
+.swap-row__meta {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 10px;
+}
+
+.swap-all {
   font-size: 14px;
-  color: var(--ex-default-font-color);
+  font-weight: 500;
+  color: $swap-green;
+  cursor: pointer;
+  white-space: nowrap;
 }
-.content {
-  padding: 30px 15px;
-  .from,
-  .to {
-    display: flex;
-    justify-content: space-between;
-    padding: 15px 10px;
-    border: 1px solid var(--ex-border-color1);
-    border-radius: 3px;
-    & > div {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      .left {
-        color: var(--ex-font-color9);
-      }
-      span {
-        margin: 0 15px;
-        font-size: 12px;
-        color: var(--ex-passive-font-color);
-      }
-      .right {
-        display: flex;
-        align-items: center;
-        .svgImg {
-          margin-left: 10px;
-          width: 20px;
-          height: 20px;
-          .icon {
-            font-size: 20px;
-          }
-          .iconImg {
-            width: 100%;
-          }
-        }
-      }
-    }
-    input {
-      flex: 1;
-      color: var(--ex-font-color20);
-      background: var(--ex-default-background-color);
-    }
-    input::placeholder {
-      color: var(--ex-font-color20);
-    }
-  }
-  .exchange_btn {
-    padding: 40px 0;
-    text-align: center;
-    .dui {
-      font-size: 40px;
-    }
-  }
-  .rate {
-    display: flex;
-    margin-top: 20px;
-    p {
-      color: var(--ex-passive-font-color);
-    }
-  }
+
+.swap-divider {
+  font-size: 12px;
+  color: #ccc;
 }
-.btn {
-  padding: 20px 15px 50px;
-  p {
-    padding: 14px 0;
-    font-size: 16px;
-    color: var(--ex-font-color);
-    background-color: var(--ex-div-bgColor1);
-    border-radius: 3px;
-    text-align: center;
-  }
+
+.swap-coin {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
 }
+
+.swap-coin--solo {
+  margin-left: auto;
+}
+
+.swap-coin__icon {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.swap-coin__svg {
+  font-size: 22px;
+}
+
+.swap-coin__img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.swap-fab-wrap {
+  display: flex;
+  justify-content: center;
+  margin: -18px 0;
+  position: relative;
+  z-index: 2;
+}
+
+.swap-fab {
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border: 4px solid $swap-card-bg;
+  border-radius: 50%;
+  background: $swap-green;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 135, 16, 0.25);
+}
+
+.swap-fab__icon {
+  font-size: 22px;
+  color: #fff;
+}
+
+.swap-rate {
+  margin: 12px 0 0;
+  font-size: 12px;
+  color: #999;
+  line-height: 1.5;
+}
+
+.swap-submit {
+  margin-top: 28px;
+  padding: 15px 20px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 500;
+  color: #fff;
+  background: $swap-btn-bg;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
 .coinList {
   max-height: 250px;
 }
+
 .coinItem {
   display: flex;
   align-items: center;
@@ -493,32 +572,38 @@ const submit = () => {
   div {
     flex: 1;
   }
+
   .svgImg {
     text-align: right;
-    // width: 30px;
-    // height: 30px;
+
     .icon {
       text-align: right;
       font-size: 30px;
     }
+
     .iconImg {
       width: 30px;
     }
   }
+
   p {
     font-size: 16px;
     color: var(--ex-passive-font-color);
   }
+
   & > div:first-child {
     text-align: end;
     margin-right: 5px;
   }
+
   & > div:last-child {
     text-align: start;
     margin-left: 5px;
   }
 }
+
 input:disabled {
-  background-color: var(--ex-default-background-color);
+  opacity: 1;
+  -webkit-text-fill-color: #111;
 }
 </style>
