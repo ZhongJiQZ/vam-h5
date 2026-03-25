@@ -453,8 +453,10 @@ const sliderChange = (val) => {
  * 买入量/成交金额监听
  */
 const turnoverChange = () => {
-  // 小数点四位
-  form.turnover = form.turnover.toFixed(4)
+  // 如果小数点超过四位小数点四位
+  if (form.turnover.toString().split('.')[1]?.length > 4) {
+    form.turnover = form.turnover.toFixed(4)
+  }
   let val = form.turnover
   if (Number(val) > Number(availableBalance.value)) {
     // 输入金额大于可用余额
