@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="order-card">
     <div class="title">
       <div class="left">
         <img :src="pledgeCoinIcon" alt="" class="pledge-coin-icon" />
@@ -109,63 +109,73 @@ const submit = () => {
 </script>
 
 <style lang="scss" scoped>
-* {
+.order-card {
   font-size: 14px;
-  color: var(--ex-default-font-color);
+  color: #1a1a1a;
+  background: #f5f6fa;
+  border-radius: 12px;
+  padding: 18px 16px 16px;
+  box-sizing: border-box;
 }
-div {
-  .title {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 15px;
-    .left {
-      display: flex;
-      align-items: center;
-      font-size: 16px;
-      font-weight: 500;
-      .pledge-coin-icon {
-        width: 24px;
-        height: 24px;
-        object-fit: contain;
-        margin-right: 10px;
-        flex-shrink: 0;
-      }
-    }
 
-    p {
-      color: var(--ex-font-color9);
-    }
-  }
-  .message {
-    & > div {
-      padding: 15px 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      .left {
-        color: var(--ex-passive-font-color);
-      }
-      .fontBold {
-        font-weight: bold;
-      }
-      .status0 {
-        color: var(--ex-font-color23);
-      }
-      .status1 {
-        color: var(--ex-font-color9);
-      }
-    }
-  }
-  .btn {
-    width: 100%;
-    height: 46px;
+.title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  .left {
     display: flex;
-    justify-content: center;
     align-items: center;
-    background-color: var(--ex-div-bgColor1);
-    color: var(--ex-font-color);
-    border-radius: 0.08rem;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a1a;
+    .pledge-coin-icon {
+      width: 26px;
+      height: 26px;
+      object-fit: contain;
+      margin-right: 10px;
+      flex-shrink: 0;
+    }
   }
+}
+
+.message {
+  & > div {
+    padding: 14px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .left {
+      color: #888888;
+    }
+    .right {
+      color: #1a1a1a;
+    }
+    .fontBold {
+      font-weight: 600;
+    }
+    .status0 {
+      color: #2b7fff;
+    }
+    .status1 {
+      color: #17ac74;
+    }
+    .status2 {
+      color: #1a1a1a;
+    }
+  }
+}
+
+.btn {
+  width: 100%;
+  height: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #05101a;
+  color: #fff;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
 }
 </style>

@@ -1,42 +1,51 @@
 <template>
-  <HeaderBar
-    :currentName="_t18('pledge_order_record')"
-    :cuttentRight="cuttentRight"
-    :border_bottom="true"
-  ></HeaderBar>
-  <Tab :tabList="tabList" :active="curIndex" @change="changeIndex">
-    <template #tabContent>
-      <!-- 下拉刷新 -->
-      <van-pull-refresh
-        v-model="refreshing"
-        @refresh="onRefresh"
-        :loading-text="_t18(`loading`)"
-        :loosing-text="_t18(`release_refresh`)"
-      >
-        <!-- 加载中动画 -->
-        <van-loading v-if="showLoading" />
-        <!-- 数据列表 -->
-        <div v-else>
-          <van-list
-            v-if="tabContentList.length > 0"
-            v-model:loading="loading"
-            :finished="finished"
-            :finished-text="_t18(`no_more_data`)"
-            :loading-text="_t18(`loading`)"
-            @load="onLoad"
-          >
-            <van-cell v-for="(item, index) in tabContentList" :key="index">
-              <OrderCard :data="item" @getList="getList"></OrderCard>
-            </van-cell>
-          </van-list>
-          <!-- 数据为空 -->
-          <Nodata v-else />
-        </div>
-      </van-pull-refresh> </template
-  ></Tab>
+  <div class="pledge-order-page">
+    <DarkHeaderBar
+      :title="_t18('pledge_order_record')"
+      right="service"
+      :border_bottom="false"
+    />
+    <Tab
+      class="pledge-order-tabs"
+      :tabList="tabList"
+      :active="curIndex"
+      title-inactive-color="#888888"
+      title-active-color="#1a1a1a"
+      indicator-color="#17AC74"
+      :line-width="28"
+      :line-height="3"
+      @change="changeIndex"
+    >
+      <template #tabContent>
+        <van-pull-refresh
+          v-model="refreshing"
+          @refresh="onRefresh"
+          :loading-text="_t18(`loading`)"
+          :loosing-text="_t18(`release_refresh`)"
+        >
+          <van-loading v-if="showLoading" />
+          <div v-else class="pledge-order-list">
+            <van-list
+              v-if="tabContentList.length > 0"
+              v-model:loading="loading"
+              :finished="finished"
+              :finished-text="_t18(`no_more_data`)"
+              :loading-text="_t18(`loading`)"
+              @load="onLoad"
+            >
+              <van-cell v-for="(item, index) in tabContentList" :key="index">
+                <OrderCard :data="item" @getList="getList"></OrderCard>
+              </van-cell>
+            </van-list>
+            <Nodata v-else />
+          </div>
+        </van-pull-refresh>
+      </template>
+    </Tab>
+  </div>
 </template>
 <script setup>
-import HeaderBar from '@/components/HeaderBar/index.vue'
+import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import { getPledgeOrderList } from '@/api/pledge/index'
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
@@ -66,9 +75,6 @@ const onRefresh = () => {
 }
 const route = useRoute()
 const curIndex = ref(0)
-const cuttentRight = reactive({
-  iconRight: [{ iconName: 'kefu', clickTo: 'event_serviceChange' }]
-})
 const tabList = computed(() => {
   let list = []
   list = [
@@ -86,7 +92,7 @@ const tabContentList = ref([])
 const getOrderList = async (status) => {
   let params = `pageNum=${pageNum.value}&pageSize=${pageSize.value}`
   // 排除全部时不传参数
-  if (curIndex.value != '0') {
+  if (curIndex.value !== 0) {
     // curIndex.value - 1
     params = `status=${status}&pageNum=${pageNum.value}&pageSize=${pageSize.value}`
   }
@@ -142,25 +148,55 @@ watch(
 </script>
 
 <style lang="scss" scoped>
-.content {
-  border-bottom: 1px solid var(--ex-border-color);
-  padding: 20px 15px;
+.pledge-order-page {
+  min-height: 100vh;
+  background: #fff;
 }
+
+.pledge-order-list {
+  min-height: 50vh;
+}
+
 .van-loading {
   text-align: center;
   padding: 30px;
 }
+
+.pledge-order-tabs {
+  :deep(.van-tabs) {
+    background: #fff !important;
+  }
+
+  :deep(.van-tabs__nav) {
+    background: #fff !important;
+  }
+
+  :deep(.van-tabs__wrap) {
+    background: #fff !important;
+  }
+
+  :deep(.van-tab) {
+    flex: 1;
+    font-size: 14px;
+  }
+
+  :deep(.van-tabs__content) {
+    background: #fff !important;
+  }
+
+  :deep(.tabContent) {
+    border-top: 1px solid rgba(0, 0, 0, 0.06) !important;
+    background: #fff !important;
+    padding: 12px 0 24px;
+  }
+}
+
 :deep(.van-cell) {
-  background: var(--ex-default-background-color) !important;
+  background: transparent !important;
+  padding: 0 12px 12px !important;
 }
-:deep(.van-tabs) {
-  background: var(--ex-home-tabbar-background-color) !important ;
-}
-:deep(.van-tab) {
-  color: var(--ex-home-list-ftcolor) !important;
-  background: var(--ex-home-tabbar-background-color) !important ;
-}
+
 :deep(.van-cell::after) {
-  border-bottom: 1px solid var(--ex-border-color) !important;
+  display: none !important;
 }
 </style>
