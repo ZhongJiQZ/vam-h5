@@ -21,29 +21,34 @@
       </van-tabs>
     </div>
 
-    <div class="order-center__panel">
-      <div class="order-center__head">
-        <p class="order-center__title">{{ _t18('center_order') }}</p>
-        <div class="order-center__shortcuts">
-          <button
-            v-for="(link, i) in headerLinks"
-            :key="i"
-            type="button"
-            class="order-center__shortcut"
-            :aria-label="link.aria"
-            @click="_toView(link.path)"
-          />
-        </div>
-      </div>
+    <div class="order-center__body">
+      <div class="order-center__sheet">
+        <div class="order-center__sheet-bg" aria-hidden="true" />
+        <div class="order-center__panel">
+          <div class="order-center__head">
+            <p class="order-center__title">{{ _t18('center_order') }}</p>
+            <div class="order-center__shortcuts">
+              <button
+                v-for="(link, i) in headerLinks"
+                :key="i"
+                type="button"
+                class="order-center__shortcut"
+                :aria-label="link.aria"
+                @click="_toView(link.path)"
+              />
+            </div>
+          </div>
 
-      <div v-show="tabActive === 'order_second'">
-        <SecondContractEntrust />
-      </div>
-      <div v-show="tabActive === 'order_spot'">
-        <SpotEntrust />
-      </div>
-      <div v-show="tabActive === 'order_contract'">
-        <UstandardOrderList />
+          <div v-show="tabActive === 'order_second'">
+            <SecondContractEntrust />
+          </div>
+          <div v-show="tabActive === 'order_spot'">
+            <SpotEntrust />
+          </div>
+          <div v-show="tabActive === 'order_contract'">
+            <UstandardOrderList />
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -98,10 +103,42 @@ $oc-accent: #008710;
 }
 
 .order-center__tabs-wrap {
+  position: relative;
+  z-index: 2;
   background: $oc-top-bg;
   padding-top: 8px;
-  padding-bottom: 4px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 8px;
+}
+
+.order-center__body {
+  background: $oc-top-bg;
+}
+
+.order-center__sheet {
+  position: relative;
+  z-index: 0;
+  min-height: calc(100vh - 64px);
+  border-radius: 16px 16px 0 0;
+  background: #ffffff;
+}
+
+.order-center__sheet-bg {
+  position: absolute;
+  top: -20px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  // background: #ffffff;
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 -8px 32px rgba(5, 16, 26, 0.18);
+  pointer-events: none;
+}
+
+.order-center__panel {
+  position: relative;
+  z-index: 1;
+  background: transparent;
 }
 
 .order-center__tabs {
@@ -144,13 +181,6 @@ $oc-accent: #008710;
   :deep(.van-tab--shrink) {
     margin-right: 8px;
   }
-}
-
-.order-center__panel {
-  background: #ffffff;
-  border-radius: 16px 16px 0 0;
-  min-height: calc(100vh - 52px);
-  box-shadow: 0 -6px 28px rgba(5, 16, 26, 0.22);
 }
 
 .order-center__head {
