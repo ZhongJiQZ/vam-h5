@@ -8,6 +8,8 @@ import Popup from '@/components/Popup/index.vue'
 import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import Card from './components/card.vue'
 import pledgeCoinIcon from '@/assets/images/Frame 981370.png'
+import pledgeHeaderRuleIcon from '@/assets/images/Frame 10711.png'
+import pledgeHeaderOrderIcon from '@/assets/images/recharge-order.png'
 import { onMounted } from 'vue'
 import { rulesList } from '@/api/common/index'
 const router = useRouter()
@@ -175,7 +177,7 @@ const manual = computed(() => {
           aria-label="rules"
           @click="showPopup"
         >
-          <svg-load name="guize" class="pledge-header-icon"></svg-load>
+          <img :src="pledgeHeaderRuleIcon" alt="" class="pledge-header-icon-img" />
         </button>
         <button
           type="button"
@@ -183,7 +185,7 @@ const manual = computed(() => {
           aria-label="history"
           @click="router.push('/pledge/pledgeOrder')"
         >
-          <svg-load name="jilu" class="pledge-header-icon"></svg-load>
+          <img :src="pledgeHeaderOrderIcon" alt="" class="pledge-header-icon-img" />
         </button>
       </template>
     </DarkHeaderBar>
@@ -252,12 +254,11 @@ const manual = computed(() => {
   -webkit-tap-highlight-color: transparent;
 }
 
-.pledge-header-icon {
+.pledge-header-icon-img {
   display: block;
-  width: 22px;
-  height: 22px;
-  font-size: 22px;
-  color: #fff;
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
 }
 
 .pledge-coin-icon {
