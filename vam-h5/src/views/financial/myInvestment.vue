@@ -117,7 +117,8 @@ onMounted(() => {
 <style lang="scss" scoped>
 $inv-top: #05101a;
 $inv-green: #008710;
-$inv-list-bg: #f5f6fa;
+$inv-list-bg: #f6f7fa;
+$inv-card-bg: #f6f7fa;
 
 .invest-page {
   min-height: 100vh;
@@ -181,8 +182,7 @@ $inv-list-bg: #f5f6fa;
 }
 
 .invest-summary {
-  background: #ffffff;
-  border: 1px solid #e8e8e8;
+  background: $inv-card-bg;
   border-radius: 16px;
   padding: 6px 16px;
   margin-bottom: 8px;
@@ -194,10 +194,6 @@ $inv-list-bg: #f5f6fa;
   align-items: center;
   padding: 14px 0;
   font-size: 14px;
-
-  &:not(:last-child) {
-    border-bottom: 1px solid #f0f0f0;
-  }
 }
 
 .invest-summary__label {
@@ -231,7 +227,7 @@ $inv-list-bg: #f5f6fa;
   min-height: 120px;
   margin: 0 -15px;
   padding: 4px 15px 28px;
-  // background: $inv-list-bg;
+  background: $inv-list-bg;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }

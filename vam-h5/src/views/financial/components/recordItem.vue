@@ -67,7 +67,7 @@ const statusMeta = computed(
 
 <style lang="scss" scoped>
 .record-card {
-  background: #eef1f6;
+  background: #f6f7fa;
   border-radius: 14px;
   padding: 16px 16px 14px;
   margin-bottom: 14px;
@@ -99,7 +99,6 @@ const statusMeta = computed(
 .record-card__row--time {
   padding-top: 10px;
   margin-top: 4px;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .record-card__value--time {
