@@ -163,7 +163,7 @@ $inv-list-bg: #f5f6fa;
   right: 0;
   bottom: 0;
   z-index: 0;
-  background: #ffffff;
+  // background: #ffffff;
   border-radius: 24px 24px 0 0;
   box-shadow: 0 -8px 32px rgba(5, 16, 26, 0.18);
   pointer-events: none;
