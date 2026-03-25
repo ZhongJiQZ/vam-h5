@@ -12,7 +12,8 @@
     <div v-for="(item, index) in currencyAbout.filter((items) => {
       return items.isShow
     })" :key="index" @click="toRecharge(item.url)">
-      <svg-load :name="item.icon" class="currencyIcon"></svg-load>
+      <img v-if="item.img" :src="item.img" class="currencyIcon" alt="" />
+      <svg-load v-else :name="item.icon" class="currencyIcon"></svg-load>
       <p>{{ item.title }}</p>
     </div>
   </div>
@@ -22,6 +23,10 @@
 import { dispatchCustomEvent } from '@/utils'
 import { _t18, _toView } from '@/utils/public'
 import { DIFF_RECHARGE_COSTORM } from '@/config/index'
+import imgRecharge from '@/assets/images/assets/recharge.png'
+import imgWithdraw from '@/assets/images/assets/withdraw.png'
+import imgSwap from '@/assets/images/assets/swap.png'
+import imgTransfer from '@/assets/images/assets/transfer.png'
 const props = defineProps({
   data: {
     type: Object
@@ -55,24 +60,24 @@ const currencyAbout = computed(() => {
   if (props.type == 'plat') {
     list = [
       {
-        icon: 'chongbi',
+        img: imgRecharge,
         title: _t18('asset_recharge', ['latcoin']),
         url: '/recharge',
         isShow: true
       }, //充币
       {
-        icon: 'tibi',
+        img: imgWithdraw,
         title: _t18('asset_withdraw', ['latcoin']),
         url: '/withdraw',
         isShow: true
       }, //提币
-      { icon: 'dui', title: _t18('asset_swap'), url: '/swap', isShow: true }, //闪兑
+      { img: imgSwap, title: _t18('asset_swap'), url: '/swap', isShow: true }, //闪兑
       // { icon: 'daikuai', title: _t18('asset_loan'), url: '/loan', isShow: false }, //助力贷
-      { icon: 'huazhuan', title: _t18('asset_transfer'), url: '/transfer', isShow: true } //划转
+      { img: imgTransfer, title: _t18('asset_transfer'), url: '/transfer', isShow: true } //划转
     ]
   } else {
     list = [
-      { icon: 'huazhuan', title: _t18('asset_transfer'), url: '/transfer', isShow: true },
+      { img: imgTransfer, title: _t18('asset_transfer'), url: '/transfer', isShow: true },
     ]
   }
   return list
@@ -148,8 +153,11 @@ const t18Type = (type) => {
   }
 
   .currencyIcon {
-    font-size: 40px;
-    margin-bottom: 10px;
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 10px;
+    display: block;
+    object-fit: contain;
   }
 }
 </style>
