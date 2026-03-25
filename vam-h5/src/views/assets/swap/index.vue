@@ -44,7 +44,7 @@
 
             <div class="swap-fab-wrap">
               <button type="button" class="swap-fab" aria-label="swap" @click="jiaohuan()">
-                <svg-load name="duihuan40x40" class="swap-fab__icon" />
+                <img :src="exchangeIcon" alt="" class="swap-fab__icon" />
               </button>
             </div>
 
@@ -126,6 +126,7 @@ import { rate, toExchange } from '@/api/account'
 import { debounce } from 'lodash'
 import { priceFormat } from '@/utils/decimal.js'
 import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
+import exchangeIcon from '@/assets/images/swap/exchange.png'
 import { ref, computed, onMounted, watch } from 'vue'
 import { useAccountStore } from '@/store/account/index'
 import { useUserStore } from '@/store/user/index'
@@ -408,7 +409,7 @@ $swap-btn-bg: #050e17;
 .swap-card {
   background: $swap-card-bg;
   border-radius: 22px;
-  padding: 20px 16px 18px;
+  padding: 22px 18px 22px;
   box-shadow: 0 2px 14px rgba(5, 16, 26, 0.06);
 }
 
@@ -416,11 +417,11 @@ $swap-btn-bg: #050e17;
   background: #ffffff;
   border: 1px solid $swap-input-border;
   border-radius: 16px;
-  padding: 12px 14px 14px;
+  padding: 16px 16px 18px;
 }
 
 .swap-balance {
-  margin: 0 0 10px;
+  margin: 0 0 12px;
   font-size: 12px;
   color: #999;
   line-height: 1.4;
@@ -437,6 +438,7 @@ $swap-btn-bg: #050e17;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+  min-height: 44px;
 }
 
 .swap-input {
@@ -515,32 +517,35 @@ $swap-btn-bg: #050e17;
 .swap-fab-wrap {
   display: flex;
   justify-content: center;
-  margin: -18px 0;
+  margin: -14px 0;
+  padding: 4px 0;
   position: relative;
   z-index: 2;
 }
 
 .swap-fab {
-  width: 46px;
-  height: 46px;
+  width: 38px;
+  height: 38px;
   padding: 0;
-  border: 4px solid $swap-card-bg;
-  border-radius: 50%;
-  background: $swap-green;
+  border: none;
+  border-radius: 0;
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 135, 16, 0.25);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .swap-fab__icon {
-  font-size: 22px;
-  color: #fff;
+  display: block;
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
 }
 
 .swap-rate {
-  margin: 12px 0 0;
+  margin: 14px 0 0;
   font-size: 12px;
   color: #999;
   line-height: 1.5;
