@@ -553,6 +553,10 @@ onMounted(() => {
  * 买入量/成交金额监听
  */
  const turnoverChange = () => {
+  // 如果小数点超过四位小数点四位
+  if (quantity.value.toString().split('.')[1]?.length > 4) {
+    quantity.value = quantity.value.toFixed(4)
+  }
   // console.log("turnover ",quantity.value)
   let val = quantity.value
   if (Number(val) > Number(availableBalance.value)) {
