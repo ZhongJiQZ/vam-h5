@@ -19,15 +19,17 @@ const closeBtn = () => {
   emit('closeBtn')
   readMsgs()
 }
+console.log(props.data)
 const readMsgs = () => {
-  let str = ''
-  props.data.forEach((item, index) => {
-    if (item.type == '1') {
-      str += item.id + ','
-    }
-  })
-  let params = `ids=${str}`
-  if (str.length > 0) {
+  // let str = ''
+  // props.data.forEach((item, index) => {
+  //   if (item.type == '1') {
+  //     str += item.id + ','
+  //   }
+  // })
+  let ids = props.data.map(item => item.id).join(',')
+  let params = `ids=${ids}`
+  // if (str.length > 0) {
     haveRead(params).then((res) => {
       if (res.code == '200') {
         showToast(res.msg)
@@ -35,7 +37,7 @@ const readMsgs = () => {
         showToast(res.msg)
       }
     })
-  }
+  // }
 }
 </script>
 <template>
