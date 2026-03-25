@@ -32,16 +32,26 @@
       </div>
     </div>
   </div>
-  <div v-else>
-    <HeaderBar
-      :currentName="_t18('plug')"
-      :cuttentRight="cuttentRight"
+  <div v-else class="plug-page">
+    <DarkHeaderBar
+      :title="_t18('plug')"
       :border_bottom="false"
-      @showPopup="showPopup"
-    ></HeaderBar>
+      bg-color="transparent"
+    >
+      <template #right>
+        <button
+          type="button"
+          class="plug-header-rule-btn"
+          aria-label="rules"
+          @click="showPopup"
+        >
+          <img :src="plugHeaderRuleIcon" alt="" class="plug-header-rule-img" />
+        </button>
+      </template>
+    </DarkHeaderBar>
     <!-- 团队信息 -->
     <div class="banner">
-      <div :class="__theme == 'dark' ? 'plugbg' : 'plug_bg'">
+      <div class="plug-hero">
         <div class="shareContent">
           <!-- 邀请好友一起赚币 -->
           <p class="shareContent_title fw-bold">{{ _t18('plug_invite', ['aams']) }}</p>
@@ -64,9 +74,7 @@
             </Copy>
           </div>
         </div>
-      </div>
-      <div v-if="!['das'].includes(_getConfig('_APP_ENV'))">
-        <div class="teamInfo">
+        <div v-if="!['das'].includes(_getConfig('_APP_ENV'))" class="teamInfo">
           <!-- 一代人数 -->
           <div>
             <p>{{ _t18('plug_oneNum', ['aams']) }}</p>
@@ -106,7 +114,6 @@
             <p>{{ _t18('plug_today_amount', ['aams']) }}(USDT)</p>
             <span class="ff-num">{{ teamInfo.todaySumAmount || 0 }}</span>
           </div>
-
         </div>
       </div>
     </div>
@@ -121,6 +128,9 @@
           @change="changeIndex"
           :lineWidth="0"
           :flexBetween="true"
+          title-inactive-color="rgba(255, 255, 255, 0.5)"
+          title-active-color="#17AC74"
+          indicator-color="#17AC74"
         >
           <!-- 加载中动画 -->
           <template #tabContent>  
@@ -188,7 +198,8 @@
 <script setup>
 import { NO_SHOW_MEMBER } from '@/config/index'
 import { _t18 } from '@/utils/public'
-import HeaderBar from '@/components/HeaderBar/index.vue'
+import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
+import plugHeaderRuleIcon from '@/assets/images/Frame 10711.png'
 import QRCode from '@/components/common/QRCode/index.vue'
 import Copy from '@/components/common/Copy/index.vue'
 import Tab from '@/components/Tab/index.vue'
@@ -198,7 +209,6 @@ import { getAgentInfo, getAgentList,getCommissionRecords } from '@/api/plug.js'
 import { onMounted } from 'vue'
 import { rulesList } from '@/api/common/index'
 
-const cuttentRight = { iconRight: [{ iconName: 'guize', clickTo: '' }] }
 const useStore = useUserStore()
 const userInfo = useStore.userInfo
 const sharkCode = userInfo?.user?.activeCode
@@ -368,67 +378,94 @@ const changeIndex = (v) => {
   }
 }
 
+.plug-page {
+  min-height: 100vh;
+  background: #0a1f1f;
+}
+
+.plug-header-rule-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  margin: -8px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.plug-header-rule-img {
+  display: block;
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
 .banner {
-  .plug_bg {
-    background: url('../../../public/resource/images/dark/plugbg.png') no-repeat center;
+  .plug-hero {
+    margin-top: calc(-1 * (60px + constant(safe-area-inset-top)));
+    margin-top: calc(-1 * (60px + env(safe-area-inset-top, 0px)));
+    padding: calc(60px + constant(safe-area-inset-top) + 12px) 15px 24px;
+    padding: calc(60px + env(safe-area-inset-top, 0px) + 12px) 15px 24px;
+    background: url('@/assets/images/plug-bg.png') no-repeat center top;
     background-size: cover;
-    padding: 45px 15px 20px;
 
     .shareContent {
-      width: 60%;
+      width: 100%;
+      max-width: 92%;
 
       .shareContent_title {
-        font-size: 20px;
-        color: var(--ex-font-color8);
+        font-size: 22px;
+        color: #fff;
+        line-height: 1.35;
       }
 
       .shareContent_info {
         font-size: 14px;
-        color: var(--ex-font-color8);
-        padding: 10px 0 30px;
+        color: rgba(255, 255, 255, 0.72);
+        padding: 10px 0 28px;
       }
 
       .sharkCode,
       .shareLink {
         p {
-          line-height: 1.2;
+          line-height: 1.35;
           font-size: 12px;
           word-break: break-all;
-          color: var(--ex-font-color8);
-          // word-wrap:break-word;
-          // word-break:normal;
+          color: rgba(255, 255, 255, 0.92);
         }
       }
     }
-  }
 
-  .plugbg {
-    background: url('../../../public/resource/images/dark/plugbg.png') no-repeat center;
-    background-size: cover;
-    padding: 45px 15px 20px;
+    .teamInfo {
+      margin-top: 14px;
+      padding: 18px 6px 12px;
+      display: flex;
+      flex-wrap: wrap;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
 
-    .shareContent {
-      width: 60%;
+      & > div {
+        width: 33.33%;
+        padding: 15px 5px;
+        text-align: center;
 
-      .shareContent_title {
-        font-size: 20px;
-        color: var(--ex-font-color6);
-      }
-
-      .shareContent_info {
-        font-size: 14px;
-
-        padding: 10px 0 30px;
-      }
-
-      .sharkCode,
-      .shareLink {
         p {
-          line-height: 1.2;
-          font-size: 12px;
-          word-break: break-all;
-          // word-wrap:break-word;
-          // word-break:normal;
+          height: 30px;
+          color: rgba(255, 255, 255, 0.62);
+          margin-bottom: 15px;
+          word-wrap: break-word;
+        }
+
+        span {
+          font-size: 16px;
+          font-weight: 600;
+          color: #fff;
         }
       }
     }
@@ -438,36 +475,17 @@ const changeIndex = (v) => {
     width: 100%;
     height: auto;
   }
-
-  .teamInfo {
-    padding: 15px 0 0;
-    display: flex;
-    flex-wrap: wrap;
-
-    & > div {
-      width: 33.33%;
-      padding: 15px 5px;
-      text-align: center;
-      // flex: 1;
-      p {
-        height: 30px;
-        color: var(--ex-passive-font-color);
-        margin-bottom: 15px;
-        word-wrap: break-word;
-      }
-
-      span {
-        font-size: 16px;
-        font-weight: 500;
-      }
-    }
-  }
 }
 
-.promotion_my {
+.plug-page .promotion_my {
+  background: #071818;
+  border-radius: 22px 22px 0 0;
+  padding-bottom: 20px;
+  margin-top: 6px;
+
   .title {
-    padding: 25px 15px 20px;
-    color: var(--ex-font-color6);
+    padding: 22px 15px 16px;
+    color: rgba(255, 255, 255, 0.96);
     font-weight: bold;
     font-size: 16px;
   }
@@ -487,7 +505,7 @@ const changeIndex = (v) => {
     p {
       font-size: 12px;
       flex: 1;
-      color: var(--ex-passive-font-color);
+      color: rgba(255, 255, 255, 0.55);
       text-align: center;
     }
   }
@@ -515,20 +533,23 @@ const changeIndex = (v) => {
       flex: 1;
       text-align: center;
       font-weight: 400;
+      color: rgba(255, 255, 255, 0.88);
     }
+  }
+
+  /* Tab 组件 betweenClass 会使用浅色 --ex-home-list-bgcolor，在深色推广页强制与面板一致 */
+  :deep(.van-tabs__wrap),
+  :deep(.van-tabs__nav) {
+    background: #071818 !important;
+  }
+
+  :deep(.tabContent) {
+    border-top-color: rgba(255, 255, 255, 0.08);
   }
 }
 
 .van-loading {
   text-align: center;
   padding: 30px;
-}
-
-:deep(.van-tab) {
-  color: var(--ex-home-list-ftcolor) !important;
-}
-
-:deep(.van-tab--active) {
-  color: var(--ex-home-list-ftcolor3) !important;
 }
 </style>
