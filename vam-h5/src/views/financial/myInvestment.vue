@@ -227,7 +227,7 @@ $inv-card-bg: #f6f7fa;
   min-height: 120px;
   margin: 0 -15px;
   padding: 4px 15px 28px;
-  background: $inv-list-bg;
+  // background: $inv-list-bg;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
