@@ -3,7 +3,7 @@
   <div class="page-withdraw">
     <DarkHeaderBar
       :title="_t18('withdraw', ['latcoin'])"
-      right="withdrawOrder"
+      right=""
       :border_bottom="true"
     />
     <div class="card">
