@@ -1,86 +1,110 @@
 <template>
-  <div class="recordItem">
-    <!-- 基金名称 -->
-    <div class="item">
-      <div>{{ _t18(`fund_name`) }}</div>
-      <div class="itemRight">{{ itemObj.planTitle }}</div>
+  <div class="record-card">
+    <div class="record-card__row">
+      <span class="record-card__label">{{ _t18('fund_name') }}</span>
+      <span class="record-card__value">{{ itemObj.planTitle }}</span>
     </div>
-    <!-- 锁仓天数 -->
-    <div class="item">
-      <div>{{ _t18(`Lock-up_days`) }}</div>
-      <div class="itemRight fw-num">{{ itemObj.days }}</div>
+    <div class="record-card__row">
+      <span class="record-card__label">{{ _t18('Lock-up_days') }}</span>
+      <span class="record-card__value fw-num">{{ itemObj.days }}</span>
     </div>
-    <!-- 日收益率 -->
-    <div class="item">
-      <div>{{ _t18(`host_dailyrateof_return`) }}</div>
-      <div class="itemRight fw-num">{{ itemObj.avgRate }}%</div>
+    <div class="record-card__row">
+      <span class="record-card__label">{{ _t18('host_dailyrateof_return') }}</span>
+      <span class="record-card__value fw-num">{{ itemObj.avgRate }}%</span>
     </div>
-    <!-- 投入金额 -->
-    <div class="item">
-      <div>{{ _t18(`investment_amount`) }}</div>
-      <div class="itemRight fw-num">
+    <div class="record-card__row">
+      <span class="record-card__label">{{ _t18('investment_amount') }}</span>
+      <span class="record-card__value fw-num">
         {{ itemObj.amount }} {{ itemObj.coin ? itemObj.coin.toUpperCase() : '' }}
-      </div>
+      </span>
     </div>
-    <!-- 预估收益 -->
-    <div class="item">
-      <div>{{ _t18(`Estimated income`) }}</div>
-      <div class="itemRight fw-num">
+    <div class="record-card__row">
+      <span class="record-card__label">{{ _t18('Estimated income') }}</span>
+      <span class="record-card__value fw-num">
         {{ priceFormat((itemObj.amount * itemObj.days * 0.05) / 100, 4) }}
         {{ itemObj.coin ? itemObj.coin.toUpperCase() : '' }}
-      </div>
+      </span>
     </div>
-    <!-- 到账时间 -->
-    <div class="item">
-      <div>{{ _t18(`Arrival_time`) }}</div>
-      <div class="itemRight fw-num">
+    <div class="record-card__row">
+      <span class="record-card__label">{{ _t18('Arrival_time') }}</span>
+      <span class="record-card__value fw-num">
         {{ timeOfreceipt(itemObj.settlementType, itemObj.days, itemObj.params.createTime) }}
-      </div>
+      </span>
     </div>
-    <!-- 状态 -->
-    <div class="item">
-      <div>{{ _t18(`mining_status`) }}</div>
-      <div class="itemRight fw-num" :style="{ color: investmentStatus(itemObj.status).color }">
-        {{ investmentStatus(itemObj.status).name }}
-      </div>
+    <div class="record-card__row">
+      <span class="record-card__label">{{ _t18('mining_status') }}</span>
+      <span
+        class="record-card__value fw-num record-card__status"
+        :style="{ color: statusMeta.color }"
+      >
+        {{ statusMeta.name }}
+      </span>
     </div>
-
-     <!-- 交易时间 -->
-     <div class="item">
-      <div>{{ _t18(`pledge_Buy`) }}{{ _t18(`k_time`) }}</div>
-      <div class="itemRight fw-num">
-        {{ itemObj.createTime }}
-      </div>
+    <div class="record-card__row record-card__row--time">
+      <span class="record-card__label">{{ _t18('pledge_Buy') }}{{ _t18('k_time') }}</span>
+      <span class="record-card__value record-card__value--time fw-num">{{ itemObj.createTime }}</span>
     </div>
-
   </div>
 </template>
+
 <script setup>
+import { computed } from 'vue'
 import { timeOfreceipt, investmentStatus } from '@/utils/filters'
 import { priceFormat } from '@/utils/decimal'
 import { _t18 } from '@/utils/public'
+
 const props = defineProps({
   itemObj: {
     type: Object,
-    default: {}
+    default: () => ({})
   }
 })
+
+const statusMeta = computed(
+  () => investmentStatus(props.itemObj.status) || { color: '#999', name: '--' }
+)
 </script>
+
 <style lang="scss" scoped>
-.recordItem {
-  padding: 30px 15px 20px;
-  border-bottom: 1px solid var(--ex-border-color);
-  .item {
-    padding: 10px 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 12px;
-    color: var(--ex-passive-font-color);
-    .itemRight {
-      font-size: 12px;
-      color: var(--ex-default-font-color);
-    }
-  }
+.record-card {
+  background: #eef1f6;
+  border-radius: 14px;
+  padding: 16px 16px 14px;
+  margin-bottom: 14px;
+  box-shadow: 0 1px 4px rgba(5, 16, 26, 0.04);
+}
+
+.record-card__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 8px 0;
+  font-size: 13px;
+}
+
+.record-card__label {
+  flex-shrink: 0;
+  color: #999;
+  max-width: 42%;
+}
+
+.record-card__value {
+  flex: 1;
+  text-align: right;
+  color: #333;
+  word-break: break-all;
+}
+
+.record-card__row--time {
+  padding-top: 10px;
+  margin-top: 4px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.record-card__value--time {
+  font-size: 14px;
+  font-weight: 600;
+  color: #222;
 }
 </style>
