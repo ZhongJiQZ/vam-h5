@@ -406,8 +406,8 @@ const changeIndex = (v) => {
   .plug-hero {
     margin-top: calc(-1 * (60px + constant(safe-area-inset-top)));
     margin-top: calc(-1 * (60px + env(safe-area-inset-top, 0px)));
-    padding: calc(60px + constant(safe-area-inset-top) + 12px) 15px 24px;
-    padding: calc(60px + env(safe-area-inset-top, 0px) + 12px) 15px 24px;
+    padding: calc(60px + constant(safe-area-inset-top) + 12px + 60px) 15px 24px;
+    padding: calc(60px + env(safe-area-inset-top, 0px) + 12px + 60px) 15px 24px;
     background: url('@/assets/images/plug-bg.png') no-repeat center top;
     background-size: cover;
 
