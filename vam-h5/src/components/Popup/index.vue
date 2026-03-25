@@ -1,5 +1,7 @@
 <!-- 弹窗 -->
 <script setup>
+import closeIcon from '@/assets/images/close.png'
+
 let props = defineProps({
   show: {
     type: Boolean,
@@ -40,7 +42,15 @@ const handelClose = () => {
         <!-- 标题 -->
         <p>{{ props.title }}</p>
         <!-- 关闭按钮 -->
-        <svg-load class="closeSvg" name="guanbi" v-if="props.close" @click="handelClose"></svg-load>
+        <button
+          v-if="props.close"
+          type="button"
+          class="close-btn"
+          aria-label="close"
+          @click="handelClose"
+        >
+          <img :src="closeIcon" alt="" class="close-img" />
+        </button>
         <!-- 内容 仅适用于规则/说明-->
         <div v-if="props.content">
           <div v-for="(item, index) in content" :key="index" class="popupContent">
@@ -69,11 +79,26 @@ const handelClose = () => {
     left: 50%;
     transform: translateX(-50%);
   }
-  .closeSvg {
-    font-size: 24px;
+  .close-btn {
     position: absolute;
-    top: 15px;
-    right: 20px;
+    top: 11px;
+    right: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    margin: -4px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .close-img {
+    display: block;
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
   }
   & > div {
     padding-top: 50px;

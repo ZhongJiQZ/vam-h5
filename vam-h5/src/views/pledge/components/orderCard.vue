@@ -2,7 +2,7 @@
   <div>
     <div class="title">
       <div class="left">
-        <svg-load name="usdt" class="usdt"></svg-load>
+        <img :src="pledgeCoinIcon" alt="" class="pledge-coin-icon" />
         <div class="txt">
           {{ dataValue.planTitle }}
         </div>
@@ -60,6 +60,7 @@ import { DIFF_HIDE_REDEEM } from '@/config/index'
 import { priceFormat } from '@/utils/decimal.js'
 import { redemption, redempNewtion } from '@/api/pledge/index'
 import { _t18 } from '@/utils/public'
+import pledgeCoinIcon from '@/assets/images/Frame 981370.png'
 import { useToast } from '@/hook/useToast'
 import { showToast } from 'vant'
 const { _toast } = useToast()
@@ -123,9 +124,12 @@ div {
       align-items: center;
       font-size: 16px;
       font-weight: 500;
-      .usdt {
-        font-size: 24px;
+      .pledge-coin-icon {
+        width: 24px;
+        height: 24px;
+        object-fit: contain;
         margin-right: 10px;
+        flex-shrink: 0;
       }
     }
 

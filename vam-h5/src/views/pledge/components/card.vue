@@ -1,5 +1,6 @@
 <script setup>
 import { _t18 } from '@/utils/public'
+import pledgeCoinIcon from '@/assets/images/Frame 981370.png'
 let props = defineProps({
   cardData: {
     type: Object
@@ -11,7 +12,7 @@ const dataValue = ref(props.cardData)
   <div class="box">
     <div class="top">
       <div class="top_left">
-        <svg-load name="usdt" class="usdt"></svg-load>
+        <img :src="pledgeCoinIcon" alt="" class="pledge-coin-icon" />
         <div class="title fw-bold">{{ dataValue.title }}</div>
       </div>
       <div class="top_right">{{ _t18('pledge_Buy', ['aams']) }}</div>
@@ -52,43 +53,57 @@ const dataValue = ref(props.cardData)
 </template>
 <style lang="scss" scoped>
 .box {
-  margin-top: 15px;
+  margin-top: 0;
   cursor: pointer;
-  // border-top: 1px solid var(--ex-border-color);
-  border: 1px solid var(--ex-border-color1);
-  border-radius: 10px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
   font-size: 14px;
-  color: var(--ex-passive-font-color);
+  color: rgba(255, 255, 255, 0.78);
+
+  & + .box {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+  }
+
   .top {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 1px solid var(--ex-project-border-color);
-    padding: 20px 10px;
+    padding: 16px 4px 18px;
     .top_left {
       display: flex;
       align-items: center;
       .title {
         font-weight: bold;
-        color: var(--ex-default-font-color);
+        color: #fff;
       }
-      .usdt {
-        font-size: 20px;
+      .pledge-coin-icon {
+        width: 22px;
+        height: 22px;
+        object-fit: contain;
         margin-right: 10px;
+        flex-shrink: 0;
       }
     }
     .top_right {
-      min-width: 104px;
-      padding: 8px 10px;
-      background-color: var(--ex-div-bgColor1);
-      color: var(--ex-font-color);
+      min-width: 88px;
+      padding: 8px 18px;
+      border: none;
+      background: rgba(255, 255, 255, 0.14);
+      color: #fff;
       text-align: center;
-      border-radius: 3px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: none;
+      -webkit-tap-highlight-color: transparent;
     }
   }
   .content {
     display: flex;
-    padding: 20px 10px;
+    padding: 18px 4px 8px;
     justify-content: space-between;
     .left {
       display: flex;
@@ -97,18 +112,19 @@ const dataValue = ref(props.cardData)
         flex: 1;
         display: flex;
         align-items: center;
-        color: var(--ex-passive-font-color);
+        color: rgba(255, 255, 255, 0.78);
         font-size: 12px;
         p {
           min-width: 36px;
+          color: rgba(255, 255, 255, 0.78);
         }
         span {
           margin-left: 20px;
-          color: var(--ex-default-font-color);
+          color: rgba(255, 255, 255, 0.96);
           font-size: 18px;
         }
         span.rate {
-          color: var(--ex-font-color9);
+          color: #5cff8f;
         }
       }
     }

@@ -5,7 +5,9 @@ import { getPledgeProductList, getPledgeShowInfo } from '@/api/pledge/index'
 import { priceFormat } from '@/utils/decimal.js'
 import { useRouter } from 'vue-router'
 import Popup from '@/components/Popup/index.vue'
+import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import Card from './components/card.vue'
+import pledgeCoinIcon from '@/assets/images/Frame 981370.png'
 import { onMounted } from 'vue'
 import { rulesList } from '@/api/common/index'
 const router = useRouter()
@@ -20,12 +22,6 @@ let showPopup = () => {
 let closePopup = () => {
   showRule.value = false
 }
-const cuttentRight = reactive({
-  iconRight: [
-    { iconName: 'guize', clickTo: '' },
-    { iconName: 'jilu', clickTo: '/pledge/pledgeOrder' }
-  ]
-})
 const toView = (data) => {
   router.push({
     path: '/pledge/pledgeDetail',
@@ -166,91 +162,159 @@ const manual = computed(() => {
     :content="popupContent"
   >
   </Popup>
-  <HeaderBar
-    :currentName="_t18('defi_host_lockup')"
-    :cuttentRight="cuttentRight"
-    @showPopup="showPopup"
-  ></HeaderBar>
-  <!-- 广告图 -->
-  <div class="banner">
-    <image-load filePath="zhiyabg.png" name="defi"></image-load>
-  </div>
-  <!-- 收益信息（资金、收益） -->
-  <div class="userAccount">
-    <div class="title">
-      <image-load filePath="usdt.png" name="usdt" class="usdt"></image-load>
-      <p class="fw-num">USDT</p>
-    </div>
-    <div class="fund">
-      <image-load filePath="zhiyaimg.png" name="zhiyaimg" class="zhiyaimg"></image-load>
-      <div class="top">
-        <div class="left">
-          <p class="fw-num">{{ priceFormat(showInfo.amount) || 0 }}</p>
-          <!-- 正在托管 -->
-          <span>{{ _t18('pledge_hosting') }}</span>
+  <div class="pledge-page">
+    <DarkHeaderBar
+      :title="_t18('defi_host_lockup')"
+      :border_bottom="false"
+      bg-color="transparent"
+    >
+      <template #right>
+        <button
+          type="button"
+          class="pledge-header-icon-btn"
+          aria-label="rules"
+          @click="showPopup"
+        >
+          <svg-load name="guize" class="pledge-header-icon"></svg-load>
+        </button>
+        <button
+          type="button"
+          class="pledge-header-icon-btn"
+          aria-label="history"
+          @click="router.push('/pledge/pledgeOrder')"
+        >
+          <svg-load name="jilu" class="pledge-header-icon"></svg-load>
+        </button>
+      </template>
+    </DarkHeaderBar>
+    <!-- 顶部背景 + 收益信息 -->
+    <div class="pledge-hero">
+      <div class="userAccount">
+        <div class="title">
+          <img :src="pledgeCoinIcon" alt="" class="pledge-coin-icon pledge-coin-icon--hero" />
+          <p class="fw-num">USDT</p>
         </div>
-        <div class="right">
-          <p class="fw-num">{{ showInfo.orderNum || 0 }}</p>
-          <!-- 委托订单 -->
-          <span>{{ _t18('pledge_commissioned_order') }}</span>
+        <div class="fund">
+          <image-load filePath="zhiyaimg.png" name="zhiyaimg" class="zhiyaimg"></image-load>
+          <div class="top">
+            <div class="left">
+              <p class="fw-num">{{ priceFormat(showInfo.amount) || 0 }}</p>
+              <!-- 正在托管 -->
+              <span>{{ _t18('pledge_hosting') }}</span>
+            </div>
+            <div class="right">
+              <p class="fw-num">{{ showInfo.orderNum || 0 }}</p>
+              <!-- 委托订单 -->
+              <span>{{ _t18('pledge_commissioned_order') }}</span>
+            </div>
+          </div>
+          <div class="bottom">
+            <div class="left">
+              <p class="fw-num">{{ priceFormat(showInfo.todayProfit) || 0 }}</p>
+              <!-- 今日收益 -->
+              <span>{{ _t18('pledge_Today_Earnings') }}</span>
+            </div>
+            <div class="right">
+              <p class="fw-num">{{ priceFormat(showInfo.profitMoney) || 0 }}</p>
+              <!-- 累计收益 -->
+              <span>{{ _t18('Cumulative_income') }}</span>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="bottom">
-        <div class="left">
-          <p class="fw-num">{{ priceFormat(showInfo.todayProfit) || 0 }}</p>
-          <!-- 今日收益 -->
-          <span>{{ _t18('pledge_Today_Earnings') }}</span>
+    </div>
+    <!-- 项目信息 -->
+    <div class="pledge-list-wrap">
+      <div class="project">
+        <div class="projectList" v-if="projectList?.length > 0">
+          <Card
+            v-for="(item, index) in projectList"
+            @click="toView(item)"
+            :key="index"
+            :cardData="item"
+          ></Card>
         </div>
-        <div class="right">
-          <p class="fw-num">{{ priceFormat(showInfo.profitMoney) || 0 }}</p>
-          <!-- 累计收益 -->
-          <span>{{ _t18('Cumulative_income') }}</span>
-        </div>
+        <Nodata v-else></Nodata>
       </div>
     </div>
-  </div>
-  <!-- 项目信息 -->
-  <div class="project">
-    <div class="projectList" v-if="projectList?.length > 0">
-      <Card
-        v-for="(item, index) in projectList"
-        @click="toView(item)"
-        :key="index"
-        :cardData="item"
-      ></Card>
-    </div>
-    <Nodata v-else></Nodata>
   </div>
 </template>
 <style lang="scss" scoped>
-.banner {
-  padding: 10px 25px 0;
-  img {
-    width: 100%;
-    height: auto;
-  }
+.pledge-header-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  margin: -8px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
+
+.pledge-header-icon {
+  display: block;
+  width: 22px;
+  height: 22px;
+  font-size: 22px;
+  color: #fff;
+}
+
+.pledge-coin-icon {
+  display: block;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.pledge-coin-icon--hero {
+  width: 34px;
+  height: 34px;
+}
+
+.pledge-page {
+  min-height: 100vh;
+  background: #0a1f1f;
+}
+
+.pledge-hero {
+  margin-top: calc(-1 * (60px + constant(safe-area-inset-top)));
+  margin-top: calc(-1 * (60px + env(safe-area-inset-top, 0px)));
+  padding: calc(60px + constant(safe-area-inset-top) + 8px) 0 28px;
+  padding: calc(60px + env(safe-area-inset-top, 0px) + 8px) 0 28px;
+  background: url('@/assets/images/pledge-bg.png') no-repeat center top;
+  background-size: cover;
+}
+
+.pledge-list-wrap {
+  background: #071818;
+  border-radius: 22px 22px 0 0;
+  margin-top: -12px;
+  padding-top: 8px;
+  min-height: 40vh;
+}
+
 .userAccount {
   font-size: 14px;
   padding: 0 15px;
-  color: var(--ex-default-font-color);
+  color: #fff;
   .title {
-    padding: 20px 0;
+    padding: 12px 0 20px;
     display: flex;
     align-items: center;
-    .usdt {
-      font-size: 34px;
-    }
     p {
       margin-left: 10px;
       font-size: 24px;
+      color: #fff;
     }
   }
   .fund {
-    border: 1px solid var(--ex-usdt-border-color);
-    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 12px;
     position: relative;
-    background: var(--ex-usdt-background-color);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
     .zhiyaimg {
       position: absolute;
       font-size: 100px;
@@ -275,27 +339,28 @@ const manual = computed(() => {
         }
       }
       .right {
-        border-left: 1px solid var(--ex-usdt-border-color3);
+        border-left: 1px solid rgba(255, 255, 255, 0.12);
         text-align: right;
       }
       p {
         font-size: 18px;
         margin-bottom: 10px;
+        color: #fff;
       }
       span {
-        color: var(--ex-passive-font-color);
+        color: rgba(255, 255, 255, 0.65);
       }
     }
     .bottom {
-      border-top: 1px solid var(--ex-usdt-border-color2);
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
       p {
-        color: var(--ex-font-color9);
+        color: #5cff8f;
       }
     }
     .title {
       margin-bottom: 14px;
       span {
-        color: var(--ex-passive-font-color);
+        color: rgba(255, 255, 255, 0.65);
       }
     }
     .amount {
@@ -305,6 +370,5 @@ const manual = computed(() => {
 }
 .project {
   padding: 0 15px 50px;
-  
 }
 </style>
