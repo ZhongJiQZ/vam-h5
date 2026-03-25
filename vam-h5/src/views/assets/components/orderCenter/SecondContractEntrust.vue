@@ -35,21 +35,21 @@
       </div>
     </div>
   
-    <!-- 列表 -->
-    <div v-if="historyNewList.length > 0">
-      <ContractHistory
-        v-for="item in historyNewList"
-        :key="item.userId"
-        :currentEntruset="currentEntruset"
-        :itemHistroy="item"
-        @recombine="remove"
-        @updateRecord="updateRecord"
-        @shareRevenue="shareRevenue"
-      />
+    <div class="sc-order-body">
+      <div v-if="historyNewList.length > 0" class="sc-order-list">
+        <ContractHistory
+          v-for="item in historyNewList"
+          :key="item.userId"
+          order-center-style
+          :currentEntruset="currentEntruset"
+          :itemHistroy="item"
+          @recombine="remove"
+          @updateRecord="updateRecord"
+          @shareRevenue="shareRevenue"
+        />
+      </div>
+      <Nodata v-else />
     </div>
-  
-    <!-- 暂无数据 -->
-    <Nodata v-else />
   
     <div class="placeholder"></div>
   
@@ -280,25 +280,44 @@
     height: 104px;
   }
   
-  .hightItem {
-    color: var(--ex-active-font-color) !important;
+  .sc-order-body {
+    background: #f6f7fb;
+    min-height: 200px;
   }
-  
+
+  .sc-order-list {
+    padding: 12px 15px 0;
+  }
+
+  .sc-order-body :deep(.van-empty),
+  .sc-order-body :deep(.nodata) {
+    padding-top: 40px;
+  }
+
   .entrust {
-    height: 50px;
+    min-height: 48px;
     display: flex;
     padding: 0 15px;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 1px solid var(--ex-border-color);
-  
+    border-bottom: 1px solid #ebebeb;
+
     .entrustL {
       font-size: 14px;
-      color: var(--ex-default-font-color);
+      color: #999;
       display: flex;
-  
+      gap: 20px;
+
       .entrustItem {
-        margin-right: 16px;
+        padding-bottom: 10px;
+        margin-bottom: -11px;
+        cursor: pointer;
+      }
+
+      .hightItem {
+        color: #333 !important;
+        font-weight: 600;
+        border-bottom: 2px solid #008710;
       }
     }
   

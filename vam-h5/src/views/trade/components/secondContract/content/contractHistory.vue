@@ -1,6 +1,6 @@
 <!-- 合约历史 -->
 <template>
-  <div class="historyItem">
+  <div class="historyItem" :class="{ 'historyItem--orderCenter': orderCenterStyle }">
     <!-- tag看涨/看跌 -->
     <div class="header">
       <div class="name" :class="Number(itemHistroy.betContent) ? '' : 'hightOther'">
@@ -147,6 +147,11 @@ const props = defineProps({
     default: () => {
       return 0
     }
+  },
+  /** 订单中心：白卡片 + 列表灰底 */
+  orderCenterStyle: {
+    type: Boolean,
+    default: false
   }
 })
 const flag = ref(false)
@@ -193,6 +198,64 @@ const sharedImg = (model) => {
 
 .hightDown {
   color: var(--ex-font-color10) !important;
+}
+
+.historyItem--orderCenter {
+  padding: 0;
+  margin-bottom: 10px;
+  border-bottom: none;
+  background: #fff;
+  border-radius: 10px;
+  padding: 14px 15px 4px;
+  box-shadow: 0 1px 3px rgba(5, 16, 26, 0.06);
+
+  .header {
+    padding-bottom: 12px;
+
+    .name {
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 4px;
+      margin-right: 10px;
+      color: #fff !important;
+      background: #008710;
+    }
+
+    .hightOther {
+      background: #e85d75 !important;
+      color: #fff !important;
+    }
+
+    .fw-num {
+      color: #666;
+      font-size: 12px;
+    }
+  }
+
+  .list .item {
+    padding-bottom: 12px;
+    font-size: 12px;
+    color: #999;
+
+    .numItem {
+      color: #333;
+      font-weight: 500;
+    }
+  }
+
+  .hightUp {
+    color: #008710 !important;
+  }
+
+  .hightDown {
+    color: #e85d75 !important;
+  }
+
+  .share-button {
+    color: #008710;
+    border-color: #008710;
+  }
 }
 
 .historyItem {

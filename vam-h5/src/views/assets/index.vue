@@ -20,17 +20,20 @@
         />
       </van-tabs>
     </div>
-    <div class="assets-index__panel">
-      <component
-        v-if="currentComp"
-        :is="currentComp"
-        :amountSum="amountSum"
-        :assetDetails="assetDetails"
-        :showNum="showNum"
-        :type="tabActive"
-        @handleYanjin="handleYanjin"
-        @handleShuaxin="handleShuaxin"
-      />
+    <div class="assets-index__sheet">
+      <div class="assets-index__sheet-bg" aria-hidden="true" />
+      <div class="assets-index__panel">
+        <component
+          v-if="currentComp"
+          :is="currentComp"
+          :amountSum="amountSum"
+          :assetDetails="assetDetails"
+          :showNum="showNum"
+          :type="tabActive"
+          @handleYanjin="handleYanjin"
+          @handleShuaxin="handleShuaxin"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -200,10 +203,11 @@ $assets-accent: #17ac74;
 }
 
 .assets-index__tabs-wrap {
+  position: relative;
+  z-index: 2;
   background: $assets-top-bg;
   padding-top: 8px;
-  padding-bottom: 4px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 8px;
 }
 
 .assets-index__tabs {
@@ -248,10 +252,28 @@ $assets-accent: #17ac74;
   }
 }
 
-.assets-index__panel {
+.assets-index__sheet {
+  position: relative;
+  z-index: 0;
+  min-height: calc(100vh - 64px);
+}
+
+.assets-index__sheet-bg {
+  position: absolute;
+  top: -20px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
   background: #fff;
-  border-radius: 16px 16px 0 0;
-  min-height: calc(100vh - 52px);
-  box-shadow: 0 -6px 28px rgba(5, 16, 26, 0.22);
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 -8px 32px rgba(5, 16, 26, 0.18);
+  pointer-events: none;
+}
+
+.assets-index__panel {
+  position: relative;
+  z-index: 1;
+  background: transparent;
 }
 </style>

@@ -3,9 +3,10 @@
       <!-- tab切换：当前委托 / 历史委托 -->
       <van-tabs
         shrink
-        color="transparent"
-        title-active-color="#17AC74"
-        title-inactive-color="#5d626d"
+        class="oc-spot-tabs"
+        color="#008710"
+        title-active-color="#333333"
+        title-inactive-color="#999999"
         @click-tab="clickTab"
       >
         <van-tab
@@ -196,33 +197,55 @@
   .orderBox {
     position: relative;
   }
-  :deep(.van-tabs__wrap) {
-    border-bottom: 1px solid var(--ex-border-color);
+
+  .oc-spot-tabs {
+    :deep(.van-tabs__wrap) {
+      border-bottom: 1px solid #ebebeb;
+    }
+
+    :deep(.van-tabs__nav) {
+      padding-right: 80px;
+      background: #fff !important;
+    }
+
+    :deep(.van-tab--active .van-tab__text) {
+      font-weight: 600;
+    }
+
+    :deep(.van-tabs__line) {
+      background: #008710;
+    }
   }
-  :deep(.van-tabs__nav) {
-    padding-right: 80px;
-    background: var(--bgColor) !important;
-  }
+
   .tab_right {
     position: absolute;
     top: 0;
     right: 0;
-    background: var(--bgColor) !important;
+    background: #fff !important;
     padding: 15px 5px;
-  
+
     .entrustRImg {
       padding: 0 12px;
       font-size: 12px;
-      margin-top:10px;
+      margin-top: 10px;
+      color: #666;
     }
   }
+
   .listBox {
-    padding: 0;
+    padding: 12px 15px 0;
+    background: #f6f7fb;
+    min-height: 200px;
   }
-  .van-cell {
-    background: var(--bgColor) !important;
+
+  :deep(.van-cell) {
+    background: #fff !important;
     padding: 0;
-    border-bottom: 1px solid var(--ex-border-color);
+    margin-bottom: 10px;
+    border-radius: 10px;
+    overflow: hidden;
+    border-bottom: none;
+    box-shadow: 0 1px 3px rgba(5, 16, 26, 0.06);
   }
   </style>
   
