@@ -234,12 +234,12 @@
 
   .listBox {
     padding: 12px 15px 0;
-    background: #f6f7fb;
+    background: #ffffff;
     min-height: 200px;
   }
 
   :deep(.van-cell) {
-    background: #fff !important;
+    background: #f6f7fa !important;
     padding: 0;
     margin-bottom: 10px;
     border-radius: 10px;

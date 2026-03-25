@@ -93,7 +93,7 @@ $oc-accent: #008710;
 
 .order-center {
   min-height: 100vh;
-  background: #fff;
+  background: #ffffff;
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
@@ -147,7 +147,7 @@ $oc-accent: #008710;
 }
 
 .order-center__panel {
-  background: #fff;
+  background: #ffffff;
   border-radius: 16px 16px 0 0;
   min-height: calc(100vh - 52px);
   box-shadow: 0 -6px 28px rgba(5, 16, 26, 0.22);

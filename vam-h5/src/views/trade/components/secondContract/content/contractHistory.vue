@@ -204,7 +204,7 @@ const sharedImg = (model) => {
   padding: 0;
   margin-bottom: 10px;
   border-bottom: none;
-  background: #fff;
+  background: #f6f7fa;
   border-radius: 10px;
   padding: 14px 15px 4px;
   box-shadow: 0 1px 3px rgba(5, 16, 26, 0.06);

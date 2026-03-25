@@ -281,7 +281,7 @@
   }
   
   .sc-order-body {
-    background: #f6f7fb;
+    background: #ffffff;
     min-height: 200px;
   }
 
