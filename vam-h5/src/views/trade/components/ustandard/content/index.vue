@@ -94,6 +94,7 @@
         <div class="rightFifth" v-if="!transactionLabel">
           <!-- 数量(手lots/张lots2) -->
           <input
+            @input="turnoverChange"
             type="text"
             inputmode="decimal"
             v-model.trim="delegateTotal"
@@ -424,6 +425,13 @@ const turnoverChange = () => {
       val = val.slice(0, dotIndex)
     }
     val = val.replace(/^0+(?=\d)/, '')
+    const maxLotsInt = toNum(bearableValue.value, 0)
+    const numValInt = toNum(val, 0)
+    if (maxLotsInt > 0 && numValInt > maxLotsInt) {
+      val = formatLotValue(maxLotsInt)
+    } else if (maxLotsInt <= 0 && numValInt > 0) {
+      val = ''
+    }
     delegateTotal.value = val
     return
   }
@@ -440,6 +448,14 @@ const turnoverChange = () => {
     val = val.replace(/^0+(?=\d)/, '')
   } else {
     val = val.replace(/^0+(?=\.)/, '0')
+  }
+
+  const maxLots = toNum(bearableValue.value, 0)
+  const numVal = toNum(val, 0)
+  if (maxLots > 0 && numVal > maxLots) {
+    val = formatLotValue(maxLots)
+  } else if (maxLots <= 0 && numVal > 0) {
+    val = ''
   }
 
   delegateTotal.value = val
