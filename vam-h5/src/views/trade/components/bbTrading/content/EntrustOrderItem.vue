@@ -47,14 +47,13 @@ const cancelOrder = async () => {
 </script>
 <template>
   <div class="hisToryList" v-if="!hide">
-    <p>{{ data.index }}</p>
     <div class="header">
       <div class="headerLeft">
         <!-- 买 -->
         <div class="name" v-if="data.type == 0">{{ _t18(`buy`) }}</div>
         <!-- 卖 -->
         <div class="name name2" v-if="data.type == 1">{{ _t18(`sell`) }}</div>
-        <div class="fw-bold">
+        <div class="pair-name fw-bold">
           {{
             data.showCoin
               ? data.showCoin
@@ -124,51 +123,71 @@ const cancelOrder = async () => {
   color: var(--ex-font-color9) !important;
 }
 .hisToryList {
-  padding: 20px 15px 0;
-  // border-bottom: 1px solid var(--ex-border-color);
+  padding: 14px 15px 4px;
+  margin-bottom: 10px;
+  background: #f5f6fa;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(5, 16, 26, 0.06);
+
   .header {
-    padding-bottom: 20px;
+    padding-bottom: 12px;
     font-size: 14px;
-    color: var(--ex-default-font-color);
     display: flex;
     align-items: center;
     justify-content: space-between;
+
     .headerLeft {
       display: flex;
       align-items: center;
+      min-width: 0;
+
       .name {
-        padding: 0 5px;
+        flex-shrink: 0;
+        padding: 4px 10px;
         font-size: 12px;
-        background: var(--ex-div-bgColor1);
-        border-radius: 2px 2px 2px 2px;
+        font-weight: 600;
+        border-radius: 6px;
         margin-right: 10px;
-        color: var(--ex-font-color);
+        color: #fff !important;
+        background: #008710;
       }
+
       .name2 {
-        background: var(--ex-rfd-fall);
+        background: #e85d75 !important;
+      }
+
+      .pair-name {
+        font-size: 14px;
+        color: #333;
+        font-weight: 500;
       }
     }
+
     .headerRight {
-      padding: 0 5px;
-      background: var(--ex-default-background-color);
-      border-radius: 2px 2px 2px 2px;
-      opacity: 1;
+      flex-shrink: 0;
+      padding: 4px 8px;
+      background: #fff;
+      border-radius: 4px;
       border: 1px solid var(--ex-border-color4);
       font-size: 12px;
       color: var(--ex-font-color9);
     }
   }
+
   .list {
     .item {
       display: flex;
       align-items: center;
       justify-content: space-between;
       font-size: 12px;
-      color: var(--ex-passive-font-color);
-      padding-bottom: 15px;
+      color: #999;
+      padding-bottom: 12px;
+
       .numItem {
-        color: var(--ex-default-font-color);
+        color: #333;
+        font-weight: 500;
       }
+
       .numItemRed {
         color: var(--ex-font-color15);
       }

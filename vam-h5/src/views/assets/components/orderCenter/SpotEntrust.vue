@@ -5,7 +5,7 @@
         shrink
         class="oc-spot-tabs"
         color="#008710"
-        title-active-color="#333333"
+        title-active-color="#000000"
         title-inactive-color="#999999"
         @click-tab="clickTab"
       >
@@ -233,19 +233,15 @@
   }
 
   .listBox {
-    padding: 12px 15px 0;
-    background: #ffffff;
+    padding: 10px 12px 0;
+    background: #fff;
     min-height: 200px;
   }
 
   :deep(.van-cell) {
-    background: #f6f7fa !important;
+    background: transparent !important;
     padding: 0;
-    margin-bottom: 10px;
-    border-radius: 10px;
-    overflow: hidden;
     border-bottom: none;
-    box-shadow: 0 1px 3px rgba(5, 16, 26, 0.06);
   }
   </style>
   

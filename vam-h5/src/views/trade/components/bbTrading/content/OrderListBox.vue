@@ -4,9 +4,10 @@
     <!-- tab切换 -->
     <van-tabs
       shrink
-      color="transparent"
-      title-active-color="#17AC74"
-      title-inactive-color="#5d626d"
+      class="bb-order-tabs"
+      color="#008710"
+      title-active-color="#000000"
+      title-inactive-color="#999999"
       @click-tab="clickTab"
     >
       <van-tab
@@ -171,30 +172,47 @@ defineExpose({
 .orderBox {
   position: relative;
 }
-:deep(.van-tabs__wrap){
-  border-bottom: 1px solid var(--ex-border-color);
+
+.bb-order-tabs {
+  :deep(.van-tabs__wrap) {
+    border-bottom: 1px solid var(--ex-border-color);
+  }
+
+  :deep(.van-tabs__nav) {
+    padding-right: 80px;
+    background: #fff !important;
+  }
+
+  :deep(.van-tab--active .van-tab__text) {
+    font-weight: 600;
+  }
+
+  :deep(.van-tabs__line) {
+    background: #008710;
+  }
 }
-:deep(.van-tabs__nav) {
-  padding-right: 80px;
-  background: var(--bgColor) !important;
-}
+
 .tab_right {
   position: absolute;
   top: 0;
   right: 0;
-  background: var(--bgColor) !important;;
+  background: #fff !important;
   padding: 15px 5px;
+
   .entrustRImg {
     padding: 0 8px;
     font-size: 12px;
   }
 }
+
 .listBox {
-  padding: 0;
+  padding: 10px 12px 0;
+  background: #fff;
 }
-.van-cell{
-  background: var(--bgColor) !important;
+
+:deep(.van-cell) {
+  background: transparent !important;
   padding: 0;
-  border-bottom: 1px solid var(--ex-border-color);
+  border-bottom: none;
 }
 </style>
