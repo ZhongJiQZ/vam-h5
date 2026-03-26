@@ -17,7 +17,8 @@ watch(
   router.currentRoute,
   (newVal) => {
     // currentTab.value = tabbarList.find((elem) => elem.pathName == newVal.name)
-    currentTab.value = getTabbarList.value.find((elem) => elem.key == newVal.name.toLowerCase())
+    currentTab.value =
+      getTabbarList.value.find((elem) => elem.key == newVal.name.toLowerCase()) ?? {}
   },
   { immediate: true }
 )
