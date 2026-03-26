@@ -167,9 +167,18 @@ watch(
   :deep(.mainBgc) {
     background: transparent;
   }
+
+  :deep(.mainBgc .main_collect) {
+    background-color: transparent;
+  }
+
+  :deep(.mainBgc .main) {
+    background-color: transparent;
+  }
 }
 
 .quote-sheet-body {
+  --van-tabs-nav-background: transparent;
   flex: 1;
   min-height: 0;
   display: flex;
