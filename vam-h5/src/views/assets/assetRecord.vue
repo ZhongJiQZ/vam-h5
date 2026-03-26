@@ -165,7 +165,7 @@ $ar-accent: #008710;
 .asset-record__tabs {
   :deep(.van-tabs__wrap) {
     height: 48px;
-    border-bottom: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
     background: transparent !important;
   }
 
@@ -195,8 +195,7 @@ $ar-accent: #008710;
   }
 
   :deep(.van-tabs__line) {
-    bottom: 20px;
-    background: $ar-accent;
+    display: none !important;
   }
 
   :deep(.van-tab--shrink) {

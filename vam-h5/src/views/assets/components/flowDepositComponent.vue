@@ -196,6 +196,10 @@ watch(
   padding-right: 8px;
 }
 
+.flow-deposit :deep(.van-tabs__line) {
+  display: none !important;
+}
+
 .flow-deposit :deep(.tabContent) {
   border-top: none;
 }
@@ -228,10 +232,6 @@ watch(
   display: flex;
   justify-content: space-between;
   padding: 8px 0;
-  border-bottom: 1px dashed rgba(0, 0, 0, 0.08);
-}
-.row:last-child {
-  border-bottom: 0;
 }
 .k {
   color: #7a8c99;

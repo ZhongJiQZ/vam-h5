@@ -174,6 +174,10 @@ watch(
   padding-right: 8px;
 }
 
+.flow-withdraw :deep(.van-tabs__line) {
+  display: none !important;
+}
+
 .flow-withdraw :deep(.tabContent) {
   border-top: none;
 }

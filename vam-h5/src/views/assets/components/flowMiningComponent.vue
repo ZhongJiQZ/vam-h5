@@ -243,8 +243,7 @@ const onRedeem = async (row) => {
   }
 
   :deep(.van-tabs__line) {
-    bottom: 8px;
-    background: #008710;
+    display: none !important;
   }
 
   :deep(.van-tab--shrink) {
@@ -270,10 +269,6 @@ const onRedeem = async (row) => {
   justify-content: space-between;
   gap: 10px;
   padding: 8px 0;
-  border-bottom: 1px dashed rgba(0, 0, 0, 0.08);
-}
-.kv:last-of-type {
-  border-bottom: 0;
 }
 
 .k {

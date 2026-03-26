@@ -213,7 +213,7 @@
     }
 
     :deep(.van-tabs__line) {
-      background: #008710;
+      display: none !important;
     }
   }
 
