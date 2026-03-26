@@ -185,7 +185,7 @@ watch(
   flex-direction: column;
   overflow: auto;
   background: #f6f7fa;
-  margin:2px;
+  margin:2px 15px;
   border-radius: 8px;
 
   > :deep(*) {
