@@ -165,7 +165,7 @@ $ar-accent: #008710;
 .asset-record__tabs {
   :deep(.van-tabs__wrap) {
     height: 48px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    border-bottom: none;
     background: transparent !important;
   }
 
