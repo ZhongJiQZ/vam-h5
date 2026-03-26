@@ -89,6 +89,7 @@ watch(
         color: var(--ex-passive-font-color);
         &.active {
           color: var(--ex-active-font-color);
+          color: #000;
         }
       }
       .itemTop {
