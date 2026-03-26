@@ -175,6 +175,8 @@ watch(
   display: flex;
   flex-direction: column;
   overflow: auto;
+  background: #f6f7fa;
+  margin:15px;
 
   > :deep(*) {
     flex: 1;
@@ -190,8 +192,8 @@ watch(
 
   .searchBtn {
     height: 36px;
-    background: #f5f6f8;
-    border-radius: 18px;
+    background: #f6f7fa;
+    border-radius: 8px;
     padding: 0 16px;
     display: flex;
     align-items: center;
