@@ -43,15 +43,14 @@
           <div class="firstHeader fw-bold">{{ _t18(`select_cycle`, ['ebc']) }}</div>
           <div class="firstList">
             <div
-              style="display: inline-block"
               class="firstItem fw-num"
-              :class="cycleIndex === index ? 'hightColor' : ''"
+              :class="{ 'firstItem--selected': cycleIndex === index }"
               v-for="(item, index) in cycleList"
               :key="index"
               @click="chooseCycle(index, item)"
             >
               <div class="firstItemTop">{{ item.period }}s</div>
-              <div>{{ _mul(item.odds, 100) }}%</div>
+              <div class="firstItemBottom">{{ _mul(item.odds, 100) }}%</div>
             </div>
           </div>
         </div>
@@ -849,25 +848,64 @@ input::-ms-input-placeholder {
       color: var(--ex-default-font-color);
     }
     .firstList {
-      overflow-x: scroll;
-      white-space: nowrap;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      gap: 10px;
+      overflow-x: auto;
       margin-bottom: 30px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+
       .firstItem {
+        flex: 0 0 auto;
         width: 75px;
         height: 66px;
-        background: var(--ex-div-bgColor17);
-        border-radius: 3px;
-        text-align: center;
-        font-size: 14px;
-        color: var(--ex-default-font-color);
-        margin-right: 15px;
+        display: flex;
+        flex-direction: column;
+        border-radius: 8px;
+        overflow: hidden;
+        box-sizing: border-box;
 
         .firstItemTop {
-          line-height: 38px;
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 14px;
+          font-weight: 600;
+          background: #9ca3af;
+          color: #fff;
+          line-height: 1;
         }
-      }
-      .firstItem:last-child {
-        margin-right: 0;
+
+        .firstItemBottom {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 14px;
+          background: #e2e4eb;
+          color: #333;
+          line-height: 1;
+        }
+
+        &--selected {
+          .firstItemTop {
+            background: #008710;
+            color: #fff;
+          }
+
+          .firstItemBottom {
+            background: #e6f4ea;
+            color: #008710;
+            font-weight: 600;
+          }
+        }
       }
     }
   }
