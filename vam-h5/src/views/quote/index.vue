@@ -177,6 +177,7 @@ watch(
   overflow: auto;
   background: #f6f7fa;
   margin:15px;
+  border-radius: 8px;
 
   > :deep(*) {
     flex: 1;
