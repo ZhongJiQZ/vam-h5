@@ -21,7 +21,7 @@
       </van-tabs>
     </div>
 
-    <div class="order-center__body">
+    <div class="order-center__sheet-outer">
       <div class="order-center__sheet">
         <div class="order-center__sheet-bg" aria-hidden="true" />
         <div class="order-center__panel">
@@ -129,7 +129,7 @@ $oc-accent: #008710;
   padding-bottom: 8px;
 }
 
-.order-center__body {
+.order-center__sheet-outer {
   background: $oc-top-bg;
   overflow: visible;
 }
@@ -150,7 +150,6 @@ $oc-accent: #008710;
   right: 0;
   bottom: 0;
   z-index: 0;
-  background: #ffffff;
   border-radius: 24px 24px 0 0;
   box-shadow: 0 -8px 32px rgba(5, 16, 26, 0.18);
   pointer-events: none;

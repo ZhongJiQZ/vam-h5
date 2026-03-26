@@ -22,7 +22,7 @@
       </van-tabs>
     </div>
 
-    <div class="asset-record__body">
+    <div class="asset-record__sheet-outer">
       <div class="asset-record__sheet">
         <div class="asset-record__sheet-bg" aria-hidden="true" />
         <div class="asset-record__panel">
@@ -119,6 +119,7 @@ $ar-accent: #008710;
   background: #ffffff;
   padding-bottom: env(safe-area-inset-bottom, 0);
   overflow-x: hidden;
+  overflow-y: visible;
 }
 
 .asset-record__tabs-wrap {
@@ -129,7 +130,7 @@ $ar-accent: #008710;
   padding-bottom: 8px;
 }
 
-.asset-record__body {
+.asset-record__sheet-outer {
   background: $ar-top-bg;
   overflow: visible;
 }
@@ -150,7 +151,6 @@ $ar-accent: #008710;
   right: 0;
   bottom: 0;
   z-index: 0;
-  background: #ffffff;
   border-radius: 24px 24px 0 0;
   box-shadow: 0 -8px 32px rgba(5, 16, 26, 0.18);
   pointer-events: none;
