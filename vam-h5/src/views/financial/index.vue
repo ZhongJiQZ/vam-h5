@@ -1,16 +1,25 @@
 <!-- 理财 -->
 <template>
-  <HeaderBar v-if="['paxpay'].includes(_getConfig('_APP_ENV'))"
-      :currentName="_t18('financial',['paxpay'])"
+  <div class="financial-page">
+    <HeaderBar
+      v-if="['paxpay'].includes(_getConfig('_APP_ENV'))"
+      :currentName="_t18('financial', ['paxpay'])"
       :border_bottom="false"
-    ></HeaderBar>
-  <LogoHeader v-else></LogoHeader>
-  <Header></Header>
-  <FundList></FundList>
+    />
+    <FinancialTopBar v-else />
+    <Header />
+    <FundList />
+  </div>
 </template>
 <script setup>
-import LogoHeader from '@/components/LogoHeader/index.vue'
+import FinancialTopBar from './components/FinancialTopBar.vue'
 import Header from './components/header.vue'
 import FundList from './components/fundList.vue'
 </script>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.financial-page {
+  min-height: 100vh;
+  background: #eef0f4;
+  box-sizing: border-box;
+}
+</style>

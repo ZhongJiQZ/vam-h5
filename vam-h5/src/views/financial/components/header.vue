@@ -3,6 +3,7 @@
     <div class="bgImg" v-if="finaImg">
       <image-load :filePath="finaImg" class="img" />
     </div>
+    <div class="nav-card">
     <div class="navigationList">
       <div
         class="item"
@@ -13,6 +14,7 @@
         <svg-load :name="item.icon" class="itemImg"></svg-load>
         <div class="itemName">{{ item.name }}</div>
       </div>
+    </div>
     </div>
   </div>
 </template>
@@ -58,20 +60,26 @@ onMounted(async () => {
 </script>
 <style lang="scss" scoped>
 .header {
-  border-top: 1px solid var(--ex-border-color);
-  border-bottom: 1px solid var(--ex-border-color);
-  padding: 20px 0;
+  padding: 12px 15px 0;
   .bgImg {
-    margin: 0 15px;
+    margin: 0 0 12px;
     height: 173px;
+    border-radius: 12px;
+    overflow: hidden;
     .img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
   }
+  .nav-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(1, 14, 26, 0.06);
+    padding: 4px 0 16px;
+  }
   .navigationList {
-    padding: 19px 15px 0;
+    padding: 16px 12px 0;
     display: flex;
     justify-content: space-between;
     .item {
@@ -79,7 +87,7 @@ onMounted(async () => {
       text-align: center;
       align-items: center;
       font-size: 12px;
-      color: var(--ex-default-font-color);
+      color: #111;
       justify-content: center;
       padding: 0 5px;
       .itemImg {
@@ -88,7 +96,6 @@ onMounted(async () => {
         margin-bottom: 10px;
       }
       .itemName {
-        // width: 52px;
         text-align: center;
         word-wrap: break-word;
       }
