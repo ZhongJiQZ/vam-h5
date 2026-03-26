@@ -1,18 +1,91 @@
 <template>
-  <!-- 详情 -->
-  <HeaderBar :currentName="_t18(`host.detail`)" />
-  <DetailHeader :headerObj="headerObj"></DetailHeader>
-  <div class="introduction">
-    <!-- 基金介绍 -->
-    <div class="title fw-bold">{{ _t18(`Fund_introduction`) }}</div>
-    <!-- 暂无介绍 -->
-    <div>{{ fundIntroduction ? fundIntroduction : _t18(`No_introductionyet`) }}</div>
-  </div>
-  <ProductDetail :proDetail="proDetail"></ProductDetail>
-  <ProductRules :proRules="proRules"></ProductRules>
-  <div class="buyNow">
-    <!-- 立即购买 -->
-    <div class="buyBtn" @click="buyNow">{{ _t18(`buy_it_now`) }}</div>
+  <div class="financial-detail-page">
+    <HeaderBar
+      v-if="['paxpay'].includes(_getConfig('_APP_ENV'))"
+      :currentName="_t18('financial', ['paxpay'])"
+      :border_bottom="false"
+    />
+    <FinancialTopBar v-else />
+
+    <div class="detail-scroll">
+      <!-- 项目概览 -->
+      <section class="card card-overview">
+        <h1 class="overview-title">{{ proDetail.title || '—' }}</h1>
+        <div
+          class="rate-banner"
+          :style="{ backgroundImage: `url(${projectBg})` }"
+        >
+          <div class="rate-value fw-num">{{ proDetail.avgRate }}%</div>
+        </div>
+        <div class="overview-rows">
+          <div class="detail-row">
+            <span class="label">{{ _t18('project_cycle') }}</span>
+            <span class="value fw-num">{{ proDetail.days }}{{ _t18('ldgpt_host_day') }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">{{ _t18('starting-amount') }}</span>
+            <span class="value fw-num">
+              {{ proDetail.limitMin }} {{ proDetail.coin }}
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 基金介绍 -->
+      <section class="card">
+        <div class="card-title fw-bold">{{ _t18(`Fund_introduction`) }}</div>
+        <div class="card-text">
+          {{ fundIntroduction ? fundIntroduction : _t18(`No_introductionyet`) }}
+        </div>
+      </section>
+
+      <!-- 产品详情 -->
+      <section class="card">
+        <div class="card-title fw-bold">{{ _t18(`product_details`) }}</div>
+        <div class="detail-row">
+          <span class="label">{{ _t18(`product-details`) }}</span>
+          <span class="value">{{ proDetail.title }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">{{ _t18(`project_progress`) }}</span>
+          <span class="value fw-num">{{ proDetail.process }}%</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">{{ _t18(`total_project`) }}</span>
+          <span class="value fw-num">{{ proDetail.totalInvestAmount }}&nbsp;{{ proDetail.coin }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">{{ _t18(`balance`) }}</span>
+          <span class="value fw-num">{{ proDetail.remainAmount }}&nbsp;{{ proDetail.coin }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">{{ _t18(`limit_number`) }}</span>
+          <span class="value fw-num">
+            {{
+              Number(proDetail.timeLimit) ? Number(proDetail.timeLimit) : _t18(`unlimited_purchase`)
+            }}
+          </span>
+        </div>
+        <div class="detail-row">
+          <span class="label">{{ _t18(`average_daily_income`) }}</span>
+          <span class="value fw-num rate-highlight">{{ proDetail.avgRate }}%</span>
+        </div>
+      </section>
+
+      <!-- 产品规则 -->
+      <section class="card card-rules">
+        <div class="card-title fw-bold">{{ _t18('product_rules') }}</div>
+        <div class="card-text">
+          {{ proRules ? proRules : _t18(`No_introductionyet`) }}
+        </div>
+      </section>
+    </div>
+
+    <div class="buy-footer">
+      <button type="button" class="buy-btn" @click="buyNow">
+        {{ _t18(`buy_it_now`) }}
+      </button>
+    </div>
   </div>
 </template>
 <script setup>
@@ -20,25 +93,30 @@ import { DIFF_ISFREEZE_OTHER } from '@/config/index'
 import { useFreeze } from '@/hook/useFreeze'
 const { _isFreeze } = useFreeze()
 import { useRouter, useRoute } from 'vue-router'
-import { computed, onMounted, ref } from 'vue'
-import HeaderBar from '@/components/HeaderBar/index.vue'
-import DetailHeader from './components/detailHeader.vue' //头
-import ProductDetail from './components/productDetail.vue' // 详情
-import ProductRules from './components/productRules.vue' // 规则
+import { onMounted, ref } from 'vue'
+import FinancialTopBar from './components/FinancialTopBar.vue'
 import { financialDetail } from '@/api/financial/index'
 import { _t18 } from '@/utils/public'
+import projectBg from '@/assets/images/financial/project-bg.png'
+
 const $router = useRouter()
 const Route = useRoute()
-// 平均收益 项目周期（天） 起投金额
-const headerObj = ref({
-  leftName: _t18('average_income'),
-  leftColor: '#DF163D',
-  centerName: `${_t18('project_cycle')}(${_t18('ldgpt_host_day')})`,
-  rightName: _t18(`starting-amount`)
+
+const fundIntroduction = ref('')
+const proRules = ref('')
+
+const proDetail = ref({
+  title: '',
+  process: '',
+  totalInvestAmount: '',
+  remainAmount: '',
+  timeLimit: '',
+  avgRate: '',
+  coin: '',
+  days: '',
+  limitMin: ''
 })
-const fundIntroduction = ref('') // 基金介绍
-const proDetail = ref({}) // 产品详情
-const proRules = ref('') // 产品规则
+
 const buyNow = () => {
   if (DIFF_ISFREEZE_OTHER.includes(__config._APP_ENV)) {
     if (_isFreeze(DIFF_ISFREEZE_OTHER)) {
@@ -48,66 +126,180 @@ const buyNow = () => {
     $router.push(`/buyFunds/${Route.params.id}`)
   }
 }
-/** 获取详情 */
+
 const getDetail = async () => {
   try {
     const res = await financialDetail(Route.params.id)
     if (res.code === 200) {
-      const { title, icon, avgRate, days, limitMin, coin, prodectIntroduction, problem } = res.data
-      /**产品介绍 */
-      fundIntroduction.value = prodectIntroduction
-      headerObj.value = {
+      const {
         title,
-        icon,
-        leftNum: avgRate + '%',
-        centerNum: days,
-        rightNum: limitMin + ' ' + coin.toUpperCase(),
-        ...headerObj.value
-      }
-      /**产品详情 */
-      const { process, totalInvestAmount, remainAmount, timeLimit } = res.data
+        avgRate,
+        days,
+        limitMin,
+        coin,
+        prodectIntroduction,
+        problem,
+        process,
+        totalInvestAmount,
+        remainAmount,
+        timeLimit
+      } = res.data
+      fundIntroduction.value = prodectIntroduction || ''
+      proRules.value = problem || ''
+      const coinU = coin ? String(coin).toUpperCase() : ''
       proDetail.value = {
-        title,
+        title: title || '',
         process,
         totalInvestAmount,
         remainAmount,
         timeLimit,
         avgRate,
-        coin: coin.toUpperCase()
+        coin: coinU,
+        days,
+        limitMin
       }
-      /**产品规则 */
-      proRules.value = problem
     }
   } catch (error) {}
 }
+
 onMounted(() => {
   getDetail()
 })
 </script>
 <style lang="scss" scoped>
-.introduction {
-  padding: 20px 17px;
-  border-top: 1px solid var(--ex-border-color);
-  border-bottom: 1px solid var(--ex-border-color);
-  color: var(--ex-passive-font-color);
-  font-size: 12px;
-  .title {
-    font-size: 16px;
-    color: var(--ex-default-font-color);
-    margin-bottom: 10px;
+.financial-detail-page {
+  min-height: 100vh;
+  background: #f6f7fa;
+  box-sizing: border-box;
+  padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+}
+
+.detail-scroll {
+  padding: 12px 0 8px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 14px;
+  margin: 0 15px 12px;
+  padding: 16px;
+  box-shadow: 0 2px 12px rgba(1, 14, 26, 0.06);
+  box-sizing: border-box;
+}
+
+.card-overview {
+  padding-top: 18px;
+}
+
+.overview-title {
+  margin: 0 0 14px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+  text-align: center;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.rate-banner {
+  min-height: 112px;
+  margin-bottom: 14px;
+  border-radius: 10px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rate-value {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+  color: #e85d75;
+}
+
+.overview-rows .detail-row {
+  margin-bottom: 10px;
+  &:last-child {
+    margin-bottom: 0;
   }
 }
-.buyNow {
-  padding: 50px 15px;
-  .buyBtn {
-    height: 50px;
-    background: var(--ex-div-bgColor1);
-    border-radius: 3px 3px 3px 3px;
-    font-size: 16px;
-    color: var(--ex-font-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+
+.card-title {
+  font-size: 16px;
+  color: #1a1a1a;
+  margin-bottom: 12px;
+}
+
+.card-text {
+  font-size: 13px;
+  line-height: 1.55;
+  color: #8b9099;
+  word-break: break-word;
+}
+
+.card-rules .card-text {
+  margin: 0;
+}
+
+.detail-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  margin-bottom: 14px;
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.label {
+  color: #8b9099;
+  flex-shrink: 0;
+}
+
+.value {
+  color: #2a2f36;
+  text-align: right;
+  word-break: break-all;
+}
+
+.rate-highlight {
+  color: #e85d75;
+}
+
+.buy-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  max-width: var(--ex-max-width, 100%);
+  margin: 0 auto;
+  padding: 12px 15px calc(12px + env(safe-area-inset-bottom, 0px));
+  background: #f6f7fa;
+  box-sizing: border-box;
+  box-shadow: 0 -4px 16px rgba(1, 14, 26, 0.06);
+}
+
+.buy-btn {
+  display: block;
+  width: 100%;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 999px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #fff;
+  background: #010e1a;
+  text-align: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  &:active {
+    opacity: 0.92;
   }
 }
 </style>
