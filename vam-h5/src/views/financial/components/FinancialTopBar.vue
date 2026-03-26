@@ -17,7 +17,7 @@
       <img
         src="@/assets/images/financial/sousuo.png"
         alt=""
-        class="icon"
+        class="icon icon-search"
         @click="$router.push('/quote')"
       />
       <img
@@ -70,5 +70,9 @@ const logoSrc = computed(() => {
   height: 24px;
   object-fit: contain;
   display: block;
+}
+.icon-search {
+  width: 19px;
+  height: 19px;
 }
 </style>
