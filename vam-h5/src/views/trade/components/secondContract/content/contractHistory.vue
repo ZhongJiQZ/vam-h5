@@ -3,19 +3,27 @@
   <div class="historyItem" :class="{ 'historyItem--orderCenter': orderCenterStyle }">
     <!-- tag看涨/看跌 -->
     <div class="header">
-      <div class="name" :class="Number(itemHistroy.betContent) ? '' : 'hightOther'">
-        {{
+      <div
+        class="direction-badge"
+        :class="Number(itemHistroy.betContent) ? 'direction-badge--up' : 'direction-badge--down'"
+      >
+        <span class="direction-badge__text">{{
           Number(itemHistroy.betContent)
             ? _t18(`exchange_bullish`, ['bitmake'])
             : _t18(`exchange_bearish`, ['bitmake'])
-        }}
+        }}</span>
+        <img
+          class="direction-badge__icon"
+          :src="Number(itemHistroy.betContent) ? imgTradeUp : imgTradeDown"
+          alt=""
+        />
       </div>
-      <div class="fw-num">
+      <div class="header-time fw-num">
         {{ _timeFormat(itemHistroy.params?.createTime, 'DD/MM/YYYY HH:mm', true) }}
       </div>
     </div>
     <div class="list">
-      <div class="item">
+      <div class="item item--pair">
         <div>
           {{
             itemHistroy.showCoin
@@ -135,6 +143,9 @@ import {
 } from '@/utils/filters'
 import { _t18 } from '@/utils/public'
 
+import imgTradeUp from '@/assets/images/trade/up.png'
+import imgTradeDown from '@/assets/images/trade/down.png'
+
 const tradeStore = useTradeStore()
 const countdown = ref(-1)
 const props = defineProps({
@@ -201,34 +212,47 @@ const sharedImg = (model) => {
 }
 
 .historyItem--orderCenter {
-  padding: 0;
+  padding: 14px 15px 4px;
   margin-bottom: 10px;
   border-bottom: none;
-  background: #f6f7fa;
+  background: #f5f6fa;
   border-radius: 10px;
-  padding: 14px 15px 4px;
   box-shadow: 0 1px 3px rgba(5, 16, 26, 0.06);
 
   .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     padding-bottom: 12px;
 
-    .name {
+    .direction-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
       padding: 4px 10px;
       font-size: 12px;
       font-weight: 600;
-      border-radius: 4px;
-      margin-right: 10px;
-      color: #fff !important;
-      background: #008710;
+      border-radius: 6px;
+      color: #fff;
+
+      &--up {
+        background: #008710;
+      }
+
+      &--down {
+        background: #e85d75;
+      }
     }
 
-    .hightOther {
-      background: #e85d75 !important;
-      color: #fff !important;
+    .direction-badge__icon {
+      width: 14px;
+      height: 14px;
+      object-fit: contain;
+      flex-shrink: 0;
     }
 
-    .fw-num {
-      color: #666;
+    .header-time {
+      color: #333;
       font-size: 12px;
     }
   }
@@ -237,6 +261,11 @@ const sharedImg = (model) => {
     padding-bottom: 12px;
     font-size: 12px;
     color: #999;
+
+    &.item--pair > div:first-child {
+      color: #333;
+      font-weight: 500;
+    }
 
     .numItem {
       color: #333;
@@ -272,18 +301,30 @@ const sharedImg = (model) => {
     color: var(--ex-default-font-color);
     display: flex;
     align-items: center;
+    justify-content: space-between;
 
-    .name {
-      padding: 5px;
+    .direction-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 10px;
       font-size: 12px;
-      background: var(--ex-div-bgColor1);
-      border-radius: 2px 2px 2px 2px;
-      margin-right: 10px;
-      color: var(--ex-font-color);
+      border-radius: 4px;
+      color: #fff;
+
+      &--up {
+        background: var(--ex-div-bgColor1);
+      }
+
+      &--down {
+        background: var(--ex-div-bgColor16);
+      }
     }
 
-    .hightOther {
-      background: var(--ex-div-bgColor16);
+    .direction-badge__icon {
+      width: 14px;
+      height: 14px;
+      object-fit: contain;
     }
   }
 

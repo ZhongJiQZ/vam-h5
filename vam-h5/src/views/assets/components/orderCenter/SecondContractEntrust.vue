@@ -281,7 +281,7 @@
   }
   
   .sc-order-body {
-    background: #ffffff;
+    background: #fff;
     min-height: 200px;
   }
 
@@ -315,7 +315,7 @@
       }
 
       .hightItem {
-        color: #333 !important;
+        color: #000 !important;
         font-weight: 600;
         border-bottom: 2px solid #008710;
       }

@@ -39,8 +39,9 @@
     </div>
   </div>
   <!-- 合约历史 -->
-  <div v-if="historyNewList.length > 0">
+  <div v-if="historyNewList.length > 0" class="sc-history-wrap">
     <ContractHistory
+      order-center-style
       :currentEntruset="currentEntruset"
       :itemHistroy="item"
       v-for="item in historyNewList"
@@ -352,8 +353,26 @@ const submit = () => {
   height: 104px;
 }
 
+.sc-history-wrap {
+  padding: 10px 12px 0;
+  background: #fff;
+}
+
 .hightItem {
-  color: var(--ex-active-font-color) !important;
+  color: #000 !important;
+  position: relative;
+  padding-bottom: 4px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background: #008710;
+    border-radius: 1px;
+  }
 }
 
 .line {
@@ -371,7 +390,7 @@ const submit = () => {
 
   .entrustL {
     font-size: 14px;
-    color: var(--ex-default-font-color);
+    color: #999;
     display: flex;
 
     .entrustItem {
