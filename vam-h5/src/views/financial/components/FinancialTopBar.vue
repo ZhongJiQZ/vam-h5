@@ -1,6 +1,12 @@
 <template>
   <div class="financial-top-bar">
-    <Logo />
+    <img
+      :src="logoSrc"
+      alt=""
+      class="logo-img"
+      loading="lazy"
+      @click="_toView('/home')"
+    />
     <div class="actions">
       <img
         src="@/assets/images/financial/service.png"
@@ -24,8 +30,18 @@
   </div>
 </template>
 <script setup>
-import Logo from '@/components/common/Logo/index.vue'
+import { computed } from 'vue'
+import { useMainStore } from '@/store/index.js'
+import { _toView } from '@/utils/public.js'
 import { dispatchCustomEvent } from '@/utils/index'
+import logoFallback from '@/assets/images/logo-white.png'
+
+const mainStore = useMainStore()
+
+const logoSrc = computed(() => {
+  const fromStore = mainStore.getLogoList?.logo || mainStore.getLogoList?.logoD
+  return fromStore || logoFallback
+})
 </script>
 <style lang="scss" scoped>
 .financial-top-bar {
@@ -37,6 +53,12 @@ import { dispatchCustomEvent } from '@/utils/index'
   box-sizing: border-box;
   width: 100%;
   max-width: var(--ex-max-width, 100%);
+}
+.logo-img {
+  height: 32px;
+  border-radius: 12px;
+  object-fit: contain;
+  display: block;
 }
 .actions {
   display: flex;
