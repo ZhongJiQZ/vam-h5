@@ -1,9 +1,9 @@
 <!-- 交易页面：秒合约，币币交易，U本位 trade/index.vue -->
 <template>
-  <div>
-    <!-- tabs -->
+  <div class="trade-page">
+    <!-- tabs：深色顶栏 -->
     <van-sticky>
-      <div class="headerList">
+      <div class="headerList darkheader">
         <div class="left">
           <svg-load name="jiantou-z" class="leftImg" @click="_back()"></svg-load>
         </div>
@@ -13,11 +13,9 @@
             shrink
             :swipe-threshold="2"
             v-model:active="currentIndex"
-            line-width="20"
-            line-height="2"
-            color="#17ac74"
-            title-active-color="#17AC74"
-            title-inactive-color="#5d626d"
+            :line-width="0"
+            title-active-color="#ffffff"
+            title-inactive-color="rgba(255, 255, 255, 0.45)"
           >
             <van-tab v-for="(item, index) in headerList" :key="index" :title="item.title">
             </van-tab>
@@ -25,11 +23,13 @@
         </div>
       </div>
     </van-sticky>
-    <!-- tab -->
-    <component
-      :is="currentComponent"
-      :headerList="headerList"
-    ></component>
+    <!-- 主内容：白底圆角承接深色头 -->
+    <div class="trade-sheet">
+      <component
+        :is="currentComponent"
+        :headerList="headerList"
+      ></component>
+    </div>
   </div>
 </template>
 
@@ -114,54 +114,91 @@ onMounted(()=>{
 </script>
 
 <style lang="scss" scoped>
+.trade-page {
+  min-height: 100vh;
+  background: #0b1118;
+  box-sizing: border-box;
+}
+
 .headerList {
-  height: 60px;
-  border-bottom: 1px solid var(--ex-border-color);
   display: flex;
   align-items: center;
-  background: var(--ex-home-list-bgcolor);
   z-index: 9;
   padding-left: 15px;
+  padding-right: 12px;
+  padding-top: env(safe-area-inset-top);
+  height: calc(60px + env(safe-area-inset-top));
+  box-sizing: border-box;
+  border-bottom: none;
+
+  &.darkheader {
+    background: #0b1118;
+  }
 
   .left {
     display: flex;
+    flex-shrink: 0;
+    align-items: center;
     font-size: 16px;
     font-weight: normal;
-    color: var(--ex-default-font-color);
+    color: #fff;
 
     .leftImg {
       width: 16px;
       height: 12px;
-      margin-right: 15px;
+      margin-right: 12px;
+      filter: brightness(0) invert(1);
     }
   }
 
   .headerChoose {
+    flex: 1;
+    min-width: 0;
     display: flex;
-    padding: 0 15px 0 0;
-    background: var(--ex-home-list-bgcolor);
+    padding: 0;
+    background: transparent;
 
     :deep(.van-tabs__wrap) {
-      height: 59px;
+      height: 44px;
     }
 
     :deep(.van-tabs__nav) {
-      background: var(--ex-home-list-bgcolor);
+      background: transparent;
+    }
+
+    :deep(.van-tabs__nav--complete) {
+      padding: 0 4px;
     }
 
     :deep(.van-tab) {
       flex: none;
-      font-size: 16px;
-      margin-right: 30px;
+      font-size: 15px;
+      margin-right: 22px;
       padding: 0;
-      color: var(--ex-home-list-ftcolor) !important;
-      background: var(--ex-home-list-bgcolor);
+      color: rgba(255, 255, 255, 0.45) !important;
+      background: transparent;
+    }
+
+    :deep(.van-tab:last-child) {
+      margin-right: 0;
     }
 
     :deep(.van-tab--active) {
-      font-weight: normal;
-      color: var(--ex-home-list-ftcolor3) !important;
+      font-weight: 500;
+      color: #ffffff !important;
+    }
+
+    :deep(.van-tabs__line) {
+      display: none;
     }
   }
+}
+
+.trade-sheet {
+  background: #fff;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  min-height: calc(100vh - 60px - env(safe-area-inset-top));
+  overflow: hidden;
 }
 </style>
