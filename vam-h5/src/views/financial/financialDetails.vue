@@ -79,12 +79,12 @@
           {{ proRules ? proRules : _t18(`No_introductionyet`) }}
         </div>
       </section>
-    </div>
 
-    <div class="buy-footer">
-      <button type="button" class="buy-btn" @click="buyNow">
-        {{ _t18(`buy_it_now`) }}
-      </button>
+      <div class="buy-footer">
+        <button type="button" class="buy-btn" @click="buyNow">
+          {{ _t18(`buy_it_now`) }}
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -171,11 +171,10 @@ onMounted(() => {
   min-height: 100vh;
   background: #f6f7fa;
   box-sizing: border-box;
-  padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
 }
 
 .detail-scroll {
-  padding: 12px 0 8px;
+  padding: 12px 0 calc(24px + env(safe-area-inset-bottom, 0px));
 }
 
 .card {
@@ -272,17 +271,9 @@ onMounted(() => {
 }
 
 .buy-footer {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 10;
-  max-width: var(--ex-max-width, 100%);
-  margin: 0 auto;
-  padding: 12px 15px calc(12px + env(safe-area-inset-bottom, 0px));
-  background: #f6f7fa;
+  margin: 8px 15px 0;
+  padding: 0;
   box-sizing: border-box;
-  box-shadow: 0 -4px 16px rgba(1, 14, 26, 0.06);
 }
 
 .buy-btn {

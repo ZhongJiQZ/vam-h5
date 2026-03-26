@@ -95,7 +95,8 @@ const tabbarPathNameList = computed(() =>
       return elem.key.charAt(0).toUpperCase() + elem.key.slice(1)
     }),
     'OrderCenter',
-    'AssetRecord'
+    'AssetRecord',
+    'FinancialDetails'
   ]
 )
 
