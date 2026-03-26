@@ -1,40 +1,102 @@
 <template>
-  <div class="columnFlex">
-    <!-- 购买基金 -->
-    <HeaderBar :currentName="t18('buy_funds')" :backwardNum="backwardNum" />
-    <div v-if="!isSuccess">
-      <DetailHeader :headerObj="headerObj"></DetailHeader>
-      <div class="introduction">
-        <!-- 买入额度 -->
-        <div class="title fw-bold">{{ t18('buy_limit') }}</div>
-        <!-- 请输入 -->
-        <input v-model="limit" type="text" :placeholder="t18('exchange.input')" class="quota" />
-      </div>
-      <ProductDetail :proDetail="proDetail"></ProductDetail>
-      <div class="buyNow">
-        <!-- 支付 -->
-        <div class="buyBtn" @click="payNow">{{ t18('to pay') }}</div>
-        <div class="protocol">
-          <svg-load v-if="!isCheck" name="gou" class="protocolImg" @click="toSwitch"></svg-load>
-          <svg-load v-if="isCheck" name="gouH" class="protocolImg" @click="toSwitch"></svg-load>
-          <!-- 我已阅读并同意 -->
-          <div>{{ t18('read_and_confirm') }}</div>
-          <!-- 理财协议 -->
-          <div class="hightName" @click="$router.push('/financialAgreement')">
-            {{ t18('financial agreement') }}
+  <div class="buy-funds-page">
+    <DarkHeaderBar
+      :title="t18('buy_funds')"
+      :backwardNum="backwardNum"
+      bg-color="#010e1a"
+      :border_bottom="false"
+    />
+
+    <div class="buy-funds-body">
+      <div v-if="!isSuccess" class="buy-funds-content">
+        <section class="card card-overview">
+          <div class="overview-head">
+            <div v-if="!headerObj.icon" class="overview-img-placeholder" />
+            <image-load v-if="headerObj.icon" :filePath="headerObj.icon" class="overview-img" />
+            <div class="overview-title">{{ headerObj.title }}</div>
+          </div>
+          <div class="stats-row">
+            <div class="stat-item">
+              <div class="stat-val fw-num">{{ headerObj.leftNum }}</div>
+              <div class="stat-label">{{ headerObj.leftName }}</div>
+            </div>
+            <div class="stat-item stat-item--center">
+              <div class="stat-val fw-num">{{ headerObj.centerNum }}</div>
+              <div class="stat-label">{{ headerObj.centerName }}</div>
+            </div>
+            <div class="stat-item stat-item--right">
+              <div class="stat-val fw-num">{{ headerObj.rightNum }}</div>
+              <div class="stat-label">{{ headerObj.rightName }}</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-title fw-bold">{{ t18('buy_limit') }}</div>
+          <input
+            v-model="limit"
+            type="text"
+            :placeholder="t18('exchange.input')"
+            class="quota-input"
+          />
+        </section>
+
+        <section class="card">
+          <div class="card-title fw-bold">{{ t18('product_details') }}</div>
+          <div class="detail-row">
+            <span class="label">{{ t18('product-details') }}</span>
+            <span class="value">{{ proDetail.title }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">{{ t18('project_progress') }}</span>
+            <span class="value fw-num">{{ proDetail.process }}%</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">{{ t18('total_project') }}</span>
+            <span class="value fw-num">{{ proDetail.totalInvestAmount }}&nbsp;{{ proDetail.coin }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">{{ t18('balance') }}</span>
+            <span class="value fw-num">{{ proDetail.remainAmount }}&nbsp;{{ proDetail.coin }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">{{ t18('limit_number') }}</span>
+            <span class="value fw-num">
+              {{
+                Number(proDetail.timeLimit) ? Number(proDetail.timeLimit) : t18('unlimited_purchase')
+              }}
+            </span>
+          </div>
+          <div class="detail-row">
+            <span class="label">{{ t18('average_daily_income') }}</span>
+            <span class="value fw-num rate-highlight">{{ proDetail.avgRate }}%</span>
+          </div>
+        </section>
+
+        <div class="buy-actions">
+          <button type="button" class="pay-btn" @click="payNow">{{ t18('to pay') }}</button>
+          <div class="protocol">
+            <svg-load v-if="!isCheck" name="gou" class="protocol-img" @click="toSwitch" />
+            <svg-load v-if="isCheck" name="gouH" class="protocol-img" @click="toSwitch" />
+            <span>{{ t18('read_and_confirm') }}</span>
+            <span class="protocol-link" @click="$router.push('/financialAgreement')">
+              {{ t18('financial agreement') }}
+            </span>
           </div>
         </div>
       </div>
-    </div>
-    <div v-if="isSuccess" class="success">
-      <svg-load name="icon8" class="successImg"></svg-load>
-      <!-- 支付成功 -->
-      <div>{{ t18('payment_successful') }}</div>
-      <div style="margin-top:10px;"></div>
-      <div style="color:green" @click="$router.push('/')">{{ t18('backhome') }}</div>
+
+      <div v-else class="success">
+        <svg-load name="icon8" class="success-img" />
+        <div class="success-text">{{ t18('payment_successful') }}</div>
+        <button type="button" class="success-home" @click="$router.push('/')">
+          {{ t18('backhome') }}
+        </button>
+      </div>
     </div>
   </div>
 </template>
+
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
@@ -45,12 +107,9 @@ import { DIFF_ISFREEZE } from '@/config/index'
 import { useFreeze } from '@/hook/useFreeze'
 import { useToast } from '@/hook/useToast'
 
-import HeaderBar from '@/components/HeaderBar/index.vue'
-import DetailHeader from './components/detailHeader.vue'
-import ProductDetail from './components/productDetail.vue'
+import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import { financialDetail, financialSubmit } from '@/api/financial/index'
 
-// ✅ 必须顶层调用
 const { t } = useI18n()
 const t18 = (key) => t(key)
 
@@ -60,15 +119,28 @@ const { _toast } = useToast()
 const Route = useRoute()
 
 const headerObj = ref({
+  title: '',
+  icon: '',
   leftName: t18('starting-amount'),
   centerName: t18('Investment_Limit'),
-  rightName: t18('Lock-up_days')
+  rightName: t18('Lock-up_days'),
+  leftNum: '',
+  centerNum: '',
+  rightNum: ''
 })
 
 const limit = ref('')
 const dayNum = ref('')
 const coninName = ref('')
-const proDetail = ref({})
+const proDetail = ref({
+  title: '',
+  process: '',
+  totalInvestAmount: '',
+  remainAmount: '',
+  timeLimit: '',
+  avgRate: '',
+  coin: ''
+})
 const isCheck = ref(false)
 const isSuccess = ref(false)
 const backwardNum = ref(-1)
@@ -123,12 +195,12 @@ const getDetail = async () => {
       dayNum.value = days
 
       headerObj.value = {
+        ...headerObj.value,
         title,
         icon,
         leftNum: limitMin + ' ' + coin.toUpperCase(),
         centerNum: limitMax + ' ' + coin.toUpperCase(),
-        rightNum: days,
-        ...headerObj.value
+        rightNum: days
       }
 
       const { process, totalInvestAmount, remainAmount, timeLimit } = res.data
@@ -150,186 +222,224 @@ onMounted(() => {
 })
 </script>
 
-<!-- <script setup>
-import { DIFF_ISFREEZE } from '@/config/index'
-import { useFreeze } from '@/hook/useFreeze'
-const { _isFreeze } = useFreeze()
-import { onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
-import { showToast } from 'vant'
-import { useToast } from '@/hook/useToast'
-const { _toast, _showName } = useToast()
-import HeaderBar from '@/components/HeaderBar/index.vue'
-import DetailHeader from './components/detailHeader.vue' //头
-import ProductDetail from './components/productDetail.vue' // 详情
-import { financialDetail, financialSubmit } from '@/api/financial/index'
-import { _t18 } from '@/utils/public'
-const Route = useRoute()
-// 起投金额 限投金额 锁仓天数
-const headerObj = ref({
-  leftName: _t18(`starting-amount`),
-  centerName: _t18(`Investment_Limit`),
-  rightName: _t18(`Lock-up_days`)
-})
-const limit = ref('') // 额度
-const dayNum = ref('') // 额度
-const coninName = ref('')
-const proDetail = ref({}) // 产品详情
-const isCheck = ref(false) // 选择服务协议
-const isSuccess = ref(false) // 判断成功
-const backwardNum = ref(-1) //
-const minNum = ref(0) // 最小输入
-const maxNum = ref(0) // 最大输入
-const payNowForm = () => {
-  // 请先同意理财协议
-  if (!isCheck.value) return _toast('please_agree_financial')
-  if (Number(limit.value) < minNum.value)
-    // 最少可购买
-    // return showToast(_t18(`Can_buy_down_to`) + ` ${minNum.value} ${coninName.value}`)
-    return _toast(_t18(`Can_buy_down_to`) + ` ${minNum.value} ${coninName.value}`)
-  if (Number(limit.value) > maxNum.value)
-    // 最多可购买
-    // return showToast(_showName(`Can_buy_up_to`) + ` ${maxNum.value} ${coninName.value}`)
-    return _toast(_t18(`Can_buy_up_to`) + ` ${maxNum.value} ${coninName.value}`)
-  let regNum = /^\d+(\.\d{1,4})?$/
-  // 最多输入小数点后4位
-  if (!regNum.test(limit.value)) return _toast('entet4_point')
-  submit()
-}
-// 支付
-const payNow = () => {
-  if (DIFF_ISFREEZE.includes(__config._APP_ENV)) {
-    if (_isFreeze(DIFF_ISFREEZE)) {
-      payNowForm()
-    }
-  } else {
-    payNowForm()
-  }
-}
-/**立即购买 */
-const submit = async () => {
-  const res = await financialSubmit(Route.params.id, limit.value, dayNum.value)
-  if (res.code === 200) {
-    isSuccess.value = true
-    backwardNum.value = -2
-  } else {
-    showToast(res.msg)
-  }
-}
-// 勾选协议
-const toSwitch = () => {
-  isCheck.value = !isCheck.value
-}
-/** 获取详情 */
-const getDetail = async () => {
-  try {
-    const res = await financialDetail(Route.params.id)
-    if (res.code === 200) {
-      const { title, icon, avgRate, days, limitMin, limitMax, coin } = res.data
-      minNum.value = limitMin
-      maxNum.value = limitMax
-      coninName.value = coin.toUpperCase() // 弹窗使用
-      dayNum.value = days
-      headerObj.value = {
-        title,
-        icon,
-        leftNum: limitMin + ' ' + coin.toUpperCase(),
-        centerNum: limitMax + ' ' + coin.toUpperCase(),
-        rightNum: days,
-        ...headerObj.value
-      }
-      /**产品详情 */
-      const { process, totalInvestAmount, remainAmount, timeLimit } = res.data
-      proDetail.value = {
-        title,
-        process,
-        totalInvestAmount,
-        remainAmount,
-        timeLimit,
-        avgRate,
-        coin: coin.toUpperCase()
-      }
-    }
-  } catch (error) {}
-}
-onMounted(() => {
-  getDetail()
-})
-</script> -->
 <style lang="scss" scoped>
-.introduction {
-  padding: 20px 17px;
-  border-top: 1px solid var(--ex-border-color);
-  border-bottom: 1px solid var(--ex-border-color);
-  color: var(--ex-passive-font-color);
-  font-size: 12px;
-  .title {
-    font-size: 16px;
-    color: var(--ex-default-font-color);
-    margin-bottom: 10px;
-  }
-  .quota {
-    width: 100%;
-    height: 50px;
-    background: var(--ex-default-background-color);
-    border-radius: 3px 3px 3px 3px;
-    border: 1px solid var(--ex-border-color2);
-    padding: 0 10px;
-    font-size: 14px;
-    color: var(--ex-default-font-color);
-  }
-  input::-webkit-input-placeholder {
-    color: var(--ex-font-color1);
-  }
-  input::-moz-input-placeholder {
-    color: var(--ex-font-color1);
-  }
-  input::-ms-input-placeholder {
-    color: var(--ex-font-color1);
-  }
+.buy-funds-page {
+  min-height: 100vh;
+  background: #010e1a;
+  box-sizing: border-box;
 }
-.buyNow {
-  padding: 40px 15px;
-  border-top: 1px solid var(--ex-border-color);
-  .buyBtn {
-    height: 50px;
-    background: var(--ex-div-bgColor1);
-    border-radius: 3px 3px 3px 3px;
-    font-size: 16px;
-    color: var(--ex-font-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .protocol {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: auto;
-    padding: 30px 0 0;
-    font-size: 14px;
-    text-align: center;
-    .protocolImg {
-      width: 18px;
-      height: 18px;
-      margin-right: 5px;
-    }
-    .hightName {
-      color: var(--ex-font-color2);
-      text-decoration: underline;
-    }
-  }
+
+.buy-funds-body {
+  background: #f6f7fa;
+  border-radius: 16px 16px 0 0;
+  min-height: calc(100vh - 60px);
+  padding: 12px 0 calc(24px + env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
+  position: relative;
+  box-shadow: 0 -8px 32px rgba(5, 16, 26, 0.12);
 }
-.success {
+
+.buy-funds-content {
+  padding: 0;
+}
+
+.card {
+  background: #fff;
+  border-radius: 14px;
+  margin: 0 15px 12px;
+  padding: 16px;
+  box-shadow: 0 2px 12px rgba(1, 14, 26, 0.06);
+  box-sizing: border-box;
+}
+
+.card-overview {
+  padding-top: 18px;
+}
+
+.overview-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.overview-img-placeholder {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  background: #eef0f4;
+  border-radius: 8px;
+}
+
+.overview-img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.overview-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.stats-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.stat-item {
   flex: 1;
-  margin: 150px auto;
-  font-size: 14px;
-  color: var(--ex-passive-font-color);
-  text-align: center;
-  .successImg {
-    width: 114px;
-    height: 112px;
-    margin-bottom: 30px;
+  min-width: 0;
+  &--center {
+    text-align: center;
   }
+  &--right {
+    text-align: right;
+  }
+}
+
+.stat-val {
+  font-size: 15px;
+  color: #1a1a1a;
+  line-height: 1.3;
+  word-break: break-all;
+}
+
+.stat-label {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #8b9099;
+}
+
+.card-title {
+  font-size: 16px;
+  color: #1a1a1a;
+  margin-bottom: 12px;
+}
+
+.quota-input {
+  width: 100%;
+  height: 48px;
+  padding: 0 14px;
+  border: 1px solid #e4e6eb;
+  border-radius: 10px;
+  font-size: 15px;
+  color: #2a2f36;
+  background: #f6f7fa;
+  box-sizing: border-box;
+}
+
+.quota-input::placeholder {
+  color: #a8b0ba;
+}
+
+.detail-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  margin-bottom: 14px;
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.label {
+  color: #8b9099;
+  flex-shrink: 0;
+}
+
+.value {
+  color: #2a2f36;
+  text-align: right;
+  word-break: break-all;
+}
+
+.rate-highlight {
+  color: #e85d75;
+}
+
+.buy-actions {
+  margin: 8px 15px 0;
+  padding-top: 8px;
+}
+
+.pay-btn {
+  display: block;
+  width: 100%;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 999px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #fff;
+  background: #010e1a;
+  text-align: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  &:active {
+    opacity: 0.92;
+  }
+}
+
+.protocol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 20px;
+  padding: 0 8px;
+  font-size: 13px;
+  color: #8b9099;
+  text-align: center;
+  line-height: 1.45;
+}
+
+.protocol-img {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.protocol-link {
+  color: #17ac74;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.success {
+  padding: 80px 24px 40px;
+  text-align: center;
+}
+
+.success-img {
+  width: 114px;
+  height: 112px;
+  margin: 0 auto 24px;
+}
+
+.success-text {
+  font-size: 16px;
+  color: #2a2f36;
+  margin-bottom: 24px;
+}
+
+.success-home {
+  padding: 12px 32px;
+  border: 1px solid #17ac74;
+  border-radius: 999px;
+  background: transparent;
+  font-size: 15px;
+  color: #17ac74;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 </style>
