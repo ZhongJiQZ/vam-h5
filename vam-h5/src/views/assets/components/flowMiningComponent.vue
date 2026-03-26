@@ -4,10 +4,12 @@
     <van-tabs
       shrink
       v-model:active="statusActive"
-      title-inactive-color="#333"
-      title-active-color="#17AC74"
-      color="#17AC74"
-      line-width="16"
+      class="flow-mining__status-tabs"
+      title-inactive-color="#7a8c99"
+      title-active-color="#1a1a1a"
+      color="#008710"
+      line-width="20"
+      line-height="3"
       @click-tab="onClickStatusTab"
     >
       <van-tab :title="_t18('records.total')" name="" />
@@ -66,12 +68,12 @@
               <div class="actions">
                 <van-button
                   v-if="String(row.status) === '0'"
-                  size="small"
-                  type="primary"
-                  class="btn"
+                  block
+                  round
+                  class="btn-redeem"
                   @click="onRedeem(row)"
                 >
-                &nbsp;{{ _t18('records.redemption') }}&nbsp;
+                  {{ _t18('records.redemption') }}
                 </van-button>
                 <!-- <div v-else class="tag">{{ formatStatus(row.status) }}</div> -->
               </div>
@@ -213,16 +215,54 @@ const onRedeem = async (row) => {
   width: 100%;
 }
 
+.flow-mining__status-tabs {
+  :deep(.van-tabs__wrap) {
+    height: 44px;
+    border-bottom: 1px solid #eef0f3;
+    background: #fff !important;
+  }
+
+  :deep(.van-tabs__nav) {
+    background: #fff !important;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  :deep(.van-tab) {
+    flex: none;
+    padding: 0 12px;
+    font-size: 14px;
+  }
+
+  :deep(.van-tab__text) {
+    font-weight: 400;
+  }
+
+  :deep(.van-tab--active .van-tab__text) {
+    font-weight: 600;
+  }
+
+  :deep(.van-tabs__line) {
+    bottom: 8px;
+    background: #008710;
+  }
+
+  :deep(.van-tab--shrink) {
+    margin-right: 4px;
+  }
+}
+
 .list-wrap {
-  padding: 12px;
+  padding: 12px 15px 24px;
+  background: #fff;
 }
 
 .card {
-  background: var(--ex-home-list-bgcolor, #fff);
+  background: #f7f9fc;
   border-radius: 12px;
-  padding: 12px;
+  padding: 14px 14px 12px;
   margin-bottom: 12px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(5, 16, 26, 0.04);
 }
 
 .kv {
@@ -230,39 +270,44 @@ const onRedeem = async (row) => {
   justify-content: space-between;
   gap: 10px;
   padding: 8px 0;
-  border-bottom: 1px dashed rgba(0, 0, 0, 0.06);
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.08);
 }
-.kv:last-child {
+.kv:last-of-type {
   border-bottom: 0;
 }
 
 .k {
   font-size: 13px;
-  color: rgba(0, 0, 0, 0.55);
+  color: #7a8c99;
   flex: 0 0 45%;
 }
 .v {
   font-size: 13px;
-  color: rgba(0, 0, 0, 0.88);
+  color: #1a1a1a;
   text-align: right;
   flex: 1;
   word-break: break-all;
 }
 
 .actions {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  margin-top: 10px;
+  margin-top: 14px;
+  padding-top: 4px;
 }
-.btn {
-  border-radius: 10px;
+
+.btn-redeem {
+  height: 44px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff !important;
+  background: #05101a !important;
+  border: none !important;
 }
+
 .tag {
   font-size: 12px;
   padding: 6px 10px;
   border-radius: 999px;
-  background: rgba(23, 172, 116, 0.12);
-  color: #17ac74;
+  background: rgba(0, 135, 16, 0.1);
+  color: #008710;
 }
 </style>

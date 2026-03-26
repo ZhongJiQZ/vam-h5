@@ -1,7 +1,16 @@
 <template>
-  <!-- 投资记录 -->
-  <!-- <HeaderBar :currentName="_t18('my_invest')"></HeaderBar> -->
-  <Tab :tabList="tabList" :active="curIndex" @change="changeIndex">
+  <div class="flow-deposit">
+  <Tab
+    :tabList="tabList"
+    :active="curIndex"
+    title-inactive-color="#7a8c99"
+    title-active-color="#1a1a1a"
+    indicator-color="#008710"
+    :line-width="20"
+    :line-height="3"
+    bold-active-tab
+    @change="changeIndex"
+  >
     <template #tabContent>
       <van-pull-refresh
         v-model="refreshing"
@@ -57,6 +66,7 @@
       </van-pull-refresh>
     </template>
   </Tab>
+  </div>
 </template>
 
 <script setup>
@@ -169,6 +179,27 @@ watch(
 </script>
 
 <style scoped lang="scss">
+.flow-deposit {
+  width: 100%;
+  background: #fff;
+}
+
+.flow-deposit :deep(.van-tabs__wrap) {
+  height: 44px;
+  border-bottom: 1px solid #eef0f3;
+  background: #fff !important;
+}
+
+.flow-deposit :deep(.van-tabs__nav) {
+  background: #fff !important;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.flow-deposit :deep(.tabContent) {
+  border-top: none;
+}
+
 .van-loading {
   text-align: center;
   padding: 30px;
@@ -176,32 +207,38 @@ watch(
 
 .van-list {
   min-height: calc(100vh - 60px - 44px);
+  padding: 12px 15px 24px;
 }
 
 :deep(.van-cell) {
-  background: var(--ex-default-background-color) !important;
+  background: transparent !important;
+  padding: 0 0 12px !important;
 }
 :deep(.van-cell::after) {
-  border-bottom: 1px solid var(--ex-border-color) !important;
+  display: none;
 }
 
-/* 简单卡片样式（可删） */
 .card {
-  background: var(--ex-home-list-bgcolor, #fff);
+  background: #f7f9fc;
   border-radius: 12px;
-  padding: 12px;
+  padding: 14px;
+  border: 1px solid rgba(5, 16, 26, 0.04);
 }
 .row {
   display: flex;
   justify-content: space-between;
-  padding: 6px 0;
+  padding: 8px 0;
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.08);
+}
+.row:last-child {
+  border-bottom: 0;
 }
 .k {
-  color: rgba(0, 0, 0, 0.55);
+  color: #7a8c99;
   font-size: 13px;
 }
 .v {
-  color: rgba(0, 0, 0, 0.88);
+  color: #1a1a1a;
   font-size: 13px;
   text-align: right;
 }

@@ -1,14 +1,15 @@
 <!-- src/views/assets/components/flowInvestComponent.vue -->
 <template>
   <div class="flow-invest">
-    <!-- 状态 tabs（和 flowMining 一致） -->
     <van-tabs
       shrink
       v-model:active="statusActive"
-      title-inactive-color="#333"
-      title-active-color="#17AC74"
-      color="#17AC74"
-      line-width="16"
+      class="flow-invest__status-tabs"
+      title-inactive-color="#7a8c99"
+      title-active-color="#1a1a1a"
+      color="#008710"
+      line-width="20"
+      line-height="3"
       @click-tab="onClickStatusTab"
     >
       <van-tab :title="_t18('records.total')" name="" />
@@ -240,34 +241,79 @@ const onRedeem = async (row) => {
   width: 100%;
 }
 
+.flow-invest__status-tabs {
+  :deep(.van-tabs__wrap) {
+    height: 44px;
+    border-bottom: 1px solid #eef0f3;
+    background: #fff !important;
+  }
+
+  :deep(.van-tabs__nav) {
+    background: #fff !important;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  :deep(.van-tab) {
+    flex: none;
+    padding: 0 12px;
+    font-size: 14px;
+  }
+
+  :deep(.van-tab__text) {
+    font-weight: 400;
+  }
+
+  :deep(.van-tab--active .van-tab__text) {
+    font-weight: 600;
+  }
+
+  :deep(.van-tabs__line) {
+    bottom: 8px;
+    background: #008710;
+  }
+
+  :deep(.van-tab--shrink) {
+    margin-right: 4px;
+  }
+}
+
 .list-wrap {
-  padding: 12px;
+  padding: 12px 15px 24px;
+  background: #fff;
 }
 
 .card {
-  background: #fff;
+  background: #f7f9fc;
   border-radius: 12px;
-  padding: 12px;
+  padding: 14px 14px 12px;
   margin-bottom: 12px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(5, 16, 26, 0.04);
 }
 
 .kv {
   display: flex;
   justify-content: space-between;
   padding: 8px 0;
-  border-bottom: 1px dashed rgba(0, 0, 0, 0.06);
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.08);
+}
+
+.kv:last-of-type {
+  border-bottom: 0;
 }
 
 .k {
   font-size: 13px;
-  color: rgba(0, 0, 0, 0.55);
+  color: #7a8c99;
+  flex: 0 0 45%;
 }
 
 .v {
   font-size: 13px;
-  color: rgba(0, 0, 0, 0.88);
+  color: #1a1a1a;
   text-align: right;
+  flex: 1;
+  word-break: break-all;
 }
 
 .actions {

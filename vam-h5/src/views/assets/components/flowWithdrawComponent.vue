@@ -1,6 +1,16 @@
 <template>
-  <!-- <HeaderBar :currentName="_t18('withdraw_order')" :cuttentRight="cuttentRight"></HeaderBar> -->
-  <Tab :tabList="tabList" :active="curIndex" @change="changeIndex">
+  <div class="flow-withdraw">
+  <Tab
+    :tabList="tabList"
+    :active="curIndex"
+    title-inactive-color="#7a8c99"
+    title-active-color="#1a1a1a"
+    indicator-color="#008710"
+    :line-width="20"
+    :line-height="3"
+    bold-active-tab
+    @change="changeIndex"
+  >
     <template #tabContent>
       <!-- 下拉刷新 -->
       <van-pull-refresh
@@ -33,6 +43,7 @@
       </van-pull-refresh>
     </template>
   </Tab>
+  </div>
 </template>
 
 <script setup>
@@ -146,6 +157,27 @@ watch(
 </script>
 
 <style lang="scss" scoped>
+.flow-withdraw {
+  width: 100%;
+  background: #fff;
+}
+
+.flow-withdraw :deep(.van-tabs__wrap) {
+  height: 44px;
+  border-bottom: 1px solid #eef0f3;
+  background: #fff !important;
+}
+
+.flow-withdraw :deep(.van-tabs__nav) {
+  background: #fff !important;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.flow-withdraw :deep(.tabContent) {
+  border-top: none;
+}
+
 .content {
   border-bottom: 5px solid var(--ex-border-color);
   padding: 20px 15px;
@@ -158,26 +190,14 @@ watch(
 
 .van-list {
   min-height: calc(100vh - 60px - 44px);
+  padding: 12px 15px 24px;
 }
 
 :deep(.van-cell) {
-  background: var(--ex-default-background-color) !important;
+  background: transparent !important;
+  padding: 0 0 12px !important;
 }
 :deep(.van-cell::after) {
-  border-bottom: 1px solid var(--ex-border-color) !important;
-}
-
-:deep(.van-tabs) {
-  background: var(--ex-home-tabbar-background-color) !important;
-}
-:deep(.van-tabs__nav) {
-  background: var(--ex-home-tabbar-background-color) !important;
-}
-:deep(.van-tab) {
-  color: var(--ex-home-list-ftcolor) !important;
-  background: var(--ex-home-tabbar-background-color) !important;
-}
-:deep(.van-tab--active) {
-  color: var(--ex-home-list-ftcolor3) !important;
+  display: none;
 }
 </style>
