@@ -10,23 +10,21 @@
     <div class="buy-funds-body">
       <div v-if="!isSuccess" class="buy-funds-content">
         <section class="card card-overview">
-          <div class="overview-head">
-            <div v-if="!headerObj.icon" class="overview-img-placeholder" />
-            <image-load v-if="headerObj.icon" :filePath="headerObj.icon" class="overview-img" />
-            <div class="overview-title">{{ headerObj.title }}</div>
+          <h1 class="overview-title">{{ proDetail.title || '—' }}</h1>
+          <div
+            class="rate-banner"
+            :style="{ backgroundImage: `url(${projectBg})` }"
+          >
+            <div class="rate-value fw-num">{{ proDetail.avgRate }}%</div>
           </div>
-          <div class="stats-row">
-            <div class="stat-item">
-              <div class="stat-val fw-num">{{ headerObj.leftNum }}</div>
-              <div class="stat-label">{{ headerObj.leftName }}</div>
+          <div class="overview-rows">
+            <div class="detail-row">
+              <span class="label">{{ t18('project_cycle') }}</span>
+              <span class="value fw-num">{{ dayNum }}{{ t18('ldgpt_host_day') }}</span>
             </div>
-            <div class="stat-item stat-item--center">
-              <div class="stat-val fw-num">{{ headerObj.centerNum }}</div>
-              <div class="stat-label">{{ headerObj.centerName }}</div>
-            </div>
-            <div class="stat-item stat-item--right">
-              <div class="stat-val fw-num">{{ headerObj.rightNum }}</div>
-              <div class="stat-label">{{ headerObj.rightName }}</div>
+            <div class="detail-row">
+              <span class="label">{{ t18('starting-amount') }}</span>
+              <span class="value fw-num">{{ minNum }} {{ coninName }}</span>
             </div>
           </div>
         </section>
@@ -109,6 +107,7 @@ import { useToast } from '@/hook/useToast'
 
 import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import { financialDetail, financialSubmit } from '@/api/financial/index'
+import projectBg from '@/assets/images/financial/project-bg.png'
 
 const { t } = useI18n()
 const t18 = (key) => t(key)
@@ -117,17 +116,6 @@ const { _isFreeze } = useFreeze()
 const { _toast } = useToast()
 
 const Route = useRoute()
-
-const headerObj = ref({
-  title: '',
-  icon: '',
-  leftName: t18('starting-amount'),
-  centerName: t18('Investment_Limit'),
-  rightName: t18('Lock-up_days'),
-  leftNum: '',
-  centerNum: '',
-  rightNum: ''
-})
 
 const limit = ref('')
 const dayNum = ref('')
@@ -194,15 +182,6 @@ const getDetail = async () => {
       coninName.value = coin.toUpperCase()
       dayNum.value = days
 
-      headerObj.value = {
-        ...headerObj.value,
-        title,
-        icon,
-        leftNum: limitMin + ' ' + coin.toUpperCase(),
-        centerNum: limitMax + ' ' + coin.toUpperCase(),
-        rightNum: days
-      }
-
       const { process, totalInvestAmount, remainAmount, timeLimit } = res.data
       proDetail.value = {
         title,
@@ -256,65 +235,40 @@ onMounted(() => {
   padding-top: 18px;
 }
 
-.overview-head {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 16px;
-}
-
-.overview-img-placeholder {
-  width: 48px;
-  height: 48px;
-  flex-shrink: 0;
-  background: #eef0f4;
-  border-radius: 8px;
-}
-
-.overview-img {
-  width: 48px;
-  height: 48px;
-  object-fit: cover;
-  border-radius: 8px;
-  flex-shrink: 0;
-}
-
 .overview-title {
+  margin: 0 0 14px;
   font-size: 16px;
   font-weight: 600;
   color: #1a1a1a;
+  text-align: center;
   line-height: 1.35;
   word-break: break-word;
 }
 
-.stats-row {
+.rate-banner {
+  min-height: 112px;
+  margin-bottom: 14px;
+  border-radius: 10px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   display: flex;
-  justify-content: space-between;
-  gap: 8px;
+  align-items: center;
+  justify-content: center;
 }
 
-.stat-item {
-  flex: 1;
-  min-width: 0;
-  &--center {
-    text-align: center;
+.rate-value {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+  color: #e85d75;
+}
+
+.overview-rows .detail-row {
+  margin-bottom: 10px;
+  &:last-child {
+    margin-bottom: 0;
   }
-  &--right {
-    text-align: right;
-  }
-}
-
-.stat-val {
-  font-size: 15px;
-  color: #1a1a1a;
-  line-height: 1.3;
-  word-break: break-all;
-}
-
-.stat-label {
-  margin-top: 8px;
-  font-size: 12px;
-  color: #8b9099;
 }
 
 .card-title {
