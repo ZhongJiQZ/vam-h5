@@ -1248,7 +1248,8 @@ const sharedImg = (model, yieldHisValue) => {
 .btn {
   font-size: 12px;
   padding: 2px 10px;
-  border: 1px solid var(--ex-primary-color);
+  border: 1px solid #008710;
+  color: #008710;
   border-radius: 5px;
 }
 
@@ -1269,13 +1270,25 @@ const sharedImg = (model, yieldHisValue) => {
 }
 
 .hisToryList {
-  padding: 20px 15px 0;
-  // border-bottom: 1px solid var(--ex-border-color);
+  padding: 14px 15px 4px;
+  margin-bottom: 10px;
+  background: #f5f6fa;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(5, 16, 26, 0.06);
+
+  .name.bgcBlue {
+    background-color: #008710 !important;
+    color: #fff !important;
+  }
+
+  .name.bgcRed {
+    background-color: #e85d75 !important;
+    color: #fff !important;
+  }
 
   .header {
-    padding-bottom: 10px;
+    padding-bottom: 12px;
     font-size: 14px;
-    color: var(--ex-default-font-color);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -1283,52 +1296,63 @@ const sharedImg = (model, yieldHisValue) => {
     .headerLeft {
       display: flex;
       align-items: center;
+      min-width: 0;
 
       .name {
-        padding: 2px 5px;
+        flex-shrink: 0;
+        padding: 4px 10px;
         font-size: 12px;
-        border-radius: 2px 2px 2px 2px;
+        font-weight: 600;
+        border-radius: 6px;
         margin-right: 10px;
-        color: var(--ex-font-color);
+      }
+
+      .fw-bold {
+        color: #333;
+        font-weight: 500;
       }
 
       .headerLeftIcon {
+        flex-shrink: 0;
         margin-left: 10px;
         font-size: 12px;
-        padding: 0 5px;
-        border: 1px solid var(--ex-primary-color);
-        border-radius: 5px;
+        padding: 2px 8px;
+        border: 1px solid #008710;
+        border-radius: 4px;
+        color: #008710;
       }
     }
 
     .headerRight {
-      padding: 0 6px;
-      background: var(--ex-default-background-color);
-      border-radius: 2px 2px 2px 2px;
-      opacity: 1;
-      border: 1px solid var(--ex-border-color3);
+      flex-shrink: 0;
+      padding: 4px 8px;
+      background: #fff;
+      border-radius: 4px;
+      border: 1px solid var(--ex-border-color4);
       font-size: 12px;
-      color: var(--ex-font-color2);
+      color: var(--ex-font-color9);
     }
 
     .headerRightNobgc {
-      font-size: 14px;
-      color: var(--ex-font-color9);
+      flex-shrink: 0;
+      font-size: 12px;
+      color: #333;
+      font-weight: 500;
     }
   }
 
   .list {
     .item {
-      line-height: 95%;
       display: flex;
       align-items: center;
       justify-content: space-between;
       font-size: 12px;
-      color: var(--ex-passive-font-color);
-      // padding-bottom: 20px;
-      padding: 8px 0; 
+      color: #999;
+      padding-bottom: 12px;
+
       .numItem {
-        color: var(--ex-default-font-color);
+        color: #333;
+        font-weight: 500;
       }
     }
   }
@@ -1342,7 +1366,7 @@ const sharedImg = (model, yieldHisValue) => {
       flex: 1;
       margin-right: 5px;
       padding: 8px 0;
-      background: var(--ex-div-bgColor17);
+      background: #e2e4eb;
       border-radius: 2px 2px 2px 2px;
       display: flex;
       align-items: center;
