@@ -710,25 +710,27 @@ const incomeValue = computed(() => {
 })
 /**
  * 高杠杆平仓后
- * 历史收益率
- * 成交后有 closePrice，所以用 closePrice，而不是用  coinPriceInfo.value.close
- * 做多仓位（Long）：  收益率 = (最新价/平仓价 - 开仓价) / 开仓价 × 杠杆
- * 159.44 - 159.272 / 159.272
+ * 历史收益率（用成交价 dealPrice，与 yieldValue 的实时价逻辑一致，区分多空）
+ * 做多：(平仓价 - 开仓价) / 开仓价 × 杠杆 × 100
+ * 做空：(开仓价 - 平仓价) / 开仓价 × 杠杆 × 100
  */
 const yieldHisValue = computed(() => {
- 
-  let price = _mul(
-        _mul(
-          _div(
-            _sub(props.recordListItem.dealPrice, props.recordListItem.openPrice),
-            props.recordListItem.openPrice
-          ),
-          100
-        ),
-        props.recordListItem.leverage
-      )
-  return _toFixed(price, 4,'down')
-  // return props.recordListItem.dealPrice + "-" + props.recordListItem.openPrice
+  const open = props.recordListItem.openPrice
+  const deal = props.recordListItem.dealPrice
+  const lev = props.recordListItem.leverage
+  let price
+  if (!props.recordListItem.type) {
+    price = _mul(
+      _mul(_div(_sub(deal, open), open), 100),
+      lev
+    )
+  } else {
+    price = _mul(
+      _mul(_div(_sub(open, deal), open), 100),
+      lev
+    )
+  }
+  return _toFixed(price, 4, 'down')
 })
 /**
  * 收益率
