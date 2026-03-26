@@ -1,89 +1,102 @@
 <template>
-  <div class="financial-detail-page">
+  <div
+    class="financial-detail-page"
+    :class="{ 'financial-detail-page--dark': !isPaxpay }"
+  >
     <HeaderBar
-      v-if="['paxpay'].includes(_getConfig('_APP_ENV'))"
+      v-if="isPaxpay"
       :currentName="_t18('financial', ['paxpay'])"
       :border_bottom="false"
     />
     <FinancialTopBar v-else />
 
-    <div class="detail-scroll">
-      <!-- 项目概览 -->
-      <section class="card card-overview">
-        <h1 class="overview-title">{{ proDetail.title || '—' }}</h1>
-        <div
-          class="rate-banner"
-          :style="{ backgroundImage: `url(${projectBg})` }"
-        >
-          <div class="rate-value fw-num">{{ proDetail.avgRate }}%</div>
-        </div>
-        <div class="overview-rows">
-          <div class="detail-row">
-            <span class="label">{{ _t18('project_cycle') }}</span>
-            <span class="value fw-num">{{ proDetail.days }}{{ _t18('ldgpt_host_day') }}</span>
+    <div
+      class="financial-detail-page__body-wrap"
+      :class="{ 'financial-detail-page__body-wrap--dark': !isPaxpay }"
+    >
+      <div class="financial-detail-page__sheet">
+        <div class="financial-detail-page__sheet-bg" aria-hidden="true" />
+        <div class="financial-detail-page__panel">
+          <div class="detail-scroll">
+            <!-- 项目概览 -->
+            <section class="card card-overview">
+              <h1 class="overview-title">{{ proDetail.title || '—' }}</h1>
+              <div
+                class="rate-banner"
+                :style="{ backgroundImage: `url(${projectBg})` }"
+              >
+                <div class="rate-value fw-num">{{ proDetail.avgRate }}%</div>
+              </div>
+              <div class="overview-rows">
+                <div class="detail-row">
+                  <span class="label">{{ _t18('project_cycle') }}</span>
+                  <span class="value fw-num">{{ proDetail.days }}{{ _t18('ldgpt_host_day') }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="label">{{ _t18('starting-amount') }}</span>
+                  <span class="value fw-num">
+                    {{ proDetail.limitMin }} {{ proDetail.coin }}
+                  </span>
+                </div>
+              </div>
+            </section>
+
+            <!-- 基金介绍 -->
+            <section class="card">
+              <div class="card-title fw-bold">{{ _t18(`Fund_introduction`) }}</div>
+              <div class="card-text">
+                {{ fundIntroduction ? fundIntroduction : _t18(`No_introductionyet`) }}
+              </div>
+            </section>
+
+            <!-- 产品详情 -->
+            <section class="card">
+              <div class="card-title fw-bold">{{ _t18(`product_details`) }}</div>
+              <div class="detail-row">
+                <span class="label">{{ _t18(`product-details`) }}</span>
+                <span class="value">{{ proDetail.title }}</span>
+              </div>
+              <div class="detail-row">
+                <span class="label">{{ _t18(`project_progress`) }}</span>
+                <span class="value fw-num">{{ proDetail.process }}%</span>
+              </div>
+              <div class="detail-row">
+                <span class="label">{{ _t18(`total_project`) }}</span>
+                <span class="value fw-num">{{ proDetail.totalInvestAmount }}&nbsp;{{ proDetail.coin }}</span>
+              </div>
+              <div class="detail-row">
+                <span class="label">{{ _t18(`balance`) }}</span>
+                <span class="value fw-num">{{ proDetail.remainAmount }}&nbsp;{{ proDetail.coin }}</span>
+              </div>
+              <div class="detail-row">
+                <span class="label">{{ _t18(`limit_number`) }}</span>
+                <span class="value fw-num">
+                  {{
+                    Number(proDetail.timeLimit) ? Number(proDetail.timeLimit) : _t18(`unlimited_purchase`)
+                  }}
+                </span>
+              </div>
+              <div class="detail-row">
+                <span class="label">{{ _t18(`average_daily_income`) }}</span>
+                <span class="value fw-num rate-highlight">{{ proDetail.avgRate }}%</span>
+              </div>
+            </section>
+
+            <!-- 产品规则 -->
+            <section class="card card-rules">
+              <div class="card-title fw-bold">{{ _t18('product_rules') }}</div>
+              <div class="card-text">
+                {{ proRules ? proRules : _t18(`No_introductionyet`) }}
+              </div>
+            </section>
+
+            <div class="buy-footer">
+              <button type="button" class="buy-btn" @click="buyNow">
+                {{ _t18(`buy_it_now`) }}
+              </button>
+            </div>
           </div>
-          <div class="detail-row">
-            <span class="label">{{ _t18('starting-amount') }}</span>
-            <span class="value fw-num">
-              {{ proDetail.limitMin }} {{ proDetail.coin }}
-            </span>
-          </div>
         </div>
-      </section>
-
-      <!-- 基金介绍 -->
-      <section class="card">
-        <div class="card-title fw-bold">{{ _t18(`Fund_introduction`) }}</div>
-        <div class="card-text">
-          {{ fundIntroduction ? fundIntroduction : _t18(`No_introductionyet`) }}
-        </div>
-      </section>
-
-      <!-- 产品详情 -->
-      <section class="card">
-        <div class="card-title fw-bold">{{ _t18(`product_details`) }}</div>
-        <div class="detail-row">
-          <span class="label">{{ _t18(`product-details`) }}</span>
-          <span class="value">{{ proDetail.title }}</span>
-        </div>
-        <div class="detail-row">
-          <span class="label">{{ _t18(`project_progress`) }}</span>
-          <span class="value fw-num">{{ proDetail.process }}%</span>
-        </div>
-        <div class="detail-row">
-          <span class="label">{{ _t18(`total_project`) }}</span>
-          <span class="value fw-num">{{ proDetail.totalInvestAmount }}&nbsp;{{ proDetail.coin }}</span>
-        </div>
-        <div class="detail-row">
-          <span class="label">{{ _t18(`balance`) }}</span>
-          <span class="value fw-num">{{ proDetail.remainAmount }}&nbsp;{{ proDetail.coin }}</span>
-        </div>
-        <div class="detail-row">
-          <span class="label">{{ _t18(`limit_number`) }}</span>
-          <span class="value fw-num">
-            {{
-              Number(proDetail.timeLimit) ? Number(proDetail.timeLimit) : _t18(`unlimited_purchase`)
-            }}
-          </span>
-        </div>
-        <div class="detail-row">
-          <span class="label">{{ _t18(`average_daily_income`) }}</span>
-          <span class="value fw-num rate-highlight">{{ proDetail.avgRate }}%</span>
-        </div>
-      </section>
-
-      <!-- 产品规则 -->
-      <section class="card card-rules">
-        <div class="card-title fw-bold">{{ _t18('product_rules') }}</div>
-        <div class="card-text">
-          {{ proRules ? proRules : _t18(`No_introductionyet`) }}
-        </div>
-      </section>
-
-      <div class="buy-footer">
-        <button type="button" class="buy-btn" @click="buyNow">
-          {{ _t18(`buy_it_now`) }}
-        </button>
       </div>
     </div>
   </div>
@@ -93,14 +106,16 @@ import { DIFF_ISFREEZE_OTHER } from '@/config/index'
 import { useFreeze } from '@/hook/useFreeze'
 const { _isFreeze } = useFreeze()
 import { useRouter, useRoute } from 'vue-router'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import FinancialTopBar from './components/FinancialTopBar.vue'
 import { financialDetail } from '@/api/financial/index'
-import { _t18 } from '@/utils/public'
+import { _t18, _getConfig } from '@/utils/public'
 import projectBg from '@/assets/images/financial/project-bg.png'
 
 const $router = useRouter()
 const Route = useRoute()
+
+const isPaxpay = computed(() => ['paxpay'].includes(_getConfig('_APP_ENV')))
 
 const fundIntroduction = ref('')
 const proRules = ref('')
@@ -169,9 +184,46 @@ onMounted(() => {
 <style lang="scss" scoped>
 .financial-detail-page {
   min-height: 100vh;
-  background: #f6f7fa;
   box-sizing: border-box;
   margin-bottom: calc(66px + env(safe-area-inset-bottom, 0px));
+  background: #f6f7fa;
+  &--dark {
+    background: #010e1a;
+  }
+}
+
+/* 与 assets/index.vue 一致：深色带 + 浅色圆角内容区（两层背景） */
+.financial-detail-page__body-wrap {
+  background: #f6f7fa;
+  &--dark {
+    background: #010e1a;
+  }
+}
+
+.financial-detail-page__sheet {
+  position: relative;
+  z-index: 0;
+  min-height: calc(100vh - 72px);
+  border-radius: 16px 16px 0 0;
+  background: #f6f7fa;
+}
+
+.financial-detail-page__sheet-bg {
+  position: absolute;
+  top: -20px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 -8px 32px rgba(5, 16, 26, 0.18);
+  pointer-events: none;
+}
+
+.financial-detail-page__panel {
+  position: relative;
+  z-index: 1;
+  background: transparent;
 }
 
 .detail-scroll {
