@@ -1,6 +1,6 @@
 <!-- 弹窗 -->
 <script setup>
-import closeIcon from '@/assets/images/close.png'
+import closeIcon from '@/assets/images/trade/close.png'
 
 let props = defineProps({
   show: {

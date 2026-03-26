@@ -9,7 +9,15 @@
     >
       <div class="popupHeader" v-if="props.showHeader">
         <slot name="titleCustomize"></slot>
-        <svg-load class="closeSvg" name="guanbi" v-if="props.close" @click="handelClose"></svg-load>
+        <button
+          v-if="props.close"
+          type="button"
+          class="close-btn"
+          aria-label="close"
+          @click="handelClose"
+        >
+          <img :src="closeIcon" alt="" class="close-img" />
+        </button>
       </div>
       <div class="popupContent" v-if="empty">
         <slot name="contentCustomize"></slot>
@@ -20,6 +28,8 @@
   </div>
 </template>
 <script setup>
+import closeIcon from '@/assets/images/trade/close.png'
+
 let props = defineProps({
   show: {
     type: Boolean,
@@ -69,9 +79,24 @@ const handelClose = () => {
   padding: 20px 15px;
   width: 100%;
   border-bottom: 1px solid var(--ex-border-color);
-  .closeSvg {
+  .close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    margin: -4px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    flex-shrink: 0;
+  }
+
+  .close-img {
+    display: block;
     width: 24px;
     height: 24px;
+    object-fit: contain;
   }
 }
 

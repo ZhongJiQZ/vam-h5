@@ -25,7 +25,14 @@
         </div>
         <!-- titleFlag 买涨  !titleFlag 买跌 -->
         <div class="titleName" :class="titleFlag ? '' : 'titleColor'">
-          {{ titleFlag ? _t18(`option_buy_up`, ['bityc']) : _t18(`option_buy_short`, ['bityc']) }}
+          <span class="titleName__text">{{
+            titleFlag ? _t18(`option_buy_up`, ['bityc']) : _t18(`option_buy_short`, ['bityc'])
+          }}</span>
+          <img
+            class="titleName__icon"
+            :src="titleFlag ? imgTradeUp : imgTradeDown"
+            alt=""
+          />
         </div>
       </div>
     </template>
@@ -107,7 +114,7 @@
       <div class="countdown">
         <div class="fw-bold closeBtn">
           <div>{{ matchText(coinInfo.showSymbol, '/USDT') }}</div>
-          <svg-load class="closeSvg" name="guanbi" @click="turnOffCountdown"></svg-load>
+          <img :src="imgClose" alt="" class="closeSvg" @click="turnOffCountdown" />
         </div>
         <div class="circle">
           <van-circle
@@ -187,7 +194,7 @@
       <div class="countdown">
         <div class="fw-bold closeBtn">
           <div>{{ matchText(coinInfo.showSymbol, '/USDT') }}</div>
-          <svg-load class="closeSvg" name="guanbi" @click="countdownClose"></svg-load>
+          <img :src="imgClose" alt="" class="closeSvg" @click="countdownClose" />
         </div>
         <div class="countdownHeader">
           <div
@@ -260,6 +267,10 @@ import {
 } from '@/utils/filters'
 import { _toFixed, _mul } from '@/utils/decimal'
 import { _t18 } from '@/utils/public'
+import imgTradeUp from '@/assets/images/trade/up.png'
+import imgTradeDown from '@/assets/images/trade/down.png'
+import imgClose from '@/assets/images/trade/close.png'
+
 const tradeStore = useTradeStore()
 const props = defineProps({
   coinInfo: {
@@ -809,15 +820,22 @@ input::-ms-input-placeholder {
   display: flex;
   align-items: center;
   .titleName {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-    padding: 5px;
+    gap: 4px;
+    padding: 5px 8px;
     background-color: var(--ex-div-bgColor1);
-    border-radius: 2px;
+    border-radius: 6px;
     font-size: 12px;
     color: var(--ex-font-color);
     margin-left: 10px;
+
+    .titleName__icon {
+      width: 14px;
+      height: 14px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
   }
   .titleColor {
     background: var(--ex-div-bgColor9);
@@ -883,6 +901,8 @@ input::-ms-input-placeholder {
     .closeSvg {
       width: 24px;
       height: 24px;
+      object-fit: contain;
+      display: block;
     }
   }
   .countdownHeader {
