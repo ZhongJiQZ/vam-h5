@@ -889,20 +889,21 @@ input::-ms-input-placeholder {
           align-items: center;
           justify-content: center;
           font-size: 14px;
-          background: #e2e4eb;
+          background: color-mix(in srgb, #9ca3af 22%, transparent);
           color: #333;
           line-height: 1;
         }
 
+        /* 选中：上与底部「看涨」同色，下为同色半透明 */
         &--selected {
           .firstItemTop {
-            background: #008710;
-            color: #fff;
+            background: var(--ex-div-bgColor1);
+            color: var(--ex-font-color);
           }
 
           .firstItemBottom {
-            background: #e6f4ea;
-            color: #008710;
+            background: color-mix(in srgb, var(--ex-div-bgColor1) 28%, transparent);
+            color: var(--ex-div-bgColor1);
             font-weight: 600;
           }
         }
