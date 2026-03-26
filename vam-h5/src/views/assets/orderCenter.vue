@@ -35,7 +35,13 @@
                 class="order-center__shortcut"
                 :aria-label="link.aria"
                 @click="_toView(link.path)"
-              />
+              >
+                <img
+                  :src="isHeaderLinkActive(link.path) ? link.imgActive : link.img"
+                  alt=""
+                  class="order-center__shortcut-img"
+                />
+              </button>
             </div>
           </div>
 
@@ -60,12 +66,23 @@ import { _t18, _toView } from '@/utils/public'
 import SecondContractEntrust from './components/orderCenter/SecondContractEntrust.vue'
 import SpotEntrust from './components/orderCenter/SpotEntrust.vue'
 import UstandardOrderList from './components/orderCenter/UstandardOrderList.vue'
+import imgQianbao from '@/assets/images/assets/qianbao.png'
+import imgQianbaoX from '@/assets/images/assets/qianbao-x.png'
+import imgWenhao from '@/assets/images/assets/wenhao.png'
+import imgWenhaoX from '@/assets/images/assets/wenhao-x.png'
+import imgLishi from '@/assets/images/assets/lishi.png'
+import imgLishiX from '@/assets/images/assets/lishi-x.png'
+
+const route = useRoute()
 
 const headerLinks = [
-  { path: '/myassets', aria: 'myassets' },
-  { path: '/orderCenter', aria: 'orderCenter' },
-  { path: '/assetRecord', aria: 'assetRecord' },
+  { path: '/myassets', aria: 'myassets', img: imgQianbao, imgActive: imgQianbaoX },
+  { path: '/orderCenter', aria: 'orderCenter', img: imgWenhao, imgActive: imgWenhaoX },
+  { path: '/assetRecord', aria: 'assetRecord', img: imgLishi, imgActive: imgLishiX },
 ]
+
+const isHeaderLinkActive = (path) =>
+  route.path === path || route.path.startsWith(`${path}/`)
 
 const tabList = computed(() => {
   const list = [
@@ -209,13 +226,22 @@ $oc-accent: #008710;
 }
 
 .order-center__shortcut {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 24px;
   height: 24px;
   padding: 0;
   border: none;
-  border-radius: 6px;
-  background: #d5dde3;
+  background: transparent;
   flex-shrink: 0;
   cursor: pointer;
+}
+
+.order-center__shortcut-img {
+  width: 24px;
+  height: 24px;
+  display: block;
+  object-fit: contain;
 }
 </style>

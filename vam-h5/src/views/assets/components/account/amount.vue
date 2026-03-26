@@ -9,10 +9,16 @@
           v-for="(link, i) in headerLinks"
           :key="i"
           type="button"
-          class="header-shortcut-placeholder"
+          class="header-shortcut-btn"
           :aria-label="link.aria"
           @click="_toView(link.path)"
-        />
+        >
+          <img
+            :src="isHeaderLinkActive(link.path) ? link.imgActive : link.img"
+            alt=""
+            class="header-shortcut-img"
+          />
+        </button>
       </div>
     </div>
     <div class="balance-value-row">
@@ -41,12 +47,23 @@ import imgRecharge from '@/assets/images/assets/recharge.png'
 import imgWithdraw from '@/assets/images/assets/withdraw.png'
 import imgSwap from '@/assets/images/assets/swap.png'
 import imgTransfer from '@/assets/images/assets/transfer.png'
+import imgQianbao from '@/assets/images/assets/qianbao.png'
+import imgQianbaoX from '@/assets/images/assets/qianbao-x.png'
+import imgWenhao from '@/assets/images/assets/wenhao.png'
+import imgWenhaoX from '@/assets/images/assets/wenhao-x.png'
+import imgLishi from '@/assets/images/assets/lishi.png'
+import imgLishiX from '@/assets/images/assets/lishi-x.png'
+
+const route = useRoute()
 
 const headerLinks = [
-  { path: '/myassets', aria: 'myassets' },
-  { path: '/orderCenter', aria: 'orderCenter' },
-  { path: '/assetRecord', aria: 'assetRecord' },
+  { path: '/myassets', aria: 'myassets', img: imgQianbao, imgActive: imgQianbaoX },
+  { path: '/orderCenter', aria: 'orderCenter', img: imgWenhao, imgActive: imgWenhaoX },
+  { path: '/assetRecord', aria: 'assetRecord', img: imgLishi, imgActive: imgLishiX },
 ]
+
+const isHeaderLinkActive = (path) =>
+  route.path === path || route.path.startsWith(`${path}/`)
 
 const props = defineProps({
   data: {
@@ -161,15 +178,24 @@ const t18Type = (type) => {
   flex-shrink: 0;
 }
 
-.header-shortcut-placeholder {
+.header-shortcut-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 24px;
   height: 24px;
   padding: 0;
   border: none;
-  border-radius: 6px;
-  background: #d5dde3;
+  background: transparent;
   flex-shrink: 0;
   cursor: pointer;
+}
+
+.header-shortcut-img {
+  width: 24px;
+  height: 24px;
+  display: block;
+  object-fit: contain;
 }
 
 .balance-value-row {
