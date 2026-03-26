@@ -1,91 +1,85 @@
 <!-- 行情页面：自选，秒合约，币币交易，U本位 -->
 <template>
-  <div>
-    <!-- 搜索 -->
-    <div class="search">
-      <div class="searchBtn">
-        <svg-load name="lujing3047" class="searchLeft"></svg-load>
-        <input
-          type="text"
-          v-model.trim="searchName"
-          :placeholder="_t18(`search_currency`)"
-          class="searchInput"
+  <div class="quote-page">
+    <!-- 深色顶栏：仅 tabs -->
+    <div class="quote-header">
+      <div class="headerChoose">
+        <van-tabs
+          swipeable
+          shrink
+          :swipe-threshold="2"
+          v-model:active="currentIndex"
+          :line-width="0"
+          title-active-color="#ffffff"
+          title-inactive-color="rgba(255, 255, 255, 0.45)"
+        >
+          <van-tab v-for="(item, index) in headerList" :key="index" :title="item.title" />
+        </van-tabs>
+      </div>
+    </div>
+    <!-- 主内容：白底圆角承接深色头 -->
+    <div class="quote-sheet">
+      <div class="search">
+        <div class="searchBtn">
+          <svg-load name="lujing3047" class="searchLeft"></svg-load>
+          <input
+            type="text"
+            v-model.trim="searchName"
+            :placeholder="_t18(`search_currency`)"
+            class="searchInput"
+          />
+        </div>
+      </div>
+      <div class="quote-sheet-body">
+        <component
+          :is="getTabComponent(activeHeader?.componentName)"
+          :key="(activeHeader?.componentName || 'QuoteOptional') + '-' + currentIndex"
+          :searchName="searchName"
         />
       </div>
     </div>
-    <!-- tabs -->
-
-    <div class="headerChoose">
-      <van-tabs
-        swipeable
-        shrink
-        :swipe-threshold="2"
-        v-model:active="currentIndex"
-        line-width="20"
-        line-height="2"
-        color="#17ac74"
-        title-active-color="#17AC74"
-        title-inactive-color="#5d626d"
-        background="var(--ex-div-bgColor8)"
-      >
-        <van-tab v-for="(item, index) in headerList" :key="index" :title="item.title">
-          <!-- <component :is="currentComponent" :searchName="searchName"></component> -->
-          <component 
-            :componentName="item.componentName"
-            :is="getTabComponent(item.componentName)" 
-            :key="item.componentName + '-' + currentIndex"
-            :searchName="searchName" 
-          />
-        </van-tab>
-      </van-tabs>
-    </div>
-    <!-- tab -->
   </div>
 </template>
 
 <script setup>
 import { _t18 } from '@/utils/public'
-import { useMainStore } from '@/store/index' 
+import { useMainStore } from '@/store/index'
 import { useTradeStore } from '@/store/trade'
 const mainStore = useMainStore()
 const tradeStore = useTradeStore()
 
 import { computed } from 'vue'
-import QuoteOptional from './components/quoteOptional.vue'//自选
-import SecondContract from './components/quoteSecondContract.vue'//秒合约
-import BBTrading from './components/quoteBBTrading.vue'//币币
-import Ustandard from './components/quoteUstandard.vue'//U本位
+import QuoteOptional from './components/quoteOptional.vue' //自选
+import SecondContract from './components/quoteSecondContract.vue' //秒合约
+import BBTrading from './components/quoteBBTrading.vue' //币币
+import Ustandard from './components/quoteUstandard.vue' //U本位
 // 搜索
 const searchName = ref('')
-const searchBtn = () => {}
 // tabs
 const headerList = computed(() => mainStore.getTradeHeaderList)
 
 const currentIndex = ref(mainStore.tradeFlag + mainStore.isOption)
-//const currentIndex = ref(mainStore.tradeFlag)
-// 用映射表最稳
+
+const activeHeader = computed(() => headerList.value?.[currentIndex.value])
+
 const componentMap = {
+  Optional: QuoteOptional,
   QuoteOptional,
   SecondContract,
   BBTrading,
   Ustandard
 }
 
-// 切换组件
 const getTabComponent = (name) => componentMap[name] || QuoteOptional
 
-// 关键：根据 tab 拉不同数据（示例：你自己按实际 store action 改）
-async function fetchByTab(index) {
-  const tab = headerList.value?.[index]?.componentName
-  await tradeStore.getCoinList(); //单个vue组件查
+async function fetchByTab() {
+  await tradeStore.getCoinList()
 }
 
-// 进入行情页就拉一次（强制）
 onMounted(() => {
   fetchByTab(currentIndex.value)
 })
 
-// 如果这个页面被 keep-alive 缓存，返回时也要拉一次
 onActivated(() => {
   fetchByTab(currentIndex.value)
 })
@@ -100,24 +94,115 @@ watch(
 </script>
 
 <style lang="scss" scoped>
-// 搜索
+.quote-page {
+  min-height: 100vh;
+  background: #0b1118;
+  box-sizing: border-box;
+}
+
+.quote-header {
+  z-index: 9;
+  padding-left: 12px;
+  padding-right: 12px;
+  padding-top: env(safe-area-inset-top);
+  min-height: calc(52px + env(safe-area-inset-top));
+  box-sizing: border-box;
+  background: #0b1118;
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 8px;
+
+  .headerChoose {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    padding: 0;
+    background: transparent;
+
+    :deep(.van-tabs__wrap) {
+      height: 44px;
+    }
+
+    :deep(.van-tabs__nav) {
+      background: transparent;
+    }
+
+    :deep(.van-tabs__nav--complete) {
+      padding: 0 4px;
+    }
+
+    :deep(.van-tab) {
+      flex: none;
+      font-size: 15px;
+      margin-right: 22px;
+      padding: 0;
+      color: rgba(255, 255, 255, 0.45) !important;
+      background: transparent;
+    }
+
+    :deep(.van-tab:last-child) {
+      margin-right: 0;
+    }
+
+    :deep(.van-tab--active) {
+      font-weight: 600;
+      color: #ffffff !important;
+    }
+
+    :deep(.van-tabs__line) {
+      display: none;
+    }
+  }
+}
+
+.quote-sheet {
+  background: #fff;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  min-height: calc(100vh - 52px - env(safe-area-inset-top));
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  :deep(.mainBgc) {
+    background: transparent;
+  }
+}
+
+.quote-sheet-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+
+  > :deep(*) {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
 .search {
-  padding: 20px 15px 10px;
+  flex-shrink: 0;
+  padding: 16px 15px 10px;
 
   .searchBtn {
-    height: 34px;
-    background: var(--ex-div-bgColor22);
-    border-radius: 20px 20px 20px;
-    padding: 0 20px;
+    height: 36px;
+    background: #f5f6f8;
+    border-radius: 18px;
+    padding: 0 16px;
     display: flex;
     align-items: center;
     justify-content: center;
 
     .searchLeft {
-      width: 12px;
-      height: 12px;
+      width: 14px;
+      height: 14px;
       margin-right: 10px;
-      margin-top: -1.5px;
+      margin-top: -1px;
+      opacity: 0.45;
     }
 
     .searchInput {
@@ -125,40 +210,27 @@ watch(
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 12px;
+      font-size: 13px;
       background: transparent;
       flex: 1;
-      color: var(--ex-font-color12);
+      color: #1a1a1a;
+    }
+
+    input::placeholder {
+      color: #a0a4ad;
     }
 
     input::-webkit-input-placeholder {
-      color: var(--ex-font-color12);
+      color: #a0a4ad;
     }
 
-    input::-moz-input-placeholder {
-      color: var(--ex-font-color12);
+    input::-moz-placeholder {
+      color: #a0a4ad;
     }
 
-    input::-ms-input-placeholder {
-      color: var(--ex-font-color12);
+    input:-ms-input-placeholder {
+      color: #a0a4ad;
     }
-  }
-}
-.headerChoose {
-  :deep(.van-tabs__nav) {
-    background: var(--ex-div-bgColor8) !important;
-  }
-  :deep(.van-tab) {
-    flex: none;
-    font-size: 14px;
-    margin-right: 30px;
-    padding: 0;
-    color: var(--ex-home-list-ftcolor) !important;
-    background: var(--ex-div-bgColor8) !important;
-  }
-  :deep(.van-tab--active) {
-    font-weight: normal;
-    color: var(--ex-home-list-ftcolor3) !important;
   }
 }
 </style>
