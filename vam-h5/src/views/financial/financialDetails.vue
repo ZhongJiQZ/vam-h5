@@ -171,6 +171,7 @@ onMounted(() => {
   min-height: 100vh;
   background: #f6f7fa;
   box-sizing: border-box;
+  margin-bottom: calc(66px + env(safe-area-inset-bottom, 0px));
 }
 
 .detail-scroll {
