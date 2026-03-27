@@ -1,20 +1,18 @@
 <template>
   <div class="slidebar">
-    <div class="sidebar-top">
-      <img
-        src="@/assets/images/logo-black.png"
-        alt="Veloxam"
-        class="sidebar-logo"
-      />
-      <img
-        src="@/assets/images/close.png"
-        alt=""
-        class="closeImg"
-        @click="closeSideBar"
-      />
-    </div>
-    <UserLogin v-if="isSign"></UserLogin>
-    <Navigation></Navigation>
+    <header class="sidebar-header">
+      <div class="sidebar-header__title">{{ _t18('sidebar_personal_center') }}</div>
+      <button type="button" class="sidebar-header__close" @click="closeSideBar">
+        <img
+          src="@/assets/images/close.png"
+          alt=""
+          class="sidebar-header__close-img"
+        />
+      </button>
+    </header>
+    <div class="sidebar-body">
+      <UserLogin v-if="isSign"></UserLogin>
+      <Navigation></Navigation>
     <!-- 未登录 -->
     <div v-if="!isSign" class="notLogged">
       <div class="btnBox" @click="_toView('/sign-in')">
@@ -52,6 +50,7 @@
       :cancelButtonText="_t18('cancel')"
       z-index="200"
     ></Dialog>
+    </div>
   </div>
 </template>
 <script setup>
@@ -104,35 +103,73 @@ const closeSideBar = () => {
 }
 </script>
 <style lang="scss" scoped>
+/* 与 /withdraw 一致：外层深色 + 内层浅色圆角内容区 */
 .slidebar {
   height: 100vh;
-  padding-bottom: 100px;
-  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #05101a;
+  box-sizing: border-box;
 }
-.sidebar-top {
-  padding: 17px 15px 20px;
+
+.sidebar-header {
+  flex-shrink: 0;
+  padding-top: constant(safe-area-inset-top);
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-left: 15px;
+  padding-right: 15px;
+  min-height: 60px;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  background: #05101a;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.sidebar-logo {
-  display: block;
-  height: 36px;
-  width: auto;
-  max-width: calc(100% - 40px - 12px);
-  object-fit: contain;
+.sidebar-header__title {
+  flex: 1;
+  min-width: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: #fff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.closeImg {
+.sidebar-header__close {
   flex-shrink: 0;
-  display: block;
-  width: 40px;
-  height: 40px;
-  object-fit: contain;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+}
+
+.sidebar-header__close-img {
+  display: block;
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.sidebar-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  background: #fff;
+  border-radius: 16px 16px 0 0;
+  padding-bottom: calc(100px + constant(safe-area-inset-bottom));
+  padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
 }
 
 // 未登录

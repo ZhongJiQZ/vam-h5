@@ -13,8 +13,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <HeaderDiff v-if="DIFF_HOME_BANNER.includes(_getConfig('_APP_ENV'))"></HeaderDiff>
-  <Header v-else></Header>
+  <!-- <HeaderDiff v-if="DIFF_HOME_BANNER.includes(_getConfig('_APP_ENV'))"></HeaderDiff> -->
+  <!-- <Header v-else></Header> -->
+  <Header />
   <Menu></Menu>
   <Footer></Footer>
 </template>
