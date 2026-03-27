@@ -86,9 +86,11 @@ const vipClass = computed(() => {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 5px 0;
+    padding: 4px 8px ;
+    border-radius: 8px;
+    background-color: #1cac7423;
     .rightTop {
-      font-size: 16px;
+      font-size: 14px;
       color: var(--ex-default-font-color);
     }
     .rightBot {
