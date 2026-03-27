@@ -6,7 +6,12 @@
       <p class="fw-num">v{{ vipClass }}</p>
     </div>
     <svg-load name="userImg" class="userMessImg" v-else></svg-load> -->
-    <img style="width:50px;" src="@/assets//images/invest.png" @click="$router.push('/myassets')">
+    <img
+      class="userMessImg"
+      src="@/assets/images/touxiang.png"
+      alt=""
+      @click="$router.push('/myassets')"
+    />
     <div class="messRight">
       <Copy :data="userId">
         <template #copyMsg>
