@@ -95,7 +95,10 @@ const total1 = ref(0)
 const total2 = ref(0)
 const total3 = ref(0)
 const pageSize = ref(5)
-const pageNum = ref(1)
+/** 各 tab 分页独立；共用一个 pageNum 会导致多 tab 并行请求时互相污染，误把第一页当「翻页」而 push 重复 */
+const pageNumByTab = ref([1, 1, 1, 1])
+/** 同 tab 并发请求时丢弃过期响应（避免与 requestedPage 组合出错） */
+const fetchGenByTab = ref([0, 0, 0, 0])
 const dataList = ref()
 const dataNewList = ref([])
 const dataTab0 = ref([])
@@ -106,10 +109,10 @@ const updateList = (val) => {
   handelRefresh()
   if (val == 1) {
     // 急速平仓
-    getTab3()
+    // getTab3()
   } else if (val == 2) {
     // 止盈止损
-    getTab2()
+    // getTab2()
   }
 }
 import { useUserStore } from '@/store/user/index'
@@ -138,102 +141,158 @@ const onLoad = () => {
 }
 // 当前持仓
 const getTab0 = async () => {
+  const tab = 0
+  const g = [...fetchGenByTab.value]
+  g[tab]++
+  fetchGenByTab.value = g
+  const myGen = g[tab]
+  const requestedPage = pageNumByTab.value[tab]
   loading.value = true
   finished.value = false
   const data = {
     status: 0,
     pageSize: pageSize.value,
-    pageNum: pageNum.value
+    pageNum: requestedPage
   }
   const res = await contractHistoryList(data)
-  if (res.code == '200') {
-    setTimeout(() => {
-      loading.value = false
-      res.rows && dataTab0.value.push(...res.rows)
-      filterEyes()
-      total0.value = res.total
-      if (dataTab0.value.length >= total0.value) {
-        finished.value = true
-      } else {
-        pageNum.value++
-      }
-    }, 500)
-    tabList.value[0].num = res.total
+  if (res.code != '200') {
+    loading.value = false
+    return
   }
+  if (myGen !== fetchGenByTab.value[tab]) return
+  loading.value = false
+  if (requestedPage === 1) {
+    dataTab0.value = res.rows ? [...res.rows] : []
+  } else {
+    res.rows && dataTab0.value.push(...res.rows)
+  }
+  filterDataList(curActive.value)
+  filterEyes()
+  total0.value = res.total
+  if (dataTab0.value.length >= total0.value) {
+    finished.value = true
+  } else {
+    const nextPage = [...pageNumByTab.value]
+    nextPage[tab]++
+    pageNumByTab.value = nextPage
+  }
+  tabList.value[0].num = res.total
 }
 // 当前委托
 const getTab1 = async () => {
+  const tab = 1
+  const g = [...fetchGenByTab.value]
+  g[tab]++
+  fetchGenByTab.value = g
+  const myGen = g[tab]
+  const requestedPage = pageNumByTab.value[tab]
   loading.value = true
   finished.value = false
   const data = {
     status: 0,
     pageSize: pageSize.value,
-    pageNum: pageNum.value
+    pageNum: requestedPage
   }
   const res = await orderList(data)
-  if (res.code == '200') {
-    setTimeout(() => {
-      loading.value = false
-      res.rows && dataTab1.value.push(...res.rows)
-      filterEyes()
-      total1.value = res.total
-      if (dataTab1.value.length >= total1.value) {
-        finished.value = true
-      } else {
-        pageNum.value++
-      }
-    }, 500)
-    tabList.value[1].num = res.total
+  if (res.code != '200') {
+    loading.value = false
+    return
   }
+  if (myGen !== fetchGenByTab.value[tab]) return
+  loading.value = false
+  if (requestedPage === 1) {
+    dataTab1.value = res.rows ? [...res.rows] : []
+  } else {
+    res.rows && dataTab1.value.push(...res.rows)
+  }
+  filterDataList(curActive.value)
+  filterEyes()
+  total1.value = res.total
+  if (dataTab1.value.length >= total1.value) {
+    finished.value = true
+  } else {
+    const nextPage = [...pageNumByTab.value]
+    nextPage[tab]++
+    pageNumByTab.value = nextPage
+  }
+  tabList.value[1].num = res.total
 }
 // 止盈止损
 const getTab2 = async () => {
+  const tab = 2
+  const g = [...fetchGenByTab.value]
+  g[tab]++
+  fetchGenByTab.value = g
+  const myGen = g[tab]
+  const requestedPage = pageNumByTab.value[tab]
   loading.value = true
   finished.value = false
   const data = {
     pageSize: pageSize.value,
-    pageNum: pageNum.value
+    pageNum: requestedPage
   }
   const res = await contractLossList(data)
-  if (res.code == '200') {
-    setTimeout(() => {
-      loading.value = false
-      res.rows && dataTab2.value.push(...res.rows)
-      filterEyes()
-      total2.value = res.total
-      if (dataTab2.value.length >= total2.value) {
-        finished.value = true
-      } else {
-        pageNum.value++
-      }
-    }, 500)
-    tabList.value[2].num = res.total
+  if (res.code != '200') {
+    loading.value = false
+    return
   }
+  if (myGen !== fetchGenByTab.value[tab]) return
+  loading.value = false
+  if (requestedPage === 1) {
+    dataTab2.value = res.rows ? [...res.rows] : []
+  } else {
+    res.rows && dataTab2.value.push(...res.rows)
+  }
+  filterDataList(curActive.value)
+  filterEyes()
+  total2.value = res.total
+  if (dataTab2.value.length >= total2.value) {
+    finished.value = true
+  } else {
+    const nextPage = [...pageNumByTab.value]
+    nextPage[tab]++
+    pageNumByTab.value = nextPage
+  }
+  tabList.value[2].num = res.total
 }
 // 历史委托
 const getTab3 = async (status) => {
+  const tab = 3
+  const g = [...fetchGenByTab.value]
+  g[tab]++
+  fetchGenByTab.value = g
+  const myGen = g[tab]
+  const requestedPage = pageNumByTab.value[tab]
   loading.value = true
   finished.value = false
   const data = {
     status: 1,
     pageSize: pageSize.value,
-    pageNum: pageNum.value
+    pageNum: requestedPage
   }
   const res = await contractHistoryList(data)
-  if (res.code == '200') {
-    setTimeout(() => {
-      loading.value = false
-      res.rows && dataTab3.value.push(...res.rows)
-      filterEyes()
-      total3.value = res.total
-      if (dataTab3.value.length >= total3.value) {
-        finished.value = true
-      } else {
-        pageNum.value++
-      }
-    }, 500)
-    tabList.value[3].num = res.total
+  if (res.code != '200') {
+    loading.value = false
+    return
   }
+  if (myGen !== fetchGenByTab.value[tab]) return
+  loading.value = false
+  if (requestedPage === 1) {
+    dataTab3.value = res.rows ? [...res.rows] : []
+  } else {
+    res.rows && dataTab3.value.push(...res.rows)
+  }
+  filterDataList(curActive.value)
+  filterEyes()
+  total3.value = res.total
+  if (dataTab3.value.length >= total3.value) {
+    finished.value = true
+  } else {
+    const nextPage = [...pageNumByTab.value]
+    nextPage[tab]++
+    pageNumByTab.value = nextPage
+  }
+  tabList.value[3].num = res.total
 }
 
 const filterDataList = (n) => {
@@ -255,30 +314,27 @@ const filterDataList = (n) => {
   }
 }
 const init = () => {
+  pageNumByTab.value = [1, 1, 1, 1]
   getTab0()
   getTab1()
   getTab2()
   getTab3()
 }
-// 刷新按钮
+// 刷新按钮：保留当前列表展示，请求返回后再整页替换（避免先清空闪烁）
 const handelRefresh = () => {
-  dataList.value = []
-  dataNewList.value = []
-  pageNum.value = 1
+  const next = [...pageNumByTab.value]
+  next[curActive.value] = 1
+  pageNumByTab.value = next
   if (curActive.value == 0) {
-    dataTab0.value = []
     getTab0()
   }
   if (curActive.value == 1) {
-    dataTab1.value = []
     getTab1()
   }
   if (curActive.value == 2) {
-    dataTab2.value = []
     getTab2()
   }
   if (curActive.value == 3) {
-    dataTab3.value = []
     getTab3()
   }
   filterDataList(curActive.value)
