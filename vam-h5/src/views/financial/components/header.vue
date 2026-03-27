@@ -8,10 +8,10 @@
       <div
         class="item"
         v-for="item in listNav"
-        :key="item.icon"
+        :key="item.clickName"
         @click="$router.push(item.clickName)"
       >
-        <svg-load :name="item.icon" class="itemImg"></svg-load>
+        <img :src="item.img" class="itemImg" alt="" />
         <div class="itemName">{{ item.name }}</div>
       </div>
     </div>
@@ -23,11 +23,14 @@ import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { _t18 } from '@/utils/public'
 import { publiceNotice } from '@/api/common/index'
+import imgValueAdded from '@/assets/images/financial/增值收益.png'
+import imgNormalProduct from '@/assets/images/financial/普通产品.png'
+import imgMyInvestment from '@/assets/images/financial/我的投资.png'
 // 增值收益 会员专区 普通产品 我的投资
 const listNav = computed(() => {
   return [
     {
-      icon: 'zhenzhi',
+      img: imgValueAdded,
       name: _t18(`value_added _income`),
       clickName: '/addIncome'
     },
@@ -37,12 +40,12 @@ const listNav = computed(() => {
     //   clickName: '/membersOnly'
     // },
     {
-      icon: 'putong',
+      img: imgNormalProduct,
       name: _t18(`normal_product`),
       clickName: '/generalMerchandise'
     },
     {
-      icon: 'touzhi',
+      img: imgMyInvestment,
       name: _t18(`my_invest`),
       clickName: '/myInvestment'
     }
