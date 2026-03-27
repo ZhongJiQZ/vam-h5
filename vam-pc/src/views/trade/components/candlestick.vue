@@ -368,7 +368,7 @@ export default {
           //设置价格精度  100表示保留两位小数   1000三位   10000四位
           pricescale: this.priceScale,
           // 最小波动
-          minmov: 1 / this.priceScale,
+          minmov: 1,
           // 分辨率数组
           supported_resolutions: this.supportedResolutions,
         };
@@ -600,7 +600,7 @@ export default {
         //设置价格精度  100表示保留两位小数   1000三位   10000四位
         pricescale: this.priceScale,
         // 最小波动
-        minmov: 1 / this.priceScale,
+        minmov: 1,
         // 分辨率数组
         supported_resolutions: this.supportedResolutions,
       };

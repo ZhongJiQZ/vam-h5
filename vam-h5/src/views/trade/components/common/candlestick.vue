@@ -311,7 +311,7 @@ dataFeedInstance.resolveSymbol = async () => {
     //设置价格精度  100表示保留两位小数   1000三位   10000四位
     pricescale: priceScale.value,
     // 最小波动
-    minmov: 1 / priceScale.value,
+    minmov: 1,
     // 分辨率数组
     supported_resolutions: supportedResolutions
   }
@@ -462,7 +462,7 @@ const subscribeTrades = async (params) => {
       }
       tempTrade.high = tempData.high
       tempTrade.low = tempData.low
-      tempTrade.close = tempData.close.toFixed(4)
+      tempTrade.close = Number(tempData.close)
       tempTrade.volume = tempData.vol
       updateDataKline(tempTrade)
     }
