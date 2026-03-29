@@ -134,7 +134,6 @@
         >
           <!-- 加载中动画 -->
           <template #tabContent>  
-            <Nodata v-if="teamList.length <= 0 && !showLoading && !showCommissionRecords "></Nodata>
             <div v-if="!showCommissionRecords"  class="contentBox">
               <div class="header">
               <!--用户ID  返佣金额  注册时间 -->
@@ -155,6 +154,7 @@
                   }}
                 </p>
               </div>
+            <Nodata v-if="teamList.length <= 0 && !showLoading && !showCommissionRecords "></Nodata>
             </div>
 
             <div  v-if="showCommissionRecords"  class="contentBox"> 
