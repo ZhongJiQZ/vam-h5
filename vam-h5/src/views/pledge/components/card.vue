@@ -1,18 +1,55 @@
 <script setup>
 import { _t18 } from '@/utils/public'
 import pledgeCoinIcon from '@/assets/images/Frame 981370.png'
-let props = defineProps({
+
+const props = defineProps({
   cardData: {
     type: Object
   }
 })
-const dataValue = ref(props.cardData)
+
+const dataValue = computed(() => props.cardData || {})
+
+const defaultPledgeIcon = pledgeCoinIcon
+const listIconSrc = ref(defaultPledgeIcon)
+
+function remoteIconUrl(raw) {
+  if (typeof raw !== 'string') return ''
+  const u = raw.trim()
+  return u.length ? u : ''
+}
+
+function syncListIcon() {
+  const remote = remoteIconUrl(props.cardData?.icon)
+  listIconSrc.value = remote || defaultPledgeIcon
+}
+
+function onListIconError() {
+  listIconSrc.value = defaultPledgeIcon
+}
+
+watch(
+  () => [props.cardData?.id, props.cardData?.icon],
+  () => {
+    syncListIcon()
+  },
+  { immediate: true }
+)
 </script>
 <template>
   <div class="box">
     <div class="top">
       <div class="top_left">
-        <img :src="pledgeCoinIcon" alt="" class="pledge-coin-icon" />
+        <span class="pledge-icon-wrap" aria-hidden="true">
+          <img
+            :src="listIconSrc"
+            alt=""
+            class="pledge-coin-icon"
+            loading="lazy"
+            decoding="async"
+            @error="onListIconError"
+          />
+        </span>
         <div class="title fw-bold">{{ dataValue.title }}</div>
       </div>
       <div class="top_right">{{ _t18('pledge_Buy', ['aams']) }}</div>
@@ -75,16 +112,30 @@ const dataValue = ref(props.cardData)
     .top_left {
       display: flex;
       align-items: center;
+      min-width: 0;
       .title {
         font-weight: bold;
         color: #fff;
+        min-width: 0;
       }
-      .pledge-coin-icon {
+      .pledge-icon-wrap {
         width: 22px;
         height: 22px;
-        object-fit: contain;
         margin-right: 10px;
         flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .pledge-coin-icon {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: center;
+        display: block;
       }
     }
     .top_right {
