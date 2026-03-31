@@ -523,6 +523,8 @@
   "login_please_emailCode": "メールアドレスを入力してください",
   "login_noAccount": "アカウントをお持ちでない方",
   "login_toRegister": "今すぐ登録",
+  "login_wallet": "ウォレットでログイン",
+  "login_wallet_need_env": "ウォレットブラウザで開くか、MetaMask / TronLink をインストールしてください",
   "login_success": "ログイン成功",
   "register": "登録",
   "register_title": "登録へようこそ",

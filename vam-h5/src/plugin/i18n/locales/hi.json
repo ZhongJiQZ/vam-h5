@@ -521,6 +521,8 @@
   "login_please_emailCode": "Please input your email address",
   "login_noAccount": "No account yet",
   "login_toRegister": "Register Now",
+  "login_wallet": "वॉलेट लॉगिन",
+  "login_wallet_need_env": "कृपया वॉलेट ब्राउज़र में खोलें या MetaMask / TronLink इंस्टॉल करें",
   "login_success": "Login successful",
   "register": "Register",
   "register_title": "Welcome to register",

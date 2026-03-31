@@ -522,6 +522,8 @@
   "login_please_emailCode": "Bitte E-Mail-Adresse eingeben",
   "login_noAccount": "Noch kein Konto?",
   "login_toRegister": "Jetzt registrieren",
+  "login_wallet": "Mit Wallet anmelden",
+  "login_wallet_need_env": "In einem Wallet-Browser öffnen oder MetaMask / TronLink installieren",
   "login_success": "Login erfolgreich",
   "register": "Registrieren",
   "register_title": "Willkommen zur Registrierung",

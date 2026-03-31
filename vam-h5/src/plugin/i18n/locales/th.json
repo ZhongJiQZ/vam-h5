@@ -521,6 +521,8 @@
   "login_please_emailCode": "กรุณาใส่อีเมล",
   "login_noAccount": "ยังไม่มีบัญชีใช่ไหม",
   "login_toRegister": "สมัครสมาชิกเลย",
+  "login_wallet": "เข้าสู่ระบบด้วยวอลเล็ต",
+  "login_wallet_need_env": "เปิดในเบราว์เซอร์วอลเล็ตหรือติดตั้ง MetaMask / TronLink",
   "login_success": "เข้าสู่ระบบสำเร็จ",
   "register": "สมัครสมาชิก",
   "register_title": "ยินดีต้อนรับการสมัคร",

@@ -521,6 +521,8 @@
   "login_please_emailCode": "이메일 주소를 입력하세요",
   "login_noAccount": "아직 계정이 없으신가요?",
   "login_toRegister": "지금 가입",
+  "login_wallet": "지갑 로그인",
+  "login_wallet_need_env": "지갑 브라우저에서 열거나 MetaMask / TronLink를 설치하세요",
   "login_success": "로그인 성공",
   "register": "회원가입",
   "register_title": "회원가입을 환영합니다",

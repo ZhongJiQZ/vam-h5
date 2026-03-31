@@ -519,6 +519,8 @@
   "login_please_emailCode": "Please input your email address",
   "login_noAccount": "No account yet",
   "login_toRegister": "Register Now",
+  "login_wallet": "כניסה עם ארנק",
+  "login_wallet_need_env": "פתחו בדפדפן ארנק או התקינו MetaMask / TronLink",
   "login_success": "Login successful",
   "register": "Register",
   "register_title": "Welcome to register",

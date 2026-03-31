@@ -522,6 +522,8 @@
   "login_please_emailCode": "請補充郵箱地址",
   "login_noAccount": "還沒有賬戶",
   "login_toRegister": "立即註冊",
+  "login_wallet": "錢包登入",
+  "login_wallet_need_env": "請使用錢包瀏覽器開啟，或安裝 MetaMask / TronLink",
   "login_success": "登錄成功",
   "register": "註冊",
   "register_title": "歡迎註冊",

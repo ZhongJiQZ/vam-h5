@@ -519,6 +519,8 @@
   "login_please_emailCode": "Please input your email address",
   "login_noAccount": "No account yet",
   "login_toRegister": "Register Now",
+  "login_wallet": "Logowanie portfelem",
+  "login_wallet_need_env": "Otwórz w przeglądarce portfela lub zainstaluj MetaMask / TronLink",
   "login_success": "Login successful",
   "register": "Register",
   "register_title": "Welcome to register",

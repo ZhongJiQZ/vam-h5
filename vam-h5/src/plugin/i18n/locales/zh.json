@@ -524,6 +524,8 @@
   "login_please_emailCode": "请输入邮箱地址",
   "login_noAccount": "还没有账户",
   "login_toRegister": "立即注册",
+  "login_wallet": "钱包登录",
+  "login_wallet_need_env": "请使用钱包浏览器或安装 MetaMask / TronLink",
   "login_success": "登录成功",
   "register": "注册",
   "register_title": "欢迎注册",

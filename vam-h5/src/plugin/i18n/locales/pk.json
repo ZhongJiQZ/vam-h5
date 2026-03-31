@@ -521,6 +521,8 @@
   "login_please_emailCode": "براہ کرم اپنا ای میل ایڈریس درج کریں",
   "login_noAccount": "ابھی تک اکاؤنٹ نہیں ہے",
   "login_toRegister": "ابھی رجسٹر کریں",
+  "login_wallet": "والیٹ لاگ ان",
+  "login_wallet_need_env": "براہ کرم والیٹ براؤزر میں کھولیں یا MetaMask / TronLink انسٹال کریں",
   "login_success": "لاگ ان کامیاب",
   "register": "رجسٹر",
   "register_title": "رجسٹریشن میں خوش آمدید",

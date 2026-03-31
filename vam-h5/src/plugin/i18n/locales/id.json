@@ -523,6 +523,8 @@
     "login_please_emailCode": "Masukkan alamat email Anda",
     "login_noAccount": "Belum punya akun?",
     "login_toRegister": "Daftar Sekarang",
+    "login_wallet": "Login dompet",
+    "login_wallet_need_env": "Buka di browser dompet atau pasang MetaMask / TronLink",
     "login_success": "Login berhasil",
     "register": "Daftar",
     "register_title": "Selamat Datang Mendaftar",

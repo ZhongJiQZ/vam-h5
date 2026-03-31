@@ -4,6 +4,9 @@
     <div class="btnBox" @click="toLogin">
       <ButtonBar :btnValue="_t18('login')" />
     </div>
+    <div class="btnBox btnBox--wallet" @click="toWalletLogin">
+      <ButtonBar :btnValue="_t18('login_wallet')" />
+    </div>
     <div class="account">
       {{ _t18('login_noAccount') }}？<span @click="$router.push('/sign-up')">{{
         _t18('login_toRegister')
@@ -45,6 +48,8 @@ import { REGISTER_REQUIRED_ACTIVECODE, REGISTER_REQUIRED_ACTIVECODE_MOBILE } fro
 import { _getConfig, _t18 } from '@/utils/public'
 import ButtonBar from '@/components/common/ButtonBar/index.vue'
 import { signUp, signIn, backPwdToEmail } from '@/api/user'
+import { check as checkETH, connect as connectETH } from '@/plugin/chain/eth'
+import { check as checkTRON } from '@/plugin/chain/tron'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/user/index'
 import { useMainStore } from '@/store/index'
@@ -155,6 +160,96 @@ const loginSubmit = (params) => {
         if (props.formDataToLogin.type == 1) {
           refersh()
         }
+      }
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+}
+
+/** Tron 连接（chain/tron 内 connect 未启用，登录页在此单独请求） */
+const connectTronForLogin = async () => {
+  let result = { code: 200 }
+  const isChecked = await checkTRON()
+  if (isChecked) {
+    try {
+      const tronAccounts = await window.tronWeb.request({
+        method: 'tron_requestAccounts'
+      })
+      let addr = null
+      if (Array.isArray(tronAccounts) && tronAccounts.length) {
+        addr = tronAccounts[0]
+      } else if (tronAccounts && tronAccounts.code == 200) {
+        addr = tronAccounts[0] || window.tronWeb?.defaultAddress?.base58
+      }
+      if (addr) {
+        result.data = { type: 'TRON', address: addr }
+      } else {
+        result.code = 500
+        result.msg =
+          tronAccounts?.message || 'Please install the TronLink extension and log in to continue.'
+      }
+    } catch (error) {
+      console.log(error)
+      result.code = 500
+      result.msg = error.message
+    }
+  } else {
+    result.code = 500
+    result.msg = 'Please install the TronLink extension and log in to continue.'
+  }
+  return result
+}
+
+const connectWalletForLogin = async () => {
+  const isTron = await checkTRON()
+  const isEth = await checkETH()
+  if (!isEth && !isTron) {
+    return 'no-wallet'
+  }
+  let res = null
+  if (isEth && isTron) {
+    res = await connectETH()
+  } else if (isTron) {
+    res = await connectTronForLogin()
+  } else if (isEth) {
+    res = await connectETH()
+  }
+  if (res?.code == 200) {
+    return res
+  }
+  res?.msg && showToast(res.msg)
+  return null
+}
+
+/**
+ * 钱包登录（与路由守卫内注释逻辑一致：signType 0 + register）
+ */
+const toWalletLogin = async () => {
+  const acountRes = await connectWalletForLogin()
+  if (acountRes === 'no-wallet') {
+    _toast('login_wallet_need_env')
+    return
+  }
+  if (!acountRes || acountRes.code !== 200) return
+  const params = {
+    signType: 0,
+    address: acountRes.data.address,
+    walletType: acountRes.data.type
+  }
+  signUp(params)
+    .then((res) => {
+      if (res.code == '200' && res.data.satoken) {
+        _toast('login_success')
+        let token = res.data.satoken
+        userStore.setIsSign(true)
+        userStore.setToken(token)
+        setTimeout(() => {
+          router.replace('/')
+          userStore.getUserInfo()
+        }, 500)
+      } else {
+        _toast(res.msg)
       }
     })
     .catch((err) => {
@@ -340,6 +435,9 @@ const forgerPasswordSubmit = (params) => {
   padding: 0 15px 50px;
   .btnBox {
     margin-top: 50px;
+  }
+  .btnBox--wallet {
+    margin-top: 0;
   }
   .account {
     padding: 50px 0 50px;
