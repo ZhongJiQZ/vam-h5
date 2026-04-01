@@ -5,6 +5,16 @@
     </div>
     <div class="title-row">
       <div class="title-left">
+        <span class="fund-icon-wrap" aria-hidden="true">
+          <img
+            :src="fundIconSrc"
+            alt=""
+            class="fund-icon"
+            loading="lazy"
+            decoding="async"
+            @error="onFundIconError"
+          />
+        </span>
         <span class="title-text">{{ itemObj.title }}</span>
         <span
           v-if="itemObj.classify !== '0' && itemObj.classify !== '2'"
@@ -50,13 +60,39 @@
 <script setup>
 import { _t18 } from '@/utils/public'
 import projectBg from '@/assets/images/financial/project-bg.png'
+import defaultFundIcon from '@/assets/images/Frame 981370.png'
 
-defineProps({
+const props = defineProps({
   itemObj: {
     type: Object,
     default: () => ({})
   }
 })
+
+const fundIconSrc = ref(defaultFundIcon)
+
+function remoteIconUrl(raw) {
+  if (typeof raw !== 'string') return ''
+  const u = raw.trim()
+  return u.length ? u : ''
+}
+
+function syncFundIcon() {
+  const remote = remoteIconUrl(props.itemObj?.icon)
+  fundIconSrc.value = remote || defaultFundIcon
+}
+
+function onFundIconError() {
+  fundIconSrc.value = defaultFundIcon
+}
+
+watch(
+  () => [props.itemObj?.id, props.itemObj?.icon],
+  () => {
+    syncFundIcon()
+  },
+  { immediate: true }
+)
 </script>
 <style lang="scss" scoped>
 .item {
@@ -98,6 +134,26 @@ defineProps({
   flex-wrap: wrap;
   gap: 8px;
   min-width: 0;
+}
+
+.fund-icon-wrap {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #e8ebf0;
+}
+
+.fund-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  display: block;
 }
 
 .title-text {
