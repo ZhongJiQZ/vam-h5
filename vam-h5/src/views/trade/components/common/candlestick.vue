@@ -161,6 +161,31 @@ onMounted(async () => {
   })
 })
 
+watch(
+  () => props.coinInfo,
+  (nv, ov) => {
+    if (!nv || typeof nv !== 'object') {
+      return
+    }
+    const coinChanged = ov?.coin != null && nv.coin !== ov.coin
+    Object.assign(currentCoinInfo, nv)
+    if (coinChanged) {
+      Object.assign(tempTrade, {
+        time: '',
+        amount: '',
+        open: '',
+        high: '',
+        low: '',
+        close: '',
+        volume: '',
+        lastClose: '',
+        intervention: false
+      })
+    }
+  },
+  { deep: true }
+)
+
 onBeforeUnmount(() => {
   document.removeEventListener('event_tradeSymbolChange', eventTradeSymbolChange)
   unsubscribeTrades(true)
@@ -264,7 +289,7 @@ dataFeedInstance.getBars = async ({ symbolInfo: coinInfo, resolution, from, firs
 
         intervalDiff.value = Math.abs(tempTrade.time - barList.slice(-2, -1)[0].time)
         console.log('candle stick init price:', tempTrade.lastClose, intervalDiff.value)
-        updateDataKline(tempTrade)
+        updateDataKline(tempTrade, coinInfo.coin)
         subscribeTrades({
           coin: coinInfo.coin,
           symbol: coinInfo.symbol,
@@ -374,39 +399,46 @@ const createStudy = () => {
  */
 const subscribeClientList = []
 /**
- * 取消订阅
- * @param {*} firstDataRequest
+ * 当前 WS 真实订阅的币种+周期（用于切换交易对时无条件取消旧订阅，避免旧 K 线/成交推送污染新币种）
  */
-const unsubscribeTrades = (firstDataRequest = false) => {
-  if (currentCoinInfo.coin==props.coinInfo.coin) {
+let activeWsSubscription = { coin: '', interval: '' }
+/**
+ * 取消订阅
+ * @param {boolean} withTradeAndPubSub 是否同时取消 TRADE、清空 K 线 PubSub（首次/切换品种时为 true）
+ */
+const unsubscribeTrades = (withTradeAndPubSub = false) => {
+  if (activeWsSubscription.coin) {
     _coinWebSocket.send({
       op: socketDict.unsubscribe,
       type: socketDict.KLINE,
-      // symbol: currentCoinInfo.coin,
-      symbol: props.coinInfo.coin,
-      interval: currentInterval.key
+      symbol: activeWsSubscription.coin,
+      interval: activeWsSubscription.interval
     })
-    if (firstDataRequest) {
-      subscribeClientList.forEach((subKey) => {
-        subKey && PubSub.unsubscribe(subKey)
-      })
-      subscribeClientList.length = 0
+  }
+  if (withTradeAndPubSub) {
+    if (activeWsSubscription.coin) {
       _coinWebSocket.send({
         op: socketDict.unsubscribe,
         type: socketDict.TRADE,
-        // symbol: currentCoinInfo.coin
-        symbol: props.coinInfo.coin
+        symbol: activeWsSubscription.coin
       })
     }
+    subscribeClientList.forEach((subKey) => {
+      subKey && PubSub.unsubscribe(subKey)
+    })
+    subscribeClientList.length = 0
   }
+  activeWsSubscription = { coin: '', interval: '' }
 }
 
 /**
  * 订阅实时成交
  */
 const subscribeTrades = async (params) => {
-  // 先取消订阅
+  // 先取消上一笔 WS +（按需）PubSub，再订阅新币种；禁止用 currentCoinInfo===props 判断，否则切换币种时不会退订
   unsubscribeTrades(params.firstDataRequest)
+
+  activeWsSubscription = { coin: params.coin, interval: params.interval }
 
   _coinWebSocket.send({
     op: socketDict.subscribe,
@@ -464,25 +496,32 @@ const subscribeTrades = async (params) => {
       tempTrade.low = tempData.low
       tempTrade.close = Number(tempData.close)
       tempTrade.volume = tempData.vol
-      updateDataKline(tempTrade)
+      updateDataKline(tempTrade, params.coin)
     }
   })
   subscribeClientList.push(candlestickKey)
 }
 /**
  * 更新数据
+ * @param detailCoin K 线所属币种（必须与 newData 一致；禁止用 currentCoinInfo，切换品种时仍存在异步窗口且会把 BTC 价位写到 XRP）
  */
-const updateDataKline = (newData) => {
+const updateDataKline = (newData, detailCoin) => {
   if (newData?.close) {
-    // console.log('更新数据', newData)
-    datafeeds.updateData(newData)
+    const coinKey = detailCoin || props.coinInfo?.coin
+    if (!coinKey) {
+      return
+    }
+    // 仅当前图表展示品种与推送一致时才改 TradingView，避免旧订阅迟到包把 BTC 柱子画进 XRP
+    if (props.coinInfo?.coin && coinKey === props.coinInfo.coin) {
+      datafeeds?.updateData(newData)
+    }
     PubSub.publish(socketDict.DETAIL, {
       data: {
         ...newData,
         vol: newData.volume
       },
       origin: 'kline',
-      symbol: currentCoinInfo.coin,
+      symbol: coinKey,
       type: socketDict.DETAIL
     })
   }
@@ -490,8 +529,8 @@ const updateDataKline = (newData) => {
 /**
  * 更新数据 限流
  */
-const updateDataKlineThrottle = throttle(function (newData) {
-  updateDataKline(newData)
+const updateDataKlineThrottle = throttle(function (newData, detailCoin) {
+  updateDataKline(newData, detailCoin)
 }, 300)
 /**
  * 显示更多分辨率
