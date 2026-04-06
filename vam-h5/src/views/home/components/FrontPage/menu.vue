@@ -12,6 +12,8 @@
       <!-- <svg-load name="mengbanzu12" class="noticeImg"></svg-load> -->
       <!-- <van-notice-bar class="currentNotice" :text="currentNotice" /> -->
       {{ currentNotice }}
+        <!-- <div>领取200usdt</div> -->
+        
     </div>
   </div>
   <div class="customerService" @click="dispatchCustomEvent('event_serviceChange')">
@@ -154,7 +156,7 @@ onUnmounted(() => {
  */
 /** 体验券活动页（首页公告位入口） */
 const toGiftCertificate = () => {
-  $router.push('/gift-certificate')
+  // $router.push('/gift-certificate')
 }
 
 const toRecharge = () => {
