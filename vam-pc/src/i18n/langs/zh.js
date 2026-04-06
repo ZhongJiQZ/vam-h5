@@ -33,6 +33,7 @@ export default {
     power: "助力贷",
     rules: "规则",
     finance: "理财",
+    trialVoucher: "体验券",
   },
   bottomNav: {
     nav1: "现货行情",
@@ -914,4 +915,37 @@ export default {
   "nation_Yemen": "也门",
   "nation_Zambia": "赞比亚",
   "nation_Zimbabwe": "津巴布韦",
+
+  gift_cert: {
+    title: "充值领金 好礼同享",
+    empty_activity: "暂无礼券活动，请稍后再试",
+    current_activity: "当前活动：",
+    voucher_name_fallback: "体验券",
+    placeholder_code: "请输入礼券码",
+    redeem: "兑换",
+    claim: "领取",
+    progress_recharged: "当前已充值 {cur} / {tgt} {sym}",
+    feed_empty: "暂无动态",
+    section_live: "最新动态",
+    rule_participate_title: "【活动参与方式】",
+    rule_participate_body:
+      "单笔或累计充值每满 {hint}，可获得体验券（面额以活动批次为准）；达标后可点击「领取」获取礼券码，可领次数以进度与平台规则为准。",
+    rule_guide_title: "【兑换码使用指南】",
+    rule_guide_body:
+      "兑换码可分享给好友；通常仅限完成实名认证的新用户使用；兑换码自生成日起 7 天内有效，过期作废（以平台公示为准）。",
+    rule_trial_title: "【体验金消费规则】",
+    rule_trial_body:
+      "体验金优先用于合约交易的保证金；平仓后体验金本金收回系统，净盈利划入现金账户可提现；若订单所需保证金超过体验金余额，将自动使用自有资金补足。",
+    toast_input_code: "请输入礼券码",
+    toast_login: "请先登录",
+    toast_claim_ok: "兑换成功",
+    toast_allocate_ok: "领取成功",
+    toast_no_activity: "暂无可参与活动",
+    toast_allocate_denied: "当前不满足领取条件",
+    feed_congrats: "恭喜 UID{uid} 领取 {amt} {cur} 体验券！",
+    my_codes_title: "您的体验券",
+    my_codes_empty: "暂无礼券记录",
+    my_codes_open: "我的体验券",
+    copy_btn: "复制",
+  },
 };

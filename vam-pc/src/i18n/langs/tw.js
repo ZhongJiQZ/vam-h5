@@ -32,6 +32,7 @@ export default {
     power: "助力貸",
     rules: "規則",
     finance: "理財",
+    trialVoucher: "體驗券",
   },
   bottomNav: {
     nav1: "現貨行情",
@@ -908,4 +909,36 @@ export default {
   "nation_Zambia": "尚比亞",
   "nation_Zimbabwe": "辛巴威",
 
+  gift_cert: {
+    title: "充值領金 好禮同享",
+    empty_activity: "暫無禮券活動，請稍後再試",
+    current_activity: "目前活動：",
+    voucher_name_fallback: "體驗券",
+    placeholder_code: "請輸入禮券碼",
+    redeem: "兌換",
+    claim: "領取",
+    progress_recharged: "目前已充值 {cur} / {tgt} {sym}",
+    feed_empty: "暫無動態",
+    section_live: "最新動態",
+    rule_participate_title: "【活動參與方式】",
+    rule_participate_body:
+      "單筆或累計充值每滿 {hint}，可獲得體驗券（面額以活動批次為準）；達標後可點擊「領取」取得禮券碼，可領次數以進度與平台規則為準。",
+    rule_guide_title: "【兌換碼使用指南】",
+    rule_guide_body:
+      "兌換碼可分享給好友；通常僅限完成實名認證的新用戶使用；兌換碼自生成年起 7 天內有效，過期作廢（以平台公示為準）。",
+    rule_trial_title: "【體驗金消費規則】",
+    rule_trial_body:
+      "體驗金優先用於合約交易之保證金；平倉後體驗金本金收回系統，淨盈利劃入現金帳戶可提現；若訂單所需保證金超過體驗金餘額，將自動使用自有資金補足。",
+    toast_input_code: "請輸入禮券碼",
+    toast_login: "請先登入",
+    toast_claim_ok: "兌換成功",
+    toast_allocate_ok: "領取成功",
+    toast_no_activity: "暫無可參與活動",
+    toast_allocate_denied: "目前不符合領取條件",
+    feed_congrats: "恭喜 UID{uid} 領取 {amt} {cur} 體驗券！",
+    my_codes_title: "您的體驗券",
+    my_codes_empty: "暫無禮券紀錄",
+    my_codes_open: "我的體驗券",
+    copy_btn: "複製",
+  },
 };

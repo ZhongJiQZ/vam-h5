@@ -13,6 +13,7 @@ import it from "./langs/it";
 import tw from "./langs/tw";
 import id from "./langs/id";
 import pk from "./langs/pk";
+import giftCertMessages from "./langs/giftCertMessages";
 // import hk from './zh-hk.json'
 // import vi from './vi-vn.json'
 // import de from './de-DE.json'
@@ -28,6 +29,16 @@ import enLocale from "element-ui/lib/locale/lang/en";
 import zhLocale from "element-ui/lib/locale/lang/zh-CN";
 // src/i18n/index.js
 
+function withGiftCert(pack) {
+  return {
+    ...pack,
+    navbar: {
+      ...pack.navbar,
+      trialVoucher: giftCertMessages.navbarTrialVoucher,
+    },
+    gift_cert: giftCertMessages.gift_cert,
+  };
+}
 
 export default {
   //英文语言包
@@ -36,44 +47,44 @@ export default {
     ...enLocale,
   },
   ja: {
-    ...ja,
+    ...withGiftCert(ja),
     ...enLocale,
   },
   ko: {
-    ...ko,
+    ...withGiftCert(ko),
     ...enLocale,
   },
 
   pt: {
-    ...pt,
+    ...withGiftCert(pt),
     ...enLocale,
   },
   vi: {
-    ...vi,
+    ...withGiftCert(vi),
     ...enLocale,
   },
   th: {
-    ...th,
+    ...withGiftCert(th),
     ...enLocale,
   },
   es: {
-    ...es,
+    ...withGiftCert(es),
     ...enLocale,
   },
   fr: {
-    ...fr,
+    ...withGiftCert(fr),
     ...enLocale,
   },
   ru: {
-    ...ru,
+    ...withGiftCert(ru),
     ...enLocale,
   },
   de: {
-    ...de,
+    ...withGiftCert(de),
     ...enLocale,
   },
   it: {
-    ...it,
+    ...withGiftCert(it),
     ...enLocale,
   },
   zh: {
@@ -85,11 +96,11 @@ export default {
     ...zhLocale,
   },
   id: {
-    ...id,
+    ...withGiftCert(id),
     ...enLocale,
   },
   pk: {
-    ...pk,
+    ...withGiftCert(pk),
     ...enLocale,
   },
 };

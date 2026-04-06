@@ -61,6 +61,11 @@ export const headerList = [
     linkUrl: "/finance/investment",
     isOpen: true,
   },
+  {
+    name: "navbar.trialVoucher",
+    linkUrl: "/giftCertificate/index",
+    isOpen: true,
+  },
 ];
 
 export const footerList = [
