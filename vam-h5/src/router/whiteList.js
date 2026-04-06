@@ -17,7 +17,8 @@ export const noLoginRouterList = [
   // '/service', //customer service
   // '/broadcastDetails', // broadcast
   '/termsOfuse',
-  '/privacyPolicy'
+  '/privacyPolicy',
+  '/gift-certificate'
 ]
 
 /**

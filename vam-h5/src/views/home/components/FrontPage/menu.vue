@@ -7,7 +7,7 @@
       </div>
     </div>
   </div>
-  <div class="notice">
+  <div class="notice" @click="toGiftCertificate">
     <div class="itemNo">
       <!-- <svg-load name="mengbanzu12" class="noticeImg"></svg-load> -->
       <!-- <van-notice-bar class="currentNotice" :text="currentNotice" /> -->
@@ -152,6 +152,11 @@ onUnmounted(() => {
 /**
  * 点击快捷充币
  */
+/** 体验券活动页（首页公告位入口） */
+const toGiftCertificate = () => {
+  $router.push('/gift-certificate')
+}
+
 const toRecharge = () => {
   if (DIFF_RECHARGE_COSTORM.includes(__config._APP_ENV)) {
     if (tokenStatus.value) {
@@ -204,6 +209,7 @@ const toRecharge = () => {
 
 .notice {
   padding: 15px 15px 10px;
+  cursor: pointer;
   background: url('@/assets/images/notice-bg.png') no-repeat left center;
   background-size: 100% 100%;
 

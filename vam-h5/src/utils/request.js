@@ -45,7 +45,10 @@ _axios.interceptors.response.use((response) => {
       userStore.signOut()
       // setTimeout(() => location.reload(), 10)
     }
-    if (response.data && response.data.code > 0) {
+    // 成功码须显式判断：用 code > 0 会把业务错误码 500 当成成功
+    const c = response.data?.code
+    const ok = c === 200 || c === '200'
+    if (response.data && ok) {
       return Promise.resolve(response.data)
     } else {
       showToast(response.data.msg || 'System error')
