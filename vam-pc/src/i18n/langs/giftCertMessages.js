@@ -1,4 +1,8 @@
-/** PC 体验券页：未单独翻译的语言复用英文文案 + 顶栏「体验券」标签 */
+/**
+ * PC 体验券页英文兜底（与 i18n/index.js 中 withGiftCert 联用）。
+ * - 已人工维护完整翻译：zh.js、tw.js 内的 gift_cert（勿在此处覆盖）。
+ * - 其余语言（ja/ko/de/…）：注入本文件英文，键与页面 gift_cert.* 一一对应；若需地道翻译，在对应 lang 文件增加 gift_cert 并改为合并策略即可。
+ */
 export default {
   navbarTrialVoucher: "Trial voucher",
   gift_cert: {
@@ -28,8 +32,11 @@ export default {
     toast_no_activity: "No active campaign",
     toast_allocate_denied: "Not eligible to claim yet",
     feed_congrats: "Congrats! UID{uid} claimed a {amt} {cur} trial voucher!",
+    feed_claim_line: "{userMask} claimed ×{amount} — {batchName}",
     my_codes_title: "Your trial vouchers",
     my_codes_empty: "No vouchers yet",
+    my_code_unused: "Unused",
+    my_code_used: "Used",
     my_codes_open: "My vouchers",
     copy_btn: "Copy",
   },

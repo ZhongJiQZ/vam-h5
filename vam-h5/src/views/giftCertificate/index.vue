@@ -8,7 +8,12 @@
       :bg-color="'var(--gift-page-bg, #eef1f6)'"
     >
       <template #footer>
-        <button type="button" class="header-gift-wrap" @click.stop="openMyCodesPopup">
+        <button
+          type="button"
+          class="header-gift-wrap"
+          :aria-label="t('gift_cert_my_codes_open')"
+          @click.stop="openMyCodesPopup"
+        >
           <van-icon name="gift-o" class="header-gift" size="22" />
         </button>
       </template>
@@ -42,7 +47,15 @@
                 class="my-codes-row"
                 :class="{ 'my-codes-row--inactive': row.inactive }"
               >
-                <span class="my-codes-code">{{ row.code }}</span>
+                <div class="my-codes-cell">
+                  <span
+                    class="my-codes-status"
+                    :class="row.isCodeUsed ? 'my-codes-status--used' : 'my-codes-status--unused'"
+                  >
+                    {{ row.isCodeUsed ? t('gift_cert_my_code_used') : t('gift_cert_my_code_unused') }}
+                  </span>
+                  <span class="my-codes-code">{{ row.code }}</span>
+                </div>
                 <van-button
                   type="default"
                   size="small"
@@ -243,7 +256,10 @@ const progressPercent = computed(() => {
 function formatFeedLine(item, tFn) {
   if (item == null) return ''
   if (typeof item === 'string') return item
-  const uid =
+  const batchName = item.batchName ?? item.batch_name ?? ''
+  const userMask =
+    item.userMask ??
+    item.user_mask ??
     item.maskUid ??
     item.maskedUid ??
     (item.uid != null ? String(item.uid).replace(/(\d{2})\d+(\d{2})/, '$1*****$2') : '')
@@ -251,8 +267,18 @@ function formatFeedLine(item, tFn) {
   const cur = item.currency ?? 'USDC'
   if (item.zh || item.cn) return item.zh || item.cn
   if (item.en) return item.en
-  if (uid && amt !== '') {
-    return tFn('gift_cert_feed_congrats', { uid, amt, cur })
+  if (batchName && userMask && amt !== '') {
+    let line = tFn('gift_cert_feed_claim_line', {
+      userMask,
+      batchName,
+      amount: amt
+    })
+    const claimTime = item.claimTime ?? item.claim_time
+    if (claimTime) line += ` · ${claimTime}`
+    return line
+  }
+  if (userMask && amt !== '') {
+    return tFn('gift_cert_feed_congrats', { uid: userMask, amt, cur })
   }
   if (item.msg || item.message) return item.msg || item.message
   try {
@@ -368,9 +394,20 @@ async function loadProgress() {
   }
 }
 
+function isTruthyUseTime(raw) {
+  if (raw == null) return false
+  if (typeof raw === 'string') return raw.trim() !== ''
+  return true
+}
+
 function normalizeMyCodeRow(item, index) {
   if (typeof item === 'string') {
-    return { code: item, inactive: false, key: `c-${index}-${item.slice(0, 12)}` }
+    return {
+      code: item,
+      inactive: false,
+      isCodeUsed: false,
+      key: `c-${index}-${item.slice(0, 12)}`
+    }
   }
   const code =
     item.code ??
@@ -379,8 +416,11 @@ function normalizeMyCodeRow(item, index) {
     item.voucherCode ??
     item.redeemCode ??
     ''
+  const useTimeRaw = item.useTime ?? item.use_time ?? item.usetime
+  const isCodeUsed = isTruthyUseTime(useTimeRaw)
   const status = item.status ?? item.useStatus ?? item.state
   const inactive = !!(
+    isCodeUsed ||
     item.used === true ||
     item.isUsed === true ||
     item.usedFlag === 1 ||
@@ -397,6 +437,7 @@ function normalizeMyCodeRow(item, index) {
   return {
     code: String(code),
     inactive,
+    isCodeUsed,
     key: String(item.id ?? `${index}-${code}`.slice(0, 48))
   }
 }
@@ -605,9 +646,31 @@ onMounted(async () => {
 .my-codes-row:last-child {
   border-bottom: none;
 }
-.my-codes-code {
+.my-codes-cell {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.my-codes-status {
+  align-self: flex-start;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  line-height: 1.35;
+}
+.my-codes-status--unused {
+  color: #047857;
+  background: rgba(16, 185, 129, 0.14);
+}
+.my-codes-status--used {
+  color: #6b7280;
+  background: rgba(107, 114, 128, 0.12);
+}
+.my-codes-code {
   font-size: 13px;
   font-weight: 500;
   color: #111827;

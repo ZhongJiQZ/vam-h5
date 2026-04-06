@@ -1237,5 +1237,10 @@
   "gift_cert_toast_allocate_denied": "Not eligible to claim yet",
   "gift_cert_feed_congrats": "Congrats! UID{uid} claimed a {amt} {cur} trial voucher!",
   "gift_cert_my_codes_title": "Your trial vouchers",
-  "gift_cert_my_codes_empty": "No vouchers yet"
+  "gift_cert_my_codes_empty": "No vouchers yet",
+  "gift_cert_feed_claim_line": "{userMask} claimed ×{amount} — {batchName}",
+  "gift_cert_my_code_unused": "Unused",
+  "gift_cert_my_code_used": "Used",
+  "gift_cert_home_entry_empty": "No vouchers available at the moment",
+  "gift_cert_my_codes_open": "My vouchers"
 }

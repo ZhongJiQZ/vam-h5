@@ -1221,6 +1221,7 @@
   "gift_cert_empty_activity": "暂无礼券活动，请稍后再试",
   "gift_cert_current_activity": "当前活动：",
   "gift_cert_voucher_name_fallback": "体验券",
+  "gift_cert_home_entry_empty": "暂无券可以使用",
   "gift_cert_placeholder_code": "请输入礼券码",
   "gift_cert_redeem": "兑换",
   "gift_cert_claim": "领取",
@@ -1240,6 +1241,10 @@
   "gift_cert_toast_no_activity": "暂无可参与活动",
   "gift_cert_toast_allocate_denied": "当前不满足领取条件",
   "gift_cert_feed_congrats": "恭喜 UID{uid} 领取 {amt} {cur} 体验券！",
+  "gift_cert_feed_claim_line": "{userMask} 领取「{batchName}」×{amount}",
   "gift_cert_my_codes_title": "您的体验券",
-  "gift_cert_my_codes_empty": "暂无礼券记录"
+  "gift_cert_my_codes_empty": "暂无礼券记录",
+  "gift_cert_my_codes_open": "我的体验券",
+  "gift_cert_my_code_unused": "未使用",
+  "gift_cert_my_code_used": "已使用"
 }

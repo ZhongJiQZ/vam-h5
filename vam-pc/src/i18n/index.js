@@ -41,9 +41,9 @@ function withGiftCert(pack) {
 }
 
 export default {
-  //英文语言包
+  // 英文语言包（体验券文案与 giftCertMessages 统一，避免与 ja/ko 等英文兜底不一致）
   en: {
-    ...en,
+    ...withGiftCert(en),
     ...enLocale,
   },
   ja: {
@@ -87,6 +87,7 @@ export default {
     ...withGiftCert(it),
     ...enLocale,
   },
+  // 简/繁：各语言文件内需保留完整 gift_cert（勿用 giftCertMessages 覆盖）
   zh: {
     ...zh,
     ...zhLocale,

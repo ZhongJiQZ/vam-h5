@@ -11,9 +11,8 @@
     <div class="itemNo">
       <!-- <svg-load name="mengbanzu12" class="noticeImg"></svg-load> -->
       <!-- <van-notice-bar class="currentNotice" :text="currentNotice" /> -->
-      {{ currentNotice }}
-        <!-- <div>领取200usdt</div> -->
-        
+      <!-- {{ currentNotice }} -->
+        <div class="gift-entry-text">{{ giftEntryDisplay }}</div>
     </div>
   </div>
   <div class="customerService" @click="dispatchCustomEvent('event_serviceChange')">
@@ -58,12 +57,13 @@
 <script setup>
 import { DIFF_RECHARGE_COSTORM, DIFF_HOME_BANNER } from '@/config/index'
 import { publiceNotice } from '@/api/common/index'
-import { onMounted, computed, onUnmounted } from 'vue'
+import { onMounted, computed, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useMainStore } from '@/store/index.js'
 import { useUserStore } from '@/store/user/index'
 import { getInfo } from '@/api/info.js'
 import { noticeList } from '@/api/common/index'
+import { giftBatchList } from '@/api/giftCertificate'
 import { _t18, _toView } from '@/utils/public'
 import InfoPopup from '@/views/home/components/InfoPopup.vue'
 import { dispatchCustomEvent } from '@/utils'
@@ -80,6 +80,32 @@ const menuList = computed(() => {
   return tempData
 })
 const currentNotice = ref('')
+
+/** 首页体验券入口文案：与礼券页一致取批次列表首项名称 */
+const giftBannerName = ref('')
+function normalizeGiftBatchList(res) {
+  const d = res?.data
+  if (Array.isArray(d)) return d
+  if (Array.isArray(res?.rows)) return res.rows
+  if (Array.isArray(d?.list)) return d.list
+  if (Array.isArray(d?.records)) return d.records
+  return []
+}
+const giftEntryDisplay = computed(() => {
+  const n = (giftBannerName.value || '').trim()
+  return n || _t18('gift_cert_home_entry_empty')
+})
+async function loadGiftBannerName() {
+  try {
+    const res = await giftBatchList({})
+    const list = normalizeGiftBatchList(res)
+    const first = list[0]
+    const name = first?.batchName ?? first?.name ?? first?.batch_name ?? ''
+    giftBannerName.value = name ? String(name) : ''
+  } catch {
+    giftBannerName.value = ''
+  }
+}
 
 const routeLink = (link) => {
   if (link === 'live' && showNoticeContent.value) {
@@ -146,6 +172,7 @@ onMounted(async () => {
   } catch (error) { }
   document.addEventListener('event_userInfoChange', event_userInfoChange)
   getInfoList()
+  loadGiftBannerName()
 })
 
 onUnmounted(() => {
@@ -156,7 +183,7 @@ onUnmounted(() => {
  */
 /** 体验券活动页（首页公告位入口） */
 const toGiftCertificate = () => {
-  // $router.push('/gift-certificate')
+  $router.push('/gift-certificate')
 }
 
 const toRecharge = () => {

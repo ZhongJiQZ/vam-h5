@@ -1218,6 +1218,7 @@
   "gift_cert_empty_activity": "暫無禮券活動，請稍後再試",
   "gift_cert_current_activity": "目前活動：",
   "gift_cert_voucher_name_fallback": "體驗券",
+  "gift_cert_home_entry_empty": "暫無券可以使用",
   "gift_cert_placeholder_code": "請輸入禮券碼",
   "gift_cert_redeem": "兌換",
   "gift_cert_claim": "領取",
@@ -1237,6 +1238,10 @@
   "gift_cert_toast_no_activity": "暫無可參與活動",
   "gift_cert_toast_allocate_denied": "目前不符合領取條件",
   "gift_cert_feed_congrats": "恭喜 UID{uid} 領取 {amt} {cur} 體驗券！",
+  "gift_cert_feed_claim_line": "{userMask} 領取「{batchName}」×{amount}",
   "gift_cert_my_codes_title": "您的體驗券",
-  "gift_cert_my_codes_empty": "暫無禮券紀錄"
+  "gift_cert_my_codes_empty": "暫無禮券紀錄",
+  "gift_cert_my_codes_open": "我的體驗券",
+  "gift_cert_my_code_unused": "未使用",
+  "gift_cert_my_code_used": "已使用"
 }

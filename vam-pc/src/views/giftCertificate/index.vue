@@ -2,15 +2,6 @@
   <div class="gift-cert-pc">
     <div class="page-head">
       <h1 class="page-title">{{ $t("gift_cert.title") }}</h1>
-      <div class="page-head-actions">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-present"
-          @click="openMyCodes"
-          >{{ $t("gift_cert.my_codes_open") }}</el-button
-        >
-      </div>
     </div>
 
     <div class="page-body">
@@ -18,11 +9,23 @@
         {{ $t("gift_cert.empty_activity") }}
       </p>
 
-      <div v-if="primaryBatch" class="batch-pill">
-        <span class="label">{{ $t("gift_cert.current_activity") }}</span>
-        <span class="name">{{
-          primaryBatch.name || $t("gift_cert.voucher_name_fallback")
-        }}</span>
+      <div v-if="batchesLoaded" class="batch-pill-row">
+        <div v-if="primaryBatch" class="batch-pill batch-pill--main">
+          <span class="label">{{ $t("gift_cert.current_activity") }}</span>
+          <span class="name">{{
+            primaryBatch.name || $t("gift_cert.voucher_name_fallback")
+          }}</span>
+        </div>
+        <div v-else class="batch-pill-spacer" aria-hidden="true" />
+        <el-button
+          type="warning"
+          plain
+          icon="el-icon-present"
+          class="batch-pill-my-codes-btn"
+          @click="openMyCodes"
+        >
+          {{ $t("gift_cert.my_codes_open") }}
+        </el-button>
       </div>
 
       <el-card class="block-card" shadow="hover">
@@ -137,7 +140,19 @@
             class="my-codes-row"
             :class="{ 'is-inactive': row.inactive }"
           >
-            <span class="code-text">{{ row.code }}</span>
+            <div class="my-codes-cell">
+              <span
+                class="my-codes-status"
+                :class="row.isCodeUsed ? 'is-used' : 'is-unused'"
+              >
+                {{
+                  row.isCodeUsed
+                    ? $t("gift_cert.my_code_used")
+                    : $t("gift_cert.my_code_unused")
+                }}
+              </span>
+              <span class="code-text">{{ row.code }}</span>
+            </div>
             <el-button
               size="mini"
               :plain="!row.inactive"
@@ -268,29 +283,43 @@ export default {
     this.init();
   },
   methods: {
+    /**
+     * 手机端 request 拦截器已返回与后端一致的「业务体」；电脑端 axios 仍是整包响应，
+     * 此处多衬一层 res.data，得到的对象与 H5 中 `await giftXxx()` 结果同形，便于同一套字段读取。
+     */
+    giftResBodySameAsH5(pcAxiosRes) {
+      if (pcAxiosRes == null || pcAxiosRes.data == null) return {};
+      return pcAxiosRes.data;
+    },
+    /** 列表类接口：在业务体上取 data / list / records（与 H5 页内 normalizeList 逻辑一致，仅先经 giftResBodySameAsH5） */
+    normalizeList(pcAxiosRes) {
+      const body = this.giftResBodySameAsH5(pcAxiosRes);
+      const d = body.data;
+      if (Array.isArray(d)) return d;
+      if (Array.isArray(body.rows)) return body.rows;
+      if (d != null && typeof d === "object") {
+        if (Array.isArray(d.list)) return d.list;
+        if (Array.isArray(d.records)) return d.records;
+      }
+      return [];
+    },
     setDocTitle() {
       document.title = this.$t("gift_cert.title");
     },
     async init() {
       this.setDocTitle();
-      await this.loadBatches();
-      await Promise.all([this.loadFeed(), this.loadProgress()]);
-    },
-    normalizeList(res) {
-      const body = res && res.data ? res.data : {};
-      const d = body.data;
-      if (Array.isArray(d)) return d;
-      if (Array.isArray(body.rows)) return body.rows;
-      if (d && Array.isArray(d.list)) return d.list;
-      if (d && Array.isArray(d.records)) return d.records;
-      return [];
+      await Promise.allSettled([this.loadBatches(), this.loadFeed()]);
+      await this.loadProgress();
     },
     formatFeedLine(item, tFn) {
       if (item == null) return "";
       if (typeof item === "string") return item;
-      const uid =
-        item.maskUid ||
-        item.maskedUid ||
+      const batchName = item.batchName ?? item.batch_name ?? "";
+      const userMask =
+        item.userMask ??
+        item.user_mask ??
+        item.maskUid ??
+        item.maskedUid ??
         (item.uid != null
           ? String(item.uid).replace(/(\d{2})\d+(\d{2})/, "$1*****$2")
           : "");
@@ -298,8 +327,18 @@ export default {
       const cur = item.currency ?? "USDC";
       if (item.zh || item.cn) return item.zh || item.cn;
       if (item.en) return item.en;
-      if (uid && amt !== "") {
-        return tFn("gift_cert.feed_congrats", { uid, amt, cur });
+      if (batchName && userMask && amt !== "") {
+        let line = tFn("gift_cert.feed_claim_line", {
+          userMask,
+          batchName,
+          amount: amt,
+        });
+        const claimTime = item.claimTime ?? item.claim_time;
+        if (claimTime) line += ` · ${claimTime}`;
+        return line;
+      }
+      if (userMask && amt !== "") {
+        return tFn("gift_cert.feed_congrats", { uid: userMask, amt, cur });
       }
       if (item.msg || item.message) return item.msg || item.message;
       try {
@@ -369,7 +408,7 @@ export default {
       }
       try {
         const res = await giftProgress({ batchId: id });
-        const body = res && res.data ? res.data : {};
+        const body = this.giftResBodySameAsH5(res);
         const d = body.data != null ? body.data : body;
         const segP = d.segmentProgress ?? d.segment_progress;
         const segT = d.segmentTarget ?? d.segment_target;
@@ -405,11 +444,17 @@ export default {
         if (this.primaryBatch) this.applyEmbeddedProgress(this.primaryBatch);
       }
     },
+    isTruthyUseTime(raw) {
+      if (raw == null) return false;
+      if (typeof raw === "string") return raw.trim() !== "";
+      return true;
+    },
     normalizeMyCodeRow(item, index) {
       if (typeof item === "string") {
         return {
           code: item,
           inactive: false,
+          isCodeUsed: false,
           key: "c-" + index + "-" + item.slice(0, 12),
         };
       }
@@ -420,8 +465,11 @@ export default {
         item.voucherCode ??
         item.redeemCode ??
         "";
+      const useTimeRaw = item.useTime ?? item.use_time ?? item.usetime;
+      const isCodeUsed = this.isTruthyUseTime(useTimeRaw);
       const status = item.status ?? item.useStatus ?? item.state;
       const inactive = !!(
+        isCodeUsed ||
         item.used === true ||
         item.isUsed === true ||
         item.usedFlag === 1 ||
@@ -438,6 +486,7 @@ export default {
       return {
         code: String(code),
         inactive,
+        isCodeUsed,
         key: String(item.id || String(index) + "-" + code).slice(0, 48),
       };
     },
@@ -545,11 +594,6 @@ export default {
 }
 
 .page-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 16px;
   margin-bottom: 20px;
 }
 
@@ -571,6 +615,29 @@ export default {
   color: #909399;
   margin: 0;
   padding: 16px;
+}
+
+.batch-pill-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.batch-pill-spacer {
+  flex: 1;
+  min-width: 8px;
+  min-height: 1px;
+}
+
+.batch-pill--main {
+  flex: 1;
+  min-width: 200px;
+}
+
+.batch-pill-my-codes-btn {
+  flex-shrink: 0;
 }
 
 .batch-pill {
@@ -730,9 +797,30 @@ export default {
   &:last-child {
     border-bottom: none;
   }
-  .code-text {
+  .my-codes-cell {
     flex: 1;
     min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .my-codes-status {
+    align-self: flex-start;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 999px;
+    line-height: 1.35;
+    &.is-unused {
+      color: #047857;
+      background: rgba(16, 185, 129, 0.14);
+    }
+    &.is-used {
+      color: #6b7280;
+      background: rgba(107, 114, 128, 0.12);
+    }
+  }
+  .code-text {
     word-break: break-all;
     font-size: 13px;
     color: #303133;
