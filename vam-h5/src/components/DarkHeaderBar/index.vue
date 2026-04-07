@@ -58,8 +58,8 @@ import { useRouter } from 'vue-router'
 import { dispatchCustomEvent } from '@/utils'
 import { _back } from '@/utils/public'
 import backIcon from '@/assets/images/back.png'
-import serviceIcon from '@/assets/images/service.png'
-import rechargeOrderIcon from '@/assets/images/recharge-order.png'
+import serviceIcon from '@/assets/images/black/service.png'
+import rechargeOrderIcon from '@/assets/images/black/recharge-order.png'
 
 const router = useRouter()
 

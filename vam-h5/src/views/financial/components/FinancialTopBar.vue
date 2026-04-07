@@ -2,10 +2,10 @@
   <div class="financial-top-bar">
     <img :src="logoSrc" alt="" class="logo-img" loading="lazy" @click="_toView('/home')" />
     <div class="actions">
-      <img src="@/assets/images/financial/service.png" alt="" class="icon"
+      <img src="@/assets/images/black/service.png" alt="" class="icon"
         @click="dispatchCustomEvent('event_serviceChange')" />
-      <img src="@/assets/images/financial/sousuo.png" alt="" class="icon icon-search" @click="$router.push('/quote')" />
-      <img src="@/assets/images/financial/user.png" alt="" class="icon" @click="$router.push('/myassets')" />
+      <img src="@/assets/images/black/sousuo.png" alt="" class="icon icon-search" @click="$router.push('/quote')" />
+      <img src="@/assets/images/black/user.png" alt="" class="icon" @click="$router.push('/myassets')" />
     </div>
   </div>
 </template>
