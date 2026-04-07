@@ -212,7 +212,7 @@ const address = computed(() => {
   min-height: calc(100vh - 60px - constant(safe-area-inset-top));
   min-height: calc(100vh - 60px - env(safe-area-inset-top, 0px));
   background: #f0f2f5;
-  border-radius: 16px 16px 0 0;
+  
   padding-bottom: 28px;
   box-sizing: border-box;
 }

@@ -198,7 +198,7 @@ $tp-btn: #050e17;
   background: #fff;
   position: relative;
   overflow: visible;
-  border-radius: 16px 16px 0 0;
+  
 }
 
 .transfer-page__sheet-bg {

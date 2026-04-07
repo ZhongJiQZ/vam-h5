@@ -48,7 +48,7 @@ getDetail()
   min-height: calc(100vh - 60px - constant(safe-area-inset-top));
   min-height: calc(100vh - 60px - env(safe-area-inset-top, 0px));
   background: #fff;
-  border-radius: 16px 16px 0 0;
+  
   padding: 16px 0 28px;
   box-sizing: border-box;
 }

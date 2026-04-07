@@ -132,7 +132,8 @@ onMounted(()=>{
   border-bottom: none;
 
   &.darkheader {
-    background: #0b1118;
+    // background: #0b1118;
+    background: #fff;
   }
 
   .left {
@@ -147,7 +148,7 @@ onMounted(()=>{
       width: 16px;
       height: 12px;
       margin-right: 12px;
-      filter: brightness(0) invert(1);
+      // filter: brightness(0) invert(1);
     }
   }
 
@@ -175,7 +176,8 @@ onMounted(()=>{
       font-size: 15px;
       margin-right: 22px;
       padding: 0;
-      color: rgba(255, 255, 255, 0.45) !important;
+      // color: rgba(255, 255, 255, 0.45) !important;
+      color: #3333 !important;
       background: transparent;
     }
 
@@ -185,7 +187,8 @@ onMounted(()=>{
 
     :deep(.van-tab--active) {
       font-weight: 500;
-      color: #ffffff !important;
+      // color: #ffffff !important;
+      color: #000 !important;
     }
 
     :deep(.van-tabs__line) {
@@ -196,8 +199,8 @@ onMounted(()=>{
 
 .trade-sheet {
   background: #fff;
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
+  // border-top-left-radius: 16px;
+  // border-top-right-radius: 16px;
   min-height: calc(100vh - 60px - env(safe-area-inset-top));
   overflow: hidden;
 }

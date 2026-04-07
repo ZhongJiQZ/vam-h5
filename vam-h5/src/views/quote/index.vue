@@ -10,8 +10,8 @@
           :swipe-threshold="2"
           v-model:active="currentIndex"
           :line-width="0"
-          title-active-color="#ffffff"
-          title-inactive-color="rgba(255, 255, 255, 0.45)"
+          title-active-color="#000"
+          title-inactive-color="#3333"
         >
           <van-tab v-for="(item, index) in headerList" :key="index" :title="item.title" />
         </van-tabs>
@@ -98,6 +98,7 @@ watch(
   min-height: 100vh;
   background: #0b1118;
   box-sizing: border-box;
+  padding-top: calc(52px + env(safe-area-inset-top));
 }
 
 .quote-header {
@@ -107,10 +108,13 @@ watch(
   padding-top: env(safe-area-inset-top);
   min-height: calc(52px + env(safe-area-inset-top));
   box-sizing: border-box;
-  background: #0b1118;
+  // background: #0b1118;
+  background: #fff;
   display: flex;
   align-items: flex-end;
   padding-bottom: 8px;
+  position: fixed;
+  top: 0;
 
   .headerChoose {
     flex: 1;
@@ -136,7 +140,7 @@ watch(
       font-size: 15px;
       margin-right: 22px;
       padding: 0;
-      color: rgba(255, 255, 255, 0.45) !important;
+      color: #3333 !important;
       background: transparent;
     }
 
@@ -146,7 +150,7 @@ watch(
 
     :deep(.van-tab--active) {
       font-weight: 600;
-      color: #ffffff !important;
+      color: #000 !important;
     }
 
     :deep(.van-tabs__line) {
@@ -157,8 +161,8 @@ watch(
 
 .quote-sheet {
   background: #fff;
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
+  // border-top-left-radius: 16px;
+  // border-top-right-radius: 16px;
   min-height: calc(100vh - 52px - env(safe-area-inset-top));
   overflow: hidden;
   display: flex;

@@ -2,7 +2,6 @@
   <div class="help-page">
     <DarkHeaderBar
       :title="_t18(`help_center`)"
-      bg-color="#010e1a"
       :border_bottom="false"
     />
     <div class="help-body">
@@ -57,7 +56,7 @@ onMounted(async () => {
 
 .help-body {
   background: #f6f7fa;
-  border-radius: 16px 16px 0 0;
+  
   min-height: calc(100vh - 60px);
   padding: 12px 0 calc(24px + env(safe-area-inset-bottom, 0px));
   box-sizing: border-box;

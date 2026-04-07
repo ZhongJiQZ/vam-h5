@@ -382,7 +382,7 @@ $swap-btn-bg: #050e17;
   position: relative;
   z-index: 0;
   min-height: calc(100vh - 64px);
-  border-radius: 16px 16px 0 0;
+  
   background: #ffffff;
 }
 

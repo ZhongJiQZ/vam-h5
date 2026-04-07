@@ -126,7 +126,8 @@ const closeSideBar = () => {
   justify-content: space-between;
   gap: 12px;
   background: #05101a;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: #fff;
+  // border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .sidebar-header__title {
@@ -134,7 +135,8 @@ const closeSideBar = () => {
   min-width: 0;
   font-size: 16px;
   font-weight: 500;
-  color: #fff;
+  // color: #fff;
+  color: #000;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -166,7 +168,7 @@ const closeSideBar = () => {
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   background: #fff;
-  border-radius: 16px 16px 0 0;
+  // 
   padding-bottom: calc(100px + constant(safe-area-inset-bottom));
   padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
   box-sizing: border-box;
