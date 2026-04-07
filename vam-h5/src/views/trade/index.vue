@@ -116,7 +116,8 @@ onMounted(()=>{
 <style lang="scss" scoped>
 .trade-page {
   min-height: 100vh;
-  background: #0b1118;
+  // background: #0b1118;
+  background: #fff;
   box-sizing: border-box;
 }
 

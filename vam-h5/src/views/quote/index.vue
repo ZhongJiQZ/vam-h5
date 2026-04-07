@@ -96,7 +96,8 @@ watch(
 <style lang="scss" scoped>
 .quote-page {
   min-height: 100vh;
-  background: #0b1118;
+  // background: #0b1118;
+  background: #fff;
   box-sizing: border-box;
   padding-top: calc(52px + env(safe-area-inset-top));
 }
