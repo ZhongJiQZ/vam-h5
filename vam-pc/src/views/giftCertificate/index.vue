@@ -268,6 +268,8 @@ export default {
       return Math.min(100, Math.max(0, this.progressPercent));
     },
     feedLines() {
+      // 触发 i18n 依赖，确保切换语言时滚动文案可重算
+      this.$i18n.locale;
       const list = this.feedRaw;
       if (!Array.isArray(list) || !list.length) return [];
       const t = this.$t.bind(this);
@@ -302,6 +304,56 @@ export default {
         if (Array.isArray(d.records)) return d.records;
       }
       return [];
+    },
+    pad2(n) {
+      return String(n).padStart(2, "0");
+    },
+    makeMockClaimTime() {
+      const now = new Date();
+      const maxOffsetMs = 30 * 24 * 60 * 60 * 1000;
+      const randomOffsetMs = Math.floor(Math.random() * maxOffsetMs);
+      const d = new Date(now.getTime() - randomOffsetMs);
+      const yyyy = d.getFullYear();
+      const mm = d.getMonth() + 1;
+      const dd = d.getDate();
+      const hh = d.getHours();
+      const mi = d.getMinutes();
+      return `${yyyy}-${this.pad2(mm)}-${this.pad2(dd)} ${this.pad2(hh)}:${this.pad2(mi)}`;
+    },
+    maskUidLike() {
+      const num = Math.floor(Math.random() * 1000);
+      return `***${String(num).padStart(3, "0")}`;
+    },
+    expandFeedList(baseList, target = 100) {
+      if (!Array.isArray(baseList) || !baseList.length) return [];
+      if (baseList.length >= target) return baseList.slice(0, target);
+
+      const result = baseList.map((item) => ({ ...(item || {}) }));
+      while (result.length < target) {
+        const src = baseList[result.length % baseList.length];
+        if (src && typeof src === "object") {
+          const row = { ...src };
+          if (row.claimTime != null || row.claim_time != null) {
+            row.claimTime = this.makeMockClaimTime();
+          }
+          if (
+            row.userMask != null ||
+            row.user_mask != null ||
+            row.maskUid != null ||
+            row.maskedUid != null ||
+            row.uid != null
+          ) {
+            row.userMask = this.maskUidLike();
+          }
+          if (row.amount != null || row.voucherAmount != null || row.usdc != null) {
+            row.amount = (Math.floor(Math.random() * 10) + 1) * 100;
+          }
+          result.push(row);
+        } else {
+          result.push(src);
+        }
+      }
+      return result;
     },
     setDocTitle() {
       document.title = this.$t("gift_cert.title");
@@ -391,7 +443,8 @@ export default {
     async loadFeed() {
       try {
         const res = await giftClaimFeed({});
-        this.feedRaw = this.normalizeList(res);
+        const list = this.normalizeList(res);
+        this.feedRaw = this.expandFeedList(list, 100);
       } catch (e) {
         this.feedRaw = [];
       }

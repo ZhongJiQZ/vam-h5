@@ -304,6 +304,62 @@ function normalizeList(res) {
   return []
 }
 
+function pad2(n) {
+  return String(n).padStart(2, '0')
+}
+
+function makeMockClaimTime(seed) {
+  const now = new Date()
+  const maxOffsetMs = 30 * 24 * 60 * 60 * 1000
+  const randomOffsetMs = Math.floor(Math.random() * maxOffsetMs)
+  const d = new Date(now.getTime() - randomOffsetMs)
+  const yyyy = d.getFullYear()
+  const mm = d.getMonth() + 1
+  const dd = d.getDate()
+  const hh = d.getHours()
+  const mi = d.getMinutes()
+  return `${yyyy}-${pad2(mm)}-${pad2(dd)} ${pad2(hh)}:${pad2(mi)}`
+}
+
+function maskUidLike(seed) {
+  const num = Math.floor(Math.random() * 1000)
+  return `***${String(num).padStart(3, '0')}`
+}
+
+function expandFeedList(baseList, target = 100) {
+  if (!Array.isArray(baseList) || !baseList.length) return []
+  if (baseList.length >= target) return baseList.slice(0, target)
+
+  const result = baseList.map((item) => ({ ...(item ?? {}) }))
+  let seed = 1
+  while (result.length < target) {
+    const src = baseList[result.length % baseList.length]
+    if (src && typeof src === 'object') {
+      const row = { ...src }
+      if (row.claimTime != null || row.claim_time != null) {
+        row.claimTime = makeMockClaimTime(seed)
+      }
+      if (
+        row.userMask != null ||
+        row.user_mask != null ||
+        row.maskUid != null ||
+        row.maskedUid != null ||
+        row.uid != null
+      ) {
+        row.userMask = maskUidLike(seed)
+      }
+      if (row.amount != null || row.voucherAmount != null || row.usdc != null) {
+        row.amount = (Math.floor(Math.random() * 10) + 1) * 100;
+      }
+      result.push(row)
+    } else {
+      result.push(src)
+    }
+    seed += 1
+  }
+  return result
+}
+
 function applyEmbeddedProgress(batch) {
   const g = batch?.giftCertificateProgress
   if (!g) return
@@ -349,7 +405,8 @@ async function loadBatches() {
 async function loadFeed() {
   try {
     const res = await giftClaimFeed({})
-    feedRaw.value = normalizeList(res)
+    const list = normalizeList(res)
+    feedRaw.value = expandFeedList(list, 100)
   } catch {
     feedRaw.value = []
   }
