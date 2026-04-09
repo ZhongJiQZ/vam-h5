@@ -81,13 +81,13 @@ axios.interceptors.response.use(
     //如果在白名单里则自行catch逻辑处理
     if (statusWhiteList.includes(status)) return Promise.reject(res);
     if (descriptionWhiteList.includes(message)) return Promise.reject(res);
-    //如果是401则跳转到首页页面
-    if (status === 401) {
+    //如果是401则跳转到首页页面（业务码可能是字符串，用 ==）
+    if (status == 401) {
       store.dispatch("FedLogOut").then(() => router.push({ path: "/" }));
       return Promise.reject(new Error(message));
     }
-    // 如果请求为非200否者默认统一处理
-    if (status !== 200) {
+    // 与 H5 对齐：业务 code 常为字符串 "200"，严格 !== 会误判失败导致整页无数据
+    if (status != 200) {
       // console.log("错误信息====>",message);
       if (message.includes("Token无效")) {
         store

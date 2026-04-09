@@ -27,6 +27,7 @@ export default {
     power: "Power Loan",
     rules: "Rules",
     finance: "Finance",
+    trialVoucher: "Trial voucher",
   },
   bottomNav: {
     nav1: "Spot Prices",

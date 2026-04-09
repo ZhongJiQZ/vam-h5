@@ -77,7 +77,7 @@ import { useFreeze } from '@/hook/useFreeze'
 import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import transferIconImg from '@/assets/images/transfer/exchange.png'
 import { getTransferList, getUserBalance } from '@/api/account'
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref, computed, watch } from 'vue'
 import { showToast } from 'vant'
 import { _t18 } from '@/utils/public'
 import { useMainStore } from '@/store'
@@ -127,8 +127,25 @@ const tempList = computed(() => {
   return list.sort((a, b) => a.sort - b.sort)
 })
 
-params.value.transferOutAccount = tempList.value[0]?.value || ''
-params.value.transferInAccount = tempList.value[1]?.value || ''
+const hasInitDefaultAccounts = ref(false)
+watch(
+  () => tempList.value,
+  (list) => {
+    if (hasInitDefaultAccounts.value) return
+    if (!Array.isArray(list) || list.length === 0) return
+
+    const out = list.find((i) => i.value === 1)?.value ?? list[0]?.value ?? ''
+    const preferredIn =
+      list.find((i) => i.value === 3 && i.value !== out)?.value ??
+      list.find((i) => i.value !== out)?.value ??
+      ''
+
+    params.value.transferOutAccount = out
+    params.value.transferInAccount = preferredIn
+    hasInitDefaultAccounts.value = true
+  },
+  { immediate: true }
+)
 
 const transferOutAccountList = computed(() =>
   tempList.value.filter((item) => item.value != params.value.transferInAccount)
@@ -198,7 +215,7 @@ $tp-btn: #050e17;
   background: #fff;
   position: relative;
   overflow: visible;
-  border-radius: 16px 16px 0 0;
+  
 }
 
 .transfer-page__sheet-bg {

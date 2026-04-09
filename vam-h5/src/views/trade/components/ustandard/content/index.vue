@@ -113,7 +113,15 @@
               :key="index"
             ></div>
           </div>
-          <van-slider v-model="sliderValue" active-color="#515151" inactive-color="#d9d9d9">
+          <van-slider
+            v-model="sliderValue"
+            active-color="#515151"
+            inactive-color="#d9d9d9"
+            :step="1"
+            @drag-start="onSliderDragStart"
+            @drag-end="onSliderDragEnd"
+            @change="onSliderChangeCommit"
+          >
             <template #button>
               <div class="init">
                 <div
@@ -360,6 +368,23 @@ const selectNum = (item) => {
 const toNum = (val, def = 0) => {
   const n = Number(val)
   return Number.isFinite(n) ? n : def
+}
+
+/** 拖动轴 step=1；点击轨道时吸附 0/25/50/75/100（change 在拖动过程中仅在结束时触发，且先于 drag-end，配合 drag-start 区分点击轨与拖动） */
+const sliderDragActive = ref(false)
+const onSliderDragStart = () => {
+  sliderDragActive.value = true
+}
+const onSliderDragEnd = () => {
+  sliderDragActive.value = false
+}
+const onSliderChangeCommit = (val) => {
+  if (sliderDragActive.value) return
+  const n = toNum(val, 0)
+  const snapped = Math.min(100, Math.max(0, Math.round(n / 25) * 25))
+  if (snapped !== n) {
+    sliderValue.value = snapped
+  }
 }
 
 const floorTo = (num, scale = 3) => {

@@ -148,6 +148,21 @@ const routes = [
       },
     ],
   },
+  // 体验券 / 礼券活动（与 H5 能力对齐）
+  {
+    path: "/giftCertificate",
+    redirect: "/giftCertificate/index",
+    component: Layout,
+    children: [
+      {
+        path: "index",
+        component: () =>
+          import(
+            /* webpackChunkName: "views" */ "@/views/giftCertificate/index.vue"
+          ),
+      },
+    ],
+  },
   // 质押挖矿
   {
     path: "/pledge",

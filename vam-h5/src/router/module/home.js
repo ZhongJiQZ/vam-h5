@@ -20,5 +20,11 @@ export default [
     path: '/addAddress',
     name: 'AddAddress',
     component: () => import('@/views/slidebar/add-address.vue')
+  },
+  {
+    path: '/gift-certificate',
+    name: 'GiftCertificate',
+    meta: { title: '充值领金 好礼同享' },
+    component: () => import('@/views/giftCertificate/index.vue')
   }
 ]

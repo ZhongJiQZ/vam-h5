@@ -152,7 +152,7 @@ $inv-card-bg: #f6f7fa;
   display: flex;
   flex-direction: column;
   min-height: 0;
-  border-radius: 16px 16px 0 0;
+  
   background: #ffffff;
   overflow: visible;
 }

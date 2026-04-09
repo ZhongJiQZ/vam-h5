@@ -135,7 +135,7 @@ const submit = () => {
   min-height: calc(100vh - 60px - constant(safe-area-inset-top));
   min-height: calc(100vh - 60px - env(safe-area-inset-top, 0px));
   background: #f5f6fa;
-  border-radius: 16px 16px 0 0;
+  
   padding: 20px 15px 28px;
   box-sizing: border-box;
   overflow: hidden;

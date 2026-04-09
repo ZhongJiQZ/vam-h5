@@ -193,9 +193,12 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 /* 资产页顶栏：与 #05101a 同系的冷灰字、浅青白选中、品牌绿下划线 */
-$assets-top-bg: #05101a;
-$assets-tab-inactive: #92a4b0;
-$assets-tab-active: #e8f1f6;
+// $assets-top-bg: #05101a;
+$assets-top-bg: #fff;
+// $assets-tab-inactive: #92a4b0;
+$assets-tab-inactive: #3333;
+// $assets-tab-active: #e8f1f6;
+$assets-tab-active: #000;
 $assets-accent: #17ac74;
 
 .assets-index {
@@ -257,7 +260,7 @@ $assets-accent: #17ac74;
   position: relative;
   z-index: 0;
   min-height: calc(100vh - 64px);
-  border-radius: 16px 16px 0 0;
+  
   background: #fff;
 }
 

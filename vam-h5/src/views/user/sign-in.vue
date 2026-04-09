@@ -44,7 +44,7 @@ import AccountLogin from './components/sign-in/AccountLogin.vue'
 import EmailLogin from './components/sign-in/EmailLogin.vue'
 import MobileLogin from './components/sign-in/MobileLogin.vue'
 import { useMainStore } from '@/store/index.js'
-import logoPng from '@/assets/images/login/logo.png'
+import logoPng from '@/assets/images/login/logo-black.png'
 import langPng from '@/assets/images/login/lang.png'
 import closePng from '@/assets/images/login/close.png'
 
@@ -96,7 +96,7 @@ $veloxam-green: #17ac74;
 
 .sign-in-page {
   min-height: 100vh;
-  background: $veloxam-dark;
+  background: #fff;
   display: flex;
   flex-direction: column;
   padding-bottom: env(safe-area-inset-bottom, 0);
@@ -132,7 +132,7 @@ $veloxam-green: #17ac74;
   border-radius: 24px 24px 0 0;
   padding: 28px 20px 24px;
   margin-top: auto;
-  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.12);
+  // box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.12);
 }
 
 .card-close {

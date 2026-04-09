@@ -61,6 +61,12 @@ export const headerList = [
     linkUrl: "/finance/investment",
     isOpen: true,
   },
+  // 体验券（顶栏入口暂不开放，需要时取消注释）
+  {
+    name: "navbar.trialVoucher",
+    linkUrl: "/giftCertificate/index",
+    isOpen: true,
+  },
 ];
 
 export const footerList = [
