@@ -36,7 +36,7 @@ const path = computed(() => {
       tempPath = `${props.filePath.replace(
         'https://echo-res.oss-cn-hongkong.aliyuncs.com',
         __config._STATIC_API
-      )}?${_APP_VERSION}`
+      )}?v=${_APP_VERSION}`
     } else {
       tempPath = `${props.filePath}?${_APP_VERSION}`
     }
