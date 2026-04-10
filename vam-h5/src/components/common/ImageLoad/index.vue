@@ -38,13 +38,13 @@ const path = computed(() => {
         __config._STATIC_API
       )}?v=${_APP_VERSION}`
     } else {
-      tempPath = `${props.filePath}?${_APP_VERSION}`
+      tempPath = `${props.filePath}?v=${_APP_VERSION}`
     }
   } else if (props.filePath) {
     if (isCustomized.value) {
-      tempPath = `/resource/images/${tempTheme}${__config._APP_ENV}/${props.filePath}?${_APP_VERSION}`
+      tempPath = `/resource/images/${tempTheme}${__config._APP_ENV}/${props.filePath}?v=${_APP_VERSION}`
     } else {
-      tempPath = `/resource/images/${tempTheme}${props.filePath}?${_APP_VERSION}`
+      tempPath = `/resource/images/${tempTheme}${props.filePath}?v=${_APP_VERSION}`
     }
   }
   return tempPath
