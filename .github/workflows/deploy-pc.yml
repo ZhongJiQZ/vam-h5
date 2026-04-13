@@ -6,7 +6,8 @@ name: Build and Deploy
 
 on:
   push:
-    branches: [main]
+    branches: 
+      - test
     paths:
       - "vam-pc/**"
   workflow_dispatch:
@@ -23,8 +24,8 @@ jobs:
     if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.deploy == 'true')
     environment: production
     env:
-      DEPLOY_SSH_KEY: ${{ secrets.MAIN_KEY }}
-      DEPLOY_HOST: 45.141.58.54
+      DEPLOY_SSH_KEY: ${{ secrets.TEST_KEY }}
+      DEPLOY_HOST: 164.215.10.119/
       DEPLOY_USER: root
       DEPLOY_PORT: "22"
       DEPLOY_PATH: /www/wwwroot/pc.zonweb.vip/dist/
