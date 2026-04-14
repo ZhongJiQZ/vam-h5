@@ -45,14 +45,12 @@
 
               <div class="kv">
                 <div class="k">{{ _t18('records.beginTime') }}</div>
-                <!-- 重点：你接口返回的 createTime 是字符串，不在 params.createTime -->
-                <div class="v">{{ formatTimestampWithTimezone(row.createTime) }}</div>
+                <div class="v">{{ formatAssetRecordTime(row, 'begin') }}</div>
               </div>
 
               <div class="kv">
                 <div class="k">{{ _t18('records.endTime') }}</div>
-                <!-- 重点：你接口返回的 endTime 是字符串，不在 params.endTime -->
-                <div class="v">{{ formatTimestampWithTimezone(row.endTime) }}</div>
+                <div class="v">{{ formatAssetRecordTime(row, 'end') }}</div>
               </div>
 
               <div class="kv">
@@ -94,6 +92,7 @@
 import { ref } from "vue";
 import { showToast, showConfirmDialog } from "vant";
 import { _t18 } from "@/utils/public";
+import { formatAssetRecordTime } from "@/utils/time";
 import { getRecordList } from "@/api/assets";
 import { redemption } from "@/api/pledge";
 import { useI18n } from 'vue-i18n'
@@ -110,13 +109,6 @@ const miningTotal = ref(0);
 const loading = ref(false);
 const finished = ref(false);
 const refreshing = ref(false);
-
-// ====== 时间格式化（先最稳：直接返回字符串；你后面再换成自己的 util） ======
-const formatTimestampWithTimezone = (ts) => {
-  if (!ts) return "-";
-  // 你接口返回类似：2026-01-28 10:21:05 或 2026-02-04T10:21:05.000+08:00
-  return String(ts).replace("T", " ").replace(".000+08:00", "");
-};
 
 const formatStatus = (e) => {
   if (String(e) === "0") return _t18("records.inProgress");

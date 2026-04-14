@@ -32,6 +32,35 @@ export function formatLocalTime(input, fmt = "YYYY-MM-DD HH:mm:ss") {
   return d.isValid() ? d.format(fmt) : "--";
 }
 
+const ASSET_RECORD_FMT = "DD/MM/YYYY HH:mm:ss";
+
+/**
+ * 资产流水/质押记录：开始、结束时间优先用 params 内毫秒时间戳，否则用顶层字符串/ISO（设备本地时区）
+ * @param {Record<string, unknown>} row
+ * @param {'begin' | 'end'} which
+ */
+export function formatAssetRecordTime(row, which) {
+  if (!row || typeof row !== "object") return "--";
+  const params = row.params;
+  if (which === "begin") {
+    const ts = params?.createTime;
+    if (ts !== undefined && ts !== null && ts !== "") {
+      const s = formatLocalTime(ts, ASSET_RECORD_FMT);
+      if (s !== "--") return s;
+    }
+    return formatLocalTime(row.createTime, ASSET_RECORD_FMT);
+  }
+  if (which === "end") {
+    const ts = params?.endTime;
+    if (ts !== undefined && ts !== null && ts !== "") {
+      const s = formatLocalTime(ts, ASSET_RECORD_FMT);
+      if (s !== "--") return s;
+    }
+    return formatLocalTime(row.endTime, ASSET_RECORD_FMT);
+  }
+  return "--";
+}
+
 /**
  * 需要显示“用户所在时区名/偏移”也可以拿这个
  */
