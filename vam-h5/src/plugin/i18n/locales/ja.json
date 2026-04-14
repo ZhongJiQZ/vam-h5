@@ -1241,5 +1241,6 @@
   "gift_cert_my_code_unused": "未使用",
   "gift_cert_my_code_used": "使用済み",
   "gift_cert_home_entry_empty": "ご利用可能なクーポンはありません",
-  "gift_cert_my_codes_open": "マイバウチャー"
+  "gift_cert_my_codes_open": "マイバウチャー",
+  "withdraw_coin_length_error": "キャッシュアドレス長エラー"
 }

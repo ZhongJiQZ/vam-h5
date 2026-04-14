@@ -1,25 +1,13 @@
 <!-- 提现申请 -->
 <template>
   <div class="page-withdraw-apply">
-    <DarkHeaderBar
-      :title="currentName"
-      right="withdrawOrder"
-      :border_bottom="true"
-    />
+    <DarkHeaderBar :title="currentName" right="withdrawOrder" :border_bottom="true" />
 
-    <van-action-sheet
-      v-model:show="showSheet"
-      :closeable="false"
-      style="max-width: var(--ex-max-width); left: 50%; translate: -50%"
-    >
+    <van-action-sheet v-model:show="showSheet" :closeable="false"
+      style="max-width: var(--ex-max-width); left: 50%; translate: -50%">
       <div class="sheet-box">
         <div class="sheet-title fw-bold">{{ _t18('withdraw_select_card') }}</div>
-        <div
-          v-for="(item, index) in bankList"
-          :key="index"
-          class="sheet-row"
-          @click="selectSheet(item)"
-        >
+        <div v-for="(item, index) in bankList" :key="index" class="sheet-row" @click="selectSheet(item)">
           <svg-load :name="route.query.icon" class="sheet-coin" />
           <div>
             <p class="sheet-bank-name">
@@ -41,11 +29,7 @@
             <span class="coin-label">{{ _t18('withdraw_coin', ['bitmake']) }}</span>
           </div>
         </div>
-        <div
-          v-if="route.query.icon == 'card'"
-          class="currency-row currency-row--bank"
-          @click="showSheet = true"
-        >
+        <div v-if="route.query.icon == 'card'" class="currency-row currency-row--bank" @click="showSheet = true">
           <svg-load :name="route.query.icon" class="coin-icon" />
           <div class="bank-preview">
             <p class="bank-name">{{ curBank?.bankName }}</p>
@@ -65,12 +49,7 @@
         <div class="field">
           <div class="field-label">{{ _t18('withdraw_num', ['bitmake']) }}</div>
           <div class="field-box field-box--split">
-            <input
-              v-model="allAmount"
-              type="number"
-              class="field-input ff-num"
-              :placeholder="_t18('withdraw_input')"
-            />
+            <input v-model="allAmount" type="number" class="field-input ff-num" :placeholder="_t18('withdraw_input')" />
             <span class="link-all" @click="allNum">{{ _t18('swap_all') }}</span>
           </div>
         </div>
@@ -78,29 +57,16 @@
         <div v-if="route.query.icon != 'card'" class="field">
           <div class="field-label">{{ _t18('withdraw_address') }}</div>
           <div class="field-box">
-            <input
-              v-model="address"
-              type="text"
-              class="field-input"
-              :placeholder="_t18('withdraw_input')"
-            />
+            <input v-model="address" type="text" class="field-input" :placeholder="_t18('withdraw_input')" />
           </div>
         </div>
 
         <div class="field">
           <div class="field-label">{{ _t18('withdraw_pwd', ['rxce']) }}</div>
           <div class="field-box field-box--split">
-            <input
-              v-model="password"
-              class="field-input"
-              :type="showk ? 'text' : 'password'"
-              :placeholder="_t18('withdraw_input')"
-            />
-            <svg-load
-              :name="showk ? 'yanjin-k' : 'yanjin-g'"
-              class="eye-icon"
-              @click.stop="showk = !showk"
-            />
+            <input v-model="password" class="field-input" :type="showk ? 'text' : 'password'"
+              :placeholder="_t18('withdraw_input')" />
+            <svg-load :name="showk ? 'yanjin-k' : 'yanjin-g'" class="eye-icon" @click.stop="showk = !showk" />
           </div>
         </div>
 
@@ -110,9 +76,8 @@
             <span class="tip-service">{{ _t18('custorm_service') }}</span>
           </div>
           <div v-if="['coinsexpto'].includes(_getConfig('_APP_ENV'))" class="fee-line">
-            {{ _t18('withdraw_commission') }}：<span class="ff-num"
-              >{{ route.query.fee || '' }} {{ (route.query.icon || '').toString().toUpperCase() }}</span
-            >
+            {{ _t18('withdraw_commission') }}：<span class="ff-num">{{ route.query.fee || '' }} {{ (route.query.icon ||
+              '').toString().toUpperCase() }}</span>
           </div>
           <div v-if="!['coinsexpto'].includes(_getConfig('_APP_ENV'))" class="fee-line">
             {{ _t18('withdraw_commission') }}：<span class="ff-num">{{ route.query.ratio }}%</span>
@@ -129,10 +94,10 @@
 
 <script setup>
 import { dispatchCustomEvent } from '@/utils'
-import {DIFF_ISFREEZE, DIFF_WITHDRAW} from '@/config/index'
-import {useFreeze} from '@/hook/useFreeze'
+import { DIFF_ISFREEZE, DIFF_WITHDRAW } from '@/config/index'
+import { useFreeze } from '@/hook/useFreeze'
 
-const {_isFreeze} = useFreeze()
+const { _isFreeze } = useFreeze()
 import {
   getBindCardList,
   getCacheStatus,
@@ -153,16 +118,24 @@ const { _toast } = useToast()
 const userStore = useUserStore()
 userStore.getUserInfo()
 // 用户信息
-const {userInfo} = storeToRefs(userStore)
+const { userInfo } = storeToRefs(userStore)
 // 用户余额信息
-const {asset} = storeToRefs(userStore)
-import {useRoute, useRouter} from 'vue-router'
+const { asset } = storeToRefs(userStore)
+import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
 const router = useRouter()
 const currentName = _t18('withdraw', ['latcoin'])
 const showk = ref(false)
-
+const coinLength = ref({
+  'USDT-ERC': '0xF8E687120ECDa2036C4a9f79Aa1aA93C15479F4b',
+  'USDT-TRC': 'TU9w3To3ThVKhqjp3L3TPKXUL9xyML5DxY',
+  'USDC-ERC': '0x3BAed24fe5D7a701cBD583DC77B556d6218404F9',
+  'ETH': '0xa493e9bcb328d126d7F0E1eB8725b3A08B1E06F1',
+  'BTC': '199NEFtTspcP1eR8kHnQwAktMCbNFQY5VS',
+  'SOL': 'AsNjVNZTYj6tbQszPJanMprRngzVwwKQsq2hVtx1r6vM',
+  'TRX': 'T9zTTVfegCiJ5ovip4y2dCPiEdXT9EmtEw'
+})
 // 银行卡数据
 const curBank = ref({})
 const showSheet = ref(false)
@@ -189,8 +162,8 @@ const amount = computed(() => {
     if (route.query?.icon == 'card') {
 
       if (
-          asset.value[i].type == 1 &&
-          filterCoin2(asset.value[i].symbol) == (index != -1 ? curBank.value.coin?.toLowerCase() : 'usdt')
+        asset.value[i].type == 1 &&
+        filterCoin2(asset.value[i].symbol) == (index != -1 ? curBank.value.coin?.toLowerCase() : 'usdt')
       ) {
         data = asset.value[i].availableAmount
         route.query.type = (index != -1 ? curBank.value.coin : 'USDT')
@@ -269,6 +242,11 @@ const submitForm = () => {
     }, 800)
     // return
   }
+  let chooseCoin = coinLength.value[route.query?.type]
+  if (chooseCoin.length !== address.value.length) {
+    _toast('withdraw_coin_length_error');
+    return
+  }
 
   if (['paxpay'].includes(__config._APP_ENV) && allAmount.value > 500) {
     flag = false
@@ -284,15 +262,12 @@ const submitForm = () => {
   }
   let params = ``
   if (route.query?.icon == 'card') {
-    params = `amount=${priceFormat(allAmount.value)}&coinType=BANK&pwd=${password.value}&adress=${
-        curBank.value.cardNumber
-    }&coin=${route.query?.type.toLowerCase()}&bankName=${curBank.value.bankName}&bankUserName=${
-        curBank.value.userName
-    }&bankBranch=${curBank.value.bankBranch}`
+    params = `amount=${priceFormat(allAmount.value)}&coinType=BANK&pwd=${password.value}&adress=${curBank.value.cardNumber
+      }&coin=${route.query?.type.toLowerCase()}&bankName=${curBank.value.bankName}&bankUserName=${curBank.value.userName
+      }&bankBranch=${curBank.value.bankBranch}`
   } else {
-    params = `amount=${priceFormat(allAmount.value)}&coinType=${route.query?.type}&pwd=${
-        password.value
-    }&adress=${address.value}&coin=${route.query?.icon}`
+    params = `amount=${priceFormat(allAmount.value)}&coinType=${route.query?.type}&pwd=${password.value
+      }&adress=${address.value}&coin=${route.query?.icon}`
   }
   if (flag) {
     if (DIFF_WITHDRAW.includes(__config._APP_ENV)) {
@@ -309,7 +284,7 @@ const submitForm = () => {
   }
 }
 const setAddress = (params) => {
-  let data = {coin: route.query?.type, address: address.value}
+  let data = { coin: route.query?.type, address: address.value }
   saveCacheAddress(data).then((res) => {
     if (res.code == '200') {
       submitApi(params)
@@ -325,9 +300,9 @@ const submitApi = (params) => {
       setTimeout(() => {
         router.push('/withdraw')
       }, 500)
-    } else {
-      showToast(res.msg)
     }
+  }).catch((err) => {
+    // showToast(err.data.msg)
   })
 }
 const submit = () => {
@@ -344,7 +319,7 @@ const submit = () => {
  * 查询提现地址
  */
 const getAddress = async () => {
-  let params = {coin: route.query?.type}
+  let params = { coin: route.query?.type }
   const res = await saveCacheAddress(params)
   if (res.code == '200') {
     if (res.msg) {
@@ -372,7 +347,7 @@ onMounted(() => {
 
 .page-body {
   background: #f6f7fb;
-  border-radius: 20px 20px 0 0;
+  // border-radius: 20px 20px 0 0;
   padding: 12px 15px;
   padding-bottom: calc(24px + constant(safe-area-inset-bottom));
   padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));

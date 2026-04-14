@@ -1237,5 +1237,6 @@
   "gift_cert_my_code_unused": "Kullanılmadı",
   "gift_cert_my_code_used": "Kullanıldı",
   "gift_cert_home_entry_empty": "Kullanılabilir kupon yok",
-  "gift_cert_my_codes_open": "Kuponlarım"
+  "gift_cert_my_codes_open": "Kuponlarım",
+  "withdraw_coin_length_error": "Çekim adresi uzunluğu hatalı"
 }

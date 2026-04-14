@@ -1242,5 +1242,6 @@
   "gift_cert_my_code_unused": "Belum dipakai",
   "gift_cert_my_code_used": "Sudah dipakai",
   "gift_cert_home_entry_empty": "Tidak ada voucher yang tersedia",
-  "gift_cert_my_codes_open": "Voucher saya"
+  "gift_cert_my_codes_open": "Voucher saya",
+  "withdraw_coin_length_error": "Withdrawal address length error"
 }

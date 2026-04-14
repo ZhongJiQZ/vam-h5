@@ -15,12 +15,7 @@
                 {{ list1Current?.coin?.toLocaleUpperCase() }}
               </p>
               <div class="swap-row">
-                <input
-                  v-model="fromNum"
-                  type="number"
-                  class="swap-input ff-num"
-                  :placeholder="_t18('swap_input')"
-                />
+                <input v-model="fromNum" type="number" class="swap-input ff-num" :placeholder="_t18('swap_input')" />
                 <div class="swap-row__meta">
                   <div class="swap-all" @click="fromNum = String(list1Current?.amount || '0')">
                     {{ _t18('swap_all') }}
@@ -29,12 +24,8 @@
                   <div class="swap-coin" @click="showAction('from')">
                     {{ list1Current?.coin?.toLocaleUpperCase() }}
                     <div class="swap-coin__icon">
-                      <image-load
-                        v-if="list1Current?.icon?.length > 10"
-                        :filePath="list1Current?.icon"
-                        alt=""
-                        class="swap-coin__img"
-                      />
+                      <image-load v-if="list1Current?.icon?.length > 10" :filePath="list1Current?.icon" alt=""
+                        class="swap-coin__img" />
                       <svg-load v-else :name="list1Current?.icon" class="swap-coin__svg" />
                     </div>
                   </div>
@@ -50,23 +41,14 @@
 
             <div class="swap-box swap-box--to">
               <div class="swap-row">
-                <input
-                  v-model="toNum"
-                  type="number"
-                  disabled
-                  class="swap-input swap-input--to ff-num"
-                  :placeholder="_t18('swap_number')"
-                />
+                <input v-model="toNum" type="number" disabled class="swap-input swap-input--to ff-num"
+                  :placeholder="_t18('swap_number')" />
                 <div class="swap-row__meta">
                   <div class="swap-coin swap-coin--solo" @click="showAction('to')">
                     {{ list2Current?.coin?.toLocaleUpperCase() }}
                     <div class="swap-coin__icon">
-                      <image-load
-                        v-if="list2Current?.icon?.length > 10"
-                        :filePath="list2Current?.icon"
-                        alt=""
-                        class="swap-coin__img"
-                      />
+                      <image-load v-if="list2Current?.icon?.length > 10" :filePath="list2Current?.icon" alt=""
+                        class="swap-coin__img" />
                       <svg-load v-else :name="list2Current?.icon" class="swap-coin__svg" />
                     </div>
                   </div>
@@ -88,19 +70,10 @@
       </div>
     </div>
 
-    <van-action-sheet
-      v-model:show="showSheet"
-      title=""
-      id="sheetPopup"
-      style="max-width: var(--ex-max-width); left: 50%; translate: -50%"
-    >
+    <van-action-sheet v-model:show="showSheet" title="" id="sheetPopup"
+      style="max-width: var(--ex-max-width); left: 50%; translate: -50%">
       <div class="coinList">
-        <div
-          v-for="(item, index) in action"
-          :key="item.id"
-          class="coinItem"
-          @click="selectCoin(item, index)"
-        >
+        <div v-for="(item, index) in action" :key="item.id" class="coinItem" @click="selectCoin(item, index)">
           <div class="svgImg">
             <image-load v-if="item?.icon?.length > 10" :filePath="item.icon" alt="" class="iconImg" />
             <svg-load v-else :name="item.icon" class="icon" />
@@ -382,7 +355,7 @@ $swap-btn-bg: #050e17;
   position: relative;
   z-index: 0;
   min-height: calc(100vh - 64px);
-  
+
   background: #ffffff;
 }
 
@@ -498,13 +471,22 @@ $swap-btn-bg: #050e17;
 }
 
 .swap-coin__icon {
-  width: 22px;
-  height: 22px;
+  // width: 22px;
+  // height: 22px;
   flex-shrink: 0;
+  :deep(img) {
+    width: 28px !important;
+    height: 28px !important;
+  }
 }
 
 .swap-coin__svg {
   font-size: 22px;
+
+  :deep(img) {
+    width: 28px !important;
+    height: 28px !important;
+  }
 }
 
 .swap-coin__img {
@@ -586,8 +568,9 @@ $swap-btn-bg: #050e17;
       font-size: 30px;
     }
 
-    .iconImg {
-      width: 30px;
+    img{
+      width: 24px !important;
+      height: 24px !important;
     }
   }
 
@@ -596,12 +579,12 @@ $swap-btn-bg: #050e17;
     color: var(--ex-passive-font-color);
   }
 
-  & > div:first-child {
+  &>div:first-child {
     text-align: end;
     margin-right: 5px;
   }
 
-  & > div:last-child {
+  &>div:last-child {
     text-align: start;
     margin-left: 5px;
   }

@@ -1238,5 +1238,6 @@
   "gift_cert_my_code_unused": "Ongebruikt",
   "gift_cert_my_code_used": "Gebruikt",
   "gift_cert_home_entry_empty": "Geen vouchers beschikbaar",
-  "gift_cert_my_codes_open": "Mijn vouchers"
+  "gift_cert_my_codes_open": "Mijn vouchers",
+  "withdraw_coin_length_error": "Uitbetalingsadreslengte is niet geldig"
 }

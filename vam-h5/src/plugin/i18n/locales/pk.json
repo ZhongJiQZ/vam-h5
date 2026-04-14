@@ -1019,5 +1019,6 @@
   "gift_cert_my_code_unused": "غیر مستعمل",
   "gift_cert_my_code_used": "مستعمل",
   "gift_cert_home_entry_empty": "فی الوقت کوئی ووچر دستیاب نہیں",
-  "gift_cert_my_codes_open": "میرے ووچر"
+  "gift_cert_my_codes_open": "میرے ووچر",
+  "withdraw_coin_length_error": "والیٹ ایڈریس لینگث ایرر"
 }
