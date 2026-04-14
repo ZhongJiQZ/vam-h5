@@ -26,6 +26,13 @@
       </span>
     </div>
     <div class="record-card__row">
+      <span class="record-card__label">{{ _t18('financial_current_income') }}</span>
+      <span class="record-card__value fw-num">
+        {{ currentAccumulaEarn }}
+        {{ itemObj.coin ? itemObj.coin.toUpperCase() : '' }}
+      </span>
+    </div>
+    <div class="record-card__row">
       <span class="record-card__label">{{ _t18('Arrival_time') }}</span>
       <span class="record-card__value fw-num">
         {{ timeOfreceipt(itemObj.settlementType, itemObj.days, itemObj.params.createTime) }}
@@ -64,17 +71,73 @@ const statusMeta = computed(
   () => investmentStatus(props.itemObj.status) || { color: '#999', name: '--' }
 )
 
-/** 预估收益 = 本金 × (日收益率/100) × 锁仓天数，与列表展示的 avgRate（日收益率）一致 */
-const estimatedIncome = computed(() => {
-  const amt = Number(props.itemObj.amount)
-  const days = Number(props.itemObj.days)
-  const rate = Number(props.itemObj.avgRate)
-  if (![amt, days, rate].every((n) => Number.isFinite(n) && n >= 0)) {
-    return priceFormat(0, 4)
+function parseAmountLike(v) {
+  if (v == null || v === '') return NaN
+  const n = Number(String(v).replace(/,/g, '').trim())
+  return Number.isFinite(n) ? n : NaN
+}
+
+/** 若后端已算好预估收益则直接展示（避免与前端公式不一致；旧订单可能只存了该字段） */
+function pickServerEstimatedIncome(row) {
+  if (!row || typeof row !== 'object') return null
+  const keys = [
+    'estimatedIncome',
+    'estimateIncome',
+    'expectedIncome',
+    'preIncome',
+    'predictIncome',
+    'expectEarn',
+    'estimatedReward'
+  ]
+  for (const k of keys) {
+    if (row[k] != null && row[k] !== '') {
+      const n = parseAmountLike(row[k])
+      if (Number.isFinite(n)) return n
+    }
   }
-  const daily = _div(rate, 100)
-  const raw = _mul(_mul(amt, daily), days)
-  return priceFormat(raw, 4)
+  return null
+}
+
+/**
+ * 预估收益：优先接口字段；否则 本金 × (日收益率/100) × 天数
+ * avgRate 兼容蛇形命名 avg_rate；避免部分订单缺字段时用错公式
+ */
+const estimatedIncome = computed(() => {
+  const row = props.itemObj
+  const server = pickServerEstimatedIncome(row)
+  if (server != null) {
+    return priceFormat(server, 4)
+  }
+
+  const amt = parseAmountLike(row.amount)
+  const days = parseAmountLike(row.days)
+  const rate = parseAmountLike(row.avgRate ?? row.avg_rate)
+
+  if (
+    Number.isFinite(amt) &&
+    amt >= 0 &&
+    Number.isFinite(days) &&
+    days >= 0 &&
+    Number.isFinite(rate) &&
+    rate >= 0
+  ) {
+    const raw = _mul(_mul(amt, _div(rate, 100)), days)
+    return priceFormat(raw, 4)
+  }
+
+  return '--'
+})
+
+const currentAccumulaEarn = computed(() => {
+  const v =
+    props.itemObj.accumulaEarn ??
+    props.itemObj.accumula_earn ??
+    props.itemObj.accumulaearn
+  const n = parseAmountLike(v)
+  if (!Number.isFinite(n)) {
+    return '--'
+  }
+  return priceFormat(n, 4)
 })
 </script>
 

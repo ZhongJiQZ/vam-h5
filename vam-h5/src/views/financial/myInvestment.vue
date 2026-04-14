@@ -40,7 +40,11 @@
                 :loading-text="_t18('loading')"
                 @load="onLoad"
               >
-                <RecordItem v-for="item in list" :key="item" :item-obj="item" />
+                <RecordItem
+                  v-for="(item, idx) in list"
+                  :key="item?.id ?? item?.orderId ?? `${item?.createTime}-${idx}`"
+                  :item-obj="item"
+                />
               </van-list>
               <Nodata v-if="list.length === 0 && isShow" />
             </div>
