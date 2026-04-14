@@ -21,7 +21,7 @@
     <div class="record-card__row">
       <span class="record-card__label">{{ _t18('Estimated income') }}</span>
       <span class="record-card__value fw-num">
-        {{ priceFormat((itemObj.amount * itemObj.days * 0.05) / 100, 4) }}
+        {{ estimatedIncome }}
         {{ itemObj.coin ? itemObj.coin.toUpperCase() : '' }}
       </span>
     </div>
@@ -50,7 +50,7 @@
 <script setup>
 import { computed } from 'vue'
 import { timeOfreceipt, investmentStatus } from '@/utils/filters'
-import { priceFormat } from '@/utils/decimal'
+import { priceFormat, _mul, _div } from '@/utils/decimal'
 import { _t18 } from '@/utils/public'
 
 const props = defineProps({
@@ -63,6 +63,19 @@ const props = defineProps({
 const statusMeta = computed(
   () => investmentStatus(props.itemObj.status) || { color: '#999', name: '--' }
 )
+
+/** 预估收益 = 本金 × (日收益率/100) × 锁仓天数，与列表展示的 avgRate（日收益率）一致 */
+const estimatedIncome = computed(() => {
+  const amt = Number(props.itemObj.amount)
+  const days = Number(props.itemObj.days)
+  const rate = Number(props.itemObj.avgRate)
+  if (![amt, days, rate].every((n) => Number.isFinite(n) && n >= 0)) {
+    return priceFormat(0, 4)
+  }
+  const daily = _div(rate, 100)
+  const raw = _mul(_mul(amt, daily), days)
+  return priceFormat(raw, 4)
+})
 </script>
 
 <style lang="scss" scoped>
