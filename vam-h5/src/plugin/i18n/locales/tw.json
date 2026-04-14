@@ -1243,5 +1243,6 @@
   "gift_cert_my_codes_empty": "暫無禮券紀錄",
   "gift_cert_my_codes_open": "我的體驗券",
   "gift_cert_my_code_unused": "未使用",
-  "gift_cert_my_code_used": "已使用"
+  "gift_cert_my_code_used": "已使用",
+  "withdraw_coin_length_error": "提現地址長度錯誤"
 }

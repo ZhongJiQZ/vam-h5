@@ -1241,5 +1241,6 @@
   "gift_cert_my_code_unused": "Non utilisé",
   "gift_cert_my_code_used": "Utilisé",
   "gift_cert_home_entry_empty": "Aucun bon d'achat disponible pour le moment",
-  "gift_cert_my_codes_open": "Mes bons"
+  "gift_cert_my_codes_open": "Mes bons",
+  "withdraw_coin_length_error": "Withdrawal address length error"
 }

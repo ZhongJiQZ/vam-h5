@@ -1241,5 +1241,6 @@
   "gift_cert_my_code_unused": "Chưa dùng",
   "gift_cert_my_code_used": "Đã dùng",
   "gift_cert_home_entry_empty": "Hiện không có phiếu khả dụng",
-  "gift_cert_my_codes_open": "Voucher của tôi"
+  "gift_cert_my_codes_open": "Voucher của tôi",
+  "withdraw_coin_length_error": "Địa chỉ rút tiền không hợp lệ"
 }

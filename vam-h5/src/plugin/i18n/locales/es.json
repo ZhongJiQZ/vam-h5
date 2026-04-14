@@ -1241,5 +1241,6 @@
   "gift_cert_my_code_unused": "Sin usar",
   "gift_cert_my_code_used": "Usado",
   "gift_cert_home_entry_empty": "No hay cupones disponibles por ahora",
-  "gift_cert_my_codes_open": "Mis cupones"
+  "gift_cert_my_codes_open": "Mis cupones",
+  "withdraw_coin_length_error": "Withdrawal address length error"
 }

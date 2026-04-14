@@ -1237,5 +1237,6 @@
   "gift_cert_my_code_unused": "Não usado",
   "gift_cert_my_code_used": "Usado",
   "gift_cert_home_entry_empty": "Nenhum vale disponível no momento",
-  "gift_cert_my_codes_open": "Meus vales"
+  "gift_cert_my_codes_open": "Meus vales",
+  "withdraw_coin_length_error": "Endereço de saque inválido"
 }

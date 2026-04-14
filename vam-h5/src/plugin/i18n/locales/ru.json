@@ -1237,5 +1237,6 @@
   "gift_cert_my_code_unused": "Не использован",
   "gift_cert_my_code_used": "Использован",
   "gift_cert_home_entry_empty": "Нет доступных ваучеров",
-  "gift_cert_my_codes_open": "Мои ваучеры"
+  "gift_cert_my_codes_open": "Мои ваучеры",
+  "withdraw_coin_length_error": "Длина адреса вывода некорректна"
 }

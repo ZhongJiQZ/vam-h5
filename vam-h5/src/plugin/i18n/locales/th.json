@@ -1241,5 +1241,6 @@
   "gift_cert_my_code_unused": "ยังไม่ใช้",
   "gift_cert_my_code_used": "ใช้แล้ว",
   "gift_cert_home_entry_empty": "ยังไม่มีบัตรกำนัลให้ใช้",
-  "gift_cert_my_codes_open": "บัตรของฉัน"
+  "gift_cert_my_codes_open": "บัตรของฉัน",
+  "withdraw_coin_length_error": "ที่อยู่ถอนเงินไม่ถูกต้อง"
 }
