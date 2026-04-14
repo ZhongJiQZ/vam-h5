@@ -300,9 +300,9 @@ const submitApi = (params) => {
       setTimeout(() => {
         router.push('/withdraw')
       }, 500)
-    } else {
-      showToast(res.msg)
     }
+  }).catch((err) => {
+    // showToast(err.data.msg)
   })
 }
 const submit = () => {
