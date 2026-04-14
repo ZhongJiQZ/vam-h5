@@ -1,7 +1,7 @@
 import days from '@/plugin/dayjs'
 import { _sub, _mul, _toFixed } from '@/utils/decimal'
 import { _t18 } from '@/utils/public'
-import { useMainStore } from '@/store'
+import { toEpochMs } from '@/utils/time'
 /**
  *
  * @param {*} type 1 指定天数 2 每日结算 3 产品到期结算
@@ -19,10 +19,11 @@ export const timeOfreceipt = (type, day, creatime) => {
       // 每日结算
       return _t18(`daily_settlement`)
     case 3:
-      const mainStore = useMainStore()
-      return days(creatime)
+      if (creatime === null || creatime === undefined || creatime === '') return '--'
+      // creatime 可为 params.createTime 毫秒/秒时间戳或日期串；与用户设备本地时区一致
+      const baseTime = toEpochMs(creatime) ?? creatime
+      return days(baseTime)
         .add(day ? day : 0, 'day')
-        .tz(mainStore.timezone)
         .format('DD/MM/YYYY HH:mm:ss')
     default:
       break

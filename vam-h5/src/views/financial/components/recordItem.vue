@@ -49,7 +49,7 @@
     </div>
     <div class="record-card__row record-card__row--time">
       <span class="record-card__label">{{ _t18('pledge_Buy') }}{{ _t18('k_time') }}</span>
-      <span class="record-card__value record-card__value--time fw-num">{{ itemObj.createTime }}</span>
+      <span class="record-card__value record-card__value--time fw-num">{{ purchaseTimeDisplay }}</span>
     </div>
   </div>
 </template>
@@ -57,6 +57,7 @@
 <script setup>
 import { computed } from 'vue'
 import { timeOfreceipt, investmentStatus } from '@/utils/filters'
+import { formatLocalTime } from '@/utils/time'
 import { priceFormat, _mul, _div } from '@/utils/decimal'
 import { _t18 } from '@/utils/public'
 
@@ -138,6 +139,17 @@ const currentAccumulaEarn = computed(() => {
     return '--'
   }
   return priceFormat(n, 4)
+})
+
+/** 购买时间：优先 params.createTime（毫秒/秒时间戳），与后端订单创建时刻一致 */
+const purchaseTimeDisplay = computed(() => {
+  const row = props.itemObj
+  const ts = row.params?.createTime
+  if (ts !== undefined && ts !== null && ts !== '') {
+    const s = formatLocalTime(ts, 'DD/MM/YYYY HH:mm:ss')
+    if (s !== '--') return s
+  }
+  return formatLocalTime(row.createTime, 'DD/MM/YYYY HH:mm:ss')
 })
 </script>
 
