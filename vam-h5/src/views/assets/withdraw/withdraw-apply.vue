@@ -130,6 +130,7 @@ const showk = ref(false)
 const coinLength = ref({
   'USDT-ERC': '0xF8E687120ECDa2036C4a9f79Aa1aA93C15479F4b',
   'USDT-TRC': 'TU9w3To3ThVKhqjp3L3TPKXUL9xyML5DxY',
+  'USDC-ERC': 'TU9w3To3ThVKhqjp3L3TPKXUL9xyML5DxY',
   'ETH': '0xa493e9bcb328d126d7F0E1eB8725b3A08B1E06F1',
   'BTC': '199NEFtTspcP1eR8kHnQwAktMCbNFQY5VS',
   'SOL': 'AsNjVNZTYj6tbQszPJanMprRngzVwwKQsq2hVtx1r6vM',
@@ -346,7 +347,7 @@ onMounted(() => {
 
 .page-body {
   background: #f6f7fb;
-  border-radius: 20px 20px 0 0;
+  // border-radius: 20px 20px 0 0;
   padding: 12px 15px;
   padding-bottom: calc(24px + constant(safe-area-inset-bottom));
   padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
