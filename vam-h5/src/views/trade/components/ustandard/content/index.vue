@@ -262,7 +262,9 @@ import OrderListBox from './OrderList.vue'
 import { _t18 } from '@/utils/public'
 import { showToast, showLoadingToast, closeToast, showConfirmDialog } from 'vant'
 import { useToast } from '@/hook/useToast'
+import { useI18n } from 'vue-i18n'
 const { _toast } = useToast()
+const { t: i18nT } = useI18n()
 
 import { useMainStore } from '@/store/index'
 const mainStore = useMainStore()
@@ -764,9 +766,10 @@ const buyOrSellForm = async (type) => {
     await showConfirmDialog({
       title: confirmTitle,
       message: confirmTip,
+      width: '320px',
       showCancelButton: true,
-      confirmButtonText: '确认',
-      cancelButtonText: '取消'
+      confirmButtonText: i18nT('utils.confirm') || '确认',
+      cancelButtonText: i18nT('utils.cancel') || '取消'
     })
 
     loadingToast = showLoadingToast({
@@ -807,9 +810,10 @@ const buyOrSellForm = async (type) => {
         await showConfirmDialog({
           title: confirmTitle,
           message: confirmTip,
+          width: '320px',
           showCancelButton: true,
-          confirmButtonText: '确认',
-          cancelButtonText: '取消'
+          confirmButtonText: i18nT('utils.confirm') || '确认',
+          cancelButtonText: i18nT('utils.cancel') || '取消'
         })
         loadingToast = showLoadingToast({
           forbidClick: true,
