@@ -492,6 +492,7 @@
   "host_dailyrateof_return": "Daily yield",
   "investment_amount": "Investment amount",
   "Estimated income": "Estimated revenue",
+  "financial_current_income": "Bieżący dochód",
   "Arrival_time": "Time of receipt",
   "mining_status": "state",
   "In_position": "In position",
@@ -1237,5 +1238,6 @@
   "gift_cert_my_code_unused": "Nieużyty",
   "gift_cert_my_code_used": "Użyty",
   "gift_cert_home_entry_empty": "Brak dostępnych voucherów",
-  "gift_cert_my_codes_open": "Moje vouchery"
+  "gift_cert_my_codes_open": "Moje vouchery",
+  "withdraw_coin_length_error": "Długość adresu wypłaty nie jest prawidłowa"
 }

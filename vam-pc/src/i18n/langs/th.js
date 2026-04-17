@@ -597,6 +597,8 @@ export default {
     triggerPrice: "ราคาที่เปิดใช้",
     status: "สถานะ",
     closeRate: "ราคาที่ปิด",
+    openPositionTime: "เวลาเปิด",
+    closePositionTime: "เวลาปิด",
     serviceCharge: "ค่าธรรมเนียมการบริการ",
     entrustedValue: "มูลค่าที่กำหนด",
     currentPosition: "ตำแหน่งปัจจุบัน",

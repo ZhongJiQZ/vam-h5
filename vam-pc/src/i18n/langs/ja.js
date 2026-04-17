@@ -607,6 +607,8 @@ export default {
     triggerPrice: "トリガー価格",
     status: "状態",
     closeRate: "決済価格",
+    openPositionTime: "エントリー時間",
+    closePositionTime: "決済時間",
     serviceCharge: "手数料",
     entrustedValue: "委託価値",
     currentPosition: "現在のポジション",

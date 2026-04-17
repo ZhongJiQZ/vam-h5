@@ -632,6 +632,8 @@ export default {
     triggerPrice: "Harga pemicu",
     status: "Status",
     closeRate: "Harga penyelesaian",
+    openPositionTime: "Waktu buka posisi",
+    closePositionTime: "Waktu tutup posisi",
     serviceCharge: "Biaya layanan",
     sellFee: "Biaya penutupan",
     entrustedValue: "Nilai order",

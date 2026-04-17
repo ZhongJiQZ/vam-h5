@@ -494,6 +494,7 @@
   "host_dailyrateof_return": "Rendement journalier",
   "investment_amount": "Montant investi",
   "Estimated income": "Revenus estimés",
+  "financial_current_income": "Revenu actuel",
   "Arrival_time": "Date de réception",
   "mining_status": "État",
   "In_position": "En position",
@@ -1241,5 +1242,6 @@
   "gift_cert_my_code_unused": "Non utilisé",
   "gift_cert_my_code_used": "Utilisé",
   "gift_cert_home_entry_empty": "Aucun bon d'achat disponible pour le moment",
-  "gift_cert_my_codes_open": "Mes bons"
+  "gift_cert_my_codes_open": "Mes bons",
+  "withdraw_coin_length_error": "Withdrawal address length error"
 }

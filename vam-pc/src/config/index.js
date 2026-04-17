@@ -18,20 +18,16 @@ export default {
       ? "mqtts://message.baiyiex.com/ws"
       : "mqtts://message.baiyiex.com/ws", // mica-mqtt服务地址
   //白名单
-  statusWhiteList: [],
+  statusWhiteList: [601],
   descriptionWhiteList: ["步骤1登录成功"],
 
   exchangeTime: 1000 * 60 * 3, //更新汇率时间
   //** 开发环境 */
   // baseUrl: "http://localhost:8220",
   // socketUrl: "ws://localhost:8220",
-  //** 生产环境：动态使用当前访问域名 */
-  get baseUrl() {
-    return `https://${window.location.host}`;
-  },
-  get socketUrl() {
-    return `wss://${window.location.host}`;
-  },
+  //** 生产环境 */
+  baseUrl: "https://dex.veloxny.com",
+  socketUrl: "wss://dex.veloxny.com",
 
   //时区字典
   TIMEZONE_DICT: [

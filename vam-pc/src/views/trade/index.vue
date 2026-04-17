@@ -2164,27 +2164,57 @@ export default {
     },
 
     //U本位下单操作
-    submitUcontract(type) {
+    async submitUcontract(type, confirmPriceChange = false) {
       const delegateType = this.ustaTabValue == "first" ? 0 : 1;
       const delegatePrice =
         type == 0 ? this.ustaBuyCoinForm.price : this.ustaSellCoinForm.price;
       const delegateTotal =
         type == 0 ? this.ustaBuyCoinForm.num : this.ustaSellCoinForm.num;
-      submitUcontract({
+      const payload = {
         symbol: this.coinSymbolInfo.coin,
         leverage: this.transactionNum.substr(0, this.transactionNum.length - 1),
         delegatePrice,
         delegateTotal,
         type,
         delegateType,
-      }).then((res) => {
-        if (res.data.code == 200) {
-          this.$message.success(res.data.msg);
+        confirmPriceChange,
+      };
+      try {
+        const res = await submitUcontract(payload);
+        const result = res?.data || {};
+        if (Number(result.code) === 200) {
+          this.$message.success(result.msg);
           // 调用U本位订单列表接口
           this.contractHistoryList(0);
           this.contractHistoryList(1);
+          return;
         }
-      });
+        this.$message.error(result.msg || "System error");
+      } catch (error) {
+        const result = error?.data || error?.response?.data || {};
+        const needPriceConfirm =
+          Number(result.code) === 601 &&
+          result?.data?.confirmCode === "PRICE_CONFIRM_REQUIRED";
+        if (!needPriceConfirm) {
+          const errMsg = result.msg || error?.message || "System error";
+          if (errMsg && errMsg !== "cancel") {
+            this.$message.error(errMsg);
+          }
+          return;
+        }
+        try {
+          await this.$confirm(
+            result?.data?.tip || result.msg || "Price confirmation required",
+            result.msg || "Tips",
+            {
+              confirmButtonText: "确认",
+              cancelButtonText: this.$t("utils.cancel") || "取消",
+              type: "warning",
+            }
+          );
+          await this.submitUcontract(type, true);
+        } catch (confirmErr) {}
+      }
     },
     //极速平仓
     stopOrder(id) {

@@ -51,6 +51,11 @@
               </div>
 
               <div class="kv">
+                <div class="k">{{ _t18('financial_current_income') }}</div>
+                <div class="v">{{ formatAccumulaEarnDisplay(row) }}</div>
+              </div>
+
+              <div class="kv">
                 <div class="k">{{ _t18('assets.paymentDate') }}</div>
                 <div class="v">
                   {{
@@ -63,12 +68,12 @@
 
               <div class="kv">
                 <div class="k">{{ _t18('records.beginTime') }}</div>
-                <div class="v">{{ formatTimestamp(row.createTime) }}</div>
+                <div class="v">{{ formatAssetRecordTime(row, 'begin') }}</div>
               </div>
 
               <div class="kv">
                 <div class="k">{{ _t18('records.endTime') }}</div>
-                <div class="v">{{ formatTimestamp(row.endTime) }}</div>
+                <div class="v">{{ formatAssetRecordTime(row, 'end') }}</div>
               </div>
 
               <div class="kv">
@@ -104,6 +109,8 @@
 import { ref } from 'vue'
 import { showToast, showConfirmDialog } from 'vant'
 import { _t18 } from '@/utils/public'
+import { formatAssetRecordTime } from '@/utils/time'
+import { priceFormat } from '@/utils/decimal'
 import { getRecordList } from '@/api/assets'
 import { redemption } from '@/api/pledge'
 import { useI18n } from 'vue-i18n'
@@ -146,9 +153,13 @@ const calcEstimatedRevenue = (row) => {
   return (amount * days * rate) / 100
 }
 
-const formatTimestamp = (ts) => {
-  if (!ts) return '-'
-  return String(ts).replace('T', ' ').replace('.000+08:00', '')
+/** 当前收益：接口字段 accumulaEarn */
+const formatAccumulaEarnDisplay = (row) => {
+  const v = row?.accumulaEarn
+  if (v === null || v === undefined || v === '') return '--'
+  const n = Number(String(v).replace(/,/g, ''))
+  if (!Number.isFinite(n)) return '--'
+  return `${priceFormat(n, 4)} USDT`
 }
 
 const formatStatus = (s) => {

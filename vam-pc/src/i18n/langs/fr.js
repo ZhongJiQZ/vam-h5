@@ -609,6 +609,8 @@ export default {
       triggerPrice: "Prix déclencheur",
       status: "Statut",
       closeRate: "Taux de clôture",
+      openPositionTime: "Heure d'ouverture",
+      closePositionTime: "Heure de clôture",
       serviceCharge: "Frais de service",
       entrustedValue: "Valeur de l'ordre confié",
       currentPosition: "Position actuelle",

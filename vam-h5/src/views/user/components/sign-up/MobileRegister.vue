@@ -46,10 +46,7 @@
       <!-- 邀请码 选填 -->
       <p>
         {{ _t18('register_invitation') }}
-        <i v-if="REGISTER_REQUIRED_ACTIVECODE_MOBILE.includes(_getConfig('_APP_ENV'))"
-          >({{ _t18('required') }})</i
-        >
-        <i v-else>({{ _t18('optional') }})</i>
+        <i>({{ _t18('required') }})</i>
       </p>
       <div>
         <input type="text" :placeholder="_t18('login_please')" v-model="formData3.invitCode" />
@@ -72,7 +69,6 @@
 
 <script setup>
 import Footer from './../signFooter.vue'
-import { REGISTER_REQUIRED_ACTIVECODE_MOBILE } from '@/config'
 import { _t18 } from '@/utils/public'
 import { mobileCode } from '@/api/user'
 import AreaCode from './../areaCode.vue'

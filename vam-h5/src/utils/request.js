@@ -48,7 +48,9 @@ _axios.interceptors.response.use((response) => {
     // 成功码须显式判断：用 code > 0 会把业务错误码 500 当成成功
     const c = response.data?.code
     const ok = c === 200 || c === '200'
-    if (response.data && ok) {
+    const isUContractSubmit = response?.config?.url?.includes('/api/contract/order/submit')
+    const isPriceConfirmRequired = isUContractSubmit && (c === 601 || c === '601')
+    if (response.data && (ok || isPriceConfirmRequired)) {
       return Promise.resolve(response.data)
     } else {
       showToast(response.data.msg || 'System error')

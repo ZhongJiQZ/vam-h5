@@ -4,7 +4,6 @@ import { getUserInfo } from '@/api/user'
 import { storageDict } from '@/config/dict'
 import { dispatchCustomEvent } from '@/utils'
 import { useAccountStore } from '../account'
-import { closeToast } from 'vant'
 import { useMainStore } from '../index'
 import router from '@/router'
 
@@ -84,12 +83,9 @@ export const useUserStore = defineStore('user', {
         dispatchCustomEvent('event_userInfoChange', this.userInfo)
         // dispatchCustomEvent('event_userInfoChange2', this.userInfo)
         localStorage.setItem(storageDict.USER_INFO, JSON.stringify(this.userInfo))
-        closeToast()
         const mainStore = useMainStore()
         mainStore.getUserRechageNew()
         return this.userInfo
-      } else {
-        closeToast()
       }
     }
   },

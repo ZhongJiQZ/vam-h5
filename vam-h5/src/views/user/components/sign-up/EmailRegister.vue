@@ -51,10 +51,7 @@
       <!-- 邀请码 选填 -->
       <p>
         {{ _t18('register_invitation') }}
-        <i v-if="REGISTER_REQUIRED_ACTIVECODE.includes(_getConfig('_APP_ENV'))"
-          >({{ _t18('required') }})</i
-        >
-        <i v-else>({{ _t18('optional') }})</i>
+        <i>({{ _t18('required') }})</i>
       </p>
       <div>
         <input type="text" :placeholder="_t18('login_please')" v-model="formData2.invitCode" />
@@ -82,7 +79,6 @@ import { emailCode } from '@/api/user'
 import { showToast } from 'vant'
 import { useToast } from '@/hook/useToast'
 import AreaCode from './../areaCode.vue'
-import { REGISTER_REQUIRED_ACTIVECODE } from '@/config'
 const { _toast } = useToast()
 import { useRoute } from 'vue-router'
 const route = useRoute()

@@ -610,6 +610,8 @@ export default {
     triggerPrice: "触发价格",
     status: "状态",
     closeRate: "平仓价格",
+    openPositionTime: "开仓时间",
+    closePositionTime: "平仓时间",
     sellFee:"平仓手续费",
     serviceCharge: "手续费",
     entrustedValue: "委托价值",

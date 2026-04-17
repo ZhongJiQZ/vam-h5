@@ -260,9 +260,11 @@ const { _isFreeze } = useFreeze()
 import Handicap from '../../common/handicap.vue'
 import OrderListBox from './OrderList.vue'
 import { _t18 } from '@/utils/public'
-import { showToast, showLoadingToast, closeToast } from 'vant'
+import { showToast, showLoadingToast, closeToast, showConfirmDialog } from 'vant'
 import { useToast } from '@/hook/useToast'
+import { useI18n } from 'vue-i18n'
 const { _toast } = useToast()
+const { t: i18nT } = useI18n()
 
 import { useMainStore } from '@/store/index'
 const mainStore = useMainStore()
@@ -685,7 +687,10 @@ const init = () => {
 /**
  * 买入/卖出
  */
-const buyOrSellForm = (type) => {
+const buyOrSellForm = async (type) => {
+  const pickMsg = (obj) =>
+    obj?.msg || obj?.data?.msg || obj?.response?.data?.msg || obj?.message || ''
+  let loadingToast = null
   let typeId = ''
   numList.value.forEach((element) => {
     if (element.name === transactionNum.value) {
@@ -695,13 +700,14 @@ const buyOrSellForm = (type) => {
 
   const tradePrice = transactionLabel.value ? coinPriceInfo.value.close : delegatePrice.value
 
-  let data = {
+  const data = {
     symbol: props.coinInfo.coin,
     leverage: typeId,
     delegatePrice: tradePrice,
     delegateTotal: delegateTotal.value,
     type: type, // 0 买入(做多) 1 卖出(开空)
-    delegateType: transactionLabel.value // 1 市价 0 限价（按你当前原逻辑保持不动）
+    delegateType: transactionLabel.value, // 1 市价 0 限价（按你当前原逻辑保持不动）
+    confirmPriceChange: false
   }
 
   if (
@@ -727,23 +733,116 @@ const buyOrSellForm = (type) => {
   }
 
   try {
-    showLoadingToast({
+    loadingToast = showLoadingToast({
       forbidClick: true,
       duration: 0
     })
+    const res = await submitUcontract(data)
+    if (Number(res?.code) === 200) {
+      _toast('quote_addSuccess')
+      orderListBoxRef.value?.handelRefresh?.()
+      userStore.getUserInfo()
+      return
+    }
 
-    submitUcontract(data).then((res) => {
-      if (res.code === 200) {
-        _toast('quote_addSuccess')
-        orderListBoxRef.value?.handelRefresh?.()
-        userStore.getUserInfo()
-      } else {
-        closeToast()
-        showToast(res.msg)
-      }
+    const priceConfirmData = res?.data?.confirmCode
+      ? res.data
+      : res?.data?.data?.confirmCode
+        ? res.data.data
+        : res?.data || {}
+    const needPriceConfirm = Number(res?.code) === 601
+    if (!needPriceConfirm) {
+      showToast({
+        message: pickMsg(res) || '下单失败',
+        duration: 4000
+      })
+      return
+    }
+
+    const confirmTitle = pickMsg(res)
+    const confirmTip = priceConfirmData?.tip || res?.data?.tip || pickMsg(res) || ''
+    loadingToast?.close?.()
+    loadingToast = null
+    await showConfirmDialog({
+      title: confirmTitle,
+      message: confirmTip,
+      width: '320px',
+      showCancelButton: true,
+      confirmButtonText: i18nT('utils.confirm') || '确认',
+      cancelButtonText: i18nT('utils.cancel') || '取消'
+    })
+
+    loadingToast = showLoadingToast({
+      forbidClick: true,
+      duration: 1500
+    })
+    const confirmRes = await submitUcontract({
+      ...data,
+      confirmPriceChange: true
+    })
+    if (Number(confirmRes?.code) === 200) {
+      _toast('quote_addSuccess')
+      orderListBoxRef.value?.handelRefresh?.()
+      userStore.getUserInfo()
+      return
+    }
+    showToast({
+      message: pickMsg(confirmRes) || '下单失败',
+      duration: 2000
     })
   } catch (error) {
-    closeToast()
+    // 用户主动取消确认弹窗，不提示
+    const isCancelAction = error === 'cancel' || error?.message === 'cancel'
+    if (isCancelAction) return
+    const errRes = error?.data || error?.response?.data
+    const needPriceConfirmInCatch = Number(errRes?.code) === 601
+    if (needPriceConfirmInCatch) {
+      const catchConfirmData = errRes?.data?.confirmCode
+        ? errRes.data
+        : errRes?.data?.data?.confirmCode
+          ? errRes.data.data
+          : errRes?.data || {}
+      const confirmTitle = pickMsg(errRes)
+      const confirmTip = catchConfirmData?.tip || errRes?.data?.tip || pickMsg(errRes) || ''
+      loadingToast?.close?.()
+      loadingToast = null
+      try {
+        await showConfirmDialog({
+          title: confirmTitle,
+          message: confirmTip,
+          width: '320px',
+          showCancelButton: true,
+          confirmButtonText: i18nT('utils.confirm') || '确认',
+          cancelButtonText: i18nT('utils.cancel') || '取消'
+        })
+        loadingToast = showLoadingToast({
+          forbidClick: true,
+          duration: 1500
+        })
+        const confirmRes = await submitUcontract({
+          ...data,
+          confirmPriceChange: true
+        })
+        if (Number(confirmRes?.code) === 200) {
+          _toast('quote_addSuccess')
+          orderListBoxRef.value?.handelRefresh?.()
+          userStore.getUserInfo()
+          return
+        }
+        showToast({
+          message: pickMsg(confirmRes) || '下单失败',
+          duration: 2000
+        })
+      } catch (confirmError) {}
+      return
+    }
+    const errMsg = pickMsg(error)
+    showToast({
+      message: errMsg || '下单失败',
+      duration: 4000
+    })
+  } finally {
+    loadingToast?.close?.()
   }
 }
 

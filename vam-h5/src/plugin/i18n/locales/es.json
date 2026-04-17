@@ -494,6 +494,7 @@
   "host_dailyrateof_return": "Rendimiento diario",
   "investment_amount": "Monto de inversión",
   "Estimated income": "Ingresos estimados",
+  "financial_current_income": "Ingreso actual",
   "Arrival_time": "Hora de recepción",
   "mining_status": "Estado",
   "In_position": "En posición",
@@ -1241,5 +1242,6 @@
   "gift_cert_my_code_unused": "Sin usar",
   "gift_cert_my_code_used": "Usado",
   "gift_cert_home_entry_empty": "No hay cupones disponibles por ahora",
-  "gift_cert_my_codes_open": "Mis cupones"
+  "gift_cert_my_codes_open": "Mis cupones",
+  "withdraw_coin_length_error": "Withdrawal address length error"
 }

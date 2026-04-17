@@ -497,6 +497,7 @@
   "host_dailyrateof_return": "日收益率",
   "investment_amount": "投入金额",
   "Estimated income": "预估收益",
+  "financial_current_income": "当前收益",
   "Arrival_time": "到账时间",
   "mining_status": "状态",
   "In_position": "持仓中",
@@ -1246,5 +1247,6 @@
   "gift_cert_my_codes_empty": "暂无礼券记录",
   "gift_cert_my_codes_open": "我的体验券",
   "gift_cert_my_code_unused": "未使用",
-  "gift_cert_my_code_used": "已使用"
+  "gift_cert_my_code_used": "已使用",
+  "withdraw_coin_length_error": "提现地址长度错误"
 }

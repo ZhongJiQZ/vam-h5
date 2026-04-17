@@ -607,6 +607,8 @@ export default {
     triggerPrice: "Aktyvinimo kaina",
     status: "Būsena",
     closeRate: "Uždarymo kaina",
+    openPositionTime: "Orario apertura",
+    closePositionTime: "Orario chiusura",
     serviceCharge: "Paslaugų mokestis",
     entrustedValue: "Pavedimo vertė",
     currentPosition: "Esama pozicija",

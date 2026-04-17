@@ -495,6 +495,7 @@
   "host_dailyrateof_return": "Daily yield",
   "investment_amount": "Investment amount",
   "Estimated income": "Estimated revenue",
+  "financial_current_income": "Current income",
   "Arrival_time": "Time of receipt",
   "mining_status": "Status",
   "In_position": "In position",
@@ -1242,5 +1243,6 @@
   "gift_cert_my_code_unused": "Unused",
   "gift_cert_my_code_used": "Used",
   "gift_cert_home_entry_empty": "No vouchers available at the moment",
-  "gift_cert_my_codes_open": "My vouchers"
+  "gift_cert_my_codes_open": "My vouchers",
+  "withdraw_coin_length_error": "Withdrawal address length error"
 }

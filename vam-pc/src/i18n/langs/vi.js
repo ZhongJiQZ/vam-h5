@@ -606,6 +606,8 @@ export default {
     triggerPrice: "Giá kích hoạt",
     status: "Trạng thái",
     closeRate: "Giá đóng cửa",
+    openPositionTime: "Thời gian mở",
+    closePositionTime: "Thời gian đóng",
     serviceCharge: "Phí dịch vụ",
     entrustedValue: "Giá trị lệnh giao dịch",
     currentPosition: "Vị trí hiện tại",

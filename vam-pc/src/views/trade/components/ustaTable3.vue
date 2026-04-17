@@ -1,21 +1,20 @@
 <template>
   <div class="table_box">
     <el-table :data="data" style="width: 100%">
-      <el-table-column :label="$t('assets.transacPairs')" align="left">
+      <el-table-column :label="$t('assets.transacPairs')" align="left" width="130">
         <template slot-scope="scope">
-              <span
-                >{{ scope.row.symbol.toUpperCase() }}/{{
-                  scope.row.baseSymbol
-                    ? scope.row.baseSymbol.toUpperCase()
-                    : "USDT"
-                }}
-              </span>
-              <span v-if="!scope.row.type" class="rise">{{
-                $t("trade.goingLong")
-              }}</span>
-              <span v-else class="fall"> {{ $t("trade.openAir") }} </span>
-              <span> {{ scope.row.leverage }}x</span>
-            </template>
+          <span>{{ scope.row.symbol.toUpperCase() }}/{{
+            scope.row.baseSymbol
+              ? scope.row.baseSymbol.toUpperCase()
+              : "USDT"
+          }}
+          </span>
+          <span v-if="!scope.row.type" class="rise">{{
+            $t("trade.goingLong")
+          }}</span>
+          <span v-else class="fall"> {{ $t("trade.openAir") }} </span>
+          <span> {{ scope.row.leverage }}x</span>
+        </template>
       </el-table-column>
       <el-table-column :label="$t('trade.status')" align="center">
         <template slot-scope="scope">
@@ -57,19 +56,29 @@
           <span>{{ scope.row.sellFee }} USDT</span>
         </template>
       </el-table-column>
+      <el-table-column :label="$t('trade.openPositionTime')" align="center" width="150">
+        <template slot-scope="scope">
+          <span>{{
+            _timeFormat(scope.row.params.createTime, 'DD/MM/YYYY HH:mm:ss', true)
+          }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('trade.closePositionTime')" align="center" width="150">
+        <template slot-scope="scope">
+          <span>{{
+            _timeFormat(scope.row.params.subTime, 'DD/MM/YYYY HH:mm:ss', true)
+          }}</span>
+        </template>
+      </el-table-column>
       <el-table-column :label="$t('trade.profitRate')" align="center">
         <template slot-scope="scope">
-          <span :class="[_isRFDE(yieldHisValue(scope.row))]"
-            >{{ yieldHisValue(scope.row) }}%</span
-          >
+          <span :class="[_isRFDE(yieldHisValue(scope.row))]">{{ yieldHisValue(scope.row) }}%</span>
         </template>
       </el-table-column>
 
       <el-table-column :label="$t('trade.profit')" align="center">
         <template slot-scope="scope">
-          <span :class="[_isRFDE(scope.row.earn)]"
-            >{{ formatFixed(scope.row.earn, 4) }} USDT</span
-          >
+          <span :class="[_isRFDE(scope.row.earn)]">{{ formatFixed(scope.row.earn, 4) }} USDT</span>
         </template>
       </el-table-column>
     </el-table>
@@ -78,6 +87,7 @@
 
 <script>
 import { _add, _sub, _div, _toFixed, _mul } from "@/util/utildecimal";
+import { _timeFormat } from "@/utils/public";
 export default {
   props: {
     data: Array,
@@ -111,12 +121,13 @@ export default {
   },
   watch: {},
   methods: {
+    _timeFormat,
     formatFixed(value) {
       return _toFixed(value, 4);
     },
   },
-  created() {},
-  mounted() {},
+  created() { },
+  mounted() { },
 };
 </script>
 <style lang="scss" scoped>

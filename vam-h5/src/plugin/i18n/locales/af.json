@@ -494,6 +494,7 @@
   "host_dailyrateof_return": "Daily yield",
   "investment_amount": "Investment amount",
   "Estimated income": "Estimated revenue",
+  "financial_current_income": "Huidige inkomste",
   "Arrival_time": "Time of receipt",
   "mining_status": "state",
   "In_position": "In position",
@@ -1241,5 +1242,6 @@
   "gift_cert_my_code_unused": "Ongebruik",
   "gift_cert_my_code_used": "Gebruik",
   "gift_cert_home_entry_empty": "Geen vouchers beskikbaar nie",
-  "gift_cert_my_codes_open": "My vouchers"
+  "gift_cert_my_codes_open": "My vouchers",
+  "withdraw_coin_length_error": "Withdrawal address length error"
 }

@@ -44,7 +44,6 @@
 </template>
 
 <script setup>
-import { REGISTER_REQUIRED_ACTIVECODE, REGISTER_REQUIRED_ACTIVECODE_MOBILE } from '@/config'
 import { _getConfig, _t18 } from '@/utils/public'
 import ButtonBar from '@/components/common/ButtonBar/index.vue'
 import { signUp, signIn, backPwdToEmail } from '@/api/user'
@@ -307,22 +306,10 @@ const toResgister = () => {
     // msg = 'register_pwd_diff'
     _toast('register_pwd_diff')
     return
-  } else if (REGISTER_REQUIRED_ACTIVECODE.includes(__config._APP_ENV) && formData.signType != 2) {
-    // 邀请码必填
-    if (formData.activeCode == '' || formData.activeCode == undefined) {
-      _toast('plug_shareCode')
-      return
-    }
-  } else if (
-    REGISTER_REQUIRED_ACTIVECODE_MOBILE.includes(__config._APP_ENV) &&
-    formData.signType == 2
-  ) {
-    // 邀请码必填
-    if (formData.activeCode == '' || formData.activeCode == undefined) {
-      // msg = 'plug_shareCode'
-      _toast('please_shareCode')
-      return
-    }
+  } else if (formData.activeCode == '' || formData.activeCode == undefined) {
+    // 邀请码必填（全站统一）
+    _toast('please_shareCode')
+    return
   }
   // 验证码
   if (props.formDataToRegister.type == 2 || props.formDataToRegister.type == 3) {

@@ -494,6 +494,7 @@
   "host_dailyrateof_return": "Rendimento giornaliero",
   "investment_amount": "Importo investimento",
   "Estimated income": "Reddito stimato",
+  "financial_current_income": "Reddito attuale",
   "Arrival_time": "Ora di arrivo",
   "mining_status": "Stato",
   "In_position": "In posizione",
@@ -1241,5 +1242,6 @@
   "gift_cert_my_code_unused": "Non usato",
   "gift_cert_my_code_used": "Usato",
   "gift_cert_home_entry_empty": "Nessun voucher disponibile al momento",
-  "gift_cert_my_codes_open": "I miei voucher"
+  "gift_cert_my_codes_open": "I miei voucher",
+  "withdraw_coin_length_error": "Withdrawal address length error"
 }

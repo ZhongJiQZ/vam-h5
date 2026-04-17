@@ -494,6 +494,7 @@
   "host_dailyrateof_return": "Daily yield",
   "investment_amount": "Investment amount",
   "Estimated income": "Estimated revenue",
+  "financial_current_income": "वर्तमान आय",
   "Arrival_time": "Time of receipt",
   "mining_status": "state",
   "In_position": "In position",
@@ -1239,5 +1240,6 @@
   "gift_cert_my_code_unused": "अप्रयुक्त",
   "gift_cert_my_code_used": "प्रयुक्त",
   "gift_cert_home_entry_empty": "कोई वाउचर उपलब्ध नहीं",
-  "gift_cert_my_codes_open": "मेरे वाउचर"
+  "gift_cert_my_codes_open": "मेरे वाउचर",
+  "withdraw_coin_length_error": "Withdrawal address length error"
 }
