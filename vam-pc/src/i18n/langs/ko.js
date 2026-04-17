@@ -596,6 +596,8 @@ export default {
     triggerPrice: "트리거 가격",
     status: "상태",
     closeRate: "청산 가격",
+    openPositionTime: "진입 시간",
+    closePositionTime: "청산 시간",
     serviceCharge: "수수료",
     entrustedValue: "위탁 가치",
     currentPosition: "현재 포지션",

@@ -607,6 +607,8 @@ export default {
     triggerPrice: "觸發價格",
     status: "狀態",
     closeRate: "平倉價格",
+    openPositionTime: "開倉時間",
+    closePositionTime: "平倉時間",
     serviceCharge: "手續費",
     entrustedValue: "委託價值",
     currentPosition: "當前持倉",

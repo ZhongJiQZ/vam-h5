@@ -624,6 +624,8 @@ export default {
     triggerPrice: "ٹرگر قیمت",
     status: "اسٹیٹس",
     closeRate: "سیٹلمنٹ قیمت",
+    openPositionTime: "اوپننگ ٹائم",
+    closePositionTime: "کلوزنگ ٹائم",
     serviceCharge: "سروس چارج",
     sellFee: "کلوزنگ فیس",
     entrustedValue: "سپرد کردہ ویلیو",

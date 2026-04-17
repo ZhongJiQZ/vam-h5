@@ -604,6 +604,8 @@ export default {
     triggerPrice: "Preço de gatilho",
     status: "Estado",
     closeRate: "Preço de fechamento",
+    openPositionTime: "Hora de abertura",
+    closePositionTime: "Hora de fechamento",
     serviceCharge: "Taxa de serviço",
     entrustedValue: "Valor encomendado",
     currentPosition: "Posição atual",

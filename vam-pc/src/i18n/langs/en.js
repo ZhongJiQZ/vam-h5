@@ -616,6 +616,8 @@ export default {
     triggerPrice: "Trigger price",
     status: "Status",
     closeRate: "Closing price",
+    openPositionTime: "Open time",
+    closePositionTime: "Close time",
     serviceCharge: "Service charge",
     sellFee:"Closing fee",
     entrustedValue: "Entrusted value",

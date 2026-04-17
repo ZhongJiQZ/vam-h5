@@ -10,6 +10,7 @@ import dayjs from '@/plugin/dayjs/index'
 import { customRef, ref } from "@vue/composition-api";
 
 import * as __config from "@/config";
+
 /**
  * 获取配置
  */
@@ -83,6 +84,18 @@ export const _numberWithCommas = (val) => {
 }
 
 /**
+ * 时间戳转 dayjs 可解析的值：纯数字时区分秒（≤10 位）与毫秒，其余原样交给 dayjs
+ */
+function normalizeTimestampInput(time) {
+  if (time === null || time === undefined || time === '') return time
+  const raw = typeof time === 'string' ? time.trim() : time
+  if (typeof raw === 'string' && !/^\d+$/.test(raw)) return time
+  const n = Number(raw)
+  if (!Number.isFinite(n) || n <= 0) return time
+  return n < 1e12 ? n * 1000 : n
+}
+
+/**
  * 时间格式化
  */
 export const _timeFormat = (time, expression = '', flag = false) => {
@@ -98,11 +111,12 @@ export const _timeFormat = (time, expression = '', flag = false) => {
   if (['bitmake'].includes(__config._APP_ENV)) {
     tempExpression = tempExpression.replace('YYYY', 'BBBB')
   }
-  if (PLATFORM_12HOURFORMAT.includes(__config._APP_ENV)) {
+  if (PLATFORM_12HOURFORMAT) {
     tempExpression = tempExpression.replace('HH:mm', 'hh:mm')
     tempExpression += ' a'
   }
-  return dayjs(time).tz(timezone).format(tempExpression)
+  const parsed = normalizeTimestampInput(time)
+  return dayjs(parsed).tz(timezone).format(tempExpression)
 }
 /**
  * 时间格式化 KLine
@@ -117,7 +131,8 @@ export const _klineTimeFormat = (time, expression = '', flag = false) => {
   } else {
     tempExpression = tempExpression + ` ${expression || 'HH:mm:ss'}`
   }
-  return dayjs(time).tz('utc').format(tempExpression)
+  const parsed = normalizeTimestampInput(time)
+  return dayjs(parsed).tz('utc').format(tempExpression)
 }
 
 /**

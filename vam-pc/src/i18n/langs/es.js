@@ -611,6 +611,8 @@ export default {
     triggerPrice: "Precio de activación",
     status: "Estado",
     closeRate: "Precio de cierre",
+    openPositionTime: "Hora de apertura",
+    closePositionTime: "Hora de cierre",
     serviceCharge: "Tarifa de servicio",
     entrustedValue: "Valor encomendado",
     currentPosition: "Posición actual",

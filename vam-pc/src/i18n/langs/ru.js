@@ -606,6 +606,8 @@ export default {
     triggerPrice: "Цена срабатывания",
     status: "Статус",
     closeRate: "Цена закрытия",
+    openPositionTime: "Время открытия",
+    closePositionTime: "Время закрытия",
     serviceCharge: "Сборы за обслуживание",
     entrustedValue: "Значение ордера",
     currentPosition: "Текущая позиция",
