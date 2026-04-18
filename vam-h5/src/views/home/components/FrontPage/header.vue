@@ -4,22 +4,26 @@
     <van-popup v-model:show="show" position="left" class="sidebar" @close="closeSideBar">
       <SideBar @closeSideBar="closeSideBar"></SideBar>
     </van-popup>
+    <div class="home-top-bar">
+      <img :src="logoSrc" class="home-top-bar__logo" alt="" @click="refreshPage" />
+      <div class="home-top-bar__actions">
+        <img
+          src="@/assets/images/black/user.png"
+          alt=""
+          class="home-top-bar__icon"
+          @click="goMyAssets"
+        />
+        <span class="home-top-bar__menu-btn" role="button" aria-label="菜单" @click="openSideBar">
+          <svg-load name="cebian" />
+        </span>
+      </div>
+    </div>
     <div class="carousel">
       <van-swipe :autoplay="3000" lazy-render :loop="true" :show-indicators="false">
         <van-swipe-item v-for="(item, index) in carouselList.slice(0,1)" :key="index">
           <image-load :filePath="item.imgUrl" alt="" class="carouselItem" @click="linkto(item)" />
         </van-swipe-item>
       </van-swipe>
-      <div class="top">
-        <div>
-          <!-- <Logo @click="refreshPage"></Logo> -->
-           <img src="@/assets/images/logo-white.png" class="logo" @click="refreshPage"/>
-        </div>
-        <div>
-          <!-- <svg-load name="user" class="rightImg" @click="openSideBar"></svg-load> -->
-           <img src="@/assets/images/user.png" class="rightImg" @click="openSideBar"/>
-        </div>
-      </div>
       <div class="currentList">
         <div
           v-for="(item, index) in dataList.filter((it, idx) => idx < 4)"
@@ -58,6 +62,7 @@ import { onMounted, computed, watch } from 'vue'
 import { publiceNotice } from '@/api/common/index'
 import { _isRFD } from '@/utils/public'
 import SideBar from '@/views/home/sidebar/index.vue'
+import logoFallback from '@/assets/images/logo-black.png'
 const show = ref(false)
 const openSideBar = () => {
   show.value = true
@@ -68,6 +73,14 @@ const closeSideBar = () => {
 const tradeStore = useTradeStore()
 const mainStroe = useMainStore()
 const $router = useRouter()
+
+const logoSrc = computed(() => {
+  return mainStroe.getLogoList?.logo || mainStroe.getLogoList?.logoD || logoFallback
+})
+
+const goMyAssets = () => {
+  $router.push('/myassets')
+}
 
 /** 非响应式：记录各币种上一笔 close，避免 ref 更新触发二次渲染把涨跌误判为平 */
 const prevCloseByCoin = {}
@@ -161,6 +174,48 @@ onMounted(async () => {
   height: 100%;
 }
 
+.home-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: var(--ex-max-width);
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 10px 15px;
+  background: #ffffff;
+}
+
+.home-top-bar__logo {
+  height: 32px;
+  display: block;
+  object-fit: contain;
+  cursor: pointer;
+}
+
+.home-top-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.home-top-bar__icon {
+  width: 24px;
+  height: 24px;
+  display: block;
+  object-fit: contain;
+  cursor: pointer;
+}
+
+.home-top-bar__menu-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 24px;
+  line-height: 0;
+}
+
 .carousel {
   position: relative;
   height: 250px;
@@ -169,43 +224,6 @@ onMounted(async () => {
     height: 250px;
     width: 100%;
     object-fit: cover;
-  }
-
-  .top {
-    height: 52px;
-    // background: var(--ex-home-box-background-color3);
-    background: rgba(255, 255, 255, 0);
-    border-radius: 5px;
-    padding: 15px 10px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: absolute;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: calc(100% - 30px);
-    .logo{
-      height:32px;
-    }
-
-    /* 减去两侧的间距 */
-    .leftImg {
-      width: 25px;
-      height: 25px;
-      border-radius: 15px;
-    }
-
-    .centerImg {
-      width: 56px;
-      height: 14px;
-      margin-left: 5px;
-    }
-
-    .rightImg {
-      width: 32px;
-      height: 32px;
-    }
   }
 
   .currentList {
