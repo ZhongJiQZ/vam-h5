@@ -154,7 +154,6 @@ watch(
   }
 )
 onMounted(() => {
-  mainStore.setTradeFlag(mainStore.tradeFlag + mainStore.isOption)
   getHeader()
 })
 onUnmounted(() => {

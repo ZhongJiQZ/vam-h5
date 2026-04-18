@@ -11,15 +11,10 @@
   <Nodata v-if="!currentHtml"></Nodata>
 </template>
 <script setup>
-import { useMainStore } from '@/store/index'
-const mainStore = useMainStore()
 import { computed, onMounted, ref } from 'vue'
 import { rulesList } from '@/api/common/index'
 import { useRoute } from 'vue-router'
 import { _t18 } from '@/utils/public'
-onMounted(()=>{
-  mainStore.setTradeFlag(mainStore.tradeFlag + mainStore.isOption)
-})
 const $route = useRoute()
 const currentName2 = computed(() => {
   switch (Number($route.query.type)) {

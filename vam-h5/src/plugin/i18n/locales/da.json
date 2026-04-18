@@ -1241,5 +1241,6 @@
   "gift_cert_my_code_used": "Brugt",
   "gift_cert_home_entry_empty": "Ingen vouchers tilgængelige",
   "gift_cert_my_codes_open": "Mine vouchers",
-  "withdraw_coin_length_error": "Withdrawal address length error"
+  "withdraw_coin_length_error": "Withdrawal address length error",
+  "operation_failed": "Handling mislykkedes"
 }

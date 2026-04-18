@@ -1239,5 +1239,6 @@
   "gift_cert_my_code_used": "Użyty",
   "gift_cert_home_entry_empty": "Brak dostępnych voucherów",
   "gift_cert_my_codes_open": "Moje vouchery",
-  "withdraw_coin_length_error": "Długość adresu wypłaty nie jest prawidłowa"
+  "withdraw_coin_length_error": "Długość adresu wypłaty nie jest prawidłowa",
+  "operation_failed": "Operacja nie powiodła się"
 }

@@ -1238,5 +1238,6 @@
   "gift_cert_my_code_used": "בשימוש",
   "gift_cert_home_entry_empty": "אין שוברים זמינים כרגע",
   "gift_cert_my_codes_open": "השוברים שלי",
-  "withdraw_coin_length_error": "אורך כתובת משיכה אינו תקין"
+  "withdraw_coin_length_error": "אורך כתובת משיכה אינו תקין",
+  "operation_failed": "הפעולה נכשלה"
 }

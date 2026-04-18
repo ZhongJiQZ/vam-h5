@@ -47,7 +47,13 @@ const $router = useRouter()
 const $route = useRoute()
 const props = defineProps({
   headerList: {
-    type: Array
+    type: Array,
+    default: () => []
+  },
+  /** 与 PLAYING_SETTING 一致，避免仅靠 tradeFlag 推算时 temp 为空导致白屏 */
+  marketTab: {
+    type: String,
+    default: ''
   }
 })
 /**
@@ -60,7 +66,13 @@ const searchName = ref('')
 const currentList = ref([])
 const currentCoinList = computed(() => {
   let tempList = []
-  if ($route.query.type) {
+  if (props.marketTab === 'secondContract') {
+    tempList = tradeStore.secondContractCoinList || []
+  } else if (props.marketTab === 'spot') {
+    tempList = tradeStore.spotCoinList || []
+  } else if (props.marketTab === 'contract') {
+    tempList = tradeStore.contractCoinList || []
+  } else if ($route.query.type) {
     if ($route.query.type == 1) {
       tempList = tradeStore.spotCoinList
     } else if ($route.query.type == 2) {
@@ -72,12 +84,25 @@ const currentCoinList = computed(() => {
     } else if ($route.path == '/tradeBB') {
       tempList = tradeStore.spotCoinList
     } else {
-      let temp = props.headerList[mainStore.tradeFlag]
-      if (temp.currentTab == 'secondContract') {
+      const len = props.headerList?.length || 0
+      const raw = mainStore.tradeFlag
+      let listIdx = 0
+      if (raw !== '' && raw !== undefined && raw !== null && len > 0) {
+        const tf = Number(raw)
+        if (Number.isFinite(tf) && tf >= 0) {
+          listIdx = !mainStore.isOption
+            ? Math.min(tf, len - 1)
+            : tf <= 0
+              ? 0
+              : Math.min(tf - 1, len - 1)
+        }
+      }
+      const temp = props.headerList?.[listIdx]
+      if (temp?.currentTab == 'secondContract') {
         tempList = tradeStore.secondContractCoinList
-      } else if (temp.currentTab == 'spot') {
+      } else if (temp?.currentTab == 'spot') {
         tempList = tradeStore.spotCoinList
-      } else if (temp.currentTab == 'contract') {
+      } else if (temp?.currentTab == 'contract') {
         tempList = tradeStore.contractCoinList
       }
     }

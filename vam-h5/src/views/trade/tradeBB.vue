@@ -23,7 +23,11 @@
         :empty="false"
       >
         <template #emptyContentCustomize>
-          <LeftSide @close="sidePopup = false" :headerList="headerList"></LeftSide>
+          <LeftSide
+            marketTab="spot"
+            @close="sidePopup = false"
+            :headerList="headerList"
+          ></LeftSide>
         </template>
       </PublicPopup>
     </div>

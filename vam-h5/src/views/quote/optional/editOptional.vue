@@ -44,6 +44,7 @@
 import { computed, ref, onMounted, watch } from 'vue'
 import { showToast } from 'vant'
 import { _t18 } from '@/utils/public'
+import { toastApiMsg } from '@/utils/toastApiMsg'
 import { useToast } from '@/hook/useToast'
 import { useTradeStore } from '@/store/trade'
 import { useMainStore } from '@/store/index.js'
@@ -174,32 +175,40 @@ const linkTo = () => {
       getCollectList()
       tradeStore.getCoinList()
     } else {
-      showToast(res.msg)
+      toastApiMsg(res.msg)
       getCollectList()
     }
   })
 }
 
+const delSubmitting = ref(false)
+
 // -------- 删除 --------
 const delList = () => {
   // 没勾选 / 没有可删除 id 就不请求
   if (!showDel.value) return
+  if (delSubmitting.value) return
   if (!ids.value) {
     // 说明你勾选的 coin 并不是后端收藏表里已有的记录（或 collectList 还没拉到）
     showToast(_t18('quote_del') + ' ' + _t18('fail') )
     return
   }
 
-  removeCollectRemoves(ids.value).then((res) => {
-    if (res.code === 200 || res.code === '200') {
-      _toast('quote_addSuccess')
-      getCollectList()
-      tradeStore.getCoinList()
-    } else {
-      showToast(res.msg)
-      getCollectList()
-    }
-  })
+  delSubmitting.value = true
+  removeCollectRemoves(ids.value)
+    .then((res) => {
+      if (res.code === 200 || res.code === '200') {
+        _toast('quote_addSuccess')
+        getCollectList()
+        tradeStore.getCoinList()
+      } else {
+        toastApiMsg(res.msg)
+        getCollectList()
+      }
+    })
+    .finally(() => {
+      delSubmitting.value = false
+    })
 }
 
 // -------- 生命周期 --------
