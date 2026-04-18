@@ -55,10 +55,33 @@ import BBTrading from './components/quoteBBTrading.vue' //币币
 import Ustandard from './components/quoteUstandard.vue' //U本位
 // 搜索
 const searchName = ref('')
-// tabs
+// tabs（tradeFlag 与行情子 tab 下标一致：0=自选 1=秒 2=币 3=U，勿再 +isOption）
 const headerList = computed(() => mainStore.getTradeHeaderList)
 
-const currentIndex = ref(mainStore.tradeFlag + mainStore.isOption)
+function clampQuoteIndex(tf, maxLen) {
+  const n = Number(tf)
+  if (!Number.isFinite(n) || n < 0) return 0
+  return Math.min(Math.floor(n), Math.max(0, maxLen - 1))
+}
+
+function readQuoteTabIndexFromStore() {
+  const raw = mainStore.tradeFlag
+  const len = headerList.value?.length || 1
+  if (raw === '' || raw === undefined || raw === null) {
+    return 0
+  }
+  return clampQuoteIndex(raw, len)
+}
+
+const currentIndex = ref(0)
+
+watch(
+  headerList,
+  () => {
+    currentIndex.value = readQuoteTabIndexFromStore()
+  },
+  { immediate: true }
+)
 
 const activeHeader = computed(() => headerList.value?.[currentIndex.value])
 
@@ -76,21 +99,27 @@ async function fetchByTab() {
   await tradeStore.getCoinList()
 }
 
+function optionalTabIndex() {
+  const list = mainStore.getTradeHeaderList || []
+  const i = list.findIndex((h) => h.componentName === 'Optional')
+  return i >= 0 ? i : 0
+}
+
 onMounted(() => {
   fetchByTab(currentIndex.value)
 })
 
+/** 底部「行情」每次进入默认自选 */
 onActivated(() => {
+  const idx = optionalTabIndex()
+  currentIndex.value = idx
+  mainStore.setTradeFlag(idx)
   fetchByTab(currentIndex.value)
 })
 
-watch(
-  currentIndex,
-  (n) => {
-    mainStore.setTradeFlag(n)
-  },
-  { immediate: true }
-)
+watch(currentIndex, (n) => {
+  mainStore.setTradeFlag(n)
+})
 </script>
 
 <style lang="scss" scoped>

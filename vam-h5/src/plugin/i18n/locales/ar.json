@@ -1241,5 +1241,6 @@
   "gift_cert_my_code_used": "مستخدم",
   "gift_cert_home_entry_empty": "لا توجد قسائم متاحة حالياً",
   "gift_cert_my_codes_open": "قسائمي",
-  "withdraw_coin_length_error": "طول عنوان السحب غير صحيح"
+  "withdraw_coin_length_error": "طول عنوان السحب غير صحيح",
+  "operation_failed": "فشلت العملية"
 }

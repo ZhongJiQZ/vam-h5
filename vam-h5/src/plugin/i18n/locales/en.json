@@ -1244,5 +1244,6 @@
   "gift_cert_my_code_used": "Used",
   "gift_cert_home_entry_empty": "No vouchers available at the moment",
   "gift_cert_my_codes_open": "My vouchers",
-  "withdraw_coin_length_error": "Withdrawal address length error"
+  "withdraw_coin_length_error": "Withdrawal address length error",
+  "operation_failed": "Operation failed"
 }

@@ -41,7 +41,8 @@
 
 <script setup>
 import { computed, ref, onMounted, watch } from 'vue'
-import { showLoadingToast, closeToast, showToast,Loading  } from 'vant'
+import { showLoadingToast, closeToast, showToast, Loading } from 'vant'
+import { toastApiMsg } from '@/utils/toastApiMsg'
 
 
 import { setCollect, removeCollect,getCollect } from '@/api/trade'
@@ -127,7 +128,7 @@ const handelCollect = (item) => {
         setTimeout(() => { show.value = false }, 500)
       } else {
         show.value = false
-        showToast(res.msg)
+        toastApiMsg(res.msg)
       }
     })
   } else {
@@ -137,7 +138,7 @@ const handelCollect = (item) => {
         setTimeout(() => { show.value = false }, 500)
       } else {
         show.value = false
-        showToast(res.msg)
+        toastApiMsg(res.msg)
       }
     })
   }

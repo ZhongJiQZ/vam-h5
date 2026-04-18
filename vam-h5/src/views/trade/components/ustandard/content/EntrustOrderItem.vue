@@ -57,9 +57,9 @@
         <div class="fw-num numItem">{{ recordListItem.openFee }} USDT</div>
       </div>
        <!-- 开仓时间 -->
-       <div class="item">
+      <div class="item">
         <div>{{ _t18(`open_time`) }}</div>
-        <div class="fw-num numItem">{{ formatLocal(recordListItem.subTime) }}</div>
+        <div class="fw-num numItem">{{ formatLocal(positionCreateTime) }}</div>
       </div>
       <!-- 最新价 -->
       <div class="item">
@@ -810,6 +810,9 @@ const guaranteePrice = computed(() => {
 const formatLocal = (t)=>{
       return formatLocalTime(t); // 默认 YYYY-MM-DD HH:mm:ss
 }
+const positionCreateTime = computed(() => {
+  return props.recordListItem?.params?.createTime || props.recordListItem?.createTime
+})
 // 当前持仓
 const showDetail = (index, curId) => {
   margin.value = false

@@ -1243,5 +1243,6 @@
   "gift_cert_my_code_used": "사용함",
   "gift_cert_home_entry_empty": "사용 가능한 쿠폰이 없습니다",
   "gift_cert_my_codes_open": "내 바우처",
-  "withdraw_coin_length_error": "출금 주소 길이 오류"
+  "withdraw_coin_length_error": "출금 주소 길이 오류",
+  "operation_failed": "작업 실패"
 }

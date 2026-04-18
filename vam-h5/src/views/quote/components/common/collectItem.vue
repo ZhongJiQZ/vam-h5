@@ -3,12 +3,13 @@
     <div class="left">
       <img v-if="collectItem.icon" :src="collectItem.icon" class="leftImg" alt="" />
       <!-- <p class="fw-bold">{{ item.coin?.toUpperCase() }}</p> -->
-      <div>
+      <div class="nameBlock">
         <div class="topText ff-num">
           <div class="textTop fw-num">
             {{ collectItem.coin?.toUpperCase() }}
           </div>
         </div>
+        <div v-if="playStyleLabel" class="play-style">{{ playStyleLabel }}</div>
       </div>
     </div>
     <!-- <div class="right">
@@ -39,13 +40,42 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { priceFormat } from '@/utils/decimal.js'
 import { useTradeStore } from '@/store/trade'
+import { _t18 } from '@/utils/public'
+
 const tradeStore = useTradeStore()
 const props = defineProps({
   collectItem: {
     type: Object
   }
+})
+
+/** 与行情顶栏 PLAYING_SETTING 的 componentName 一致 */
+const COMPONENT_NAME_I18N = {
+  SecondContract: 'trade_tab6',
+  BBTrading: 'trade_tab3',
+  Ustandard: 'trade_tab5',
+  Optional: 'quote_optional'
+}
+
+function resolveComponentName(item) {
+  if (!item) return ''
+  if (item.componentName) return item.componentName
+  if (item.component_name) return item.component_name
+  const key = item.coinKey
+  if (typeof key === 'string' && key.includes('|')) {
+    const part = key.split('|')[1]?.trim()
+    if (part) return part
+  }
+  return ''
+}
+
+const playStyleLabel = computed(() => {
+  const name = resolveComponentName(props.collectItem)
+  const i18nKey = COMPONENT_NAME_I18N[name]
+  return i18nKey ? _t18(i18nKey) : ''
 })
 </script>
 
@@ -56,11 +86,23 @@ const props = defineProps({
   justify-content: space-between;
   .left {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
+    min-width: 0;
     .leftImg {
       width: 25px;
       height: 25px;
       margin-right: 10px;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+    .nameBlock {
+      min-width: 0;
+    }
+    .play-style {
+      margin-top: 4px;
+      font-size: 11px;
+      line-height: 1.2;
+      color: var(--ex-font-color21);
     }
     .topText {
       display: flex;
