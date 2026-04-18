@@ -9,7 +9,7 @@
     <div v-if="collectList?.length > 0" class="quote-optional__list">
       <CollectItem
         v-for="(item, index) in filterKeyCoin(collectList, searchName, 2)"
-        :key="index"
+        :key="item.coinKey || item.id || index"
         :collectItem="item"
         @click="linkTo(item)"
       >
