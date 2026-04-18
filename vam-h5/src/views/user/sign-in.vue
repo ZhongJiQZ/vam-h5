@@ -12,10 +12,6 @@
     </header>
 
     <div class="sign-in-card">
-      <button type="button" class="card-close" @click="$router.push('/')" aria-label="close">
-        <img :src="closePng" alt="" />
-      </button>
-
       <h1 class="card-title">
         {{ _t18('login_title') }} {{ _getConfig('_APP_META_TITLE') }}
       </h1>
@@ -46,7 +42,6 @@ import MobileLogin from './components/sign-in/MobileLogin.vue'
 import { useMainStore } from '@/store/index.js'
 import logoPng from '@/assets/images/login/logo-black.png'
 import langPng from '@/assets/images/login/lang.png'
-import closePng from '@/assets/images/login/close.png'
 
 /**
  * 登录注册方式
@@ -135,29 +130,8 @@ $veloxam-green: #17ac74;
   // box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.12);
 }
 
-.card-close {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  width: 32px;
-  height: 32px;
-  border: none;
-  padding: 0;
-  background: transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-
-  img {
-    width: 20px;
-    height: 20px;
-    object-fit: contain;
-  }
-}
-
 .card-title {
-  margin: 0 40px 20px 0;
+  margin: 0 0 20px;
   font-size: 22px;
   font-weight: 700;
   color: #111;
