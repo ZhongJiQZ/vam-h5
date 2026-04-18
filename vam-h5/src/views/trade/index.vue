@@ -34,16 +34,13 @@
 </template>
 
 <script setup>
-import { watch } from 'vue'
-import { _t18 } from '@/utils/public'
+import { watch, computed, onMounted, ref } from 'vue'
 import { useMainStore } from '@/store/index'
 const mainStore = useMainStore()
 import { useTradeStore } from '@/store/trade'
 const tradeStore = useTradeStore()
 import { useRoute } from 'vue-router'
 const $route = useRoute()
-import { computed, onMounted } from 'vue'
-
 import SecondContract from './components/tradeSecondContract.vue'//秒合约
 import BBTrading from './components/tradeBBTrading.vue'//币币
 import Ustandard from './components/tradeUstandard.vue'//U本位合约 
@@ -56,9 +53,28 @@ const headerList = computed(() => {
   })
   return tempList
 })
-const currentIndex = ref(
-  mainStore.tradeFlag - mainStore.isOption < 0 ? 0 : mainStore.tradeFlag - mainStore.isOption
-)
+/**
+ * tradeFlag 与行情页子 tab 一致（含自选）：0=自选 1=秒合约 2=币币 3=U本位（开启自选时）
+ * 交易页无「自选」：下标 0,1,2 对应 秒/币/U → 写入 store 时为 isOption ? n+1 : n
+ */
+function quoteTabIndexToTradeListIndex(tf) {
+  const isOpt = mainStore.isOption
+  const len = headerList.value?.length || 3
+  const n = Number(tf)
+  if (!Number.isFinite(n) || n < 0) return 0
+  if (!isOpt) return Math.min(n, len - 1)
+  return n <= 0 ? 0 : Math.min(n - 1, len - 1)
+}
+
+function readInitialTradeListIndex() {
+  const raw = mainStore.tradeFlag
+  if (raw === '' || raw === undefined || raw === null) {
+    return 0
+  }
+  return quoteTabIndexToTradeListIndex(raw)
+}
+
+const currentIndex = ref(0)
 
 const COMPONENT_MAP = {
   SecondContract,
@@ -74,17 +90,30 @@ const currentComponent = computed(() => {
 
 const isAutoSwitching = ref(false)
 
+function persistTradeFlagFromListIndex(listIndex) {
+  if (!mainStore.isOption) {
+    mainStore.setTradeFlag(listIndex)
+    return
+  }
+  if (listIndex === 0) {
+    // 与行情「自选」同为交易页第 0 个 tab：store 为 0 时不覆盖（仍为自选）
+    if (Number(mainStore.tradeFlag) === 0) return
+    mainStore.setTradeFlag(1)
+    return
+  }
+  mainStore.setTradeFlag(listIndex + 1)
+}
+
 //SecondContract,BBTrading,Ustandard
 function setIndexByComponentName(componentName) {
   const idx = headerList.value.findIndex((h) => h.componentName === componentName)
   if (idx >= 0 && idx !== currentIndex.value) {
     isAutoSwitching.value = true
     currentIndex.value = idx
-    // nextTick 后再放开，避免某些 watch 里重复触发
     setTimeout(() => (isAutoSwitching.value = false), 0)
   }
-} 
- 
+}
+
 watch(
   () => $route.query.componentName,
   (name) => {
@@ -95,21 +124,23 @@ watch(
   { immediate: true }
 )
 
-
 watch(
-  currentIndex,
-  (n) => {
-    mainStore.setTradeFlag(n)
-    if (!isAutoSwitching.value) {
-      tradeStore.getCoinList()
-    }
+  headerList,
+  () => {
+    currentIndex.value = readInitialTradeListIndex()
   },
   { immediate: true }
 )
 
-onMounted(()=>{
+watch(currentIndex, (n) => {
+  persistTradeFlagFromListIndex(n)
+  if (!isAutoSwitching.value) {
+    tradeStore.getCoinList()
+  }
+})
+
+onMounted(() => {
   tradeStore.getCoinList()
-  // console.log("$route.query.symbol",$route.query.symbol);
 })
 </script>
 
