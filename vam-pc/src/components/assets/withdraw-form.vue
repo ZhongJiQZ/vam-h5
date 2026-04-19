@@ -32,10 +32,10 @@
               </el-select>
             </el-form-item>
             <!-- {{withdrawInfo}}--withdrawInfo -->
-            <el-form-item :label="$t('assets.withdrawCoinType')" v-show="withdrawInfo.icon == 'card'">
+            <!-- <el-form-item :label="$t('assets.withdrawCoinType')" v-show="withdrawInfo.icon == 'card'">
               <el-input :disabled="!curBank.coin" :placeholder="$t('utils.plsInput')"
                 :value="curBank && curBank.coin ? curBank.coin : ''"></el-input>
-            </el-form-item>
+            </el-form-item> -->
             <el-form-item :label="$t('assets.bankCard')" v-show="withdrawInfo.icon == 'card'">
               <!-- <el-input v-model="withdrawForm.bankCard"></el-input> -->
               <el-select v-model="curBank.id" :placeholder="$t('utils.plsSelect')" clearable @change="changeBank">
@@ -58,7 +58,7 @@
                 message: $t('assets.plsSelectWithdrawAddress'),
                 trigger: 'blur',
               },
-            ]">
+            ]" v-if="withdrawInfo.icon != 'card'">
               <el-input v-model="withdrawForm.address"></el-input>
             </el-form-item>
 
