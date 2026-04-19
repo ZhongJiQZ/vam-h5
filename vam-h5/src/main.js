@@ -63,19 +63,40 @@ Promise.all([
   tradeStore.getCoinList(),
   // mainStore.getLanguageList()
 ]).then(async () => {
-  const currentLanguage = mainStore.languageList.filter((item) => item.isDefault === 'Y')
-  // 判断语言列表中是否存在缓存语言 若不存在 使用默认语言
-  // let defaultLanguage = mainStore.language || ''
-  // if (!defaultLanguage && currentLanguage.length) {
-  //   defaultLanguage = currentLanguage[0].dictValue
-  // }
-  // let defaultLanguage = 'en'
-  // const i18n = await setupI18n(defaultLanguage)
+  const languageList = mainStore.languageList || []
+  const norm = (s) => String(s || '').toLowerCase().replace(/_/g, '-')
 
-  // ✅ 用本地缓存语言初始化，而不是 DEFAULT_LANGUAGE
-const savedLang = localStorage.getItem(storageDict.LANGUAGE) || DEFAULT_LANGUAGE
-const i18n = await setupI18n(savedLang)
+  const matchDeviceToList = () => {
+    if (typeof navigator === 'undefined') return null
+    const raw = (navigator.languages && navigator.languages[0]) || navigator.language || ''
+    if (!raw) return null
+    const candidates = [raw, raw.split(/[-_]/)[0]]
+    for (const c of candidates) {
+      const n = norm(c)
+      let hit = languageList.find((i) => norm(i.dictValue) === n)
+      if (hit) return hit.dictValue
+      const prim = n.split('-')[0]
+      hit = languageList.find((i) => norm(i.dictValue).split('-')[0] === prim)
+      if (hit) return hit.dictValue
+    }
+    return null
+  }
 
+  const saved = localStorage.getItem(storageDict.LANGUAGE)
+  let initialLocale = DEFAULT_LANGUAGE
+
+  if (saved && languageList.some((i) => i.dictValue === saved)) {
+    initialLocale = saved
+  } else if (languageList.length) {
+    initialLocale =
+      matchDeviceToList() ||
+      languageList.find((i) => norm(i.dictValue) === 'en')?.dictValue ||
+      DEFAULT_LANGUAGE
+  } else {
+    initialLocale = saved || DEFAULT_LANGUAGE
+  }
+
+  const i18n = await setupI18n(initialLocale)
   app.use(i18n)
   app.mount('#app')
 })
