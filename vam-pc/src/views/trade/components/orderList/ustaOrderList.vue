@@ -155,8 +155,21 @@
       </div>
 
       <!-- 历史委托 -->
-      <div class="table_content" v-if="orderTabsValue == 'hiswei'">
+      <div class="table_content usta_his_wrap" v-if="orderTabsValue == 'hiswei'">
         <ustaTable3 :data="ustaHisOrderList"></ustaTable3>
+        <div
+          v-if="Number(ustaOrderLen2) > ustaHisPageSize"
+          class="usta_his_pagination"
+        >
+          <el-pagination
+            small
+            layout="prev, pager, next"
+            :page-size="ustaHisPageSize"
+            :current-page="ustaHisPageNum"
+            :total="Number(ustaOrderLen2) || 0"
+            @current-change="onUstaHisPageChange"
+          />
+        </div>
       </div>
       <!-- <el-empty v-if="orderTableData.length == 0" :description="$t('utils.noData')">
           <template #image>
@@ -377,6 +390,14 @@ export default {
     ustaOrderLen2: String,
     ustaOrderLen3: String,
     ustaOrderLen4: String,
+    ustaHisPageNum: {
+      type: Number,
+      default: 1,
+    },
+    ustaHisPageSize: {
+      type: Number,
+      default: 10,
+    },
     coinPriceInfo: Object,
     availableBalance: String,
     contractCoinList: Array,
@@ -750,7 +771,8 @@ export default {
       } else if (this.orderTabsValue == "loss") {
         this.$emit("contractLossList");
       } else {
-        this.$emit("contractHistoryList", 1);
+        // 历史委托：进入该 tab 时从第 1 页拉取
+        this.$emit("contractHistoryList", 1, 1);
       }
     },
     //点击显示隐藏其他交易队
@@ -776,9 +798,12 @@ export default {
         } else if (this.orderTabsValue == "loss") {
           this.$emit("contractLossList");
         } else {
-          this.$emit("contractHistoryList", 1);
+          this.$emit("contractHistoryList", 1, 1);
         }
       }
+    },
+    onUstaHisPageChange(page) {
+      this.$emit("contractHistoryList", 1, page);
     },
   },
   created() {},
@@ -836,5 +861,10 @@ export default {
 }
 ::v-deep.readInput .el-input__inner {
   background: #f1f1f1;
+}
+.usta_his_pagination {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 0 8px;
 }
 </style>

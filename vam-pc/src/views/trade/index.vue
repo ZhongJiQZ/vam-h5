@@ -854,6 +854,8 @@
           :ustaOrderLen1="ustaOrderLen1"
           :ustaHisOrderList="ustaHisOrderList"
           :ustaOrderLen2="ustaOrderLen2"
+          :ustaHisPageNum="ustaHisPageNum"
+          :ustaHisPageSize="ustaHisPageSize"
           :positionList="positionList"
           :ustaOrderLen3="ustaOrderLen3"
           :ustaLossList="ustaLossList"
@@ -1356,6 +1358,8 @@ export default {
       ustaOrderLen1: "", //usta的当前委托订单详情列表长度
       ustaHisOrderList: [], //usta的历史委托订单详情列表
       ustaOrderLen2: "", //usta的历史委托订单详情列表长度
+      ustaHisPageNum: 1, // 历史委托当前页
+      ustaHisPageSize: 10, // 历史委托每页条数
       positionList: [], //usta的持仓列表
       ustaOrderLen3: "", //usta的持仓列表长度
       ustaLossList: [], //usta的亏损列表
@@ -1740,7 +1744,7 @@ export default {
           this.getUstaContractOrder(0);
           // this.getUstaContractOrder(1);
           this.contractHistoryList(0);
-          this.contractHistoryList(1);
+          this.contractHistoryList(1, 1);
           this.contractLossList();
         }
       }
@@ -1805,7 +1809,7 @@ export default {
         this.tabsValue = "usta";
         this.getUstaContractOrder(0);
         this.contractHistoryList(0);
-        this.contractHistoryList(1);
+        this.contractHistoryList(1, 1);
         this.contractLossList();
         this.tableList = this.contractCoinList;
       }
@@ -2130,12 +2134,22 @@ export default {
         }
       });
     },
-    //持仓列表
-    contractHistoryList(status) {
+    // 持仓列表 status=0；历史委托 status=1（支持分页）
+    contractHistoryList(status, histPage) {
+      const pageSize = this.ustaHisPageSize || 10;
+      let pageNum = 1;
+      if (status == 0) {
+        pageNum = 1;
+      } else {
+        if (histPage !== undefined && histPage !== null && histPage !== "") {
+          this.ustaHisPageNum = Number(histPage) || 1;
+        }
+        pageNum = this.ustaHisPageNum || 1;
+      }
       contractHistoryList({
         status,
-        pageNum: 1,
-        pageSize: 10,
+        pageNum,
+        pageSize,
       }).then((res) => {
         if (res.data.code == 200) {
           if (status == 0) {
@@ -2186,7 +2200,7 @@ export default {
           this.$message.success(result.msg);
           // 调用U本位订单列表接口
           this.contractHistoryList(0);
-          this.contractHistoryList(1);
+          this.contractHistoryList(1, 1);
           return;
         }
         this.$message.error(result.msg || "System error");
