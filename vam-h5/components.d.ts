@@ -39,6 +39,8 @@ declare module 'vue' {
     VanActionSheet: typeof import('vant/es')['ActionSheet']
     VanCountDown: typeof import('vant/es')['CountDown']
     VanDialog: typeof import('vant/es')['Dialog']
+    VanIcon: typeof import('vant/es')['Icon']
+    VanList: typeof import('vant/es')['List']
     VanPopup: typeof import('vant/es')['Popup']
     VanRadio: typeof import('vant/es')['Radio']
     VanRadioGroup: typeof import('vant/es')['RadioGroup']
@@ -48,5 +50,6 @@ declare module 'vue' {
     VanSwipeItem: typeof import('vant/es')['SwipeItem']
     VanTab: typeof import('vant/es')['Tab']
     VanTabs: typeof import('vant/es')['Tabs']
+    VanUploader: typeof import('vant/es')['Uploader']
   }
 }

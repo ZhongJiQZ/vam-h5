@@ -243,7 +243,7 @@ const submitForm = () => {
     // return
   }
   let chooseCoin = coinLength.value[route.query?.type]
-  if (chooseCoin.length !== address.value.length) {
+  if (route.query?.icon != 'card'&&chooseCoin.length !== address.value.length) {
     _toast('withdraw_coin_length_error');
     return
   }
