@@ -38,6 +38,10 @@ const coinList = computed(() => {
         obj.icon = 'card'
         obj.title = _t18('withdraw_card')
         obj.card = filterCoin2(item.rechargeType).toLocaleUpperCase()
+        if (item.fiatPerUsdt != null && item.fiatPerUsdt !== '') {
+          obj.fiatPerUsdt = item.fiatPerUsdt
+          obj.fiatCurrency = item.fiatCurrency || 'IDR'
+        }
       }
       list.push(obj)
     }

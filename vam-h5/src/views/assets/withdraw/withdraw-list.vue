@@ -63,11 +63,17 @@ const toClick = (item) => {
       flag.value = true
     }
     if (flag.value) {
-      let params = ``
+      const base = item.card || item.title
+      let params = ''
       if (item.fee && item.fee > 0) {
-        params = `type=${item.card || item.title}&icon=${item.icon}&ratio=${item.ratio}&fee=${item.fee}`
+        params = `type=${base}&icon=${item.icon}&ratio=${item.ratio}&fee=${item.fee}`
       } else {
-        params = `type=${item.card || item.title}&icon=${item.icon}&ratio=${item.ratio}`
+        params = `type=${base}&icon=${item.icon}&ratio=${item.ratio}`
+      }
+      if (item.icon === 'card' && item.fiatPerUsdt != null && item.fiatPerUsdt !== '') {
+        params += `&fiatPerUsdt=${encodeURIComponent(item.fiatPerUsdt)}&fiatCurrency=${encodeURIComponent(
+          item.fiatCurrency || 'IDR'
+        )}`
       }
       setTimeout(() => {
         router.push(`/withdraw-apply?${params}`)

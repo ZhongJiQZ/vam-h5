@@ -54,6 +54,14 @@
           </div>
         </div>
 
+        <div v-if="showFiatHints" class="fiat-hints">
+          <p class="fiat-rate-line">{{ fiatRateText }}</p>
+          <p v-if="fiatEstimateDisplay" class="fiat-estimate">
+            <span class="fiat-est-label">{{ _t18('withdraw_fiat_estimate') }}</span>
+            <span class="fiat-est-val ff-num">{{ fiatEstimateDisplay }}</span>
+          </p>
+        </div>
+
         <div v-if="route.query.icon != 'card'" class="field">
           <div class="field-label">{{ _t18('withdraw_address') }}</div>
           <div class="field-box">
@@ -110,10 +118,13 @@ import { priceFormat } from '@/utils/decimal.js'
 import { showToast } from 'vant'
 import { useUserStore } from '@/store/user/index'
 import { storeToRefs } from 'pinia'
-import { _t18, _getConfig } from '@/utils/public'
+import { _t18, _getConfig, _numberWithCommas } from '@/utils/public'
 import { useToast } from '@/hook/useToast'
 import { filterCoin2 } from '@/utils/public'
 import { computed, onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 const { _toast } = useToast()
 const userStore = useUserStore()
 userStore.getUserInfo()
@@ -203,6 +214,28 @@ const getCardList = async () => {
   }
 }
 const allAmount = ref('')
+const showFiatHints = computed(
+  () => route.query.icon === 'card' && route.query.fiatPerUsdt != null && route.query.fiatPerUsdt !== ''
+)
+const fiatPerUsdtNum = computed(() => {
+  const n = Number(route.query.fiatPerUsdt)
+  return Number.isFinite(n) && n > 0 ? n : null
+})
+const fiatCurrency = computed(() => String(route.query.fiatCurrency || 'IDR'))
+const fiatRateText = computed(() => {
+  if (!showFiatHints.value || fiatPerUsdtNum.value == null) return ''
+  return t('withdraw_rate_line', {
+    currency: fiatCurrency.value,
+    rate: _numberWithCommas(fiatPerUsdtNum.value)
+  })
+})
+const fiatEstimateDisplay = computed(() => {
+  if (!showFiatHints.value || fiatPerUsdtNum.value == null) return ''
+  const qty = Number(allAmount.value)
+  if (!Number.isFinite(qty) || qty <= 0) return ''
+  const fiat = qty * fiatPerUsdtNum.value
+  return `${fiatCurrency.value} ${_numberWithCommas(fiat)}`
+})
 const address = ref(userInfo.value?.user?.address)
 const password = ref('')
 let allNum = () => {
@@ -508,6 +541,38 @@ onMounted(() => {
     color: var(--ex-primary-color);
     padding: 8px 0 8px 8px;
     -webkit-tap-highlight-color: transparent;
+  }
+
+  .fiat-hints {
+    margin: -8px 0 12px;
+    padding: 0 2px;
+  }
+
+  .fiat-rate-line {
+    margin: 0 0 8px;
+    font-size: 13px;
+    color: #646566;
+    line-height: 1.5;
+  }
+
+  .fiat-estimate {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px;
+    font-size: 13px;
+    color: #323233;
+    line-height: 1.5;
+  }
+
+  .fiat-est-label {
+    color: #969799;
+  }
+
+  .fiat-est-val {
+    font-weight: 600;
+    color: #323233;
   }
 
   .eye-icon {

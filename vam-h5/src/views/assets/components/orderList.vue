@@ -21,18 +21,38 @@
       </div>
     </div>
     <div class="message">
-      <div>
-        <p class="left">
-          {{
-            ['paxpay', 'aams'].includes(_getConfig('_APP_ENV'))
-              ? _t18('withdraw_money')
-              : _t18('recharge_amount')
-          }}
-        </p>
-        <p class="right fontBold fw-num" :class="{ 'amount-highlight': cardLayout }">
-          {{ priceFormat(dataValue.amount) }}
-        </p>
-      </div>
+      <template v-if="showWithdrawBankFiat">
+        <div>
+          <p class="left">{{ _t18('withdraw_money') }}</p>
+          <p class="right fontBold fw-num" :class="{ 'amount-highlight': cardLayout }">
+            {{ priceFormat(dataValue.amount) }} USDT
+          </p>
+        </div>
+        <div>
+          <p class="left">{{ _t18('withdraw_commission') }}</p>
+          <p class="right fontBold fw-num" :class="{ 'amount-highlight': cardLayout }">
+            {{ priceFormat(dataValue.fee ?? 0) }} USDT
+          </p>
+        </div>
+        <div>
+          <p class="left">{{ _t18('withdraw_actual_fiat') }}</p>
+          <p class="right ff-num" :class="{ 'time-val': cardLayout }">{{ receiptFiatDisplay }}</p>
+        </div>
+      </template>
+      <template v-else>
+        <div>
+          <p class="left">
+            {{
+              ['paxpay', 'aams'].includes(_getConfig('_APP_ENV'))
+                ? _t18('withdraw_money')
+                : _t18('recharge_amount')
+            }}
+          </p>
+          <p class="right fontBold fw-num" :class="{ 'amount-highlight': cardLayout }">
+            {{ priceFormat(dataValue.amount) }}
+          </p>
+        </div>
+      </template>
 
       <div>
         <p class="left">{{ _t18('recharge_status') }}</p>
@@ -64,8 +84,9 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { formatLocalTime } from '@/utils/time'
-import { _t18 } from '@/utils/public'
+import { _t18, _numberWithCommas } from '@/utils/public'
 import { filterCoin2 } from '@/utils/public'
 import { priceFormat } from '@/utils/decimal'
 
@@ -87,6 +108,26 @@ const props = defineProps({
   }
 })
 const dataValue = computed(() => props.data)
+
+const showWithdrawBankFiat = computed(() => {
+  if (!props.cardLayout) return false
+  const d = dataValue.value
+  if (String(d?.type || '').toUpperCase() !== 'BANK') return false
+  if (d?.receiptCoin == null || String(d.receiptCoin).trim() === '') return false
+  if (d?.receiptAmount == null || d?.receiptAmount === '') return false
+  return true
+})
+
+const receiptFiatDisplay = computed(() => {
+  const d = dataValue.value
+  const coin = String(d?.receiptCoin || '').trim()
+  const raw = d?.receiptAmount
+  if (raw == null || raw === '') return ''
+  const n = Number(raw)
+  if (!Number.isFinite(n)) return `${coin} ${raw}`.trim()
+  return `${coin} ${_numberWithCommas(n)}`
+})
+
 const toDetail = (data) => {
   if (router.currentRoute.value.name == 'RechargOrder') {
     router.push({
