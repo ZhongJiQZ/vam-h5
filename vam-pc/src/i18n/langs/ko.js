@@ -492,6 +492,7 @@ export default {
     bankCard: "은행 카드",
     bankCardNum: "은행 카드 번호",
     plsFillBankCardNum: "은행 카드 번호를 입력하세요",
+    userName: "이름",
     bankAddress: "카드를 발급한 은행 주소 또는 번호(선택사항)",
     bankName: "소유 은행",
     plsFillBankName: "소유 은행을 입력하세요",

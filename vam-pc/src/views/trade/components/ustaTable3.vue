@@ -66,7 +66,13 @@
       <el-table-column :label="$t('trade.closePositionTime')" align="center" width="150">
         <template slot-scope="scope">
           <span>{{
-            _timeFormat(scope.row.dealTime || scope.row.params?.dealTime || scope.row.params?.subTime, 'DD/MM/YYYY HH:mm:ss', true)
+            _timeFormat(
+              scope.row.dealTime ||
+                (scope.row.params && scope.row.params.dealTime) ||
+                (scope.row.params && scope.row.params.subTime),
+              'DD/MM/YYYY HH:mm:ss',
+              true
+            )
           }}</span>
         </template>
       </el-table-column>

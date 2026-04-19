@@ -4,39 +4,23 @@
       <div class="left-form">
         <div class="top_box flex-between">
           <div class="title bold">{{ $t("assets.withdraw") }}</div>
-          <div
-            class="bindCard bold cur_p"
-            @click="
-              $router.push({
-                path: '/user/index',
-                query: { key: 'bank' },
-              })
-            "
-          >
+          <div class="bindCard bold cur_p" @click="
+            $router.push({
+              path: '/user/index',
+              query: { key: 'bank' },
+            })
+            ">
             {{ $t("assets.bindBankCard") }}>
           </div>
         </div>
         <div class="recharge_form">
-          <el-form
-            :model="withdrawForm"
-            ref="form"
-            label-width="90px"
-            label-position="left"
-            hide-required-asterisk="true"
-          >
+          <el-form :model="withdrawForm" ref="form" label-width="90px" label-position="left"
+            hide-required-asterisk="true">
             <el-form-item :label="$t('assets.withdrawWay')">
-              <el-select
-                v-model="withdrawForm.coinType"
-                :placeholder="$t('assets.plsSelectWithdrawWay')"
-                clearable
-                @change="changeCoin"
-              >
-                <el-option
-                  v-for="(item, index) in data"
-                  :key="index"
-                  :label="item.title"
-                  :value="item.title"
-                ></el-option>
+              <el-select v-model="withdrawForm.coinType" :placeholder="$t('assets.plsSelectWithdrawWay')" clearable
+                @change="changeCoin">
+                <el-option v-for="(item, index) in data" :key="index" :label="item.title"
+                  :value="item.title"></el-option>
                 <!-- <el-option label="USDT-ERC" value="USDT-ERC"></el-option>
                 <el-option label="USDT-TRC" value="USDT-TRC"></el-option>
                 <el-option label="ETH" value="ETH"></el-option>
@@ -48,34 +32,15 @@
               </el-select>
             </el-form-item>
             <!-- {{withdrawInfo}}--withdrawInfo -->
-            <el-form-item
-              :label="$t('assets.withdrawCoinType')"
-              v-show="withdrawInfo.icon == 'card'"
-            >
-              <el-input
-                :disabled="!curBank.coin"
-                :placeholder="$t('utils.plsInput')"
-                :value="curBank && curBank.coin ? curBank.coin : ''"
-              ></el-input>
+            <el-form-item :label="$t('assets.withdrawCoinType')" v-show="withdrawInfo.icon == 'card'">
+              <el-input :disabled="!curBank.coin" :placeholder="$t('utils.plsInput')"
+                :value="curBank && curBank.coin ? curBank.coin : ''"></el-input>
             </el-form-item>
-            <el-form-item
-              :label="$t('assets.bankCard')"
-              v-show="withdrawInfo.icon == 'card'"
-            >
+            <el-form-item :label="$t('assets.bankCard')" v-show="withdrawInfo.icon == 'card'">
               <!-- <el-input v-model="withdrawForm.bankCard"></el-input> -->
-              <el-select
-                v-model="curBank.id"
-                :placeholder="$t('utils.plsSelect')"
-                clearable
-                @change="changeBank"
-              >
-                <el-option
-                  v-if="withdrawBankList.length > 0"
-                  v-for="(item, index) in withdrawBankList"
-                  :key="index"
-                  :label="item.bankName + item.coin + cardNumber"
-                  :value="item.id"
-                ></el-option>
+              <el-select v-model="curBank.id" :placeholder="$t('utils.plsSelect')" clearable @change="changeBank">
+                <el-option v-if="withdrawBankList.length > 0" v-for="(item, index) in withdrawBankList" :key="index"
+                  :label="item.bankName + item.cardNumber" :value="item.id"></el-option>
                 <!-- <p class="bankName">
             {{ item?.bankName }} <span class="scl" v-if="item?.coin">（{{ item?.coin }}）</span>
           </p>
@@ -87,32 +52,24 @@
                 <el-option label="ddd" value="5"></el-option> -->
               </el-select>
             </el-form-item>
-            <el-form-item
-              :label="$t('assets.withdrawAddress')"
-              prop="address"
-              :rules="[
-                {
-                  required: true,
-                  message: $t('assets.plsSelectWithdrawAddress'),
-                  trigger: 'blur',
-                },
-              ]"
-            >
+            <el-form-item :label="$t('assets.withdrawAddress')" prop="address" :rules="[
+              {
+                required: true,
+                message: $t('assets.plsSelectWithdrawAddress'),
+                trigger: 'blur',
+              },
+            ]">
               <el-input v-model="withdrawForm.address"></el-input>
             </el-form-item>
 
-            <el-form-item
-              :label="$t('assets.withdrawMoney')"
-              prop="amount"
-              :rules="[
-                {
-                  required: true,
-                  message: $t('assets.plsInputWithdrawMoney'),
-                  trigger: 'blur',
-                },
-                { type: 'number', message: $t('assets.mustNumber') },
-              ]"
-            >
+            <el-form-item :label="$t('assets.withdrawMoney')" prop="amount" :rules="[
+              {
+                required: true,
+                message: $t('assets.plsInputWithdrawMoney'),
+                trigger: 'blur',
+              },
+              { type: 'number', message: $t('assets.mustNumber') },
+            ]">
               <el-input v-model="withdrawForm.amount">
                 <template slot="append">
                   <div class="all_btn cur_p" @click="initAllNum">
@@ -159,7 +116,7 @@ import { withdrawSubmit } from "@/api/assets";
 import { priceFormat } from "@/util/utildecimal.js";
 export default {
   props: {
-    data: Array,
+    data: Array, 
     withdrawInfo: Object, //提现信息
     withdrawBankList: Array, //银行卡列表
     curBank: Object, //当前选中的银行卡
@@ -230,26 +187,21 @@ export default {
       if (this.withdrawInfo.icon == "card") {
         params = `amount=${priceFormat(
           this.withdrawForm.amount
-        )}&coinType=BANK&pwd=${this.withdrawForm.psw}&adress=${
-          this.curBank.cardNumber
-        }&coin=${this.withdrawInfo.card.toLowerCase()}&bankName=${
-          this.curBank.bankName
-        }&bankUserName=${this.curBank.userName}&bankBranch=${
-          this.curBank.bankBranch
-        }`;
+        )}&coinType=BANK&pwd=${this.withdrawForm.psw}&adress=${this.curBank.cardNumber
+          }&coin=${this.withdrawInfo.card.toLowerCase()}&bankName=${this.curBank.bankName
+          }&bankUserName=${this.curBank.userName}&bankBranch=${this.curBank.bankBranch
+          }`;
       } else {
-        params = `amount=${priceFormat(this.withdrawForm.amount)}&coinType=${
-          this.withdrawInfo.title
-        }&pwd=${this.withdrawForm.psw}&adress=${
-          this.withdrawForm.address
-        }&coin=${this.withdrawInfo.icon}`;
+        params = `amount=${priceFormat(this.withdrawForm.amount)}&coinType=${this.withdrawInfo.title
+          }&pwd=${this.withdrawForm.psw}&adress=${this.withdrawForm.address
+          }&coin=${this.withdrawInfo.icon}`;
       }
       // this.$emit("getWithdrawRecord");
       withdrawSubmit(params).then((res) => {
-        if (res.data.code==200) {
+        if (res.data.code == 200) {
           this.$message.success(res.data.msg);
-          this.withdrawForm.amount='';
-          this.withdrawForm.address='';
+          this.withdrawForm.amount = '';
+          this.withdrawForm.address = '';
           this.$emit("getWithdrawRecord");
         }
       });
@@ -265,6 +217,7 @@ export default {
 .bold {
   font-weight: bold;
 }
+
 .recharge_form_box {
   width: 1200px;
   padding: 40px 0;
@@ -312,7 +265,7 @@ export default {
         .confirm_btn {
           margin-top: 40px;
 
-          > div {
+          >div {
             width: 600px;
             height: 48px;
             line-height: 48px;

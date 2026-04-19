@@ -493,6 +493,7 @@ export default {
     bankCard: "บัตรเครดิต",
     bankCardNum: "หมายเลขบัตรเครดิต",
     plsFillBankCardNum: "โปรดกรอกหมายเลขบัตรเครดิต",
+    userName: "ชื่อ",
     bankAddress: "ที่อยู่หรือหมายเลขโทรศัพท์ธนาคารที่ออกบัตร(ไม่บังคับ)",
     bankName: "ธนาคารที่เป็นเจ้าของ",
     plsFillBankName: "โปรดกรอกชื่อธนาคารที่เป็นเจ้าของ",

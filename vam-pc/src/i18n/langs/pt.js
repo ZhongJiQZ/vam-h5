@@ -499,6 +499,7 @@ export default {
     bankCard: "Cartão Bancário",
     bankCardNum: "Número do Cartão Bancário",
     plsFillBankCardNum: "Por favor, preencha o número do cartão bancário",
+    userName: "Nome",
     bankAddress: "Endereço ou número do banco (opcional)",
     bankName: "Nome do Banco",
     plsFillBankName: "Por favor, preencha o nome do banco",

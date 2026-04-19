@@ -25,9 +25,9 @@ export default {
   //** 开发环境 */
   // baseUrl: "http://localhost:8220",
   // socketUrl: "ws://localhost:8220",
-  //** 生产环境 */
-  baseUrl: "https://dex.veloxny.com",
-  socketUrl: "wss://dex.veloxny.com",
+  //** 生产环境 *
+  baseUrl: "https://pc.vamtest.top",
+  socketUrl: "wss://pc.vamtest.top",
 
   //时区字典
   TIMEZONE_DICT: [

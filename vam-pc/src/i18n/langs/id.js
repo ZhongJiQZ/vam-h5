@@ -527,6 +527,7 @@ export default {
     bankCard: "Kartu bank",
     bankCardNum: "Nomor kartu",
     plsFillBankCardNum: "Silakan masukkan nomor kartu bank Anda",
+    userName: "Nama",
     bankAddress: "Alamat bank atau nomor telepon (opsional)",
     bankName: "Nama bank",
     plsFillBankName: "Silakan masukkan nama bank",

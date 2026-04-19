@@ -501,6 +501,7 @@ export default {
     bankCard: "Thẻ ngân hàng",
     bankCardNum: "Số thẻ ngân hàng",
     plsFillBankCardNum: "Vui lòng điền số thẻ ngân hàng",
+    userName: "Tên",
     bankAddress: "Địa chỉ hoặc số điện thoại ngân hàng (không bắt buộc)",
     bankName: "Tên ngân hàng",
     plsFillBankName: "Vui lòng điền tên ngân hàng",

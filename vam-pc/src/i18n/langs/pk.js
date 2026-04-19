@@ -520,6 +520,7 @@ export default {
     bankCard: "بینک کارڈ",
     bankCardNum: "کارڈ نمبر",
     plsFillBankCardNum: "براہِ کرم بینک کارڈ نمبر درج کریں",
+    userName: "نام",
     bankAddress: "بینک ایڈریس یا فون نمبر (اختیاری)",
     bankName: "بینک کا نام",
     plsFillBankName: "براہِ کرم بینک کا نام درج کریں",

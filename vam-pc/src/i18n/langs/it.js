@@ -501,6 +501,7 @@ export default {
     bankCard: "Banko kortelė",
     bankCardNum: "Banko kortelės numeris",
     plsFillBankCardNum: "Prašome įvesti banko kortelės numerį",
+    userName: "Vardas",
     bankAddress: "Banko kortelės adresas arba numeris (neprivaloma)",
     bankName: "Banko pavadinimas",
     plsFillBankName: "Prašome įvesti banko pavadinimą",

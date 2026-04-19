@@ -506,6 +506,7 @@ export default {
     bankCard: "Bankkarte",
     bankCardNum: "Bankkartennummer",
     plsFillBankCardNum: "Bitte geben Sie die Bankkartennummer ein",
+    userName: "Benutzername",
     bankAddress: "Bankadresse oder -nummer (optional)",
     bankName: "Bankname",
     plsFillBankName: "Bitte geben Sie den Banknamen ein",

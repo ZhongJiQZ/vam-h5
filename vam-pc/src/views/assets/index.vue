@@ -114,7 +114,7 @@
           :withdrawBankList="withdrawBankList"
           :curBank="curBank"
           @getCurBankInfo="getCurBankInfo"
-          :userInfo="userInfo"
+          :userInfo="userInfo" 
         ></WithdrawForm>
       </div>
       <div>
@@ -417,7 +417,9 @@ export default {
       coinSymbolInfo: {},
     };
   },
-  created() {},
+  created() {
+    this.getwithdrawBankInfo()
+  },
   computed: {
     ...mapGetters([
       "userInfo",
@@ -1119,6 +1121,7 @@ export default {
     },
     //获取当前选中的提现银行卡信息
     getCurBankInfo(param) {
+      console.log(param)
       this.curBank = this.withdrawBankList.find(
         (item) => item.id == param.param1
       );

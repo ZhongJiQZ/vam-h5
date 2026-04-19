@@ -503,6 +503,7 @@ export default {
     bankCard: "Банковская карта",
     bankCardNum: "Номер банковской карты",
     plsFillBankCardNum: "Пожалуйста, введите номер банковской карты",
+    userName: "Имя",
     bankAddress: "Адрес или номер банка (по желанию)",
     bankName: "Название банка",
     plsFillBankName: "Пожалуйста, введите название банка",

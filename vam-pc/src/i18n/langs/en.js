@@ -510,6 +510,7 @@ export default {
     bankCard: "Bank Card",
     bankCardNum: "Card Number",
     plsFillBankCardNum: "Please enter your bank card number",
+    userName: "User Name",
     bankAddress: "Bank Address or Phone Number (Optional)",
     bankName: "Bank Name",
     plsFillBankName: "Please enter the bank name",

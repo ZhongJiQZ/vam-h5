@@ -502,6 +502,7 @@ export default {
     bankCard: "銀行卡",
     bankCardNum: "銀行卡號",
     plsFillBankCardNum: "請填寫銀行卡號",
+    userName: "姓名",
     bankAddress: "辦卡銀行地址或號碼(選填)",
     bankName: "所屬銀行",
     plsFillBankName: "請填寫所屬銀行",

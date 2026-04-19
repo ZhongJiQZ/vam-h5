@@ -17,71 +17,42 @@
         <p>{{ $t("user.bank") }}</p>
       </div>
       <div class="form_main">
-        <el-form
-          :model="form"
-          ref="form"
-          label-width="90px"
-          label-position="top"
-          hide-required-asterisk="true"
-        >
+        <el-form :model="form" ref="form" label-width="90px" label-position="top" hide-required-asterisk="true">
           <div class="top_box flex-between">
-            <el-form-item
-              :label="$t('user.bankCardNum')"
-              prop="cardNumber"
-              :rules="[
-                {
-                  required: true,
-                  message: $t('user.plsFillBankCardNum'),
-                  trigger: 'blur',
-                },
-              ]"
-            >
-              <el-input
-                v-model="form.cardNumber"
-                :placeholder="$t('utils.plsInput')"
-              ></el-input>
+            <el-form-item :label="$t('user.bankCardNum')" prop="cardNumber" :rules="[
+              {
+                required: true,
+                message: $t('user.plsFillBankCardNum'),
+                trigger: 'blur',
+              },
+            ]">
+              <el-input v-model="form.cardNumber" :placeholder="$t('utils.plsInput')"></el-input>
             </el-form-item>
-            <el-form-item :label="$t('user.bankAddress')" prop="bankAddress">
-              <el-input
-                v-model="form.bankAddress"
-                :placeholder="$t('utils.plsInput')"
-              ></el-input>
+            <el-form-item :label="$t('user.bankName')" prop="bankName" :rules="[
+              {
+                required: true,
+                message: $t('user.plsFillBankName'),
+                trigger: 'blur',
+              },
+            ]">
+              <el-input v-model="form.bankName" :placeholder="$t('utils.plsInput')"></el-input>
             </el-form-item>
-            <el-form-item
-              :label="$t('user.bankName')"
-              prop="bankName"
-              :rules="[
-                {
-                  required: true,
-                  message: $t('user.plsFillBankName'),
-                  trigger: 'blur',
-                },
-              ]"
-            >
-              <el-input
-                v-model="form.bankName"
-                :placeholder="$t('utils.plsInput')"
-              ></el-input>
+            <el-form-item :label="$t('user.userName')" prop="userName">
+              <el-input v-model="form.userName" :placeholder="$t('utils.plsInput')"></el-input>
+            </el-form-item>
+            <!-- <el-form-item :label="$t('user.bankAddress')" prop="bankAddress">
+              <el-input v-model="form.bankAddress" :placeholder="$t('utils.plsInput')"></el-input>
             </el-form-item>
             <el-form-item :label="$t('user.bankCode')" prop="bankCode">
-              <el-input
-                v-model="form.bankCode"
-                :placeholder="$t('utils.plsInput')"
-              >
+              <el-input v-model="form.bankCode" :placeholder="$t('utils.plsInput')">
               </el-input>
             </el-form-item>
             <el-form-item :label="$t('user.bankBranch')" prop="bankBranch">
-              <el-input
-                v-model="form.bankBranch"
-                :placeholder="$t('utils.plsInput')"
-              ></el-input>
+              <el-input v-model="form.bankBranch" :placeholder="$t('utils.plsInput')"></el-input>
             </el-form-item>
             <el-form-item :label="$t('user.userAddress')" prop="userAddress">
-              <el-input
-                v-model="form.userAddress"
-                :placeholder="$t('utils.plsInput')"
-              ></el-input>
-            </el-form-item>
+              <el-input v-model="form.userAddress" :placeholder="$t('utils.plsInput')"></el-input>
+            </el-form-item> -->
           </div>
 
           <div style="height: 20px"></div>
@@ -102,20 +73,13 @@
       <div class="empty">
         <el-empty :description="$t('utils.noData')">
           <template #image>
-            <img
-              :src="require('@/assets/image/noData.png')"
-              alt="Empty Image"
-            />
+            <img :src="require('@/assets/image/noData.png')" alt="Empty Image" />
           </template>
         </el-empty>
       </div>
 
       <div class="btn_box cur_p flex-center">
-        <el-button
-          class="commonBtn_bg flex-center"
-          @click="addBankCard"
-          type="primary"
-        >
+        <el-button class="commonBtn_bg flex-center" @click="addBankCard" type="primary">
           + {{ $t("user.addBankCard") }}
         </el-button>
       </div>
@@ -186,17 +150,21 @@ export default {
   .form_box {
     width: 1200px;
     margin: auto;
+
     .top_nav {
       height: 76px;
       gap: 10px;
     }
+
     .form_main {
       width: 1200px;
       margin: auto;
+
       // background: red;
       // padding: 10px 40px 40px 40px;
       .el-form {
         .top_box {
+
           //   display: flex;
           //   justify-content: space-between;
           //   //   height: 200px;
@@ -206,10 +174,11 @@ export default {
             // padding: 0;
           }
         }
+
         .confirm_btn {
           margin-top: 40px;
 
-          > div {
+          >div {
             width: 227px;
             height: 40px;
             line-height: 40px;
@@ -220,6 +189,7 @@ export default {
             border-radius: 4px;
           }
         }
+
         // .el-form-item {
         //   width: 560px;
         //   // padding: 0;
@@ -236,8 +206,10 @@ export default {
     .empty {
       margin-top: 30px;
     }
+
     .btn_box {
       margin: 150px auto 60px;
+
       .el-button {
         width: 245px;
         height: 50px;
