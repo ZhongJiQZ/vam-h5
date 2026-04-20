@@ -858,10 +858,13 @@
           :ustaOrderLen3="ustaOrderLen3"
           :ustaLossList="ustaLossList"
           :ustaOrderLen4="ustaOrderLen4"
+          :ustaPagination="ustaPagination"
           @contractHistoryList="contractHistoryList"
           @getUstaContractOrder="getUstaContractOrder"
           @contractLossList="contractLossList"
           @filterUstaData="filterUstaData"
+          @ustaTabChange="onUstaTabChange"
+          @ustaPageChange="onUstaPageChange"
           :coinPriceInfo="coinPriceInfo"
           @cancelUstaOrder="cancelUstaOrder"
           @stoplossBullshit="stoplossBullshit"
@@ -1360,6 +1363,13 @@ export default {
       ustaOrderLen3: "", //usta的持仓列表长度
       ustaLossList: [], //usta的亏损列表
       ustaOrderLen4: "", //usta的亏损列表长度
+      /** U本位订单各 Tab 分页（与 ustaOrderList 联动） */
+      ustaPagination: {
+        position: { pageNum: 1, pageSize: 10 },
+        curOrder: { pageNum: 1, pageSize: 10 },
+        hisOrder: { pageNum: 1, pageSize: 10 },
+        loss: { pageNum: 1, pageSize: 10 },
+      },
       inputCoin: "",
     };
   },
@@ -2112,12 +2122,44 @@ export default {
     clickUstaTab(e) {
       this.ustaTabValue = e.name;
     },
+    onUstaTabChange(tabName) {
+      const map = {
+        curPosition: "position",
+        cuwei: "curOrder",
+        loss: "loss",
+        hiswei: "hisOrder",
+      };
+      const key = map[tabName];
+      if (key) {
+        this.ustaPagination[key].pageNum = 1;
+      }
+    },
+    onUstaPageChange({ key, pageNum, pageSize }) {
+      const slot = this.ustaPagination[key];
+      if (!slot) return;
+      if (pageSize != null) {
+        slot.pageSize = pageSize;
+        slot.pageNum = 1;
+      } else if (pageNum != null) {
+        slot.pageNum = pageNum;
+      }
+      if (key === "position") {
+        this.contractHistoryList(0);
+      } else if (key === "curOrder") {
+        this.getUstaContractOrder(0);
+      } else if (key === "hisOrder") {
+        this.contractHistoryList(1);
+      } else if (key === "loss") {
+        this.contractLossList();
+      }
+    },
     //委托订单列表
     getUstaContractOrder(status) {
+      const { pageNum, pageSize } = this.ustaPagination.curOrder;
       getUstaContractOrder({
         status,
-        pageNum: 1,
-        pageSize: 10,
+        pageNum,
+        pageSize,
       }).then((res) => {
         if (res.data.code == 200) {
           this.ustaCurOrderList = res.data.rows;
@@ -2132,10 +2174,12 @@ export default {
     },
     //持仓列表
     contractHistoryList(status) {
+      const key = status === 0 ? "position" : "hisOrder";
+      const { pageNum, pageSize } = this.ustaPagination[key];
       contractHistoryList({
         status,
-        pageNum: 1,
-        pageSize: 10,
+        pageNum,
+        pageSize,
       }).then((res) => {
         if (res.data.code == 200) {
           if (status == 0) {
@@ -2152,9 +2196,10 @@ export default {
 
     //止盈止损列表
     contractLossList() {
+      const { pageNum, pageSize } = this.ustaPagination.loss;
       contractLossList({
-        pageNum: 1,
-        pageSize: 10,
+        pageNum,
+        pageSize,
       }).then((res) => {
         if (res.data.code == 200) {
           this.ustaLossList = res.data.rows;
