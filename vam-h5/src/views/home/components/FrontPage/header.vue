@@ -7,12 +7,12 @@
     <div class="home-top-bar">
       <img :src="logoSrc" class="home-top-bar__logo" alt="" @click="refreshPage" />
       <div class="home-top-bar__actions">
-        <img
+        <!-- <img
           src="@/assets/images/black/user.png"
           alt=""
           class="home-top-bar__icon"
           @click="goMyAssets"
-        />
+        /> -->
         <span class="home-top-bar__menu-btn" role="button" aria-label="菜单" @click="openSideBar">
           <svg-load name="cebian" />
         </span>
