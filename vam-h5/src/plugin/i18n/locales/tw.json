@@ -699,6 +699,7 @@
   "withdraw_detail": "提現詳情",
   "withdraw_rate_line": "匯率：1 USDT = {currency} {rate}",
   "withdraw_fiat_estimate": "約到賬（法幣）",
+  "withdraw_fiat_fee_line": "手續費：{currency} {amount}",
   "withdraw_actual_fiat": "實際金額",
   "transfer": "劃轉",
   "transfer_from": "從",

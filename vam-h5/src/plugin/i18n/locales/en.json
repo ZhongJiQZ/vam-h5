@@ -699,6 +699,7 @@
   "withdraw_detail": "Withdrawal details",
   "withdraw_rate_line": "Rate: 1 USDT = {currency} {rate}",
   "withdraw_fiat_estimate": "Est. receipt (fiat)",
+  "withdraw_fiat_fee_line": "Fee: {currency} {amount}",
   "withdraw_actual_fiat": "Actual amount (fiat)",
   "transfer": "Transfer",
   "transfer_from": "From",

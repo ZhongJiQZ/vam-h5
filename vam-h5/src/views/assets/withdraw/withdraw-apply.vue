@@ -57,6 +57,7 @@
 
         <div v-if="showFiatHints" class="fiat-hints">
           <p class="fiat-rate-line">{{ fiatRateText }}</p>
+          <p v-if="fiatFeeLineText" class="fiat-fee-line">{{ fiatFeeLineText }}</p>
           <p v-if="fiatEstimateDisplay" class="fiat-estimate">
             <span class="fiat-est-label">{{ _t18('withdraw_fiat_estimate') }}</span>
             <span class="fiat-est-val ff-num">{{ fiatEstimateDisplay }}</span>
@@ -234,9 +235,44 @@ const fiatEstimateDisplay = computed(() => {
   if (!showFiatHints.value || fiatPerUsdtNum.value == null) return ''
   const qty = Number(allAmount.value)
   if (!Number.isFinite(qty) || qty <= 0) return ''
-  const fiat = qty * fiatPerUsdtNum.value
+  const env = _getConfig('_APP_ENV')
+  let netQty = qty
+  if (['coinsexpto'].includes(env)) {
+    const fee = Number(route.query.fee)
+    if (Number.isFinite(fee) && fee > 0) {
+      netQty = Math.max(0, qty - fee)
+    }
+  } else {
+    const ratio = Number(route.query.ratio)
+    if (Number.isFinite(ratio) && ratio > 0) {
+      netQty = Math.max(0, qty * (1 - ratio / 100))
+    }
+  }
+  const fiat = netQty * fiatPerUsdtNum.value
   return `${fiatCurrency.value} ${_numberWithCommas(fiat)}`
 })
+
+const fiatFeeLineText = computed(() => {
+  if (!showFiatHints.value || fiatPerUsdtNum.value == null) return ''
+  const qty = Number(allAmount.value)
+  if (!Number.isFinite(qty) || qty <= 0) return ''
+  const env = _getConfig('_APP_ENV')
+  let feeCrypto = 0
+  if (['coinsexpto'].includes(env)) {
+    const fee = Number(route.query.fee)
+    if (Number.isFinite(fee) && fee > 0) feeCrypto = fee
+  } else {
+    const ratio = Number(route.query.ratio)
+    if (Number.isFinite(ratio) && ratio > 0) feeCrypto = qty * (ratio / 100)
+  }
+  if (feeCrypto <= 0) return ''
+  const feeFiat = feeCrypto * fiatPerUsdtNum.value
+  return t('withdraw_fiat_fee_line', {
+    currency: fiatCurrency.value,
+    amount: _numberWithCommas(feeFiat)
+  })
+})
+
 const address = ref(userInfo.value?.user?.address)
 const password = ref('')
 let allNum = () => {
@@ -562,6 +598,13 @@ onMounted(() => {
   }
 
   .fiat-rate-line {
+    margin: 0 0 8px;
+    font-size: 13px;
+    color: #646566;
+    line-height: 1.5;
+  }
+
+  .fiat-fee-line {
     margin: 0 0 8px;
     font-size: 13px;
     color: #646566;
