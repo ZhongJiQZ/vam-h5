@@ -25,9 +25,15 @@
             <p class="top">{{ _t18('bank_name') }}</p>
             <div class="bottom">{{ rechargeObj?.bankName }}</div>
           </div>
-          <div class="info-row">
+          <div class="address">
             <p class="top">{{ _t18('Account_holder') }}</p>
-            <div class="bottom">{{ rechargeObj?.bankUserName }}</div>
+            <div class="bottom">
+              <Copy :data="rechargeObj?.bankUserName || ''" :fontSize="'16px'">
+                <template #copyMsg>
+                  <span class="fw-num">{{ rechargeObj?.bankUserName }}</span>
+                </template>
+              </Copy>
+            </div>
           </div>
           <div class="address">
             <p class="top">{{ _t18('Bank_card_number') }}</p>
