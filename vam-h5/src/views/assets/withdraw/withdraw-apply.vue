@@ -56,8 +56,8 @@
         </div>
 
         <div v-if="showFiatHints" class="fiat-hints">
-          <p class="fiat-rate-line">{{ fiatRateText }}</p>
           <p v-if="fiatFeeLineText" class="fiat-fee-line">{{ fiatFeeLineText }}</p>
+          <p class="fiat-rate-line">{{ fiatRateText }}</p>
           <p v-if="fiatEstimateDisplay" class="fiat-estimate">
             <span class="fiat-est-label">{{ _t18('withdraw_fiat_estimate') }}</span>
             <span class="fiat-est-val ff-num">{{ fiatEstimateDisplay }}</span>
