@@ -39,11 +39,12 @@
             v-show="cuttentRight.iconRight"
             v-for="(item, index) in cuttentRight.iconRight"
             :key="index"
+            class="rightIconWrap"
+            @click.stop="handelClick(item.clickTo)"
           >
             <svg-load
               :name="item.iconName"
               class="rightIcon"
-              @click="handelClick(item.clickTo)"
             ></svg-load>
           </div>
         </div>
@@ -90,7 +91,7 @@ const props = defineProps({
     default: false
   }
 })
-const emit = defineEmits(['linkTo', 'showPopup', 'del'])
+const emit = defineEmits(['linkTo', 'showPopup', 'iconDelete'])
 const linkTo = () => {
   emit('linkTo')
 }
@@ -101,7 +102,7 @@ let handelClick = (item) => {
   if (item == 'event_serviceChange') {
     dispatchCustomEvent('event_serviceChange')
   } else if (item == 'del') {
-    emit('del')
+    emit('iconDelete')
   } else if (item) {
     router.push(item)
   } else {
@@ -155,8 +156,15 @@ header {
         width: 24px;
         height: 24px;
       }
-      .rightIcon {
+      .rightIconWrap {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         margin-left: 20px;
+        min-width: 28px;
+        min-height: 28px;
+      }
+      .rightIcon {
         font-size: 24px;
       }
     }

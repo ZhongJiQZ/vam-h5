@@ -6,7 +6,7 @@
         :currentName="_t18('Bank_edit')"
         :cuttentRight="cuttentRight"
         :border_bottom="true"
-        @del="del"
+        @icon-delete="onDeleteBank"
     ></HeaderBar>
     <!--内容-->
     <div class="content">
@@ -88,7 +88,6 @@
       <div class="btnBox" @click="submit">
         <ButtonBar :btnValue="_t18('Bank_save')"/>
       </div>
-      <van-dialog v-model:show="show" title="" show-cancel-button></van-dialog>
     </div>
   </div>
 </template>
@@ -109,7 +108,7 @@ const userStore = useUserStore()
 // userStore.getUserInfo()
 // 用户信息
 const {userInfo} = storeToRefs(userStore)
-const {_toast} = useToast()
+const {_toast, _showName} = useToast()
 const Route = useRoute()
 const Router = useRouter()
 // const formData = reactive({
@@ -123,25 +122,29 @@ const Router = useRouter()
 const formData = reactive(JSON.parse(decodeURI(Route.query.data)))
 const bindUserName = ref(formData.userName || userInfo.value.user?.loginName)
 const cuttentRight = {iconRight: [{iconName: 'sanchu24x24', clickTo: 'del'}]}
-const del = () => {
-  showConfirmDialog({
-    message: _t18('Bank_delete')
-  })
-      .then(() => {
-        delBindCard(formData.id).then((res) => {
-          if (res.code == '200') {
-            // showToast('删除成功！')
-            _toast('Bank_delete_success')
-            setTimeout(() => {
-              Router.push('/bind-card')
-            }, 500)
-          } else {
-            showToast(msg)
-          }
-        })
-      })
-      .catch(() => {
-      })
+const onDeleteBank = async () => {
+  if (formData.id == null || formData.id === '') {
+    return
+  }
+  try {
+    await showConfirmDialog({
+      message: _showName('Bank_delete'),
+      confirmButtonText: _showName('btnConfirm'),
+      cancelButtonText: _showName('cancel')
+    })
+    const res = await delBindCard(formData.id)
+    if (res.code == '200') {
+      _toast('Bank_delete_success')
+      setTimeout(() => {
+        Router.push('/bind-card')
+      }, 500)
+    } else {
+      showToast(res.msg || '')
+    }
+  } catch (e) {
+    console.log(e)
+    // 用户取消确认框，或请求被拦截器处理
+  }
 }
 
 
@@ -176,7 +179,7 @@ const submit = () => {
         Router.push('/bind-card')
       }, 500)
     } else {
-      showToast(msg)
+      showToast(res.msg || '')
     }
   })
 }
