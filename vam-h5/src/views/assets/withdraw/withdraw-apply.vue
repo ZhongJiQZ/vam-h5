@@ -248,7 +248,7 @@ const fiatEstimateDisplay = computed(() => {
       netQty = Math.max(0, qty * (1 - ratio / 100))
     }
   }
-  const fiat = netQty * fiatPerUsdtNum.value
+  const fiat = Math.round(netQty * fiatPerUsdtNum.value)
   return `${fiatCurrency.value} ${_numberWithCommas(fiat)}`
 })
 
@@ -266,7 +266,7 @@ const fiatFeeLineText = computed(() => {
     if (Number.isFinite(ratio) && ratio > 0) feeCrypto = qty * (ratio / 100)
   }
   if (feeCrypto <= 0) return ''
-  const feeFiat = feeCrypto * fiatPerUsdtNum.value
+  const feeFiat = Math.round(feeCrypto * fiatPerUsdtNum.value)
   return t('withdraw_fiat_fee_line', {
     currency: fiatCurrency.value,
     amount: _numberWithCommas(feeFiat)
