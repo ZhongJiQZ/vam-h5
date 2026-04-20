@@ -286,6 +286,7 @@ const fiatTransferDisplay = computed(() => {
   background: #f0f2f5;
   
   padding-bottom: 28px;
+  padding-top: 20px;
   box-sizing: border-box;
 }
 
@@ -337,7 +338,7 @@ const fiatTransferDisplay = computed(() => {
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 
   &--noqr {
-    margin-top: 20px;
+    margin-top: 0;
   }
 
   & > div {
