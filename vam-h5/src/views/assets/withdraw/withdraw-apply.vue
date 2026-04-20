@@ -49,7 +49,8 @@
         <div class="field">
           <div class="field-label">{{ _t18('withdraw_num', ['bitmake']) }}</div>
           <div class="field-box field-box--split">
-            <input v-model="allAmount" type="number" class="field-input ff-num" :placeholder="_t18('withdraw_input')" />
+            <input v-model="allAmount" type="number" class="field-input ff-num" :placeholder="_t18('withdraw_input')"
+              @input="onWithdrawAmountInput" />
             <span class="link-all" @click="allNum">{{ _t18('swap_all') }}</span>
           </div>
         </div>
@@ -240,6 +241,18 @@ const address = ref(userInfo.value?.user?.address)
 const password = ref('')
 let allNum = () => {
   allAmount.value = amount.value
+}
+
+const onWithdrawAmountInput = () => {
+  const raw = allAmount.value
+  if (raw === '' || raw === null || raw === undefined) return
+  const n = Number(String(raw).replace(/,/g, ''))
+  if (!Number.isFinite(n)) return
+  const max = Number(amount.value)
+  if (!Number.isFinite(max)) return
+  if (n > max) {
+    allAmount.value = max
+  }
 }
 
 // 特殊平台，提现需要初级认证（初级）
