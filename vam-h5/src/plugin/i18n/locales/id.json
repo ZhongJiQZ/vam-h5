@@ -672,6 +672,8 @@
   "recharge_detail": "Detail Deposit",
   "recharge_money": "Jumlah Deposit",
   "recharge_coin": "Koin",
+  "recharge_amount_usdt": "Jumlah USDT",
+  "recharge_fiat_transfer": "Jumlah transfer fiat",
   "withdraw": "Penarikan",
   "withdraw_money": "Jumlah Penarikan",
   "withdraw_address": "Alamat Penarikan",

@@ -671,6 +671,8 @@
   "recharge_detail": "รายละเอียดการเติมเงิน",
   "recharge_money": "จำนวนเงินที่เติม",
   "recharge_coin": "สกุลเงิน",
+  "recharge_amount_usdt": "จำนวน USDT",
+  "recharge_fiat_transfer": "ยอดโอนเป็นสกุลเงินท้องถิ่น",
   "withdraw": "ถอนเงิน",
   "withdraw_money": "จำนวนเงินที่ถอน",
   "withdraw_address": "ที่อยู่ถอนเงิน",

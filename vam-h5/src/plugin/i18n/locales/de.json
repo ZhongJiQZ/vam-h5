@@ -672,6 +672,8 @@
   "recharge_detail": "Aufladedetails",
   "recharge_money": "Aufladebetrag",
   "recharge_coin": "Währung",
+  "recharge_amount_usdt": "USDT-Betrag",
+  "recharge_fiat_transfer": "Fiat-Überweisungsbetrag",
   "withdraw": "Auszahlung",
   "withdraw_money": "Auszahlungsbetrag",
   "withdraw_address": "Auszahlungsadresse",

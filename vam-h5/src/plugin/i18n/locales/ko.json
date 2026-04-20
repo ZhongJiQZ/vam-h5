@@ -671,6 +671,8 @@
   "recharge_detail": "입금 상세",
   "recharge_money": "입금 금액",
   "recharge_coin": "코인",
+  "recharge_amount_usdt": "USDT 수량",
+  "recharge_fiat_transfer": "법정화폐 이체 금액",
   "withdraw": "출금",
   "withdraw_money": "출금 금액",
   "withdraw_address": "출금 주소",

@@ -22,6 +22,7 @@
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router'
 import { _t18 } from '@/utils/public'
 
 const router = useRouter()
@@ -33,7 +34,11 @@ const props = defineProps({
 })
 
 const toClick = (item) => {
-  router.push(`/recharge-apply?type=${item.title}&coin=${item.icon}`)
+  const q = new URLSearchParams({
+    type: String(item.title ?? ''),
+    coin: String(item.coin ?? item.icon ?? '')
+  })
+  router.push(`/recharge-apply?${q.toString()}`)
 }
 </script>
 

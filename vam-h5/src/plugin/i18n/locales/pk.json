@@ -671,6 +671,8 @@
   "recharge_detail": "ری چارج کی تفصیلات",
   "recharge_money": "ری چارج رقم",
   "recharge_coin": "کرنسی",
+  "recharge_amount_usdt": "USDT کی رقم",
+  "recharge_fiat_transfer": "فیاٹ ٹرانسفر کی رقم",
   "withdraw": "ود ڈرال",
   "withdraw_money": "ود ڈرال کی رقم",
   "withdraw_address": "ود ڈرال ایڈریس",

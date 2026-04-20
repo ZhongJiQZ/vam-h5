@@ -671,6 +671,8 @@
   "recharge_detail": "Dettagli ricarica",
   "recharge_money": "Importo ricarica",
   "recharge_coin": "Valuta",
+  "recharge_amount_usdt": "Importo USDT",
+  "recharge_fiat_transfer": "Importo bonifico fiat",
   "withdraw": "Prelievo",
   "withdraw_money": "Importo prelievo",
   "withdraw_address": "Indirizzo prelievo",

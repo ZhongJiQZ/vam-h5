@@ -671,6 +671,8 @@
   "recharge_detail": "入金詳細",
   "recharge_money": "入金額",
   "recharge_coin": "通貨",
+  "recharge_amount_usdt": "USDT数量",
+  "recharge_fiat_transfer": "法定通貨の振込金額",
   "withdraw": "出金",
   "withdraw_money": "出金額",
   "withdraw_address": "出金アドレス",

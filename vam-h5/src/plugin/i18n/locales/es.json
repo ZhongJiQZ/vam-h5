@@ -671,6 +671,8 @@
   "recharge_detail": "Detalles de recarga",
   "recharge_money": "Monto de recarga",
   "recharge_coin": "Moneda",
+  "recharge_amount_usdt": "Cantidad en USDT",
+  "recharge_fiat_transfer": "Importe de transferencia en fiat",
   "withdraw": "Retiro",
   "withdraw_money": "Monto de retiro",
   "withdraw_address": "Dirección de retiro",

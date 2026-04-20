@@ -671,6 +671,8 @@
   "recharge_detail": "Chi tiết nạp",
   "recharge_money": "Số tiền nạp",
   "recharge_coin": "Tiền tệ",
+  "recharge_amount_usdt": "Số USDT",
+  "recharge_fiat_transfer": "Số tiền chuyển khoản (tiền pháp định)",
   "withdraw": "Rút tiền",
   "withdraw_money": "Số tiền rút",
   "withdraw_address": "Địa chỉ rút",

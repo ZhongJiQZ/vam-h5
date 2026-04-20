@@ -8,7 +8,7 @@
     />
 
     <div class="page-body">
-      <div class="qr-section">
+      <div v-if="!isBankRecharge" class="qr-section">
         <div
           class="qr-bg"
           :style="{ backgroundImage: `url(${rechargeApplyBg})` }"
@@ -19,8 +19,28 @@
         </div>
       </div>
 
-      <div class="applyMes">
-        <div class="address">
+      <div class="applyMes" :class="{ 'applyMes--noqr': isBankRecharge }">
+        <template v-if="isBankRecharge">
+          <div class="info-row">
+            <p class="top">{{ _t18('bank_name') }}</p>
+            <div class="bottom">{{ rechargeObj?.bankName }}</div>
+          </div>
+          <div class="info-row">
+            <p class="top">{{ _t18('Account_holder') }}</p>
+            <div class="bottom">{{ rechargeObj?.bankUserName }}</div>
+          </div>
+          <div class="address">
+            <p class="top">{{ _t18('Bank_card_number') }}</p>
+            <div class="bottom">
+              <Copy :data="rechargeObj?.bankCardNo || ''" :fontSize="'16px'">
+                <template #copyMsg>
+                  <span class="fw-num">{{ rechargeObj?.bankCardNo }}</span>
+                </template>
+              </Copy>
+            </div>
+          </div>
+        </template>
+        <div v-else class="address">
           <p class="top">{{ _t18('recharge_address', ['bitmake']) }}({{ route.query.type }})</p>
           <div class="bottom">
             <Copy :data="address" :fontSize="'16px'">
@@ -32,13 +52,20 @@
         </div>
         <template
           v-if="
+            isBankRecharge ||
             !['coinsexpto', 'rxce', 'gmtoin', 'aams', 'bitbyex', 'gmmoin'].includes(
               _getConfig('_APP_ENV')
             )
           "
         >
           <div class="num">
-            <p class="top">{{ _t18('recharge_number', ['bitmake']) }}</p>
+            <p class="top">
+              {{
+                isBankRecharge
+                  ? _t18('recharge_amount_usdt')
+                  : _t18('recharge_number', ['bitmake'])
+              }}
+            </p>
             <div class="bottom">
               <input
                 v-model="num"
@@ -47,6 +74,13 @@
                 :placeholder="_t18('recharge_input')"
               />
             </div>
+          </div>
+          <div v-if="isBankRecharge && showFiatHints" class="fiat-hints">
+            <p class="fiat-rate-line">{{ fiatRateText }}</p>
+            <p v-if="fiatTransferDisplay" class="fiat-estimate">
+              <span class="fiat-est-label">{{ _t18('recharge_fiat_transfer') }}</span>
+              <span class="fiat-est-val ff-num">{{ fiatTransferDisplay }}</span>
+            </p>
           </div>
           <div class="uploadImg">
             <p class="top">{{ _t18('recharge_imgUpload', ['bitmake']) }}</p>
@@ -59,7 +93,12 @@
         </template>
       </div>
 
-      <template v-if="['coinsexpto', 'rxce', 'bitbyex', 'gmmoin'].includes(_getConfig('_APP_ENV'))">
+      <template
+        v-if="
+          !isBankRecharge &&
+          ['coinsexpto', 'rxce', 'bitbyex', 'gmmoin'].includes(_getConfig('_APP_ENV'))
+        "
+      >
         <div class="btn-wrap">
           <div class="btn btn--primary" @click="_copy(address)">
             <p>{{ _t18('copy') }}</p>
@@ -76,12 +115,14 @@
           </div>
         </div>
       </template>
-      <template v-else-if="['gmtoin'].includes(_getConfig('_APP_ENV'))">
+      <template v-else-if="!isBankRecharge && ['gmtoin'].includes(_getConfig('_APP_ENV'))">
         <div class="tip-list">
           <div class="tip">{{ _t18('account_balance_info') }}</div>
         </div>
       </template>
-      <template v-else-if="['aams', 'gmmoin'].includes(_getConfig('_APP_ENV'))"></template>
+      <template
+        v-else-if="!isBankRecharge && ['aams', 'gmmoin'].includes(_getConfig('_APP_ENV'))"
+      ></template>
       <template v-else>
         <div class="btn-wrap">
           <div class="btn btn--primary" @click="submit">
@@ -96,7 +137,7 @@
 <script setup>
 import { uploadImg } from '@/api/common/index.js'
 import { rechargeSubmit } from '@/api/account.js'
-import { _toView, _t18, _getConfig } from '@/utils/public'
+import { _toView, _t18, _getConfig, _numberWithCommas } from '@/utils/public'
 import { priceFormat } from '@/utils/decimal'
 import QRCode from '@/components/common/QRCode/index.vue'
 import Copy from '@/components/common/Copy/index.vue'
@@ -108,7 +149,10 @@ import { useToast } from '@/hook/useToast'
 import { useCopy } from '@/hook/useCopy'
 import { useRouter, useRoute } from 'vue-router'
 import { useMainStore } from '@/store'
-import { onMounted, reactive, computed, ref } from 'vue'
+import { reactive, computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const { _toast } = useToast()
 const { _copy } = useCopy()
@@ -144,12 +188,13 @@ const afterRead = (file) => {
 }
 
 const submit = debounce(() => {
-  if (!['coinsexpto'].includes(__config._APP_ENV) && num.value == '') {
+  const needProof = isBankRecharge.value || !['coinsexpto'].includes(__config._APP_ENV)
+  if (needProof && num.value == '') {
     _toast('recharge_num')
     return
   }
   let filePath = ''
-  if (!['coinsexpto'].includes(__config._APP_ENV)) {
+  if (needProof) {
     if (fileList.value.length == 0) {
       _toast('recharge_img')
       return
@@ -161,21 +206,24 @@ const submit = debounce(() => {
       return
     }
   }
+  const payAddress = isBankRecharge.value
+    ? (rechargeObj.value?.bankCardNo ?? '')
+    : address.value
   let params = {}
-  if (!['coinsexpto'].includes(__config._APP_ENV)) {
+  if (needProof) {
     params = {
       amount: priceFormat(num.value),
       type: route.query.type,
       coin: route.query.coin,
       filePath: filePath || '',
-      address: address.value
+      address: payAddress
     }
   } else {
     params = {
       amount: 0,
       type: route.query.type,
       coin: route.query.coin,
-      address: address.value
+      address: payAddress
     }
   }
 
@@ -194,9 +242,33 @@ const submit = debounce(() => {
 
 const mainStore = useMainStore()
 
-const address = computed(() => {
-  const rechargeObj = mainStore.getRechargeList.find((elem) => elem.coinName == route.query.type)
-  return rechargeObj?.coinAddress ?? ''
+const rechargeObj = computed(() =>
+  mainStore.getRechargeList.find((elem) => elem.coinName == route.query.type)
+)
+const isBankRecharge = computed(() =>
+  Boolean(rechargeObj.value?.bankCardNo && rechargeObj.value?.bankName)
+)
+const address = computed(() => rechargeObj.value?.coinAddress ?? '')
+
+const fiatPerUsdtNum = computed(() => {
+  const n = Number(rechargeObj.value?.fiatPerUsdt)
+  return Number.isFinite(n) && n > 0 ? n : null
+})
+const showFiatHints = computed(() => isBankRecharge.value && fiatPerUsdtNum.value != null)
+const fiatCurrency = computed(() => String(rechargeObj.value?.fiatCurrency || 'IDR'))
+const fiatRateText = computed(() => {
+  if (!showFiatHints.value || fiatPerUsdtNum.value == null) return ''
+  return t('withdraw_rate_line', {
+    currency: fiatCurrency.value,
+    rate: _numberWithCommas(fiatPerUsdtNum.value)
+  })
+})
+const fiatTransferDisplay = computed(() => {
+  if (!showFiatHints.value || fiatPerUsdtNum.value == null) return ''
+  const qty = Number(num.value)
+  if (!Number.isFinite(qty) || qty <= 0) return ''
+  const fiat = Math.round(qty * fiatPerUsdtNum.value)
+  return `${fiatCurrency.value} ${_numberWithCommas(fiat)}`
 })
 </script>
 
@@ -264,6 +336,10 @@ const address = computed(() => {
   padding: 20px 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 
+  &--noqr {
+    margin-top: 20px;
+  }
+
   & > div {
     margin-bottom: 20px;
 
@@ -283,6 +359,38 @@ const address = computed(() => {
     word-break: break-all;
     font-size: 15px;
     color: #323233;
+  }
+
+  .info-row .bottom {
+    font-size: 15px;
+    color: #323233;
+    line-height: 1.45;
+  }
+
+  .fiat-hints {
+    margin: -4px 0 4px;
+  }
+
+  .fiat-rate-line {
+    margin: 0 0 8px;
+    font-size: 13px;
+    color: #646566;
+    line-height: 1.5;
+  }
+
+  .fiat-estimate {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px;
+    font-size: 13px;
+    color: #323233;
+    line-height: 1.5;
+  }
+
+  .fiat-est-label {
+    color: #969799;
   }
 
   .num .bottom {

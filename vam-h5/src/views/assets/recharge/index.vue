@@ -34,11 +34,13 @@ const mainStore = useMainStore()
 
 const coinList = computed(() => {
   return mainStore.getRechargeList.map((item) => {
+    const isBank = Boolean(item.bankCardNo && item.bankName)
     return {
-      icon: filterCoin2(item.coin),
+      icon: isBank ? 'card' : filterCoin2(item.coin),
       type: 0,
       title: item.coinName,
-      address: item.address
+      address: item.address,
+      coin: item.coin
     }
   })
 })

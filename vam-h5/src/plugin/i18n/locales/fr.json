@@ -671,6 +671,8 @@
   "recharge_detail": "Détails du dépôt",
   "recharge_money": "Montant du dépôt",
   "recharge_coin": "Crypto",
+  "recharge_amount_usdt": "Montant USDT",
+  "recharge_fiat_transfer": "Montant du virement en monnaie fiat",
   "withdraw": "Retrait",
   "withdraw_money": "Montant du retrait",
   "withdraw_address": "Adresse de retrait",

@@ -672,6 +672,8 @@
   "recharge_detail": "充值詳情",
   "recharge_money": "充值金額",
   "recharge_coin": "幣種",
+  "recharge_amount_usdt": "USDT數量",
+  "recharge_fiat_transfer": "法幣轉帳金額",
   "withdraw": "提現",
   "withdraw_money": "提現金額",
   "withdraw_address": "提現地址",

@@ -669,6 +669,8 @@
   "recharge_detail": "Recharge Details",
   "recharge_money": "Recharge amount",
   "recharge_coin": "Currency",
+  "recharge_amount_usdt": "USDT-beløb",
+  "recharge_fiat_transfer": "Fiat overførselsbeløb",
   "withdraw": "Withdrawal",
   "withdraw_money": "Withdrawal amount",
   "withdraw_address": "Withdrawal address",
