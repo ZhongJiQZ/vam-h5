@@ -137,6 +137,21 @@
             </template>
           </el-table-column>
         </el-table>
+        <div class="order_list_pagination">
+          <el-pagination
+            :current-page="ustaPagination.position.pageNum"
+            :page-size="ustaPagination.position.pageSize"
+            :total="Number(ustaOrderLen3) || 0"
+            layout="total, sizes, prev, pager, next"
+            :page-sizes="[10, 20, 50, 100]"
+            @current-change="
+              (p) => $emit('ustaPageChange', { key: 'position', pageNum: p })
+            "
+            @size-change="
+              (s) => $emit('ustaPageChange', { key: 'position', pageSize: s })
+            "
+          />
+        </div>
       </div>
       <!-- 当前委托 -->
       <div class="table_content" v-if="orderTabsValue == 'cuwei'">
@@ -144,6 +159,21 @@
           :data="ustaCurOrderList"
           @cancelUstaOrder="cancelUstaOrder"
         ></ustaTable1>
+        <div class="order_list_pagination">
+          <el-pagination
+            :current-page="ustaPagination.curOrder.pageNum"
+            :page-size="ustaPagination.curOrder.pageSize"
+            :total="Number(ustaOrderLen1) || 0"
+            layout="total, sizes, prev, pager, next"
+            :page-sizes="[10, 20, 50, 100]"
+            @current-change="
+              (p) => $emit('ustaPageChange', { key: 'curOrder', pageNum: p })
+            "
+            @size-change="
+              (s) => $emit('ustaPageChange', { key: 'curOrder', pageSize: s })
+            "
+          />
+        </div>
       </div>
 
       <!-- 止盈止损 -->
@@ -152,22 +182,40 @@
           :data="ustaLossList"
           @stoplossBullshit="stoplossBullshit"
         ></ustaTable2>
+        <div class="order_list_pagination">
+          <el-pagination
+            :current-page="ustaPagination.loss.pageNum"
+            :page-size="ustaPagination.loss.pageSize"
+            :total="Number(ustaOrderLen4) || 0"
+            layout="total, sizes, prev, pager, next"
+            :page-sizes="[10, 20, 50, 100]"
+            @current-change="
+              (p) => $emit('ustaPageChange', { key: 'loss', pageNum: p })
+            "
+            @size-change="
+              (s) => $emit('ustaPageChange', { key: 'loss', pageSize: s })
+            "
+          />
+        </div>
       </div>
 
       <!-- 历史委托 -->
       <div class="table_content usta_his_wrap" v-if="orderTabsValue == 'hiswei'">
         <ustaTable3 :data="ustaHisOrderList"></ustaTable3>
-        <div
-          v-if="Number(ustaOrderLen2) > ustaHisPageSize"
-          class="usta_his_pagination"
-        >
+
+        <div class="order_list_pagination">
           <el-pagination
-            small
-            layout="prev, pager, next"
-            :page-size="ustaHisPageSize"
-            :current-page="ustaHisPageNum"
+            :current-page="ustaPagination.hisOrder.pageNum"
+            :page-size="ustaPagination.hisOrder.pageSize"
             :total="Number(ustaOrderLen2) || 0"
-            @current-change="onUstaHisPageChange"
+            layout="total, sizes, prev, pager, next"
+            :page-sizes="[10, 20, 50, 100]"
+            @current-change="
+              (p) => $emit('ustaPageChange', { key: 'hisOrder', pageNum: p })
+            "
+            @size-change="
+              (s) => $emit('ustaPageChange', { key: 'hisOrder', pageSize: s })
+            "
           />
         </div>
       </div>
@@ -390,13 +438,15 @@ export default {
     ustaOrderLen2: String,
     ustaOrderLen3: String,
     ustaOrderLen4: String,
-    ustaHisPageNum: {
-      type: Number,
-      default: 1,
-    },
-    ustaHisPageSize: {
-      type: Number,
-      default: 10,
+
+    ustaPagination: {
+      type: Object,
+      default: () => ({
+        position: { pageNum: 1, pageSize: 10 },
+        curOrder: { pageNum: 1, pageSize: 10 },
+        hisOrder: { pageNum: 1, pageSize: 10 },
+        loss: { pageNum: 1, pageSize: 10 },
+      }),
     },
     coinPriceInfo: Object,
     availableBalance: String,
@@ -764,6 +814,7 @@ export default {
     //切换Tab
     orderTabsClick(e) {
       this.orderTabsValue = e.name;
+      this.$emit("ustaTabChange", e.name);
       if (this.orderTabsValue == "curPosition") {
         this.$emit("contractHistoryList", 0);
       } else if (this.orderTabsValue == "cuwei") {
@@ -791,6 +842,7 @@ export default {
         //   }
       } else {
         // console.log("orderTabsValue===>", this.orderTabsValue);
+        this.$emit("ustaTabChange", this.orderTabsValue);
         if (this.orderTabsValue == "curPosition") {
           this.$emit("contractHistoryList", 0);
         } else if (this.orderTabsValue == "cuwei") {
@@ -862,9 +914,15 @@ export default {
 ::v-deep.readInput .el-input__inner {
   background: #f1f1f1;
 }
+<<<<<<< HEAD
 .usta_his_pagination {
   display: flex;
   justify-content: flex-end;
   padding: 12px 0 8px;
+=======
+.order_list_pagination {
+  margin-top: 12px;
+  text-align: right;
+>>>>>>> main
 }
 </style>
