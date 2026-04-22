@@ -8,6 +8,23 @@ export function normalizeRechargeAddressFromApi(raw, coinName) {
   if (typeof raw === 'string') return raw
   if (typeof raw !== 'object') return ''
 
+  const exactKey =
+    coinName && Object.keys(raw).find((k) => String(k).toUpperCase() === String(coinName).toUpperCase())
+
+  if (exactKey && raw[exactKey] != null) {
+    const inner = raw[exactKey]
+    if (typeof inner === 'string') return inner
+    if (typeof inner === 'object' && inner !== null) {
+      const innerExact = Object.keys(inner).find(
+        (k) => String(k).toUpperCase() === String(coinName).toUpperCase()
+      )
+      if (innerExact && typeof inner[innerExact] === 'string') return inner[innerExact]
+      for (const v of Object.values(inner)) {
+        if (typeof v === 'string' && v.trim()) return v
+      }
+    }
+  }
+
   if (coinName && raw[coinName] != null) {
     const inner = raw[coinName]
     if (typeof inner === 'string') return inner
