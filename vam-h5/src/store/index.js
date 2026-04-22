@@ -287,7 +287,8 @@ export const useMainStore = defineStore('main', {
         )
         toFetch.forEach((elem, idx) => {
           const r = responses[idx]
-          const raw = r?.data?.[elem.coinName] ?? r?.data
+          const payload = r?.data?.data ?? r?.data ?? r
+          const raw = payload?.[elem.coinName] ?? payload
           self.userRechageMap[elem.coinName] = normalizeRechargeAddressFromApi(
             raw,
             elem.coinName
