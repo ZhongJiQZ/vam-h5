@@ -1,8 +1,11 @@
+import Vue from "vue";
 import { setStore, getStore, getAllStore } from "@/util/store";
 import config from "@/config/index";
 import { getDataApi, getSettingConfigApi } from "@/api/system";
 import { getPlatFormConfigApi } from "@/api/common";
+import { getUserRechageNewApi } from "@/api/assets";
 import { analysisFunction } from "@/util/util";
+import { normalizeRechargeAddressFromApi } from "@/util/rechargeAddress";
 
 const common = {
   state: {
@@ -52,6 +55,8 @@ const common = {
     timeFormat: "MM/DD/YYYY",
 
     platFormConfig: {}, //平台配置文件
+    /** 用户各币种充值地址（接口 getAdress），与 H5 mainStore.userRechageMap 对齐 */
+    userRechageMap: {},
   },
   actions: {
     getAllSystemConfig({ commit }) {
@@ -85,6 +90,27 @@ const common = {
       }).then((res) => {
         let data = res.data.data.records;
         commit("SET_All_IMG_URL", data);
+      });
+    },
+    /**
+     * 拉取缺失的充值地址写入 userRechageMap（跳过银行卡通道）
+     */
+    async getUserRechageNew({ state, commit }) {
+      const list = state.settingConfig.ASSET_COIN || [];
+      const toFetch = list.filter((elem) => {
+        if (elem.bankCardNo && elem.bankName) return false;
+        const v = state.userRechageMap[elem.coinName];
+        return v == undefined || (typeof v === "object" && v !== null);
+      });
+      if (!toFetch.length) return;
+      const responses = await Promise.all(
+        toFetch.map((elem) => getUserRechageNewApi(elem.coin, elem.coinName))
+      );
+      toFetch.forEach((elem, idx) => {
+        const body = responses[idx].data;
+        const raw = body?.data?.[elem.coinName] ?? body?.data;
+        const addr = normalizeRechargeAddressFromApi(raw, elem.coinName);
+        commit("SET_USER_RECHARGE_ADDRESS", { coinName: elem.coinName, address: addr });
       });
     },
   },
@@ -275,6 +301,9 @@ const common = {
     },
     SET_MERCHANT_VARIATION: (state, merchantVariation) => {
       state.merchantVariation = merchantVariation;
+    },
+    SET_USER_RECHARGE_ADDRESS: (state, { coinName, address }) => {
+      Vue.set(state.userRechageMap, coinName, address);
     },
   },
 };

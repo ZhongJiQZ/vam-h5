@@ -73,6 +73,16 @@ export const rechargeSubmit = (data) => {
   });
 };
 
+/** 获取用户充值地址（与 H5 getUserRechageNewApi 一致） */
+export const getUserRechageNewApi = (coin, symbol) => {
+  return request({
+    url: `/api/recharge/getAdress?coin=${encodeURIComponent(coin)}&symbol=${encodeURIComponent(
+      symbol
+    )}`,
+    method: "post",
+  });
+};
+
 /* 
   获取充值(提现)记录列表*/
 export const getRecordList = (data, key) => {

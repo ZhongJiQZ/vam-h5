@@ -258,6 +258,7 @@ import {
 import { getRulesList } from "@/api/rule";
 import { priceFormat } from "@/util/utildecimal.js";
 import { filterCoin2 } from "@/util/public";
+import { normalizeRechargeAddressFromApi } from "@/util/rechargeAddress";
 
 export default {
   components: {
@@ -430,6 +431,7 @@ export default {
       "secondContractCoinList",
       "spotCoinList",
       "contractCoinList",
+      "userRechageMap",
     ]),
     coinPriceInfo() {
       const tradeInfo = JSON.parse(localStorage.getItem("tradeInfo"));
@@ -541,7 +543,12 @@ export default {
     this.getPersonalOrderList();
   },
   methods: {
-    ...mapActions(["getUserInfoData", "getCoinList", "getAllSystemConfig"]),
+    ...mapActions([
+      "getUserInfoData",
+      "getCoinList",
+      "getAllSystemConfig",
+      "getUserRechageNew",
+    ]),
     ...mapMutations(["SET_USER_INFO"]),
     //获取用户信息
     async getUserInfo() {
@@ -574,8 +581,6 @@ export default {
         }
 
         if (this.tabsValue == "recharge" || this.tabsValue == "withdraw") {
-          // this.getRange("USDT-TRC");
-          this.getRange(this.settingConfig.ASSET_COIN[0].coinName);
           this.getTableData({
             param1: "",
             pageNum: 1,
@@ -756,20 +761,34 @@ export default {
       });
     },
     getRange(val) {
-      if (Object.keys(this.platFormConfig).length > 0) {
-        // console.log("val====>", val);
-        // console.log("this.platFormConfig====>", this.platFormConfig);
-        // this.rechargeAddress = this.platFormConfig.RECHARGE_ADDRESS[val];
-        this.rechargeAddress = this.settingConfig.ASSET_COIN.find((item) => {
-          return item.coinName == val;
-        })?.coinAddress;
-        let itemObj = this.settingConfig.ASSET_COIN.filter((item) => {
-          return item.coinName == val;
-        })[0];
-        const minRechargeNum = itemObj.rechargeMin;
-        const maxRechargeNum = itemObj.rechargeMax;
-        this.rechargeNumRange = minRechargeNum + "-" + maxRechargeNum;
+      const list = this.settingConfig.ASSET_COIN;
+      if (!list || !list.length || !val) return;
+      let itemObj = list.find((item) => item.coinName == val);
+      if (!itemObj) return;
+      const minRechargeNum = itemObj.rechargeMin;
+      const maxRechargeNum = itemObj.rechargeMax;
+      this.rechargeNumRange = minRechargeNum + "-" + maxRechargeNum;
+
+      const isBank = itemObj.bankCardNo && itemObj.bankName;
+      if (isBank) {
+        this.rechargeAddress = itemObj.coinAddress || "";
+        return;
       }
+
+      this.applyRechargeAddress(val, itemObj);
+      this.getUserRechageNew().then(() => {
+        this.applyRechargeAddress(val, itemObj);
+      });
+    },
+    applyRechargeAddress(val, itemObj) {
+      const item =
+        itemObj ||
+        this.settingConfig.ASSET_COIN.find((i) => i.coinName == val);
+      const fromMap = normalizeRechargeAddressFromApi(
+        this.userRechageMap[val],
+        val
+      );
+      this.rechargeAddress = fromMap || item?.coinAddress || "";
     },
     searchData(param) {
       const filterBySearchCoin = (list, searchCoin) => {

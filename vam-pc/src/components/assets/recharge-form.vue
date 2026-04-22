@@ -58,7 +58,7 @@
                   alt=""
                   width="15px"
                   class="copy_icon"
-                  @click="copyAddress(form.address)"
+                  @click="copyAddress(rechargeAddress)"
                 />
               </template>
             </el-input>
@@ -102,8 +102,8 @@ export default {
   data() {
     return {
       form: {
-        coin: "usdt",
-        type: "USDT-TRC",
+        coin: "",
+        type: "",
         amount: "",
         address: "",
       },
@@ -130,13 +130,34 @@ export default {
     // this.getRange(this.form.type);
   },
   watch: {
+    coinTypeList: {
+      immediate: true,
+      handler(list) {
+        if (!list || !list.length) return;
+        const inList = list.some((c) => c.coinName === this.form.type);
+        if (!this.form.type || !inList) {
+          this.form.type = list[0].coinName;
+        } else {
+          this.syncCoinFromType();
+          this.$emit("getRange", this.form.type);
+        }
+      },
+    },
     "form.type"(val) {
-      // this.form.address = this.platFormConfig.RECHARGE_ADDRESS[val];
-      // this.getRange(val);
+      if (!val) return;
+      this.syncCoinFromType();
       this.$emit("getRange", val);
     },
   },
   methods: {
+    syncCoinFromType() {
+      const row = (this.coinTypeList || []).find(
+        (c) => c.coinName === this.form.type
+      );
+      if (row && row.coin != null && row.coin !== "") {
+        this.form.coin = row.coin;
+      }
+    },
     submit() {
       this.rechargeSubmit();
     },

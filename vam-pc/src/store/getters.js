@@ -13,6 +13,7 @@ const getters = {
   themeName: (state) => state.common.themeName,
   languageData: (state) => state.common.languageData,
   settingConfig: (state) => state.common.settingConfig,
+  userRechageMap: (state) => state.common.userRechageMap,
   platFormConfig: (state) => state.common.platFormConfig,
   allImgUrl: (state) => state.common.allImgUrl,
   prySelf: (state) => state.common.prySelf,
