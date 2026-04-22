@@ -308,7 +308,7 @@
        <!-- 开仓时间 -->
        <div class="item">
         <div>{{ _t18(`open_time`) }}</div>
-        <div class="fw-num numItem">{{ formatLocalTime(recordListItem.subTime) }}</div>
+        <div class="fw-num numItem">{{ formatLocalTime(recordListItem.createTime) }}</div>
       </div>
       <!-- 委托总量 -->
       <div class="item">
