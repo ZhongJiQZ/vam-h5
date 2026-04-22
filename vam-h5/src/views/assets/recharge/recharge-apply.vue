@@ -88,14 +88,6 @@
               <span class="fiat-est-val ff-num">{{ fiatTransferDisplay }}</span>
             </p>
           </div>
-          <div class="uploadImg">
-            <p class="top">{{ _t18('recharge_imgUpload', ['bitmake']) }}</p>
-            <van-uploader v-model="fileList" max-count="1" :after-read="afterRead">
-              <div class="bottom">
-                <image-load filePath="defi/delete.png" name="delete" class="img"></image-load>
-              </div>
-            </van-uploader>
-          </div>
         </template>
       </div>
 
@@ -141,7 +133,6 @@
 </template>
 
 <script setup>
-import { uploadImg } from '@/api/common/index.js'
 import { rechargeSubmit } from '@/api/account.js'
 import { _toView, _t18, _getConfig, _numberWithCommas } from '@/utils/public'
 import { priceFormat } from '@/utils/decimal'
@@ -175,53 +166,23 @@ const tipList = reactive([
 ])
 const tipList2 = reactive([{ content: _t18('recharge_tip5') }])
 const num = ref('')
-const fileList = ref([])
-
-const afterRead = (file) => {
-  file.status = 'uploading'
-  const formData = new FormData()
-  formData.append('file', file.file)
-  uploadImg(formData).then((res) => {
-    res = res.data
-    if (res.code == '200') {
-      file.res = res.data.url
-      file.status = 'success'
-    } else {
-      showToast(res.msg)
-      fileList.value = []
-    }
-  })
-}
 
 const submit = debounce(() => {
-  const needProof = isBankRecharge.value || !['coinsexpto'].includes(__config._APP_ENV)
-  if (needProof && num.value == '') {
+  const needAmount = isBankRecharge.value || !['coinsexpto'].includes(__config._APP_ENV)
+  if (needAmount && num.value == '') {
     _toast('recharge_num')
     return
-  }
-  let filePath = ''
-  if (needProof) {
-    if (fileList.value.length == 0) {
-      _toast('recharge_img')
-      return
-    }
-    const file = fileList.value[0] || {}
-    filePath = file.res
-    if (file.status != 'success') {
-      _toast('recharge_img_load')
-      return
-    }
   }
   const payAddress = isBankRecharge.value
     ? (rechargeObj.value?.bankCardNo ?? '')
     : address.value
   let params = {}
-  if (needProof) {
+  if (needAmount) {
     params = {
       amount: priceFormat(num.value),
       type: route.query.type,
       coin: route.query.coin,
-      filePath: filePath || '',
+      filePath: '',
       address: payAddress
     }
   } else {
@@ -418,28 +379,6 @@ const fiatTransferDisplay = computed(() => {
     input::placeholder {
       color: #c8c9cc;
       font-size: 14px;
-    }
-  }
-
-  .uploadImg {
-    .van-uploader {
-      width: 100%;
-
-      :deep(.van-uploader__input-wrapper) {
-        width: 100%;
-      }
-    }
-
-    .bottom {
-      border: 1px solid #ebedf0;
-      padding: 40px 0;
-      text-align: center;
-      border-radius: 8px;
-      background: #fafafa;
-
-      .img {
-        font-size: 36px;
-      }
     }
   }
 }
