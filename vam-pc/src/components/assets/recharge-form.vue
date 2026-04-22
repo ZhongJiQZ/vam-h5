@@ -73,30 +73,6 @@
             <qrcode :address="rechargeAddress"></qrcode>
           </el-form-item>
 
-          <el-form-item
-            :label="$t('assets.uploadPayShoot')"
-            prop="imageUrl"
-            :rules="[
-              {
-                required: true,
-                message: $t('assets.plsUploadPayShoot'),
-                trigger: 'blur',
-              },
-            ]"
-          >
-            <el-upload
-              class="image-uploader"
-              action="https://jsonplaceholder.typicode.com/posts/"
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload"
-              :headers="headerObj"
-            >
-              <img v-if="form.fileFath" :src="form.fileFath" class="avatar" />
-              <i v-else class="el-icon-camera-solid avatar-uploader-icon"></i>
-            </el-upload>
-          </el-form-item>
-
           <el-form-item>
             <div class="confirm_btn">
               <div @click="submit" class="cur_d"   >{{ $t("assets.confirmRecharge") }}</div>
@@ -111,7 +87,6 @@
 <script>
 import { rechargeSubmit } from "@/api/assets";
 import qrcode from "@/components/common/qrcode.vue";
-import { uploadFile } from "@/api/common";
 // import { mapGetters } from "vuex";
 export default {
   props: {
@@ -131,10 +106,8 @@ export default {
         type: "USDT-TRC",
         amount: "",
         address: "",
-        fileFath: "",
       },
       // coinTypeList: [],
-      headerObj: { "Content-Type": "multipart/form-data" },
       // rechargeNumRange: "", //充值范围
     };
   },
@@ -176,7 +149,6 @@ export default {
         if (res.data.code==200) {
           this.$message.success(res.data.msg);
           this.form.amount='';
-          this.form.fileFath='';
           this.$emit("getRechargeRecord");
         }
       });
@@ -198,32 +170,6 @@ export default {
     //   const maxRechargeNum = itemObj.rechargeMax;
     //   this.rechargeNumRange = minRechargeNum + "-" + maxRechargeNum;
     // },
-    uploadFile(formData, type) {
-      uploadFile(formData).then((res) => {
-        //this.repayTypeInfo = res.data.data[0];
-        console.log("上传图片结果=====》", res.data);
-        this.form[type] = res.data.data.url;
-      });
-    },
-    handleAvatarSuccess(res, file) {
-      let formData = new FormData();
-      formData.append("file", file.raw);
-      this.uploadFile(formData, "fileFath");
-      console.log("fileFath==>", this.form.fileFath);
-    },
-    beforeAvatarUpload(file) {
-      console.log("file==>", file);
-      const isJPG = file.type === "image/jpeg";
-      const isLt2M = file.size / 1024 / 1024 < 2;
-
-      // if (!isJPG) {
-      //   this.$message.warning("上传头像图片只能是 JPG 格式!");
-      // }
-      if (!isLt2M) {
-        this.$message.warning("上传头像图片大小不能超过 2MB!");
-      }
-      return isLt2M;
-    },
   },
 };
 </script>
@@ -263,32 +209,6 @@ export default {
         line-height: 40px;
       }
 
-      .avatar-uploader .el-upload {
-        border: 1px dashed #d9d9d9;
-        border-radius: 6px;
-        cursor: pointer;
-        position: relative;
-        overflow: hidden;
-      }
-      .avatar-uploader .el-upload:hover {
-        border-color: #409eff;
-      }
-      .avatar-uploader-icon {
-        font-size: 28px;
-        color: #8c939d;
-        width: 102px;
-        height: 102px;
-        line-height: 102px;
-        text-align: center;
-        background: #f1f1f1;
-      }
-      .avatar {
-        width: 100px;
-        height: 100px;
-        background: #f1f1f1;
-        border: 1px dashed #d9d9d9;
-        display: block;
-      }
       .confirm_btn {
         margin-top: 40px;
         > div {
