@@ -64,29 +64,15 @@
             )
           "
         >
-          <div class="num">
+          <div class="info-row">
             <p class="top">
-              {{
-                isBankRecharge
-                  ? _t18('recharge_amount_usdt')
-                  : _t18('recharge_number', ['bitmake'])
-              }}
+              {{ isBankRecharge ? _t18('recharge_amount_usdt') : _t18('recharge_number', ['bitmake']) }}
             </p>
-            <div class="bottom">
-              <input
-                v-model="num"
-                type="number"
-                class="ff-num"
-                :placeholder="_t18('recharge_input')"
-              />
-            </div>
+            <div class="bottom ff-num">{{ submitAmountDisplay }}</div>
           </div>
-          <div v-if="isBankRecharge && showFiatHints" class="fiat-hints">
-            <p class="fiat-rate-line">{{ fiatRateText }}</p>
-            <p v-if="fiatTransferDisplay" class="fiat-estimate">
-              <span class="fiat-est-label">{{ _t18('recharge_fiat_transfer') }}</span>
-              <span class="fiat-est-val ff-num">{{ fiatTransferDisplay }}</span>
-            </p>
+          <div v-if="showFeeHints" class="fee-hints">
+            <p class="fee-line">{{ _t18('withdraw_commission') }}: {{ feeRatioNum }}%</p>
+            <p class="fee-line ff-num">100U {{ _t18('Actual_amount_received') }}: {{ hundredNetAmount }}</p>
           </div>
         </template>
       </div>
@@ -123,34 +109,98 @@
       ></template>
       <template v-else>
         <div class="btn-wrap">
-          <div class="btn btn--primary" @click="submit">
-            <p>{{ _t18('recharge_require', ['bitmake']) }}</p>
+          <div class="btn btn--primary" @click="onIRecharged">
+            <p>{{ _t18('recharge_i_paid') }}</p>
           </div>
         </div>
       </template>
     </div>
+
+    <van-popup
+      v-model:show="showPendingPopup"
+      round
+      closeable
+      :close-on-click-overlay="false"
+      class="status-popup"
+      @close="onPendingClose"
+    >
+      <div class="status-panel">
+        <h3 class="status-title">{{ _t18('recharge_waiting_confirm') }}</h3>
+        <div class="progress-wrap">
+          <div class="progress-ring" :style="{ '--rate': `${pendingPercent}%` }"></div>
+          <p class="status-rate">{{ pendingPercent }}%</p>
+        </div>
+        <p class="status-sub">{{ _t18('recharge_usually_need') }} {{ remainMinute }} {{ _t18('minute') }}</p>
+        <div class="status-tipbox">
+          <p>{{ _t18('recharge_waiting_tip_1') }}</p>
+          <p>{{ _t18('recharge_waiting_tip_2') }}</p>
+          <p>{{ _t18('recharge_waiting_tip_3') }}</p>
+        </div>
+      </div>
+    </van-popup>
+
+    <van-popup
+      v-model:show="showSuccessPopup"
+      round
+      :close-on-click-overlay="false"
+      class="status-popup status-popup--small"
+    >
+      <div class="status-panel status-panel--center">
+        <div class="success-hero">
+          <div class="ok-icon">✓</div>
+          <h3 class="status-title success-title">{{ _t18('recharge_success') }}</h3>
+          <p class="status-sub success-sub">{{ _t18('recharge_success_back_home') }}</p>
+        </div>
+        <div class="status-success-detail success-card">
+          <p class="status-success-line">
+            <span>{{ _t18('Actual_amount_received') }}</span>
+            <span class="ff-num">{{ successReceivedDisplay }}</span>
+          </p>
+          <p class="status-success-line">
+            <span>{{ _t18('Arrival_time') }}</span>
+            <span class="ff-num">{{ successArriveTimeDisplay }}</span>
+          </p>
+        </div>
+        <div class="btn btn--primary status-btn" @click="goHome">
+          <p>{{ _t18('back_home') }}</p>
+        </div>
+      </div>
+    </van-popup>
+
+    <van-popup
+      v-model:show="showTimeoutPopup"
+      round
+      :close-on-click-overlay="false"
+      class="status-popup status-popup--small"
+    >
+      <div class="status-panel status-panel--center">
+        <h3 class="status-title">{{ _t18('recharge_timeout_title') }}</h3>
+        <p class="status-sub">{{ _t18('recharge_timeout_desc') }}</p>
+        <p class="status-link" @click="contactService">{{ _t18('custorm_service') }}</p>
+        <div class="btn btn--primary status-btn" @click="goHome">
+          <p>{{ _t18('back_home') }}</p>
+        </div>
+      </div>
+    </van-popup>
   </div>
 </template>
 
 <script setup>
-import { rechargeSubmit } from '@/api/account.js'
-import { _toView, _t18, _getConfig, _numberWithCommas } from '@/utils/public'
+import { getRechargeDetail, getRechargeList } from '@/api/account.js'
+import { _t18, _getConfig } from '@/utils/public'
 import { priceFormat } from '@/utils/decimal'
 import QRCode from '@/components/common/QRCode/index.vue'
 import Copy from '@/components/common/Copy/index.vue'
 import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import rechargeApplyBg from '@/assets/images/recharge-apply-bg.png'
-import { showToast } from 'vant'
-import { debounce } from 'lodash'
 import { useToast } from '@/hook/useToast'
 import { useCopy } from '@/hook/useCopy'
 import { useRouter, useRoute } from 'vue-router'
 import { useMainStore } from '@/store'
-import { reactive, computed, ref, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { dispatchCustomEvent } from '@/utils'
+import { reactive, computed, ref, watch, onUnmounted } from 'vue'
 import { normalizeRechargeAddressFromApi } from '@/utils/rechargeAddress'
-
-const { t } = useI18n()
+import { formatLocalTime } from '@/utils/time'
 
 const { _toast } = useToast()
 const { _copy } = useCopy()
@@ -166,47 +216,127 @@ const tipList = reactive([
   { content: _t18('recharge_tip4') }
 ])
 const tipList2 = reactive([{ content: _t18('recharge_tip5') }])
-const num = ref('')
+const submitAmount = computed(() => {
+  const n = Number(route.query.amount)
+  return Number.isFinite(n) && n > 0 ? n : 0
+})
 
-const submit = debounce(() => {
-  const needAmount = isBankRecharge.value || !['coinsexpto'].includes(__config._APP_ENV)
-  if (needAmount && num.value == '') {
+const submitAmountDisplay = computed(() => {
+  const suffix = route.query?.coin?.toString().toUpperCase() || ''
+  return `${priceFormat(submitAmount.value)}${suffix ? ` ${suffix}` : ''}`
+})
+
+const queryOrderId = computed(() => String(route.query.orderId || '').trim())
+const showPendingPopup = ref(false)
+const showSuccessPopup = ref(false)
+const showTimeoutPopup = ref(false)
+const successReceived = ref('')
+const successArriveTime = ref('')
+const elapsedSeconds = ref(0)
+const polling = ref(false)
+let pollingTimer = null
+
+const pendingPercent = computed(() => Math.min(100, Math.floor((elapsedSeconds.value / 180) * 100)))
+const remainMinute = computed(() => Math.max(1, Math.ceil((180 - elapsedSeconds.value) / 60)))
+
+const stopPolling = () => {
+  polling.value = false
+  if (pollingTimer) {
+    clearInterval(pollingTimer)
+    pollingTimer = null
+  }
+}
+
+const resolveByListFallback = async () => {
+  const res = await getRechargeList('pageNum=1&pageSize=10')
+  if (res.code != '200' && res.code != 200) return null
+  const rows = res.rows || []
+  const wantType = String(route.query.type || '').toUpperCase()
+  const wantAmount = Number(submitAmount.value)
+  return (
+    rows.find((item) => {
+      const typeMatch = String(item?.type || '').toUpperCase() === wantType
+      const amt = Number(item?.amount)
+      const amountMatch = Number.isFinite(amt) && Number.isFinite(wantAmount) ? Math.abs(amt - wantAmount) < 1e-8 : true
+      return typeMatch && amountMatch
+    }) || rows[0] || null
+  )
+}
+
+const fetchOrderStatus = async () => {
+  if (queryOrderId.value) {
+    const detailRes = await getRechargeDetail(queryOrderId.value)
+    if (detailRes.code == '200' || detailRes.code == 200) {
+      return detailRes.data || null
+    }
+  }
+  return resolveByListFallback()
+}
+
+const onPendingClose = () => {
+  stopPolling()
+  showPendingPopup.value = false
+}
+
+const onPollingTimeout = () => {
+  stopPolling()
+  showPendingPopup.value = false
+  showTimeoutPopup.value = true
+}
+
+const onIRecharged = async () => {
+  if (submitAmount.value <= 0) {
     _toast('recharge_num')
+    router.push(`/recharge-amount?type=${route.query.type || ''}&coin=${route.query.coin || ''}`)
     return
   }
-  const payAddress = isBankRecharge.value
-    ? (rechargeObj.value?.bankCardNo ?? '')
-    : address.value
-  let params = {}
-  if (needAmount) {
-    params = {
-      amount: priceFormat(num.value),
-      type: route.query.type,
-      coin: route.query.coin,
-      filePath: '',
-      address: payAddress
+  if (polling.value) return
+  showTimeoutPopup.value = false
+  showSuccessPopup.value = false
+  showPendingPopup.value = true
+  elapsedSeconds.value = 0
+  polling.value = true
+
+  const checkOnce = async () => {
+    if (!polling.value) return
+    const order = await fetchOrderStatus()
+    const status = Number(order?.status)
+    if (status === 1) {
+      const receivedRaw = order?.realAmount ?? order?.amount ?? order?.params?.amount ?? ''
+      successReceived.value = receivedRaw
+      const tRaw = order?.params?.createTime ?? order?.createTime ?? order?.updateTime ?? ''
+      successArriveTime.value = tRaw
+      stopPolling()
+      showPendingPopup.value = false
+      showSuccessPopup.value = true
+      return
     }
-  } else {
-    params = {
-      amount: 0,
-      type: route.query.type,
-      coin: route.query.coin,
-      address: payAddress
+    if (status === 2) {
+      onPollingTimeout()
     }
   }
 
-  rechargeSubmit(params).then((res) => {
-    if (res.code == '200') {
-      _toast('recharge_success')
-      num.value = ''
-      setTimeout(() => {
-        _toView('/recharge-order')
-      }, 500)
-    } else {
-      showToast(res.msg)
+  await checkOnce()
+  pollingTimer = setInterval(async () => {
+    if (!polling.value) return
+    elapsedSeconds.value += 2
+    if (elapsedSeconds.value >= 180) {
+      onPollingTimeout()
+      return
     }
-  })
-}, 500)
+    await checkOnce()
+  }, 2000)
+}
+
+const goHome = () => {
+  showSuccessPopup.value = false
+  showTimeoutPopup.value = false
+  router.push('/')
+}
+
+const contactService = () => {
+  dispatchCustomEvent('event_serviceChange')
+}
 
 const mainStore = useMainStore()
 
@@ -228,6 +358,12 @@ watch(
   { immediate: true }
 )
 
+watch(showPendingPopup, (visible) => {
+  if (!visible) {
+    stopPolling()
+  }
+})
+
 const address = computed(() => {
   if (isBankRecharge.value) return rechargeObj.value?.coinAddress ?? ''
   const key = route.query.type
@@ -235,25 +371,27 @@ const address = computed(() => {
   return fromMap || rechargeObj.value?.coinAddress || ''
 })
 
-const fiatPerUsdtNum = computed(() => {
-  const n = Number(rechargeObj.value?.fiatPerUsdt)
-  return Number.isFinite(n) && n > 0 ? n : null
+const feeRatioNum = computed(() => {
+  const n = Number(rechargeObj.value?.rechargeFeeRatio)
+  return Number.isFinite(n) && n > 0 ? n : 0
 })
-const showFiatHints = computed(() => isBankRecharge.value && fiatPerUsdtNum.value != null)
-const fiatCurrency = computed(() => String(rechargeObj.value?.fiatCurrency || 'IDR'))
-const fiatRateText = computed(() => {
-  if (!showFiatHints.value || fiatPerUsdtNum.value == null) return ''
-  return t('withdraw_rate_line', {
-    currency: fiatCurrency.value,
-    rate: _numberWithCommas(fiatPerUsdtNum.value)
-  })
+const showFeeHints = computed(() => feeRatioNum.value > 0)
+const hundredNetAmount = computed(() => {
+  const net = 100 * (1 - feeRatioNum.value / 100)
+  return `${priceFormat(net)} U`
 })
-const fiatTransferDisplay = computed(() => {
-  if (!showFiatHints.value || fiatPerUsdtNum.value == null) return ''
-  const qty = Number(num.value)
-  if (!Number.isFinite(qty) || qty <= 0) return ''
-  const fiat = Math.round(qty * fiatPerUsdtNum.value)
-  return `${fiatCurrency.value} ${_numberWithCommas(fiat)}`
+const successReceivedDisplay = computed(() => {
+  if (successReceived.value === '' || successReceived.value == null) return '--'
+  const suffix = route.query?.coin?.toString().toUpperCase() || ''
+  return `${priceFormat(successReceived.value)}${suffix ? ` ${suffix}` : ''}`
+})
+const successArriveTimeDisplay = computed(() => {
+  if (!successArriveTime.value) return '--'
+  return formatLocalTime(successArriveTime.value)
+})
+
+onUnmounted(() => {
+  stopPolling()
 })
 </script>
 
@@ -353,51 +491,15 @@ const fiatTransferDisplay = computed(() => {
     line-height: 1.45;
   }
 
-  .fiat-hints {
+  .fee-hints {
     margin: -4px 0 4px;
   }
 
-  .fiat-rate-line {
+  .fee-line {
     margin: 0 0 8px;
     font-size: 13px;
     color: #646566;
     line-height: 1.5;
-  }
-
-  .fiat-estimate {
-    margin: 0;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 6px;
-    font-size: 13px;
-    color: #323233;
-    line-height: 1.5;
-  }
-
-  .fiat-est-label {
-    color: #969799;
-  }
-
-  .num .bottom {
-    border: 1px solid #ebedf0;
-    padding: 12px;
-    border-radius: 8px;
-    background: #fff;
-
-    input {
-      width: 100%;
-      border: none;
-      font-size: 15px;
-      color: #323233;
-      background: transparent;
-      outline: none;
-    }
-
-    input::placeholder {
-      color: #c8c9cc;
-      font-size: 14px;
-    }
   }
 }
 
@@ -430,5 +532,146 @@ const fiatTransferDisplay = computed(() => {
   .tip {
     margin-bottom: 12px;
   }
+}
+
+.status-popup {
+  width: calc(100vw - 56px);
+  max-width: 360px;
+}
+
+.status-popup--small {
+  max-width: 320px;
+}
+
+.status-panel {
+  padding: 18px 16px 20px;
+}
+
+.status-panel--center {
+  text-align: center;
+}
+
+.status-title {
+  margin: 0 0 14px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #323233;
+}
+
+.progress-wrap {
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 12px;
+  position: relative;
+}
+
+.progress-ring {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: conic-gradient(#17ac74 var(--rate), #ececec 0);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #000 calc(100% - 8px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #000 calc(100% - 8px));
+}
+
+.status-rate {
+  margin: 0;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 700;
+  color: #323233;
+}
+
+.status-sub {
+  margin: 0 0 14px;
+  text-align: center;
+  font-size: 14px;
+  color: #646566;
+}
+
+.status-tipbox {
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ebedf0;
+  background: #fafafa;
+  font-size: 13px;
+  color: #646566;
+  line-height: 1.6;
+}
+
+.ok-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 12px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #17ac74 0%, #24c484 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  font-weight: 700;
+  box-shadow: 0 8px 20px rgba(23, 172, 116, 0.28);
+}
+
+.status-btn {
+  margin-top: 10px;
+}
+
+.status-success-detail {
+  margin: 0 0 8px;
+  padding: 10px 12px;
+  border: 1px solid #ebedf0;
+  border-radius: 10px;
+  background: #fafafa;
+}
+
+.success-hero {
+  margin-bottom: 10px;
+}
+
+.success-title {
+  margin-bottom: 8px;
+}
+
+.success-sub {
+  margin-bottom: 12px;
+}
+
+.success-card {
+  border-color: #dff3e8;
+  background: linear-gradient(180deg, #f7fcf9 0%, #ffffff 100%);
+}
+
+.status-success-line {
+  margin: 0 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #646566;
+  font-size: 13px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  span:last-child {
+    font-weight: 600;
+    color: #323233;
+  }
+}
+
+.status-link {
+  margin: 0 0 10px;
+  text-align: center;
+  color: #17ac74;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 </style>

@@ -7,6 +7,12 @@ export default [
   },
   // 充值申请
   {
+    path: '/recharge-amount',
+    name: 'RechargeAmount',
+    component: () => import('@/views/assets/recharge/recharge-amount.vue')
+  },
+  // 充值申请
+  {
     path: '/recharge-apply',
     name: 'RechargeApply',
     component: () => import('@/views/assets/recharge/recharge-apply.vue')
