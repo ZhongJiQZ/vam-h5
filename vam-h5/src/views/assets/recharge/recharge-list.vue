@@ -38,7 +38,7 @@ const toClick = (item) => {
     type: String(item.title ?? ''),
     coin: String(item.coin ?? item.icon ?? '')
   })
-  router.push(`/recharge-apply?${q.toString()}`)
+  router.push(`/recharge-amount?${q.toString()}`)
 }
 </script>
 
