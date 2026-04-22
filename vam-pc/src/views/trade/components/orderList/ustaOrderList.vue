@@ -914,15 +914,8 @@ export default {
 ::v-deep.readInput .el-input__inner {
   background: #f1f1f1;
 }
-<<<<<<< HEAD
-.usta_his_pagination {
-  display: flex;
-  justify-content: flex-end;
-  padding: 12px 0 8px;
-=======
 .order_list_pagination {
   margin-top: 12px;
   text-align: right;
->>>>>>> main
 }
 </style>
