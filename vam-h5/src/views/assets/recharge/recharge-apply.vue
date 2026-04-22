@@ -416,7 +416,12 @@ const hundredNetAmount = computed(() => {
 const successReceivedDisplay = computed(() => {
   if (successReceived.value === '' || successReceived.value == null) return '--'
   const suffix = route.query?.coin?.toString().toUpperCase() || ''
-  return `${priceFormat(successReceived.value)}${suffix ? ` ${suffix}` : ''}`
+  const n = Number(successReceived.value)
+  let amountText = priceFormat(successReceived.value)
+  if (Number.isFinite(n) && suffix === 'USDT') {
+    amountText = n.toFixed(2)
+  }
+  return `${amountText}${suffix ? ` ${suffix}` : ''}`
 })
 const successArriveTimeDisplay = computed(() => {
   if (!successArriveTime.value) return '--'
