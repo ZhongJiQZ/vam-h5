@@ -9,6 +9,7 @@ import { debounce } from 'lodash'
 import { getCollect } from '@/api/trade/index'
 
 import { _t18 } from '@/utils/public'
+import { normalizeRechargeAddressFromApi } from '@/utils/rechargeAddress'
 
 export const useMainStore = defineStore('main', {
   state: () => {
@@ -275,19 +276,23 @@ export const useMainStore = defineStore('main', {
      */
     getUserRechageNewDebounce: debounce(
       async function (self) {
-        let promiseList = []
-        self.settingConfig.ASSET_COIN.map((elem) => {
-          if (self.userRechageMap[elem.coinName] == undefined) {
-            promiseList.push(getUserRechageNewApi(elem.coin, elem.coinName))
-          }
+        const list = self.settingConfig.ASSET_COIN || []
+        const toFetch = list.filter((elem) => {
+          const v = self.userRechageMap[elem.coinName]
+          return v == undefined || (typeof v === 'object' && v !== null)
         })
-        if (promiseList.length) {
-          Promise.all(promiseList).then((res) => {
-            self.settingConfig.ASSET_COIN.forEach((elem, index) => {
-              self.userRechageMap[elem.coinName] = res[index]['data'][elem.coinName] || ''
-            })
-          })
-        }
+        if (!toFetch.length) return
+        const responses = await Promise.all(
+          toFetch.map((elem) => getUserRechageNewApi(elem.coin, elem.coinName))
+        )
+        toFetch.forEach((elem, idx) => {
+          const r = responses[idx]
+          const raw = r?.data?.[elem.coinName] ?? r?.data
+          self.userRechageMap[elem.coinName] = normalizeRechargeAddressFromApi(
+            raw,
+            elem.coinName
+          )
+        })
       },
       5000,
       { leading: true, trailing: false }

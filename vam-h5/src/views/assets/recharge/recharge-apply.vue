@@ -146,8 +146,9 @@ import { useToast } from '@/hook/useToast'
 import { useCopy } from '@/hook/useCopy'
 import { useRouter, useRoute } from 'vue-router'
 import { useMainStore } from '@/store'
-import { reactive, computed, ref } from 'vue'
+import { reactive, computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { normalizeRechargeAddressFromApi } from '@/utils/rechargeAddress'
 
 const { t } = useI18n()
 
@@ -215,7 +216,24 @@ const rechargeObj = computed(() =>
 const isBankRecharge = computed(() =>
   Boolean(rechargeObj.value?.bankCardNo && rechargeObj.value?.bankName)
 )
-const address = computed(() => rechargeObj.value?.coinAddress ?? '')
+
+function ensureUserRechargeAddresses() {
+  if (isBankRecharge.value) return
+  mainStore.getUserRechageNew()
+}
+
+watch(
+  [() => route.query.coin, () => route.query.type, isBankRecharge],
+  ensureUserRechargeAddresses,
+  { immediate: true }
+)
+
+const address = computed(() => {
+  if (isBankRecharge.value) return rechargeObj.value?.coinAddress ?? ''
+  const key = route.query.type
+  const fromMap = key ? normalizeRechargeAddressFromApi(mainStore.userRechageMap[key], key) : ''
+  return fromMap || rechargeObj.value?.coinAddress || ''
+})
 
 const fiatPerUsdtNum = computed(() => {
   const n = Number(rechargeObj.value?.fiatPerUsdt)
