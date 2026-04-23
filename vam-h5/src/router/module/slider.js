@@ -54,6 +54,12 @@ export default [
     path: '/term-service',
     name: 'TermService',
     component: TermService
+  },
+  // 白皮书
+  {
+    path: '/white-paper',
+    name: 'WhitePaper',
+    component: () => import('@/views/slidebar/white-paper.vue')
   }, // 语言
 
   {
