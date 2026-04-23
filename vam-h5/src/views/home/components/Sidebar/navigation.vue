@@ -126,7 +126,11 @@ const getWhitePaper = async () => {
   }
 }
 const toView = (item) => {
-  if (item.jumpType == 'link' && (item.key == 'paper' || item.key == 'aboutUS')) {
+  if (item.key == 'paper') {
+    router.push('/white-paper')
+  }
+
+  if (item.jumpType == 'link' && item.key == 'aboutUS') {
     window.open(paperUrl.value)
   } else if (item.jumpType == 'path') {
     // _toView(item.jumpUrl)
@@ -152,7 +156,7 @@ const toView = (item) => {
     } else {
       router.push(item.jumpUrl)
     }
-  }
+  } 
 }
 </script>
 <style lang="scss" scoped>
