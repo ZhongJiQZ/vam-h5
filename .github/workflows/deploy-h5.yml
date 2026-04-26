@@ -20,7 +20,7 @@ jobs:
     defaults:
       run:
         working-directory: vam-h5
-    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.deploy == 'true')
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     environment: production
     env:
       DEPLOY_SSH_KEY: ${{ secrets.TEST_KEY }}
