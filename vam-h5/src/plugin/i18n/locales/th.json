@@ -655,6 +655,7 @@
   "recharge_input": "กรุณาใส่",
   "recharge_imgUpload": "อัปโหลดภาพหน้าจอรายละเอียดการชำระเงิน",
   "recharge_require": "ยืนยันการเติม",
+  "recharge_submitting": "กำลังดำเนินการเติมเงิน...",
   "recharge_num": "กรุณาใส่จำนวนที่เติม",
   "recharge_img": "กรุณาอัปโหลดภาพหน้าจอ",
   "recharge_img_load": "กำลังอัปโหลดภาพ กรุณารอสักครู่",

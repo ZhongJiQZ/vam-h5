@@ -655,6 +655,7 @@
   "recharge_input": "入力してください",
   "recharge_imgUpload": "支払い詳細のスクリーンショットをアップロード",
   "recharge_require": "入金を確認",
+  "recharge_submitting": "入金処理中...",
   "recharge_num": "入金額を入力してください",
   "recharge_img": "スクリーンショットをアップロードしてください",
   "recharge_img_load": "画像アップロード中です。しばらくお待ちください",

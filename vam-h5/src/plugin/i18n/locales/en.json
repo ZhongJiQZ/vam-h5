@@ -656,6 +656,7 @@
   "recharge_input": "Please enter ",
   "recharge_imgUpload": "Upload screenshot of payment details",
   "recharge_require": "Confirm Deposit",
+  "recharge_submitting": "Processing deposit...",
   "recharge_num": "Please fill in the Deposit quantity",
   "recharge_img": "Please upload screenshots",
   "recharge_img_load": "The image is being uploaded, please try again later",

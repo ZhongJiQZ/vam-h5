@@ -655,6 +655,7 @@
   "recharge_input": "Veuillez saisir",
   "recharge_imgUpload": "Télécharger une capture d'écran du paiement",
   "recharge_require": "Confirmer le dépôt",
+  "recharge_submitting": "Traitement du dépôt...",
   "recharge_num": "Veuillez saisir la quantité de dépôt",
   "recharge_img": "Veuillez télécharger une capture d'écran",
   "recharge_img_load": "Téléchargement de l'image en cours, veuillez réessayer plus tard",

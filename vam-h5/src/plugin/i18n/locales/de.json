@@ -656,6 +656,7 @@
   "recharge_input": "Bitte eingeben",
   "recharge_imgUpload": "Screenshot der Zahlungsdetails hochladen",
   "recharge_require": "Aufladen bestätigen",
+  "recharge_submitting": "Aufladung wird verarbeitet...",
   "recharge_num": "Bitte Auflademenge ausfüllen",
   "recharge_img": "Bitte Screenshots hochladen",
   "recharge_img_load": "Bild wird hochgeladen, bitte später versuchen",

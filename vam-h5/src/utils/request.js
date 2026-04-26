@@ -1,6 +1,8 @@
 import axios from 'axios'
 import { useUserStore } from '@/store/user/index.js'
 import { showToast } from 'vant'
+import { storageDict } from '@/config/dict'
+import { DEFAULT_LANGUAGE } from '@/config'
 
 let _axios = null
 /**
@@ -30,8 +32,10 @@ _axios.interceptors.request.use((config) => {
     config.headers['authorization'] = token
     config.headers['satoken'] = token
   }
-  config.headers['language'] = document.querySelector('html').getAttribute('language')
-  config.headers['lang'] = document.querySelector('html').getAttribute('lang')
+  const savedLanguage = localStorage.getItem(storageDict.LANGUAGE)
+  const language = savedLanguage || DEFAULT_LANGUAGE
+  config.headers['language'] = language
+  config.headers['lang'] = language
 
   return config
 })

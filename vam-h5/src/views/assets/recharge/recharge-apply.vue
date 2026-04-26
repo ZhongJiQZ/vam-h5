@@ -123,8 +123,11 @@
       ></template>
       <template v-else>
         <div class="btn-wrap">
-          <div class="btn btn--primary" @click="submit">
-            <p>{{ _t18('recharge_require', ['bitmake']) }}</p>
+          <div class="btn btn--primary" :class="{ 'btn--loading': submitting }" @click="submit">
+            <p>
+              <span v-if="submitting" class="btn-loading-spinner" aria-hidden="true"></span>
+              {{ submitting ? _t18('recharge_submitting') : _t18('recharge_require', ['bitmake']) }}
+            </p>
           </div>
         </div>
       </template>
@@ -167,8 +170,10 @@ const tipList = reactive([
 ])
 const tipList2 = reactive([{ content: _t18('recharge_tip5') }])
 const num = ref('')
+const submitting = ref(false)
 
 const submit = debounce(() => {
+  if (submitting.value) return
   const needAmount = isBankRecharge.value || !['coinsexpto'].includes(__config._APP_ENV)
   if (needAmount && num.value == '') {
     _toast('recharge_num')
@@ -195,17 +200,27 @@ const submit = debounce(() => {
     }
   }
 
-  rechargeSubmit(params).then((res) => {
-    if (res.code == '200') {
-      _toast('recharge_success')
-      num.value = ''
-      setTimeout(() => {
-        _toView('/recharge-order')
-      }, 500)
-    } else {
-      showToast(res.msg)
-    }
-  })
+  submitting.value = true
+  rechargeSubmit(params)
+    .then((res) => {
+      if (res.code == '200') {
+        _toast('recharge_success')
+        num.value = ''
+        // setTimeout(() => {
+        //   _toView('/recharge-order')
+        // }, 500)
+        if (res.data.payUrl) {
+          window.location.href = res.data.payUrl
+        } else {
+          _toView('/recharge-order')
+        }
+      } else {
+        showToast(res.msg)
+      }
+    })
+    .finally(() => {
+      submitting.value = false
+    })
 }, 500)
 
 const mainStore = useMainStore()
@@ -418,6 +433,30 @@ const fiatTransferDisplay = computed(() => {
     color: #fff;
     background: #05101a;
     font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+}
+
+.btn--loading {
+  pointer-events: none;
+  opacity: 0.92;
+}
+
+.btn-loading-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.38);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: btn-spin 0.7s linear infinite;
+}
+
+@keyframes btn-spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 

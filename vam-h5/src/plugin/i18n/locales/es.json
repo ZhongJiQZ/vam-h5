@@ -655,6 +655,7 @@
   "recharge_input": "Por favor ingresa",
   "recharge_imgUpload": "Subir captura de pantalla de detalles de pago",
   "recharge_require": "Confirmar recarga",
+  "recharge_submitting": "Procesando recarga...",
   "recharge_num": "Por favor completa la cantidad de recarga",
   "recharge_img": "Por favor sube capturas de pantalla",
   "recharge_img_load": "La imagen se está subiendo, por favor intenta de nuevo más tarde",
