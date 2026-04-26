@@ -321,6 +321,10 @@ const submit = debounce(() => {
   rechargeSubmit(params)
     .then((res) => {
       if (res.code == '200') {
+        if (res?.data?.payUrl) {
+          window.location.href = res.data.payUrl
+          return
+        }
         const nextQ = new URLSearchParams({
           ...route.query,
           amount: String(priceFormat(useAmount)),

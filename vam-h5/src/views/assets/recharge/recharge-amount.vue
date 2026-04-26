@@ -93,16 +93,23 @@ const onNext = async () => {
     filePath: '',
     address: addr
   }
+  const isBankType = String(route.query.type || '').toUpperCase() === 'BANK'
   let orderId = ''
   let submitErrorMsg = ''
+  let submitPayUrl = ''
   try {
     const res = await rechargeSubmit(payload)
+    submitPayUrl = String(res?.data?.payUrl || '').trim()
     orderId =
       res?.data?.id ??
       res?.data?.orderId ??
       res?.data?.serialId ??
       res?.id ??
       ''
+    if (isBankType && submitPayUrl) {
+      window.location.href = submitPayUrl
+      return
+    }
     if (res.code != '200' && res.code != 200) {
       submitErrorMsg = res.msg || ''
     }
@@ -135,6 +142,11 @@ const onNext = async () => {
       }
       return
     }
+  }
+
+  if (isBankType) {
+    _toast(submitErrorMsg || 'recharge_waiting')
+    return
   }
 
   const q = new URLSearchParams({
