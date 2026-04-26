@@ -49,7 +49,7 @@
             }}
           </p>
           <p class="right fontBold fw-num" :class="{ 'amount-highlight': cardLayout }">
-            {{ priceFormat(dataValue.amount) }}
+            {{ defaultAmountDisplay }}
           </p>
         </div>
       </template>
@@ -108,6 +108,13 @@ const props = defineProps({
   }
 })
 const dataValue = computed(() => props.data)
+const isAssetRecordRoute = computed(() => router.currentRoute.value.name === 'AssetRecord')
+
+const fiatPrefix = (coin) => {
+  const c = String(coin || '').toUpperCase()
+  if (c === 'IDR') return 'Rp'
+  return c || 'Rp'
+}
 
 const showWithdrawBankFiat = computed(() => {
   if (!props.cardLayout) return false
@@ -126,6 +133,19 @@ const receiptFiatDisplay = computed(() => {
   const n = Number(raw)
   if (!Number.isFinite(n)) return `${coin} ${raw}`.trim()
   return `${coin} ${_numberWithCommas(n)}`
+})
+
+const defaultAmountDisplay = computed(() => {
+  const d = dataValue.value
+  const isBank = String(d?.type || '').toUpperCase() === 'BANK'
+  if (!isAssetRecordRoute.value || !isBank) {
+    return priceFormat(d?.amount)
+  }
+  const raw = d?.receiptAmount ?? d?.amount
+  const n = Number(raw)
+  const prefix = fiatPrefix(d?.receiptCoin)
+  if (!Number.isFinite(n)) return `${prefix} ${raw ?? ''}`.trim()
+  return `${prefix} ${_numberWithCommas(n)}`
 })
 
 const toDetail = (data) => {

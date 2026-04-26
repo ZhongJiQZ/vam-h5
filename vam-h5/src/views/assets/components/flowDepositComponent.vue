@@ -39,7 +39,7 @@
 
                 <div class="row">
                   <div class="k">{{ _t18('assets.amount') }}</div>
-                  <div class="v">{{ item.amount }} {{ item.coin.toUpperCase() }}</div>
+                  <div class="v">{{ formatRecordAmount(item) }}</div>
                 </div>
 
                 <div class="row">
@@ -72,7 +72,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import Tab from '@/components/Tab/index.vue'
-import { _t18 } from '@/utils/public'
+import { _t18, _numberWithCommas } from '@/utils/public'
 
 // ✅ 用你真实的投资记录接口替换这里
 // 例：import { getRecordList } from '@/api/assets'
@@ -106,6 +106,23 @@ const pageNum = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
 const tabContentList = ref([])
+
+const fiatPrefix = (coin) => {
+  const c = String(coin || '').toUpperCase()
+  if (c === 'IDR') return 'Rp'
+  return c || 'Rp'
+}
+
+const formatRecordAmount = (item) => {
+  const isBank = String(item?.type || '').toUpperCase() === 'BANK'
+  if (!isBank) {
+    return `${item?.amount ?? '-'} ${(item?.coin || '').toUpperCase()}`.trim()
+  }
+  const raw = item?.receiptAmount ?? item?.amount
+  const n = Number(raw)
+  const fiat = Number.isFinite(n) ? _numberWithCommas(n) : raw
+  return `${fiatPrefix(item?.receiptCoin)} ${fiat}`
+}
 
 const buildParams = () => {
   let params = `pageNum=${pageNum.value}&pageSize=${pageSize.value}`
