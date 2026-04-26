@@ -58,7 +58,7 @@ export const useUserStore = defineStore('user', {
         this.$reset()
         const accountStore = useAccountStore()
         accountStore && accountStore.$reset()
-        router.replace('/')
+        router.replace('/sign-in')
         
       } catch (error) {}
     },
