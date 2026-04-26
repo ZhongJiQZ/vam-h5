@@ -656,6 +656,7 @@
   "recharge_input": "请输入",
   "recharge_imgUpload": "上传支付详情截图",
   "recharge_require": "确认充值",
+  "recharge_submitting": "正在充值...",
   "recharge_num": "请填写充值数量",
   "recharge_img": "请上传截图",
   "recharge_img_load": "图片上传中,稍后重试",

@@ -655,6 +655,7 @@
   "recharge_input": "입력하세요",
   "recharge_imgUpload": "결제 내역 스크린샷 업로드",
   "recharge_require": "입금 확인",
+  "recharge_submitting": "입금 처리 중...",
   "recharge_num": "입금 수량을 입력하세요",
   "recharge_img": "스크린샷을 업로드해 주세요",
   "recharge_img_load": "이미지 업로드 중입니다. 잠시만 기다려 주세요",

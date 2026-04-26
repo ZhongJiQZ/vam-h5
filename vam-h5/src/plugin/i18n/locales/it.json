@@ -655,6 +655,7 @@
   "recharge_input": "Inserisci",
   "recharge_imgUpload": "Carica screenshot dettagli pagamento",
   "recharge_require": "Conferma ricarica",
+  "recharge_submitting": "Ricarica in corso...",
   "recharge_num": "Inserisci quantità ricarica",
   "recharge_img": "Carica screenshot",
   "recharge_img_load": "Immagine in caricamento, riprova più tardi",

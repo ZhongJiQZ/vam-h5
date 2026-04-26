@@ -655,6 +655,7 @@
   "recharge_input": "Vui lòng nhập",
   "recharge_imgUpload": "Tải lên ảnh chụp màn hình chi tiết thanh toán",
   "recharge_require": "Xác nhận nạp",
+  "recharge_submitting": "Đang xử lý nạp tiền...",
   "recharge_num": "Vui lòng điền số lượng nạp",
   "recharge_img": "Vui lòng tải lên ảnh chụp màn hình",
   "recharge_img_load": "Đang tải ảnh lên, vui lòng thử lại sau",

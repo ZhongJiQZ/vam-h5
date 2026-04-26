@@ -656,6 +656,7 @@
   "recharge_input": "Masukkan",
   "recharge_imgUpload": "Unggah bukti transfer",
   "recharge_require": "Konfirmasi Deposit",
+  "recharge_submitting": "Memproses deposit...",
   "recharge_num": "Masukkan jumlah deposit",
   "recharge_img": "Unggah bukti transfer",
   "recharge_img_load": "Sedang mengunggah gambar, silakan tunggu",
