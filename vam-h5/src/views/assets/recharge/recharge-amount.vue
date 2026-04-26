@@ -11,15 +11,20 @@
           </div>
         </div>
         <div class="field">
-          <p class="label">{{ _t18('recharge_number', ['bitmake']) }}</p>
-          <div class="input-box">
+          <p class="label">
+            {{ _t18('recharge_number', ['bitmake']) }}
+            <span v-if="showFiatMode" class="rate-pill">1={{ _numberWithCommas(fiatRateNum) }}</span>
+          </p>
+          <div class="input-box" :class="{ 'input-box--suffix': showFiatMode }">
             <input
               v-model="amount"
               type="number"
               class="ff-num"
               :placeholder="_t18('recharge_input')"
             />
+            <span v-if="showFiatMode" class="currency-suffix">{{ fiatCurrency }}</span>
           </div>
+          <p v-if="showFiatMode && approxUsdt" class="approx-line">≈ {{ approxUsdt }}</p>
         </div>
         <p class="mini-hint">{{ _t18('recharge_amount_confirm_hint') }}</p>
       </div>
@@ -37,7 +42,7 @@ import { rechargeSubmit, getRechargeList } from '@/api/account.js'
 import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import { useMainStore } from '@/store'
 import { useRoute, useRouter } from 'vue-router'
-import { _t18, filterCoin2 } from '@/utils/public'
+import { _t18, filterCoin2, _numberWithCommas } from '@/utils/public'
 import { useToast } from '@/hook/useToast'
 import { computed, ref, watch } from 'vue'
 import { priceFormat } from '@/utils/decimal'
@@ -58,6 +63,22 @@ const rechargeObj = computed(() =>
 const isBankRecharge = computed(() =>
   Boolean(rechargeObj.value?.bankCardNo && rechargeObj.value?.bankName)
 )
+const isBankType = computed(() => String(route.query.type || '').toUpperCase() === 'BANK')
+const fiatRateNum = computed(() => {
+  const n = Number(rechargeObj.value?.fiatPerUsdt)
+  return Number.isFinite(n) && n > 0 ? n : null
+})
+const fiatCurrency = computed(() =>
+  String(rechargeObj.value?.fiatCurrency || 'Rp').toUpperCase()
+)
+const showFiatMode = computed(() => isBankType.value && fiatRateNum.value != null)
+const approxUsdt = computed(() => {
+  if (!showFiatMode.value) return ''
+  const fiat = Number(amount.value)
+  if (!Number.isFinite(fiat) || fiat <= 0) return ''
+  const usdt = fiat / fiatRateNum.value
+  return `${priceFormat(usdt)} USDT`
+})
 const submitAddress = computed(() => {
   if (isBankRecharge.value) return rechargeObj.value?.bankCardNo ?? ''
   const key = route.query.type
@@ -86,14 +107,14 @@ const onNext = async () => {
     _toast('recharge_address_empty')
     return
   }
+  const submitUsdtAmount = showFiatMode.value ? val / fiatRateNum.value : val
   const payload = {
-    amount: priceFormat(val),
+    amount: priceFormat(submitUsdtAmount),
     type: route.query.type,
     coin: route.query.coin,
     filePath: '',
     address: addr
   }
-  const isBankType = String(route.query.type || '').toUpperCase() === 'BANK'
   let orderId = ''
   let submitErrorMsg = ''
   let submitPayUrl = ''
@@ -152,7 +173,7 @@ const onNext = async () => {
   const q = new URLSearchParams({
     type: String(route.query.type || ''),
     coin: String(route.query.coin || ''),
-    amount: String(priceFormat(val)),
+    amount: String(priceFormat(submitUsdtAmount)),
     orderId: String(orderId || '')
   })
   router.push(`/recharge-apply?${q.toString()}`)
@@ -210,6 +231,16 @@ const onNext = async () => {
   font-size: 13px;
   color: #969799;
   line-height: 1.4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.rate-pill {
+  color: #ee0a24;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .input-box {
@@ -227,6 +258,29 @@ const onNext = async () => {
     color: #323233;
     background: transparent;
   }
+}
+
+.input-box--suffix {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  input {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.currency-suffix {
+  color: #ee0a24;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.approx-line {
+  margin: 8px 2px 0;
+  font-size: 13px;
+  color: #646566;
 }
 
 .mini-hint {

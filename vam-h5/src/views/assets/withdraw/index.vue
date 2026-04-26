@@ -40,7 +40,7 @@ const coinList = computed(() => {
         obj.card = filterCoin2(item.rechargeType).toLocaleUpperCase()
         if (item.fiatPerUsdt != null && item.fiatPerUsdt !== '') {
           obj.fiatPerUsdt = item.fiatPerUsdt
-          obj.fiatCurrency = item.fiatCurrency || 'IDR'
+          obj.fiatCurrency = item.fiatCurrency || 'Rp'
         }
       }
       list.push(obj)

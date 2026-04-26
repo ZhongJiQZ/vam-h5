@@ -72,7 +72,7 @@ const toClick = (item) => {
       }
       if (item.icon === 'card' && item.fiatPerUsdt != null && item.fiatPerUsdt !== '') {
         params += `&fiatPerUsdt=${encodeURIComponent(item.fiatPerUsdt)}&fiatCurrency=${encodeURIComponent(
-          item.fiatCurrency || 'IDR'
+          item.fiatCurrency || 'Rp'
         )}`
       }
       setTimeout(() => {
