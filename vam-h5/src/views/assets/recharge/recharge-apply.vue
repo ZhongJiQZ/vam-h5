@@ -8,7 +8,7 @@
     />
 
     <div class="page-body">
-      <div v-if="!isBankRecharge" class="qr-section">
+      <div v-if="!isBankRecharge && !isChannelOnlyRecharge" class="qr-section">
         <div
           class="qr-bg"
           :style="{ backgroundImage: `url(${rechargeApplyBg})` }"
@@ -19,8 +19,8 @@
         </div>
       </div>
 
-      <div class="applyMes" :class="{ 'applyMes--noqr': isBankRecharge }">
-        <template v-if="isBankRecharge">
+      <div class="applyMes" :class="{ 'applyMes--noqr': isBankRecharge || isChannelOnlyRecharge }">
+        <template v-if="isBankRecharge && !isChannelOnlyRecharge">
           <div class="info-row">
             <p class="top">{{ _t18('bank_name') }}</p>
             <div class="bottom">{{ rechargeObj?.bankName }}</div>
@@ -46,7 +46,7 @@
             </div>
           </div>
         </template>
-        <div v-else class="address">
+        <div v-else-if="!isChannelOnlyRecharge" class="address">
           <p class="top">{{ _t18('recharge_address', ['bitmake']) }}({{ route.query.type }})</p>
           <div class="bottom">
             <Copy :data="address" :fontSize="'16px'">
@@ -64,11 +64,17 @@
             )
           "
         >
-          <div class="info-row">
+          <div v-if="!isChannelOnlyRecharge" class="info-row">
             <p class="top">
               {{ isBankRecharge ? _t18('recharge_amount_usdt') : _t18('recharge_number', ['bitmake']) }}
             </p>
             <div class="bottom ff-num">{{ submitAmountDisplay }}</div>
+          </div>
+          <div v-else class="num">
+            <p class="top">{{ _t18('recharge_number', ['bitmake']) }}</p>
+            <div class="bottom">
+              <input v-model="num" type="number" class="ff-num" :placeholder="_t18('recharge_input')" />
+            </div>
           </div>
           <div v-if="showFeeHints" class="fee-hints">
             <p class="fee-line">{{ _t18('withdraw_commission') }}: {{ feeRatioNum }}%</p>
@@ -107,10 +113,15 @@
       <template
         v-else-if="!isBankRecharge && ['aams', 'gmmoin'].includes(_getConfig('_APP_ENV'))"
       ></template>
-      <template v-else>
+      <template v-else-if="!isChannelOnlyRecharge">
         <div class="btn-wrap">
           <div class="btn btn--primary" @click="onIRecharged">
             <p>{{ _t18('recharge_i_paid') }}</p>
+          </div>
+        </div>
+      </template>
+      <template v-else>
+        <div class="btn-wrap">
           <div class="btn btn--primary" :class="{ 'btn--loading': submitting }" @click="submit">
             <p>
               <span v-if="submitting" class="btn-loading-spinner" aria-hidden="true"></span>
@@ -191,7 +202,7 @@
 </template>
 
 <script setup>
-import { getRechargeDetail, getRechargeList } from '@/api/account.js'
+import { getRechargeDetail, getRechargeList, rechargeSubmit } from '@/api/account.js'
 import { _t18, _getConfig } from '@/utils/public'
 import { priceFormat } from '@/utils/decimal'
 import QRCode from '@/components/common/QRCode/index.vue'
@@ -206,6 +217,7 @@ import { dispatchCustomEvent } from '@/utils'
 import { reactive, computed, ref, watch, onUnmounted } from 'vue'
 import { normalizeRechargeAddressFromApi } from '@/utils/rechargeAddress'
 import { formatLocalTime } from '@/utils/time'
+import { debounce } from 'lodash'
 
 const { _toast } = useToast()
 const { _copy } = useCopy()
@@ -284,11 +296,47 @@ const onPendingClose = () => {
 }
 const num = ref('')
 const submitting = ref(false)
+const isChannelOnlyRecharge = computed(() => {
+  const t = String(route.query?.type || '').toUpperCase()
+  if (t === 'BANK') return true
+  return Boolean(rechargeObj.value?.change && !rechargeObj.value?.bankCardNo)
+})
 
 const submit = debounce(() => {
   if (submitting.value) return
-  const needAmount = isBankRecharge.value || !['coinsexpto'].includes(__config._APP_ENV)
+  const needAmount = true
   if (needAmount && num.value == '') {
+    _toast('recharge_num')
+    return
+  }
+  submitting.value = true
+  const useAmount = Number(num.value)
+  const params = {
+    amount: priceFormat(useAmount),
+    type: route.query.type,
+    coin: route.query.coin,
+    filePath: '',
+    address: address.value || rechargeObj.value?.bankCardNo || ''
+  }
+  rechargeSubmit(params)
+    .then((res) => {
+      if (res.code == '200') {
+        const nextQ = new URLSearchParams({
+          ...route.query,
+          amount: String(priceFormat(useAmount)),
+          orderId: String(res?.data?.id || res?.data?.orderId || res?.data?.serialId || '')
+        })
+        router.replace(`/recharge-apply?${nextQ.toString()}`)
+        onIRecharged()
+      } else {
+        _toast(res.msg || 'error')
+      }
+    })
+    .finally(() => {
+      submitting.value = false
+    })
+}, 500)
+
 const onPollingTimeout = () => {
   stopPolling()
   showPendingPopup.value = false
@@ -344,29 +392,6 @@ const goHome = () => {
   showTimeoutPopup.value = false
   router.push('/')
 }
-
-  submitting.value = true
-  rechargeSubmit(params)
-    .then((res) => {
-      if (res.code == '200') {
-        _toast('recharge_success')
-        num.value = ''
-        // setTimeout(() => {
-        //   _toView('/recharge-order')
-        // }, 500)
-        if (res.data.payUrl) {
-          window.location.href = res.data.payUrl
-        } else {
-          _toView('/recharge-order')
-        }
-      } else {
-        showToast(res.msg)
-      }
-    })
-    .finally(() => {
-      submitting.value = false
-    })
-}, 500)
 const contactService = () => {
   dispatchCustomEvent('event_serviceChange')
 }
