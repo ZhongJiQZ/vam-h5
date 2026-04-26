@@ -107,9 +107,9 @@ const onNext = async () => {
     _toast('recharge_address_empty')
     return
   }
-  const submitUsdtAmount = showFiatMode.value ? val / fiatRateNum.value : val
+  const submitAmountValue = val
   const payload = {
-    amount: priceFormat(submitUsdtAmount),
+    amount: priceFormat(submitAmountValue),
     type: route.query.type,
     coin: route.query.coin,
     filePath: '',
@@ -173,7 +173,7 @@ const onNext = async () => {
   const q = new URLSearchParams({
     type: String(route.query.type || ''),
     coin: String(route.query.coin || ''),
-    amount: String(priceFormat(submitUsdtAmount)),
+    amount: String(priceFormat(submitAmountValue)),
     orderId: String(orderId || '')
   })
   router.push(`/recharge-apply?${q.toString()}`)
