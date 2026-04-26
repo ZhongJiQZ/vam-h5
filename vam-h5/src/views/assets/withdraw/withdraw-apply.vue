@@ -223,7 +223,7 @@ const fiatPerUsdtNum = computed(() => {
   const n = Number(route.query.fiatPerUsdt)
   return Number.isFinite(n) && n > 0 ? n : null
 })
-const fiatCurrency = computed(() => String(route.query.fiatCurrency || 'IDR'))
+const fiatCurrency = computed(() => String(route.query.fiatCurrency || 'Rp'))
 const fiatRateText = computed(() => {
   if (!showFiatHints.value || fiatPerUsdtNum.value == null) return ''
   return t('withdraw_rate_line', {
