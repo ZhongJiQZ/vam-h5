@@ -11,14 +11,16 @@ let _tokenInvalidHandling = false
 const isTokenInvalidResponse = (data = {}) => {
   const code = data?.code
   const msg = String(data?.msg || '').toLowerCase()
-  const byCode = code === 401 || code === '401' || code === 403 || code === '403'
   const byMsg =
     msg.includes('invalid token') ||
     msg.includes('token invalid') ||
     msg.includes('token已失效') ||
     msg.includes('token失效') ||
     msg.includes('登录失效')
-  return byCode || byMsg
+  // 仅在明确 token 失效时才强退：避免网关/权限类 401/403 误伤全量用户
+  const is401Or403 = code === 401 || code === '401' || code === 403 || code === '403'
+  if (byMsg) return true
+  return is401Or403 && msg.includes('token')
 }
 
 const handleTokenInvalid = () => {
