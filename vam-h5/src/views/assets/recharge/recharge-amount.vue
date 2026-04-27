@@ -64,6 +64,7 @@ const isBankRecharge = computed(() =>
   Boolean(rechargeObj.value?.bankCardNo && rechargeObj.value?.bankName)
 )
 const isBankType = computed(() => String(route.query.type || '').toUpperCase() === 'BANK')
+const isVirtualType = computed(() => !isBankType.value)
 const fiatRateNum = computed(() => {
   const n = Number(rechargeObj.value?.fiatPerUsdt)
   return Number.isFinite(n) && n > 0 ? n : null
@@ -102,12 +103,58 @@ const onNext = async () => {
     _toast('recharge_num')
     return
   }
+  const submitAmountValue = val
+  // 虚拟币：若已有处理中订单，直接进入“地址+我已充值”页，避免重复下单
+  if (isVirtualType.value) {
+    const pendingRes = await getRechargeList('status=0&pageNum=1&pageSize=100')
+    if (pendingRes.code == '200' || pendingRes.code == 200) {
+      const rows = pendingRes.rows || []
+      const wantType = String(route.query.type || '').toUpperCase()
+      const wantCoin = String(route.query.coin || '').toUpperCase()
+      const norm = (s) => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '')
+      const wantTypeN = norm(wantType)
+      const wantCoinN = norm(wantCoin)
+      const pending = rows.find(
+        (item) => {
+          const t = String(item?.type || '')
+          const coin = String(item?.coin || '')
+          const coinName = String(item?.coinName || '')
+          const symbol = String(item?.symbol || '')
+          const tN = norm(t)
+          const coinN = norm(coin)
+          const coinNameN = norm(coinName)
+          const symbolN = norm(symbol)
+          return (
+            tN === wantTypeN ||
+            coinNameN === wantTypeN ||
+            symbolN === wantTypeN ||
+            coinN === wantCoinN ||
+            tN === wantCoinN ||
+            tN.includes(wantTypeN) ||
+            coinNameN.includes(wantTypeN) ||
+            symbolN.includes(wantTypeN) ||
+            wantTypeN.includes(tN)
+          )
+        }
+      )
+      if (pending) {
+        const q = new URLSearchParams({
+          type: String(route.query.type || ''),
+          coin: String(route.query.coin || ''),
+          amount: String(priceFormat(pending?.amount ?? submitAmountValue)),
+          orderId: String(pending?.id || pending?.serialId || '')
+        })
+        router.push(`/recharge-apply?${q.toString()}`)
+        return
+      }
+    }
+  }
+
   const addr = submitAddress.value
   if (!addr) {
     _toast('recharge_address_empty')
     return
   }
-  const submitAmountValue = val
   const payload = {
     amount: priceFormat(submitAmountValue),
     type: route.query.type,
@@ -118,6 +165,9 @@ const onNext = async () => {
   let orderId = ''
   let submitErrorMsg = ''
   let submitPayUrl = ''
+  const waitingMsgHit = (msg) =>
+    String(msg || '').toLowerCase().includes('waiting for callback') ||
+    String(msg || '').includes('有一笔充值订单等待回调')
   try {
     const res = await rechargeSubmit(payload)
     submitPayUrl = String(res?.data?.payUrl || '').trim()
@@ -136,6 +186,47 @@ const onNext = async () => {
     }
   } catch (err) {
     submitErrorMsg = err?.data?.msg || err?.msg || err?.message || ''
+  }
+
+  // 虚拟币：后端明确提示“已有等待回调订单”时，直接跳申请页
+  if (isVirtualType.value && waitingMsgHit(submitErrorMsg)) {
+    const listRes = await getRechargeList('status=0&pageNum=1&pageSize=100')
+    let fallbackOrderId = ''
+    if (listRes.code == '200' || listRes.code == 200) {
+      const rows = listRes.rows || []
+      const wantType = String(route.query.type || '').toUpperCase()
+      const wantCoin = String(route.query.coin || '').toUpperCase()
+      const norm = (s) => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '')
+      const wantTypeN = norm(wantType)
+      const wantCoinN = norm(wantCoin)
+      const pending = rows.find((item) => {
+        const tN = norm(item?.type)
+        const coinN = norm(item?.coin)
+        const coinNameN = norm(item?.coinName)
+        const symbolN = norm(item?.symbol)
+        return (
+          tN === wantTypeN ||
+          coinNameN === wantTypeN ||
+          symbolN === wantTypeN ||
+          coinN === wantCoinN ||
+          tN === wantCoinN ||
+          tN.includes(wantTypeN) ||
+          coinNameN.includes(wantTypeN) ||
+          symbolN.includes(wantTypeN) ||
+          wantTypeN.includes(tN)
+        )
+      })
+      fallbackOrderId = String(pending?.id || pending?.serialId || '')
+    }
+    const q = new URLSearchParams({
+      type: String(route.query.type || ''),
+      coin: String(route.query.coin || ''),
+      amount: String(priceFormat(submitAmountValue)),
+      orderId: fallbackOrderId
+    })
+    _toast('recharge_waiting')
+    router.push(`/recharge-apply?${q.toString()}`)
+    return
   }
 
   if (!orderId) {
@@ -165,10 +256,13 @@ const onNext = async () => {
     }
   }
 
-  if (isBankType) {
+  if (isBankType.value) {
     _toast(submitErrorMsg || 'recharge_waiting')
     return
   }
+
+  // 仅虚拟币可进入地址/回调等待页
+  if (!isVirtualType.value) return
 
   const q = new URLSearchParams({
     type: String(route.query.type || ''),
