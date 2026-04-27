@@ -13,6 +13,9 @@
     </van-overlay>
     <div class="content">
       <div v-if="!bindcard">
+<!--        <div class="section-head">-->
+<!--          <h3>{{ _t18('sidebar_bank') }}</h3>-->
+<!--        </div>-->
         <div v-if="bankList.length > 0">
           <BankItem :bankList="bankList"></BankItem>
         </div>
@@ -26,7 +29,9 @@
         </div>
       </div>
       <div v-if="bindcard">
-        <strong class="tip">{{ _t18('bindCard_txt') }}</strong>
+        <div class="section-head section-head--form">
+          <h3>{{ _t18('add_bank_card') }}</h3>
+        </div>
 
         <div class="form" v-if="
           ['trustwallet', 'coinmarketcap', 'kabit', 'etfinex', 'ebc'].includes(
@@ -169,18 +174,29 @@
       :style="{ height: '72%', maxWidth: 'var(--ex-max-width)', left: '50%', translate: '-50%' }"
     >
       <div class="bank-picker">
-        <div class="bank-picker__header">{{ _t18('Bank_own') }}</div>
+        <div class="bank-picker__header">
+          <span>{{ _t18('Bank_own') }}</span>
+          <span class="bank-picker__close" @click="showBankPicker = false">×</span>
+        </div>
         <div class="bank-picker__search">
-          <input v-model.trim="bankKeyword" type="text" :placeholder="_t18('enter_search_keywords')" />
+          <div class="bank-picker__search-inner">
+            <span class="bank-picker__search-icon">🔎</span>
+            <input v-model.trim="bankKeyword" type="text" :placeholder="_t18('enter_search_keywords')" />
+          </div>
+          <p v-if="formData.bankName" class="bank-picker__selected">
+            {{ _t18('Bank_own') }}: <span class="val">{{ formData.bankName }}</span>
+          </p>
         </div>
         <div class="bank-picker__list">
           <div
             v-for="name in filteredBankOptions"
             :key="name"
             class="bank-picker__item"
+            :class="{ 'bank-picker__item--active': formData.bankName === name }"
             @click="selectBankName(name)"
           >
-            {{ name }}
+            <span class="txt">{{ name }}</span>
+            <span v-if="formData.bankName === name" class="ok">✓</span>
           </div>
           <div v-if="filteredBankOptions.length === 0" class="bank-picker__empty">
             {{ _t18('no_more_data') }}
@@ -334,19 +350,47 @@ const submit = () => {
 </script>
 <style lang="scss" scoped>
 .content {
-  padding: 10px 15px;
+  padding: 12px 15px 24px;
+  min-height: calc(100vh - 60px - env(safe-area-inset-top, 0px));
+  background: linear-gradient(180deg, #f3f5fa 0%, #eef2f8 100%);
+  box-sizing: border-box;
 
-  .tip {
-    font-size: 12px;
-    color: var(--ex-tip-font-color);
-    margin-bottom: 30px;
+  .section-head {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 12px;
+    border: 1px solid #edf0f5;
+    box-shadow: 0 6px 18px rgba(36, 58, 88, 0.06);
+
+    h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: #323233;
+    }
   }
 
+  .section-head--form {
+    margin-bottom: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    box-shadow: none;
+  }
+
+  .tip { display: none; }
+
   .form {
-    padding-top: 5px;
+    padding: 6px 14px 16px;
+    background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
+    border-bottom-left-radius: 14px;
+    border-bottom-right-radius: 14px;
+    border: 1px solid #edf0f5;
+    border-top: 0;
+    box-shadow: 0 6px 18px rgba(36, 58, 88, 0.06);
 
     .formInput {
-      margin-top: 20px;
+      margin-top: 16px;
 
       .label {
         color: var(--ex-default-font-color);
@@ -373,20 +417,37 @@ const submit = () => {
       input {
         width: 100%;
         height: 46px;
-        background: var(--ex-bindcard-input-background-color);
-        border-radius: 3px;
-        border: 1px solid var(--ex-bindcard-input-border-color);
+        background: #fff;
+        border-radius: 10px;
+        border: 1px solid #ebedf0;
         padding: 0 15px;
         font-size: 14px;
+        box-sizing: border-box;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
         &::placeholder {
           color: var(--ex-bindcard-input-font-color);
           font-size: 14px;
         }
+
+        &:focus {
+          border-color: rgba(23, 172, 116, 0.45);
+          box-shadow: 0 0 0 3px rgba(23, 172, 116, 0.08);
+        }
       }
 
       :deep(.van-cell) {
-        border: 1px solid var(--ex-bindcard-input-border-color);
+        border: 1px solid #ebedf0;
+        border-radius: 10px;
+        background: #fff;
+        min-height: 46px;
+        padding: 11px 12px !important;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+        &:active {
+          border-color: rgba(23, 172, 116, 0.45);
+          box-shadow: 0 0 0 3px rgba(23, 172, 116, 0.08);
+        }
 
         &::placeholder {
           color: var(--ex-bindcard-input-font-color);
@@ -408,7 +469,7 @@ const submit = () => {
   //   margin: 50px 0;
   // }
   .btnBox {
-    margin-top: 50px;
+    margin-top: 18px;
   }
 }
 
@@ -416,11 +477,16 @@ const submit = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
+  background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
+  border-radius: 14px;
+  padding: 28px 16px 22px;
+  border: 1px solid #edf0f5;
+  box-shadow: 0 6px 18px rgba(36, 58, 88, 0.06);
 
   img {
     width: 120px;
     height: 110px;
-    margin: 240px 0 35px 0;
+    margin: 22px 0 18px;
   }
 
   .bind-text {
@@ -458,24 +524,65 @@ const submit = () => {
 }
 
 .bank-picker__header {
-  padding: 14px 16px 10px;
+  padding: 14px 16px 12px;
   font-size: 16px;
   font-weight: 600;
   color: var(--ex-default-font-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--ex-border-color1);
+}
+
+.bank-picker__close {
+  font-size: 22px;
+  line-height: 1;
+  color: var(--ex-passive-font-color);
+  padding: 0 2px;
 }
 
 .bank-picker__search {
   padding: 0 16px 10px;
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 2;
+}
 
+.bank-picker__search-inner {
+  border: 1px solid var(--ex-bindcard-input-border-color);
+  background: var(--ex-bindcard-input-background-color);
+  border-radius: 8px;
+  padding: 0 10px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   input {
     width: 100%;
-    height: 40px;
-    border: 1px solid var(--ex-bindcard-input-border-color);
-    background: var(--ex-bindcard-input-background-color);
-    border-radius: 8px;
-    padding: 0 12px;
+    height: 100%;
+    border: none;
+    background: transparent;
+    outline: none;
     box-sizing: border-box;
     font-size: 14px;
+  }
+}
+
+.bank-picker__search-icon {
+  font-size: 14px;
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+
+.bank-picker__selected {
+  margin: 8px 2px 0;
+  font-size: 12px;
+  color: var(--ex-passive-font-color);
+
+  .val {
+    color: var(--ex-default-font-color);
+    font-weight: 500;
   }
 }
 
@@ -491,6 +598,23 @@ const submit = () => {
   font-size: 14px;
   color: var(--ex-default-font-color);
   line-height: 1.4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.bank-picker__item .txt {
+  min-width: 0;
+}
+
+.bank-picker__item .ok {
+  color: #17ac74;
+  font-weight: 700;
+}
+
+.bank-picker__item--active {
+  background: rgba(23, 172, 116, 0.06);
 }
 
 .bank-picker__empty {

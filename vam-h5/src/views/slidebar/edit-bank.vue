@@ -10,6 +10,9 @@
     ></HeaderBar>
     <!--内容-->
     <div class="content">
+      <div class="section-head section-head--form">
+        <h3>{{ _t18('Bank_edit') }}</h3>
+      </div>
       <div class="form">
         <div class="formInput">
           <p class="label">{{ _t18('advanced_name') }}</p>
@@ -48,10 +51,13 @@
           <p class="label" v-else>
             {{ _t18('Bank_own') }}
           </p>
-          <input
-              :placeholder="_t18('login_please')"
-              v-model="formData.bankName"
-              class="form-input"
+          <van-field
+            class="form-input"
+            is-link
+            readonly
+            v-model="formData.bankName"
+            :placeholder="_t18('login_please')"
+            @click="showBankPicker = true"
           />
         </div>
         <div class="formInput" v-if="formData.bankBranch">
@@ -89,6 +95,42 @@
         <ButtonBar :btnValue="_t18('Bank_save')"/>
       </div>
     </div>
+    <van-popup
+      v-model:show="showBankPicker"
+      position="bottom"
+      :style="{ height: '72%', maxWidth: 'var(--ex-max-width)', left: '50%', translate: '-50%' }"
+    >
+      <div class="bank-picker">
+        <div class="bank-picker__header">
+          <span>{{ _t18('Bank_own') }}</span>
+          <span class="bank-picker__close" @click="showBankPicker = false">×</span>
+        </div>
+        <div class="bank-picker__search">
+          <div class="bank-picker__search-inner">
+            <span class="bank-picker__search-icon">🔎</span>
+            <input v-model.trim="bankKeyword" type="text" :placeholder="_t18('enter_search_keywords')" />
+          </div>
+          <p v-if="formData.bankName" class="bank-picker__selected">
+            {{ _t18('Bank_own') }}: <span class="val">{{ formData.bankName }}</span>
+          </p>
+        </div>
+        <div class="bank-picker__list">
+          <div
+            v-for="name in filteredBankOptions"
+            :key="name"
+            class="bank-picker__item"
+            :class="{ 'bank-picker__item--active': formData.bankName === name }"
+            @click="selectBankName(name)"
+          >
+            <span class="txt">{{ name }}</span>
+            <span v-if="formData.bankName === name" class="ok">✓</span>
+          </div>
+          <div v-if="filteredBankOptions.length === 0" class="bank-picker__empty">
+            {{ _t18('no_more_data') }}
+          </div>
+        </div>
+      </div>
+    </van-popup>
   </div>
 </template>
 <script setup>
@@ -103,6 +145,7 @@ import {useToast} from '@/hook/useToast'
 import {useUserStore} from '@/store/user/index'
 import {dict} from '@/api/common/index.js'
 import {storeToRefs} from 'pinia'
+import { INDONESIA_BANK_OPTIONS } from '@/constants/indonesiaBanks'
 
 const userStore = useUserStore()
 // userStore.getUserInfo()
@@ -122,6 +165,17 @@ const Router = useRouter()
 const formData = reactive(JSON.parse(decodeURI(Route.query.data)))
 const bindUserName = ref(formData.userName || userInfo.value.user?.loginName)
 const cuttentRight = {iconRight: [{iconName: 'sanchu24x24', clickTo: 'del'}]}
+const showBankPicker = ref(false)
+const bankKeyword = ref('')
+const filteredBankOptions = computed(() => {
+  const kw = bankKeyword.value.toUpperCase()
+  if (!kw) return INDONESIA_BANK_OPTIONS
+  return INDONESIA_BANK_OPTIONS.filter((n) => n.includes(kw))
+})
+const selectBankName = (name) => {
+  formData.bankName = name
+  showBankPicker.value = false
+}
 const onDeleteBank = async () => {
   if (formData.id == null || formData.id === '') {
     return
@@ -199,8 +253,26 @@ const submit = () => {
 }
 
 .content {
-  margin-top: 10px;
-  padding: 0 15px;
+  padding: 12px 15px 24px;
+  min-height: calc(100vh - 60px - env(safe-area-inset-top, 0px));
+  background: linear-gradient(180deg, #f3f5fa 0%, #eef2f8 100%);
+  box-sizing: border-box;
+
+  .section-head {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    border-radius: 14px 14px 0 0;
+    padding: 14px;
+    border: 1px solid #edf0f5;
+    border-bottom: 0;
+    box-shadow: 0 6px 18px rgba(36, 58, 88, 0.06);
+
+    h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: #323233;
+    }
+  }
 
   .tip {
     font-size: 12px;
@@ -209,7 +281,13 @@ const submit = () => {
   }
 
   .form {
-    padding-top: 5px;
+    padding: 6px 14px 16px;
+    background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
+    border-bottom-left-radius: 14px;
+    border-bottom-right-radius: 14px;
+    border: 1px solid #edf0f5;
+    border-top: 0;
+    box-shadow: 0 6px 18px rgba(36, 58, 88, 0.06);
 
     .formInput {
       margin-top: 20px;
@@ -233,20 +311,31 @@ const submit = () => {
       input {
         width: 100%;
         height: 46px;
-        background: var(--ex-default-background-color);
-        border-radius: 3px;
-        border: 1px solid var(--ex-border-color1);
+        background: #fff;
+        border-radius: 10px;
+        border: 1px solid #ebedf0;
         padding: 0 15px;
         font-size: 14px;
+        box-sizing: border-box;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
         &::placeholder {
           color: var(--ex-font-color5);
           font-size: 14px;
         }
+
+        &:focus {
+          border-color: rgba(23, 172, 116, 0.45);
+          box-shadow: 0 0 0 3px rgba(23, 172, 116, 0.08);
+        }
       }
 
       :deep(.van-cell) {
-        border: 1px solid var(--ex-bindcard-input-border-color);
+        border: 1px solid #ebedf0;
+        border-radius: 10px;
+        background: #fff;
+        min-height: 46px;
+        padding: 11px 12px !important;
 
         &::placeholder {
           color: var(--ex-bindcard-input-font-color);
@@ -268,7 +357,116 @@ const submit = () => {
   //   margin: 50px 0;
   // }
   .btnBox {
-    margin-top: 50px;
+    margin-top: 18px;
   }
+}
+
+.bank-picker {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+}
+
+.bank-picker__header {
+  padding: 14px 16px 12px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ex-default-font-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--ex-border-color1);
+}
+
+.bank-picker__close {
+  font-size: 22px;
+  line-height: 1;
+  color: var(--ex-passive-font-color);
+  padding: 0 2px;
+}
+
+.bank-picker__search {
+  padding: 0 16px 10px;
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 2;
+}
+
+.bank-picker__search-inner {
+  border: 1px solid var(--ex-bindcard-input-border-color);
+  background: var(--ex-bindcard-input-background-color);
+  border-radius: 8px;
+  padding: 0 10px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: transparent;
+    outline: none;
+    box-sizing: border-box;
+    font-size: 14px;
+  }
+}
+
+.bank-picker__search-icon {
+  font-size: 14px;
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+
+.bank-picker__selected {
+  margin: 8px 2px 0;
+  font-size: 12px;
+  color: var(--ex-passive-font-color);
+
+  .val {
+    color: var(--ex-default-font-color);
+    font-weight: 500;
+  }
+}
+
+.bank-picker__list {
+  flex: 1;
+  overflow: auto;
+  padding: 0 16px 12px;
+}
+
+.bank-picker__item {
+  padding: 12px 2px;
+  border-bottom: 1px solid var(--ex-border-color1);
+  font-size: 14px;
+  color: var(--ex-default-font-color);
+  line-height: 1.4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.bank-picker__item .txt {
+  min-width: 0;
+}
+
+.bank-picker__item .ok {
+  color: #17ac74;
+  font-weight: 700;
+}
+
+.bank-picker__item--active {
+  background: rgba(23, 172, 116, 0.06);
+}
+
+.bank-picker__empty {
+  color: var(--ex-passive-font-color);
+  text-align: center;
+  padding: 30px 0;
+  font-size: 13px;
 }
 </style>

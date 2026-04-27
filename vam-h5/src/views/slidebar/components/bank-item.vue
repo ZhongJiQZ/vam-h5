@@ -2,14 +2,18 @@
   <div class="bankItem">
     <ul class="bank-content">
       <li v-for="item in props.bankList" :key="item.id" @click="change(item)">
-        <div class="top-content">
-          <p class="bank-type">{{ item.bankName }}<span class="scl" v-if="item.coin">（{{ item.coin }}）</span></p>
-          <div class="normal" @click="change(item)">
+        <div class="bank-card-head">
+          <div class="bank-brand">
+            <span>{{ bankInitial(item.bankName) }}</span>
+          </div>
+          <div class="badge">{{ item.coin || 'BANK' }}</div>
+          <div class="normal">
             <svg-load name="bianji" class="bianji"></svg-load>
           </div>
         </div>
+        <p class="bank-type">{{ item.bankName }}<span class="scl" v-if="item.coin">（{{ item.coin }}）</span></p>
         <p class="name">{{ item.userName }}</p>
-        <p class="bankNumber">{{ item.cardNumber }}</p>
+        <p class="bankNumber fw-num">{{ formatCardNo(item.cardNumber) }}</p>
         <p v-if="item.bankAddress" class="bank">{{ item.bankAddress }}</p>
         <p v-if="item.bankBranch" class="bank">{{ item.bankBranch }}</p>
       </li>
@@ -35,75 +39,128 @@ const change = (item) => {
     query: {data: encodeURI(JSON.stringify(item))}
   })
 }
+
+const formatCardNo = (val) => {
+  const s = String(val || '')
+  if (s.length <= 8) return s
+  return `${s.slice(0, 4)}  ****  ****  ${s.slice(-4)}`
+}
+
+const bankInitial = (name) => {
+  const s = String(name || '').trim()
+  if (!s) return 'B'
+  return s.charAt(0).toUpperCase()
+}
 </script>
 <style lang="scss" scoped>
 .bank-content {
-  margin-top: 13px;
+  margin-top: 0;
 
   li {
     display: flex;
     flex-direction: column;
-    padding: 0 15px 20px 28px;
-    border-bottom: 1px solid var(--ex-border-color);
-    margin-top: 20px;
+    padding: 14px 16px 18px;
+    margin-top: 12px;
+    background: radial-gradient(120% 160% at 0% 0%, #1f3554 0%, #162437 52%, #0f1a29 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    box-shadow: 0 8px 22px rgba(6, 16, 28, 0.22);
+    animation: card-enter 260ms ease both;
 
     &:nth-child(1) {
-      margin-top: 7px;
+      margin-top: 0;
     }
 
-    .top-content {
+    .bank-card-head {
       display: flex;
-      flex-direction: row;
       justify-content: space-between;
-      height: 15px;
+      height: 22px;
       align-items: center;
+      margin-bottom: 8px;
 
-      .bank-type {
-        font-size: 16px;
-        font-weight: bold;
-        color: var(--ex-default-font-color);
-        position: relative;
+      .bank-brand {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.18);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 700;
+        margin-right: 8px;
+      }
 
-        .scl {
-          color: var(--ex-font-color8);
-          padding-left: 5px;
-          font-size: 14px;
-        }
+      .badge {
+        font-size: 11px;
+        color: #c9d7e8;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 999px;
+        padding: 3px 10px;
+        font-weight: 600;
+      }
+    }
 
-        &::before {
-          content: '';
-          width: 3px;
-          height: 100%;
-          position: absolute;
-          left: -10px;
-          background-color: var(--ex-div-bgColor1);
-          top: 0;
-        }
+    .bank-type {
+      font-size: 16px;
+      font-weight: 700;
+      color: #ffffff;
+
+      .scl {
+        color: #c5d1df;
+        padding-left: 5px;
+        font-size: 13px;
+        font-weight: 400;
       }
     }
 
     .name {
-      color: var(--ex-default-font-color);
-      font-size: 14px;
-      padding-top: 10px;
+      color: #d6e1ef;
+      font-size: 13px;
+      padding-top: 8px;
     }
 
     .bankNumber {
-      font-size: 20px;
+      font-size: 22px;
       font-weight: bold;
-      color: var(--ex-default-font-color);
-      padding-top: 10px;
+      color: #ffffff;
+      padding-top: 12px;
+      letter-spacing: 1.8px;
     }
 
     .bank {
-      margin-top: 10px;
-      font-size: 14px;
-      color: var(--ex-passive-font-color);
+      margin-top: 8px;
+      font-size: 12px;
+      color: #aebfd3;
     }
   }
 
   .bianji {
-    font-size: 14px;
+    font-size: 16px;
+    color: #d9e4f1;
+    background: rgba(255, 255, 255, 0.14);
+    border-radius: 999px;
+    padding: 8px;
+    transition: transform 0.16s ease, background-color 0.16s ease;
+  }
+
+  .normal:active .bianji {
+    transform: scale(0.94);
+    background: rgba(255, 255, 255, 0.24);
+  }
+}
+
+@keyframes card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 </style>
