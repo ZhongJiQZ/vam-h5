@@ -165,9 +165,28 @@ const onNext = async () => {
   let orderId = ''
   let submitErrorMsg = ''
   let submitPayUrl = ''
-  const waitingMsgHit = (msg) =>
-    String(msg || '').toLowerCase().includes('waiting for callback') ||
-    String(msg || '').includes('有一笔充值订单等待回调')
+  const pickErrMsg = (e) =>
+    String(e?.data?.msg || e?.response?.data?.msg || e?.msg || e?.message || '')
+  const waitingMsgHit = (msg) => {
+    const s = String(msg || '').toLowerCase()
+    return (
+      s.includes('waiting for callback') ||
+      s.includes('do not create another one') ||
+      s.includes('充值订单等待回调') ||
+      s.includes('不要重复创建') ||
+      s.includes('正在等待回調') ||
+      s.includes('請勿重複建立')
+    )
+  }
+  const jumpToApply = (oid = '') => {
+    const q = new URLSearchParams({
+      type: String(route.query.type || ''),
+      coin: String(route.query.coin || ''),
+      amount: String(priceFormat(submitAmountValue)),
+      orderId: String(oid || '')
+    })
+    router.push(`/recharge-apply?${q.toString()}`)
+  }
   try {
     const res = await rechargeSubmit(payload)
     submitPayUrl = String(res?.data?.payUrl || '').trim()
@@ -183,9 +202,19 @@ const onNext = async () => {
     }
     if (res.code != '200' && res.code != 200) {
       submitErrorMsg = res.msg || ''
+      if (isVirtualType.value && waitingMsgHit(submitErrorMsg)) {
+        _toast('recharge_waiting')
+        jumpToApply(orderId)
+        return
+      }
     }
   } catch (err) {
-    submitErrorMsg = err?.data?.msg || err?.msg || err?.message || ''
+    submitErrorMsg = pickErrMsg(err)
+    if (isVirtualType.value && waitingMsgHit(submitErrorMsg)) {
+      _toast('recharge_waiting')
+      jumpToApply(orderId)
+      return
+    }
   }
 
   // 虚拟币：后端明确提示“已有等待回调订单”时，直接跳申请页
@@ -218,14 +247,8 @@ const onNext = async () => {
       })
       fallbackOrderId = String(pending?.id || pending?.serialId || '')
     }
-    const q = new URLSearchParams({
-      type: String(route.query.type || ''),
-      coin: String(route.query.coin || ''),
-      amount: String(priceFormat(submitAmountValue)),
-      orderId: fallbackOrderId
-    })
     _toast('recharge_waiting')
-    router.push(`/recharge-apply?${q.toString()}`)
+    jumpToApply(fallbackOrderId)
     return
   }
 
@@ -264,13 +287,7 @@ const onNext = async () => {
   // 仅虚拟币可进入地址/回调等待页
   if (!isVirtualType.value) return
 
-  const q = new URLSearchParams({
-    type: String(route.query.type || ''),
-    coin: String(route.query.coin || ''),
-    amount: String(priceFormat(submitAmountValue)),
-    orderId: String(orderId || '')
-  })
-  router.push(`/recharge-apply?${q.toString()}`)
+  jumpToApply(orderId)
 }
 </script>
 

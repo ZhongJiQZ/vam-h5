@@ -49,7 +49,14 @@
                 _t18('bank_name')
               }}<span class="info" v-if="showInfo2">（*{{ _t18('required') }}）</span>
             </p>
-            <input :placeholder="_t18('login_please')" v-model="formData.bankName" class="form-input" />
+            <van-field
+              class="form-input"
+              is-link
+              readonly
+              v-model="formData.bankName"
+              :placeholder="_t18('login_please')"
+              @click="showBankPicker = true"
+            />
           </div>
           <!-- 账户-->
           <div class="formInput">
@@ -98,7 +105,14 @@
                 _t18('Bank_own')
               }}<span class="info" v-if="showInfo2">（*{{ _t18('required') }}）</span>
             </p>
-            <input :placeholder="_t18('login_please')" v-model="formData.bankName" class="form-input" />
+            <van-field
+              class="form-input"
+              is-link
+              readonly
+              v-model="formData.bankName"
+              :placeholder="_t18('login_please')"
+              @click="showBankPicker = true"
+            />
           </div>
 
           <!-- HFM2 币种选择-->
@@ -149,18 +163,44 @@
         </div>
       </div>
     </div>
+    <van-popup
+      v-model:show="showBankPicker"
+      position="bottom"
+      :style="{ height: '72%', maxWidth: 'var(--ex-max-width)', left: '50%', translate: '-50%' }"
+    >
+      <div class="bank-picker">
+        <div class="bank-picker__header">{{ _t18('Bank_own') }}</div>
+        <div class="bank-picker__search">
+          <input v-model.trim="bankKeyword" type="text" :placeholder="_t18('enter_search_keywords')" />
+        </div>
+        <div class="bank-picker__list">
+          <div
+            v-for="name in filteredBankOptions"
+            :key="name"
+            class="bank-picker__item"
+            @click="selectBankName(name)"
+          >
+            {{ name }}
+          </div>
+          <div v-if="filteredBankOptions.length === 0" class="bank-picker__empty">
+            {{ _t18('no_more_data') }}
+          </div>
+        </div>
+      </div>
+    </van-popup>
   </div>
 </template>
 <script setup>
 import { getBindCardList, bindCardSubmit } from '@/api/account.js'
 import ButtonBar from '@/components/common/ButtonBar/index.vue'
 import BankItem from './components/bank-item.vue'
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import HeaderBar from '@/components/HeaderBar/index.vue'
 import { showToast } from 'vant'
 import { _t18, _toView } from '@/utils/public'
 import { dict } from '@/api/common/index.js'
 import { useToast } from '@/hook/useToast'
+import { INDONESIA_BANK_OPTIONS } from '@/constants/indonesiaBanks'
 
 const { _toast } = useToast()
 
@@ -198,6 +238,17 @@ const showInfo1 = ref(false)
 const showInfo2 = ref(false)
 const bindcard = ref(false)
 const cuttentRight = { iconRight: [{ iconName: 'kefu', clickTo: 'event_serviceChange' }] }
+const showBankPicker = ref(false)
+const bankKeyword = ref('')
+const filteredBankOptions = computed(() => {
+  const kw = bankKeyword.value.toUpperCase()
+  if (!kw) return INDONESIA_BANK_OPTIONS
+  return INDONESIA_BANK_OPTIONS.filter((n) => n.includes(kw))
+})
+const selectBankName = (name) => {
+  formData.bankName = name
+  showBankPicker.value = false
+}
 const add = () => {
   bindcard.value = true
 }
@@ -397,5 +448,55 @@ const submit = () => {
   //   color: var(--ex-font-color);
   //   margin: 50px 0;
   // }
+}
+
+.bank-picker {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+}
+
+.bank-picker__header {
+  padding: 14px 16px 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ex-default-font-color);
+}
+
+.bank-picker__search {
+  padding: 0 16px 10px;
+
+  input {
+    width: 100%;
+    height: 40px;
+    border: 1px solid var(--ex-bindcard-input-border-color);
+    background: var(--ex-bindcard-input-background-color);
+    border-radius: 8px;
+    padding: 0 12px;
+    box-sizing: border-box;
+    font-size: 14px;
+  }
+}
+
+.bank-picker__list {
+  flex: 1;
+  overflow: auto;
+  padding: 0 16px 12px;
+}
+
+.bank-picker__item {
+  padding: 12px 2px;
+  border-bottom: 1px solid var(--ex-border-color1);
+  font-size: 14px;
+  color: var(--ex-default-font-color);
+  line-height: 1.4;
+}
+
+.bank-picker__empty {
+  color: var(--ex-passive-font-color);
+  text-align: center;
+  padding: 30px 0;
+  font-size: 13px;
 }
 </style>
