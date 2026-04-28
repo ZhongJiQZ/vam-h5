@@ -24,9 +24,39 @@
             />
             <span v-if="showFiatMode" class="currency-suffix">{{ fiatCurrency }}</span>
           </div>
-          <p v-if="showFiatMode && approxUsdt" class="approx-line">≈ {{ approxUsdt }}</p>
+          <p v-if="showFiatMode && convertedUsdt" class="approx-line">
+            {{ _t18('recharge_amount_usdt') }}: {{ convertedUsdt }}
+          </p>
+          <p v-if="showFiatMode && convertedUsdt" class="approx-line approx-line--net">
+            {{ _t18('Actual_amount_received') }}: {{ netUsdt }}
+          </p>
         </div>
-        <p class="mini-hint">{{ _t18('recharge_amount_confirm_hint') }}</p>
+        <div class="tips-card">
+          <div v-if="showFiatMode && hasLimitRange" class="tips-row">
+            <span class="tips-label">
+              <i class="tips-dot"></i>
+              {{ _t18('recharge_limit_range') }}
+            </span>
+            <span class="tips-value tips-value--stack">
+              <span class="tips-limit-line">
+                <span class="tips-chip">MIN</span>
+                <span>{{ limitMinDisplay }}</span>
+              </span>
+              <span class="tips-limit-line">
+                <span class="tips-chip">MAX</span>
+                <span>{{ limitMaxDisplay }}</span>
+              </span>
+            </span>
+          </div>
+          <div v-if="showFiatMode" class="tips-row">
+            <span class="tips-label">
+              <i class="tips-dot tips-dot--warn"></i>
+              {{ _t18('withdraw_commission') }}
+            </span>
+            <span class="tips-value tips-value--warn">{{ feeRatioNum }}%</span>
+          </div>
+          <p class="tips-desc">{{ _t18('recharge_amount_confirm_hint') }}</p>
+        </div>
       </div>
       <div class="btn-wrap">
         <div class="btn btn--primary" @click="onNext">
@@ -73,12 +103,40 @@ const fiatCurrency = computed(() =>
   String(rechargeObj.value?.fiatCurrency || 'Rp').toUpperCase()
 )
 const showFiatMode = computed(() => isBankType.value && fiatRateNum.value != null)
-const approxUsdt = computed(() => {
+const feeRatioNum = computed(() => {
+  const n = Number(rechargeObj.value?.rechargeFeeRatio)
+  return Number.isFinite(n) && n > 0 ? n : 0
+})
+const convertedUsdt = computed(() => {
   if (!showFiatMode.value) return ''
   const fiat = Number(amount.value)
   if (!Number.isFinite(fiat) || fiat <= 0) return ''
   const usdt = fiat / fiatRateNum.value
   return `${priceFormat(usdt)} USDT`
+})
+const netUsdt = computed(() => {
+  if (!showFiatMode.value) return ''
+  const fiat = Number(amount.value)
+  if (!Number.isFinite(fiat) || fiat <= 0) return ''
+  const usdt = fiat / fiatRateNum.value
+  const net = usdt * (1 - feeRatioNum.value / 100)
+  return `${priceFormat(Math.max(net, 0))} USDT`
+})
+const hasLimitRange = computed(() => {
+  if (!showFiatMode.value) return ''
+  const min = Number(rechargeObj.value?.rechargeMin)
+  const max = Number(rechargeObj.value?.rechargeMax)
+  return Number.isFinite(min) && Number.isFinite(max)
+})
+const limitMinDisplay = computed(() => {
+  const min = Number(rechargeObj.value?.rechargeMin)
+  if (!Number.isFinite(min)) return '--'
+  return `${_numberWithCommas(String(Math.floor(min)))} ${fiatCurrency.value}`
+})
+const limitMaxDisplay = computed(() => {
+  const max = Number(rechargeObj.value?.rechargeMax)
+  if (!Number.isFinite(max)) return '--'
+  return `${_numberWithCommas(String(Math.floor(max)))} ${fiatCurrency.value}`
 })
 const submitAddress = computed(() => {
   if (isBankRecharge.value) return rechargeObj.value?.bankCardNo ?? ''
@@ -394,11 +452,118 @@ const onNext = async () => {
   color: #646566;
 }
 
+.approx-line--net {
+  margin-top: 4px;
+  color: #17ac74;
+}
+
 .mini-hint {
   margin: 12px 2px 0;
   font-size: 12px;
   color: #969799;
   line-height: 1.5;
+}
+
+.tips-card {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 138, 0, 0.35);
+  background: linear-gradient(180deg, rgba(255, 245, 230, 0.75) 0%, rgba(255, 250, 242, 0.95) 100%);
+}
+
+.tips-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px dashed rgba(255, 138, 0, 0.25);
+}
+
+.tips-row:last-of-type {
+  border-bottom: 0;
+}
+
+.tips-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 74px;
+  flex-shrink: 0;
+  font-size: 12px;
+  color: #8d6a3f;
+}
+
+.tips-value {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #323233;
+  text-align: right;
+  flex: 1;
+  min-width: 0;
+}
+
+.tips-value--warn {
+  color: #ee0a24;
+}
+
+.tips-value--stack {
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.tips-limit-line {
+  display: grid;
+  grid-template-columns: 28px auto;
+  align-items: center;
+  gap: 4px;
+  min-height: 16px;
+  width: 100%;
+  justify-content: end;
+  justify-items: end;
+}
+
+.tips-desc {
+  margin: 8px 0 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #7a7f87;
+}
+
+.tips-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ff8a00;
+}
+
+.tips-dot--warn {
+  background: #ee0a24;
+}
+
+.tips-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  box-sizing: border-box;
+  font-size: 10px;
+  line-height: 1;
+  padding: 3px 5px;
+  border-radius: 999px;
+  color: #8d6a3f;
+  background: rgba(255, 138, 0, 0.16);
+  border: 1px solid rgba(255, 138, 0, 0.28);
+}
+
+.tips-sep {
+  opacity: 0.55;
 }
 
 .btn-wrap {

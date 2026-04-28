@@ -81,16 +81,19 @@
         </div>
 
         <div v-if="!['aams'].includes(_getConfig('_APP_ENV'))" class="tip-block">
+          <div class="tips-card">
+            <div v-if="ENABLE_WITHDRAW_LIMIT_HINT && hasWithdrawLimit" class="tips-row">
+              <span class="tips-label">{{ _t18('withdraw_limit_range') }}</span>
+              <span class="tips-value ff-num">{{ withdrawLimitRangeText }}</span>
+            </div>
+            <div class="tips-row">
+              <span class="tips-label">{{ _t18('withdraw_commission') }}</span>
+              <span class="tips-value tips-value--warn ff-num">{{ withdrawFeeDisplay }}</span>
+            </div>
+          </div>
           <div class="tip-line" @click="dispatchCustomEvent('event_serviceChange')">
             {{ _t18('withdraw_tip') }}
             <span class="tip-service">{{ _t18('custorm_service') }}</span>
-          </div>
-          <div v-if="['coinsexpto'].includes(_getConfig('_APP_ENV'))" class="fee-line">
-            {{ _t18('withdraw_commission') }}：<span class="ff-num">{{ route.query.fee || '' }} {{ (route.query.icon ||
-              '').toString().toUpperCase() }}</span>
-          </div>
-          <div v-if="!['coinsexpto'].includes(_getConfig('_APP_ENV'))" class="fee-line">
-            {{ _t18('withdraw_commission') }}：<span class="ff-num">{{ route.query.ratio }}%</span>
           </div>
         </div>
       </div>
@@ -119,6 +122,7 @@ import ButtonBar from '@/components/common/ButtonBar/index.vue'
 import { priceFormat } from '@/utils/decimal.js'
 import { showToast } from 'vant'
 import { useUserStore } from '@/store/user/index'
+import { useMainStore } from '@/store'
 import { storeToRefs } from 'pinia'
 import { _t18, _getConfig, _numberWithCommas } from '@/utils/public'
 import { useToast } from '@/hook/useToast'
@@ -128,6 +132,7 @@ import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 const { _toast } = useToast()
+const mainStore = useMainStore()
 const userStore = useUserStore()
 userStore.getUserInfo()
 // 用户信息
@@ -139,6 +144,8 @@ import { useRoute, useRouter } from 'vue-router'
 const route = useRoute()
 const router = useRouter()
 const currentName = _t18('withdraw', ['latcoin'])
+// Toggle this to true when withdrawal limit hint is needed again.
+const ENABLE_WITHDRAW_LIMIT_HINT = false
 const showk = ref(false)
 const coinLength = ref({
   'USDT-ERC': '0xF8E687120ECDa2036C4a9f79Aa1aA93C15479F4b',
@@ -162,6 +169,13 @@ const balanceCoinLabel = computed(() => {
     return curBank.value.coin
   }
   return (route.query.type || '')?.toString() || ''
+})
+const currentWithdrawConfig = computed(() => {
+  const type = String(route.query.type || '').toUpperCase()
+  return (mainStore.getWithdrawList || []).find((item) => {
+    const rechargeType = String(item?.rechargeType || item?.coinName || '').toUpperCase()
+    return String(item?.type || '') === '1' && rechargeType === type
+  }) || null
 })
 
 const amount = computed(() => {
@@ -223,7 +237,12 @@ const fiatPerUsdtNum = computed(() => {
   const n = Number(route.query.fiatPerUsdt)
   return Number.isFinite(n) && n > 0 ? n : null
 })
-const fiatCurrency = computed(() => String(route.query.fiatCurrency || 'Rp'))
+const fiatCurrency = computed(() => {
+  const fromConfig = currentWithdrawConfig.value?.fiatCurrency
+  const fromQuery = route.query.fiatCurrency
+  const val = String(fromConfig || fromQuery || '').trim()
+  return val
+})
 const fiatRateText = computed(() => {
   if (!showFiatHints.value || fiatPerUsdtNum.value == null) return ''
   return t('withdraw_rate_line', {
@@ -271,6 +290,32 @@ const fiatFeeLineText = computed(() => {
     currency: fiatCurrency.value,
     amount: _numberWithCommas(feeFiat)
   })
+})
+const withdrawMinNum = computed(() => {
+  const raw =
+    currentWithdrawConfig.value?.withdrawalMix ??
+    currentWithdrawConfig.value?.withdrawalMin ??
+    route.query.withdrawalMix ??
+    route.query.withdrawalMin
+  const n = Number(raw)
+  return Number.isFinite(n) && n > 0 ? n : null
+})
+const withdrawMaxNum = computed(() => {
+  const n = Number(currentWithdrawConfig.value?.withdrawalMax ?? route.query.withdrawalMax)
+  return Number.isFinite(n) && n > 0 ? n : null
+})
+const hasWithdrawLimit = computed(() => withdrawMinNum.value != null || withdrawMaxNum.value != null)
+const withdrawLimitRangeText = computed(() => {
+  if (!hasWithdrawLimit.value) return ''
+  const minTxt = withdrawMinNum.value != null ? _numberWithCommas(Math.floor(withdrawMinNum.value)) : '--'
+  const maxTxt = withdrawMaxNum.value != null ? _numberWithCommas(Math.floor(withdrawMaxNum.value)) : '--'
+  return `${minTxt} - ${maxTxt} ${(route.query.type || '').toString().toUpperCase()}`
+})
+const withdrawFeeDisplay = computed(() => {
+  if (['coinsexpto'].includes(_getConfig('_APP_ENV'))) {
+    return `${route.query.fee || ''} ${(route.query.icon || '').toString().toUpperCase()}`
+  }
+  return `${route.query.ratio || 0}%`
 })
 
 const address = ref(userInfo.value?.user?.address)
@@ -410,6 +455,9 @@ const getAddress = async () => {
   }
 }
 onMounted(() => {
+  if ((mainStore.getWithdrawList || []).length === 0) {
+    mainStore.getSettingConfig()
+  }
   if (route.query?.icon == 'card') {
     getCardList()
   }
@@ -643,6 +691,43 @@ onMounted(() => {
   margin-top: 22px;
   padding-top: 4px;
 
+  .tips-card {
+    margin-bottom: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 138, 0, 0.35);
+    background: linear-gradient(180deg, rgba(255, 245, 230, 0.75) 0%, rgba(255, 250, 242, 0.95) 100%);
+  }
+
+  .tips-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 6px 0;
+    border-bottom: 1px dashed rgba(255, 138, 0, 0.25);
+  }
+
+  .tips-row:last-child {
+    border-bottom: 0;
+  }
+
+  .tips-label {
+    font-size: 12px;
+    color: #8d6a3f;
+  }
+
+  .tips-value {
+    font-size: 12px;
+    color: #323233;
+    text-align: right;
+    font-weight: 600;
+  }
+
+  .tips-value--warn {
+    color: #ee0a24;
+  }
+
   .tip-line {
     font-size: 13px;
     color: #969799;
@@ -655,12 +740,6 @@ onMounted(() => {
     font-weight: 500;
     text-decoration: underline;
     text-underline-offset: 2px;
-  }
-
-  .fee-line {
-    font-size: 13px;
-    color: #646566;
-    line-height: 1.5;
   }
 }
 
