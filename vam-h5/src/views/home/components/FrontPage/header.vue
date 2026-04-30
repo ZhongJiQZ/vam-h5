@@ -29,21 +29,21 @@
           v-for="(item, index) in dataList.filter((it, idx) => idx < 4)"
           :key="index"
           class="currentList-card"
-          :class="`currentList-card--${rfdFromLastTick(item.coin)}`"
+          :class="`currentList-card--${rfdFromChangePercent(item.coin)}`"
           @click="linkTo(item)"
         >
           <div class="currentList-pair fw-num">{{ item.showSymbol }}</div>
           <div
             :class="[
-              rfdFromLastTick(item.coin),
+              rfdFromChangePercent(item.coin),
               'rfd-sign currentList-change fw-num'
             ]"
           >
-            {{ tradeStore.allCoinPriceInfo[item.coin]?.priceChangePercent }}%
+            {{ _absChangePercentStr(tradeStore.allCoinPriceInfo[item.coin]?.priceChangePercent) }}%
           </div>
           <div
             :class="[
-              rfdFromLastTick(item.coin),
+              rfdFromChangePercent(item.coin),
               'currentList-price fw-num'
             ]"
           >
@@ -58,9 +58,9 @@
 import { useTradeStore } from '@/store/trade/index'
 import { useMainStore } from '@/store/index.js'
 import { useRouter } from 'vue-router'
-import { onMounted, computed, watch } from 'vue'
+import { onMounted, computed } from 'vue'
 import { publiceNotice } from '@/api/common/index'
-import { _isRFD } from '@/utils/public'
+import { _isRFDByChangePercent, _absChangePercentStr } from '@/utils/public'
 import SideBar from '@/views/home/sidebar/index.vue'
 import logoFallback from '@/assets/images/logo-black.png'
 const show = ref(false)
@@ -82,38 +82,10 @@ const goMyAssets = () => {
   $router.push('/myassets')
 }
 
-/** 非响应式：记录各币种上一笔 close，避免 ref 更新触发二次渲染把涨跌误判为平 */
-const prevCloseByCoin = {}
-
-const rfdFromLastTick = (coin) => {
+const rfdFromChangePercent = (coin) => {
   const info = tradeStore.allCoinPriceInfo[coin]
-  if (!info) return 'draw'
-  const close = Number(info.close)
-  if (isNaN(close)) return 'draw'
-  const prev = prevCloseByCoin[coin]
-  if (prev === undefined) {
-    return _isRFD(info.open, close)
-  }
-  if (prev === close) {
-    return _isRFD(info.open, close)
-  }
-  return _isRFD(prev, close)
+  return _isRFDByChangePercent(info?.priceChangePercent)
 }
-
-watch(
-  () => tradeStore.allCoinPriceInfo,
-  () => {
-    const info = tradeStore.allCoinPriceInfo
-    if (!info) return
-    for (const key of Object.keys(info)) {
-      const c = Number(info[key]?.close)
-      if (!isNaN(c)) {
-        prevCloseByCoin[key] = c
-      }
-    }
-  },
-  { deep: true, flush: 'post' }
-)
 
 const dataList = computed(() => {
   // let tempFilterKey = Object.keys(tradeStore.allCoinPriceInfo)

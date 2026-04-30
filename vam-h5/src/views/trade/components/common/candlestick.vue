@@ -58,7 +58,10 @@ const tempTrade = {
   close: '',
   volume: '',
   lastClose: '',
-  intervention: false
+  intervention: false,
+  /** 与后端 kline/detial tick 一致，透传给 DETAIL 用于 24h 涨跌幅 */
+  changeRate24h: undefined,
+  change24h: undefined
 }
 /**
  * 分辨率差
@@ -179,7 +182,9 @@ watch(
         close: '',
         volume: '',
         lastClose: '',
-        intervention: false
+        intervention: false,
+        changeRate24h: undefined,
+        change24h: undefined
       })
     }
   },
@@ -496,6 +501,12 @@ const subscribeTrades = async (params) => {
       tempTrade.low = tempData.low
       tempTrade.close = Number(tempData.close)
       tempTrade.volume = tempData.vol
+      if (tempData.changeRate24h !== undefined && tempData.changeRate24h !== null && tempData.changeRate24h !== '') {
+        tempTrade.changeRate24h = tempData.changeRate24h
+      }
+      if (tempData.change24h !== undefined && tempData.change24h !== null && tempData.change24h !== '') {
+        tempTrade.change24h = tempData.change24h
+      }
       updateDataKline(tempTrade, params.coin)
     }
   })
@@ -517,8 +528,23 @@ const updateDataKline = (newData, detailCoin) => {
     }
     PubSub.publish(socketDict.DETAIL, {
       data: {
-        ...newData,
-        vol: newData.volume
+        tick: {
+          open: newData.open,
+          close: newData.close,
+          high: newData.high,
+          low: newData.low,
+          vol: newData.volume,
+          ...(newData.changeRate24h !== undefined &&
+          newData.changeRate24h !== null &&
+          newData.changeRate24h !== ''
+            ? { changeRate24h: newData.changeRate24h }
+            : {}),
+          ...(newData.change24h !== undefined &&
+          newData.change24h !== null &&
+          newData.change24h !== ''
+            ? { change24h: newData.change24h }
+            : {})
+        }
       },
       origin: 'kline',
       symbol: coinKey,

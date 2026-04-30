@@ -20,11 +20,11 @@
           </div>
           <div
             :class="[
-              _isRFD(coinPriceInfo.openPrice, coinPriceInfo.close, 'buy', 'rise'),
+              _isRFDByChangePercent(coinPriceInfo?.priceChangePercent, 'buy', 'rise'),
               ' rfd-sign secondLeftB fw-num'
             ]"
           >
-            {{ coinPriceInfo?.priceChangePercent }}%
+            {{ _absChangePercentStr(coinPriceInfo?.priceChangePercent) }}%
           </div>
         </div>
         <div class="secondRight">
@@ -87,6 +87,7 @@ import DealList from './components/common/dealList.vue'
 import PublicPopup from '@/components/Popup/public.vue'
 import LeftSide from './components/common/leftSide.vue'
 import { countFormat, priceFormat } from '@/utils/decimal'
+import { _isRFD, _isRFDByChangePercent, _absChangePercentStr } from '@/utils/public'
 import { useMainStore } from '@/store/index'
 const mainStore = useMainStore()
 import { useTradeStore } from '@/store/trade'

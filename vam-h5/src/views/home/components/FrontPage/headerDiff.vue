@@ -37,21 +37,15 @@
       <div class="itemTop ff-num">{{ item.showSymbol }}</div>
       <div
         :class="[
-          _isRFD(
-            tradeStore.allCoinPriceInfo[item.coin]?.openPrice,
-            tradeStore.allCoinPriceInfo[item.coin]?.close
-          ),
+          _isRFDByChangePercent(tradeStore.allCoinPriceInfo[item.coin]?.priceChangePercent),
           'rfd-sign itemMain ff-num'
         ]"
       >
-        {{ tradeStore.allCoinPriceInfo[item.coin]?.priceChangePercent }}%
+        {{ _absChangePercentStr(tradeStore.allCoinPriceInfo[item.coin]?.priceChangePercent) }}%
       </div>
       <div
         :class="[
-          _isRFD(
-            tradeStore.allCoinPriceInfo[item.coin]?.open,
-            tradeStore.allCoinPriceInfo[item.coin]?.close
-          ),
+          _isRFDByChangePercent(tradeStore.allCoinPriceInfo[item.coin]?.priceChangePercent),
           'itemFooter fw-num'
         ]"
       >
@@ -68,6 +62,7 @@ import { onMounted } from 'vue'
 import { publiceNotice } from '@/api/common/index'
 import { computed } from 'vue'
 import SideBar from '@/views/home/sidebar/index.vue'
+import { _isRFDByChangePercent, _absChangePercentStr } from '@/utils/public'
 const show = ref(false)
 const openSideBar = () => {
   show.value = true

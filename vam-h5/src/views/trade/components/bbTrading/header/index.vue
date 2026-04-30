@@ -12,11 +12,11 @@
           <div class="fw-bold">{{ coinInfo.showSymbol }}</div>
           <div
           :class="[
-            _isRFD(coinPriceInfo.openPrice, coinPriceInfo.close, 'buy', 'rise'),
+            _isRFDByChangePercent(coinPriceInfo?.priceChangePercent, 'buy', 'rise'),
             ' rfd-sign firNum fw-num'
           ]"
         >
-          {{ coinPriceInfo?.priceChangePercent }}%
+          {{ _absChangePercentStr(coinPriceInfo?.priceChangePercent) }}%
         </div>
         </div>
         <!-- 币币交易规则，收藏 -->
@@ -45,7 +45,7 @@
 <script setup>
 import { useTradeStore } from '@/store/trade'
 import { countFormat, priceFormat } from '@/utils/decimal'
-import { _t18 } from '@/utils/public'
+import { _t18, _isRFDByChangePercent, _absChangePercentStr } from '@/utils/public'
 import { useMainStore } from '@/store/index.js'
 const mainStore = useMainStore()
 

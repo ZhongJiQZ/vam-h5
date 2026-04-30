@@ -25,14 +25,11 @@
       <div class="rightBox">
         <div
           :class="[
-            _isRFD(
-              tradeStore.allCoinPriceInfo[collectItem.coin]?.openPrice,
-              tradeStore.allCoinPriceInfo[collectItem.coin]?.close
-            ),
+            _isRFDByChangePercent(tradeStore.allCoinPriceInfo[collectItem.coin]?.priceChangePercent),
             'rfd-sign rfd-bg rightRight fw-num'
           ]"
         >
-          <span>{{ tradeStore.allCoinPriceInfo[collectItem.coin]?.priceChangePercent }}%</span>
+          <span>{{ _absChangePercentStr(tradeStore.allCoinPriceInfo[collectItem.coin]?.priceChangePercent) }}%</span>
         </div>
       </div>
     </div>
@@ -43,7 +40,7 @@
 import { computed } from 'vue'
 import { priceFormat } from '@/utils/decimal.js'
 import { useTradeStore } from '@/store/trade'
-import { _t18 } from '@/utils/public'
+import { _t18, _isRFDByChangePercent, _absChangePercentStr } from '@/utils/public'
 
 const tradeStore = useTradeStore()
 const props = defineProps({

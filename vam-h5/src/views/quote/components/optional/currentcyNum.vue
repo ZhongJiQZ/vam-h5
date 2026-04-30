@@ -5,16 +5,17 @@
       </div>
       <div
         :class="[
-          _isRFD(coinPriceInfo?.openPrice, coinPriceInfo?.close, 'buy', 'rise'),
+          _isRFDByChangePercent(coinPriceInfo?.priceChangePercent, 'buy', 'rise'),
           ' rfd-sign numBot fw-num'
         ]"
       >
-        {{ coinPriceInfo?.priceChangePercent }}%
+        {{ _absChangePercentStr(coinPriceInfo?.priceChangePercent) }}%
       </div>
   </div>
 </template>
 <script setup>
 import { priceFormat } from '@/utils/decimal.js'
+import { _isRFDByChangePercent, _absChangePercentStr } from '@/utils/public'
 import { useTradeStore } from '@/store/trade'
 const tradeStore = useTradeStore()
 const props = defineProps({

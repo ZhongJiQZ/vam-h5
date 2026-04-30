@@ -1,5 +1,6 @@
 <script setup>
 import { useTradeStore } from '@/store/trade/index'
+import { _isRFDByChangePercent, _absChangePercentStr } from '@/utils/public'
 const tradeStore = useTradeStore()
 // 显示数组 []
 </script>
@@ -20,14 +21,11 @@ const tradeStore = useTradeStore()
       <div class="right">
         <div
           :class="[
-            _isRFD(
-              tradeStore.allCoinPriceInfo[item.coin].openPrice,
-              tradeStore.allCoinPriceInfo[item.coin].close
-            ),
+            _isRFDByChangePercent(tradeStore.allCoinPriceInfo[item.coin]?.priceChangePercent),
             'rfd-bg rfd-sign rightNum fw-num'
           ]"
         >
-          {{ tradeStore.allCoinPriceInfo[item.coin]?.priceChangePercent }}%
+          {{ _absChangePercentStr(tradeStore.allCoinPriceInfo[item.coin]?.priceChangePercent) }}%
         </div>
       </div>
     </div>

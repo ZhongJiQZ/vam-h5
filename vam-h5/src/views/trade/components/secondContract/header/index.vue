@@ -34,11 +34,12 @@
           </div>
           <div
             :class="[
-              _isRFD(coinPriceInfo.openPrice, coinPriceInfo.close, 'buy', 'rise'),
+              _isRFDByChangePercent(coinPriceInfo?.priceChangePercent, 'buy', 'rise'),
               ' rfd-sign secondLeftB fw-num'
             ]"
+            v-if="false"
           >
-            {{ coinPriceInfo?.priceChangePercent }}%
+            {{ _absChangePercentStr(coinPriceInfo?.priceChangePercent) }}%
           </div>
         </div>
         <div class="secondRight">
@@ -80,7 +81,7 @@
 <script setup>
 import { useTradeStore } from '@/store/trade'
 import { countFormat, priceFormat } from '@/utils/decimal'
-import { _t18 } from '@/utils/public'
+import { _t18, _isRFD, _isRFDByChangePercent, _absChangePercentStr } from '@/utils/public'
 import { useMainStore } from '@/store/index.js'
 import { onMounted } from 'vue'
 const mainStore = useMainStore()

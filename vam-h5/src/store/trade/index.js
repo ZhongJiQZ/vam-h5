@@ -6,6 +6,40 @@ import { _coinWebSocket } from '@/plugin/socket/index'
 // ⚠️ 确保你项目里有 PubSub 引入
 //  import PubSub from 'pubsub-js'
 
+/** 涨跌幅百分比数值（已乘 100）的字串：带符号的 priceChangePercent + 绝对值 change（排序等） */
+function normalizeSignedPercent(n) {
+  if (isNaN(n)) {
+    return null
+  }
+  const absN = Math.abs(n)
+  let priceChangePercent
+  if (absN === 0) {
+    priceChangePercent = _toFixed(0, 2)
+  } else if (absN < 0.01) {
+    priceChangePercent = n < 0 ? '-0.01' : '0.01'
+  } else {
+    priceChangePercent = _toFixed(n, 2)
+  }
+  const change = absN === 0 ? _toFixed(0, 2) : absN < 0.01 ? '0.01' : _toFixed(absN, 2)
+  return { priceChangePercent, change }
+}
+
+/**
+ * 后端 tick.changeRate24h 为比例，需 ×100 后与手写公式单位一致。
+ * priceChangePercent 带符号（供样式判断）；change 为绝对值。
+ */
+function formatFromChangeRate24h(changeRate24h) {
+  if (changeRate24h === undefined || changeRate24h === null || changeRate24h === '') {
+    return null
+  }
+  const raw = Number(changeRate24h)
+  if (isNaN(raw)) {
+    return null
+  }
+  const n = _mul(raw, 100)
+  return normalizeSignedPercent(n)
+}
+
 export const useTradeStore = defineStore('trade', {
   state: () => ({
     allCoinPriceInfo: {},          // ✅ 不要 reactive({})
@@ -64,20 +98,30 @@ export const useTradeStore = defineStore('trade', {
           this[keyMap[key]].push(elem)
 
           let change = '0.00'
-          try {
-            if (elem.amount > 0 && elem.open > 0) {
-              change = _toFixed(
-                Math.abs(_mul(_div(_sub(elem.amount, elem.open), elem.open), 100)),
-                2
-              )
-            }
-          } catch (e) {}
+          let priceChangePercent = '0.00'
+          const fromApiRate = formatFromChangeRate24h(elem.changeRate24h)
+          if (fromApiRate !=null) {
+            change = fromApiRate.change
+            priceChangePercent = fromApiRate.priceChangePercent
+          } else {
+            console.log(JSON.stringify(elem))
+            try {
+              if (elem.amount > 0 && elem.open > 0) {
+                const n = _mul(_div(_sub(elem.amount, elem.open), elem.open), 100)
+                const norm = normalizeSignedPercent(n)
+                if (norm) {
+                  change = norm.change
+                  priceChangePercent = norm.priceChangePercent
+                }
+              }
+            } catch (e) {}
+          }
 
           tempAllCoinPriceInfo[elem.coin] = {
             close: priceFormat(elem.amount),
             openPrice: priceFormat(elem.open), // ✅ 24h open（或初始 open）
             change,
-            priceChangePercent: change
+            priceChangePercent
           }
         })
       }
@@ -143,25 +187,23 @@ export const useTradeStore = defineStore('trade', {
           tempObj.low24 = tempData.low
         }
 
-        // ✅ 写回 allCoinPriceInfo
-        // 注意：你原来用 abs，涨跌方向会丢；如果你 UI 需要方向，去掉 abs
+        // ✅ 写回 allCoinPriceInfo：优先用推送的 changeRate24h，否则沿用本地计算（如 kline 合成推送无该字段）
         const info = this.allCoinPriceInfo[symbol]
-        const openPriceFor24h = Number(info.openPrice) > 0 ? Number(info.openPrice) : Number(tempObj.open)
+        const fromSocketRate = formatFromChangeRate24h(tempData.changeRate24h)
+        if (fromSocketRate) {
+          tempObj.priceChangePercent = fromSocketRate.priceChangePercent
+          tempObj.change = fromSocketRate.change
+        } else {
+          const openPriceFor24h = Number(info.openPrice) > 0 ? Number(info.openPrice) : Number(tempObj.open)
 
-        if (Number(tempObj.close) > 0 && openPriceFor24h > 0) {
-          const priceChangePercent = _toFixed(
-            Math.abs(_mul(_div(_sub(tempObj.close, openPriceFor24h), openPriceFor24h), 100)),
-            2
-          )
-          tempObj.priceChangePercent = Math.abs(priceChangePercent) < 0.01 ? '0.01' : priceChangePercent
-        }
-
-        if (Number(tempObj.close) > 0 && Number(tempObj.open) > 0) {
-          const tempChange = _toFixed(
-            Math.abs(_mul(_div(_sub(tempObj.close, tempObj.open), tempObj.open), 100)),
-            2
-          )
-          tempObj.change = Math.abs(tempChange) < 0.01 ? '0.01' : tempChange
+          if (Number(tempObj.close) > 0 && openPriceFor24h > 0) {
+            const n = _mul(_div(_sub(tempObj.close, openPriceFor24h), openPriceFor24h), 100)
+            const norm = normalizeSignedPercent(n)
+            if (norm) {
+              tempObj.priceChangePercent = norm.priceChangePercent
+              tempObj.change = norm.change
+            }
+          }
         }
 
         for (const k in tempObj) info[k] = tempObj[k]
