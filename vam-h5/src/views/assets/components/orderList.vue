@@ -71,13 +71,29 @@
         <p class="left">{{ _t18('recharge_time') }}</p>
         <p class="right ff-num time-val">{{ formatLocalTime(dataValue.params?.createTime) }}</p>
       </div>
-      <div v-if="dataValue.rechargeRemark">
-        <p class="left">{{ _t18('kind_tips') }}</p>
-        <p class="right ff-num">{{ dataValue.rechargeRemark }}</p>
+      <div v-if="dataValue.rechargeRemark" :class="{ 'remark-row': cardLayout }">
+        <template v-if="cardLayout">
+          <div class="remark-box">
+            <p class="remark-box__title">{{ _t18('kind_tips') }}</p>
+            <p class="remark-box__content ff-num">{{ dataValue.rechargeRemark }}</p>
+          </div>
+        </template>
+        <template v-else>
+          <p class="left">{{ _t18('kind_tips') }}</p>
+          <p class="right ff-num">{{ dataValue.rechargeRemark }}</p>
+        </template>
       </div>
-      <div v-if="dataValue.withDrawRemark">
-        <p class="left">{{ _t18('kind_tips') }}</p>
-        <p class="right ff-num">{{ dataValue.withDrawRemark }}</p>
+      <div v-if="dataValue.withDrawRemark" :class="{ 'remark-row': cardLayout }">
+        <template v-if="cardLayout">
+          <div class="remark-box">
+            <p class="remark-box__title">{{ _t18('kind_tips') }}</p>
+            <p class="remark-box__content ff-num">{{ dataValue.withDrawRemark }}</p>
+          </div>
+        </template>
+        <template v-else>
+          <p class="left">{{ _t18('kind_tips') }}</p>
+          <p class="right ff-num">{{ dataValue.withDrawRemark }}</p>
+        </template>
       </div>
     </div>
   </div>
@@ -288,6 +304,39 @@ const toDetail = (data) => {
       color: #646566 !important;
       font-weight: 400;
     }
+  }
+
+  .message > div.remark-row {
+    display: block;
+    padding-top: 12px;
+    padding-bottom: 0;
+  }
+
+  .remark-box {
+    border: 1px solid #ffd6dc;
+    background: #fff5f7;
+    border-radius: 10px;
+    padding: 10px 12px;
+    box-sizing: border-box;
+  }
+
+  .remark-box__title {
+    margin: 0 0 6px;
+    color: #ee0a24;
+    font-size: 12px;
+    line-height: 1.2;
+    font-weight: 600;
+    text-align: left;
+  }
+
+  .remark-box__content {
+    margin: 0;
+    color: #646566;
+    font-size: 13px;
+    line-height: 1.45;
+    text-align: left;
+    word-break: break-word;
+    white-space: pre-wrap;
   }
 }
 
