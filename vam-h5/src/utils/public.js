@@ -135,11 +135,12 @@ export const _hideAddress = (str) => {
  * @param {*} default 默认
  * @returns rise 涨 fall 跌 draw 平
  */
-export const _isRFD = (open, close, direction = 'buy', def = 'draw') => {
+export const _isRFD = (open, close, direction = 'buy', def = 'rise') => {
   let tempVal = ''
   open = Number(open)
   close = Number(close)
   if (isNaN(open) || isNaN(close)) {
+    return 'rise'
     return 'draw'
   }
   if (open < close) {
