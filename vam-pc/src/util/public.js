@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import { _toFixed } from "./utildecimal";
 
 // 加载插件
 dayjs.extend(utc);
@@ -63,6 +64,37 @@ export const _isRFD = (open, close, direction = "buy", def = "draw") => {
   }
 
   return tempVal;
+};
+
+/**
+ * 按涨跌幅百分比判断涨跌样式（与 _isRFD 的 direction/def 语义一致）
+ * @param {*} percent 已乘 100 后的涨跌幅，可为负
+ */
+export const _isRFDByChangePercent = (
+  percent,
+  direction = "buy",
+  def = "rise"
+) => {
+  const p = Number(percent);
+  if (percent === "" || percent === null || percent === undefined || isNaN(p)) {
+    return def;
+  }
+  if (p > 0) {
+    return direction === "buy" ? "rise" : "fall";
+  }
+  if (p < 0) {
+    return direction === "buy" ? "fall" : "rise";
+  }
+  return def;
+};
+
+/** 展示用涨跌幅绝对值（两位小数） */
+export const _absChangePercentStr = (percent) => {
+  const p = Number(percent);
+  if (percent === "" || percent === null || percent === undefined || isNaN(p)) {
+    return "0.00";
+  }
+  return `${_toFixed(Math.abs(p), 2)}`;
 };
 
 /**

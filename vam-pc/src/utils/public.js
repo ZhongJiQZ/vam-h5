@@ -8,6 +8,7 @@ import store from "@/store";
 import dayjs from '@/plugin/dayjs/index'
 // import { customRef, ref } from 'vue'
 import { customRef, ref } from "@vue/composition-api";
+import { _toFixed } from '@/utils/decimal'
 
 import * as __config from "@/config";
 
@@ -184,6 +185,31 @@ export const _isRFD = (open, close, direction = 'buy', def = 'draw') => {
   }
 
   return tempVal
+}
+
+/**
+ * 按涨跌幅百分比判断涨跌样式（与 _isRFD 的 direction/def 语义一致）
+ */
+export const _isRFDByChangePercent = (percent, direction = 'buy', def = 'rise') => {
+  const p = Number(percent)
+  if (percent === '' || percent === null || percent === undefined || isNaN(p)) {
+    return def
+  }
+  if (p > 0) {
+    return direction === 'buy' ? 'rise' : 'fall'
+  }
+  if (p < 0) {
+    return direction === 'buy' ? 'fall' : 'rise'
+  }
+  return def
+}
+
+export const _absChangePercentStr = (percent) => {
+  const p = Number(percent)
+  if (percent === '' || percent === null || percent === undefined || isNaN(p)) {
+    return '0.00'
+  }
+  return `${_toFixed(Math.abs(p), 2)}`
 }
 
 /**

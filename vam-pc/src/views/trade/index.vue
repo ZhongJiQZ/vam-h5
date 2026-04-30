@@ -18,9 +18,8 @@
                 <p
                   class="e2"
                   :class="[
-                    _isRFD(
-                      coinPriceInfo.open,
-                      coinPriceInfo.close,
+                    _isRFDByChangePercent(
+                      coinPriceInfo.priceChangePercent,
                       'buy',
                       'rise'
                     ),
@@ -35,16 +34,15 @@
                 <p>{{ $t("trade.hourRiseFall") }}</p>
                 <p
                   :class="[
-                    _isRFD(
-                      coinPriceInfo.openPrice,
-                      coinPriceInfo.close,
+                    _isRFDByChangePercent(
+                      coinPriceInfo.priceChangePercent,
                       'buy',
                       'rise'
                     ),
                     ' rfd-sign secondLeftB fw-num ',
                   ]"
                 >
-                  {{ coinPriceInfo.priceChangePercent }}%
+                  {{ _absChangePercentStr(coinPriceInfo.priceChangePercent) }}%
                 </p>
               </div>
               <div class="coin_detail_item c3 flex-colum-between">
@@ -156,9 +154,8 @@
                       <span
                         class="flex-box"
                         :class="[
-                          _isRFD(
-                            coinPriceInfo.open,
-                            coinPriceInfo.close,
+                          _isRFDByChangePercent(
+                            coinPriceInfo.priceChangePercent,
                             'buy',
                             'rise'
                           ),
@@ -733,14 +730,19 @@
                       <div>{{ allCoinPriceInfo[item.coin].close }}</div>
                       <div
                         :class="[
-                          _isRFD(
-                            allCoinPriceInfo[item.coin].openPrice,
-                            allCoinPriceInfo[item.coin].close
+                          _isRFDByChangePercent(
+                            allCoinPriceInfo[item.coin]?.priceChangePercent,
+                            'buy',
+                            'rise'
                           ),
                           'rfd-sign rightNum fw-num num_Bold',
                         ]"
                       >
-                        {{ allCoinPriceInfo[item.coin].priceChangePercent }}%
+                        {{
+                          _absChangePercentStr(
+                            allCoinPriceInfo[item.coin]?.priceChangePercent
+                          )
+                        }}%
                       </div>
                     </div>
                   </li>

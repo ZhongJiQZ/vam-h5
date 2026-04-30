@@ -111,6 +111,8 @@ export default {
         volume: "",
         lastClose: "",
         intervention: false,
+        changeRate24h: undefined,
+        change24h: undefined,
       },
       intervalDiff: "",
       headIntervalList: [],
@@ -752,6 +754,20 @@ export default {
           this.tempTrade.low = tempData.low;
           this.tempTrade.close = Number(priceFormat(tempData.close));
           this.tempTrade.volume = tempData.vol;
+          if (
+            tempData.changeRate24h !== undefined &&
+            tempData.changeRate24h !== null &&
+            tempData.changeRate24h !== ""
+          ) {
+            this.tempTrade.changeRate24h = tempData.changeRate24h;
+          }
+          if (
+            tempData.change24h !== undefined &&
+            tempData.change24h !== null &&
+            tempData.change24h !== ""
+          ) {
+            this.tempTrade.change24h = tempData.change24h;
+          }
           this.updateDataKline(this.tempTrade);
         }
       });
@@ -766,8 +782,23 @@ export default {
         this.datafeeds.updateData(newData);
         PubSub.publish(socketDict.DETAIL, {
           data: {
-            ...newData,
-            vol: newData.volume,
+            tick: {
+              open: newData.open,
+              close: newData.close,
+              high: newData.high,
+              low: newData.low,
+              vol: newData.volume,
+              ...(newData.changeRate24h !== undefined &&
+              newData.changeRate24h !== null &&
+              newData.changeRate24h !== ""
+                ? { changeRate24h: newData.changeRate24h }
+                : {}),
+              ...(newData.change24h !== undefined &&
+              newData.change24h !== null &&
+              newData.change24h !== ""
+                ? { change24h: newData.change24h }
+                : {}),
+            },
           },
           origin: "kline",
           symbol: this.currentCoinInfo.coin,

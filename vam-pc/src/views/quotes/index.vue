@@ -131,14 +131,19 @@
             <template slot-scope="scope">
               <div
                 :class="[
-                  _isRFD(
-                    allCoinPriceInfo[scope.row.coin].openPrice,
-                    allCoinPriceInfo[scope.row.coin].close
+                  _isRFDByChangePercent(
+                    allCoinPriceInfo[scope.row.coin]?.priceChangePercent,
+                    'buy',
+                    'rise'
                   ),
                   'rfd-sign rightNum fw-num num_Bold',
                 ]"
               >
-                {{ allCoinPriceInfo[scope.row.coin].priceChangePercent }}%
+                {{
+                  _absChangePercentStr(
+                    allCoinPriceInfo[scope.row.coin]?.priceChangePercent
+                  )
+                }}%
               </div>
             </template>
           </el-table-column>
@@ -560,12 +565,16 @@ export default {
       this.tableList.sort((a, b) => {
         const sortA = this.allCoinPriceInfo[a.coin][finalProp];
         const sortB = this.allCoinPriceInfo[b.coin][finalProp];
+        const valA = Number(sortA)
+        const valB = Number(sortB)
+        const na = Number.isFinite(valA) ? valA : 0
+        const nb = Number.isFinite(valB) ? valB : 0
 
         // 根据排序顺序进行比较
         if (order === "ascending") {
-          return sortA - sortB;
+          return na - nb;
         } else {
-          return sortB - sortA;
+          return nb - na;
         }
       });
     },
