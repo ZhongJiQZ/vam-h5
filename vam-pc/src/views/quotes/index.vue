@@ -423,6 +423,23 @@ export default {
     //   return data;
     // }
   },
+  watch: {
+    secondContractCoinList() {
+      if (this.tabsValue === "miao") {
+        this.searchCoin(this.input);
+      }
+    },
+    spotCoinList() {
+      if (this.tabsValue === "bb") {
+        this.searchCoin(this.input);
+      }
+    },
+    contractCoinList() {
+      if (this.tabsValue === "uyue") {
+        this.searchCoin(this.input);
+      }
+    },
+  },
   created() {
     if (!this.isLogin) {
         this.$router.push({ path: "/user/login" });
@@ -432,14 +449,12 @@ export default {
   mounted() {
     // this.getUserCoinApi();
 
-    this.getCoinList();
-    this.tableList = this.secondContractCoinList;
     if (this.$route.query && this.$route.query.text) {
       this.input = this.$route.query.text;
-      this.searchCoin(this.input);
     }
-    console.log("allCoinPriceInfo====>", this.allCoinPriceInfo);
-    console.log("秒合约列表数据====>", this.secondContractCoinList);
+    this.getCoinList().then(() => {
+      this.searchCoin(this.input);
+    });
     //获取类型字典
     // this.getAreaTabsDataFun()
     //获取自选
