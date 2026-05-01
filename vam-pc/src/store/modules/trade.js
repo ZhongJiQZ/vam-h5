@@ -25,7 +25,7 @@ function normalizeSignedPercent(n) {
   return { priceChangePercent, change }
 }
 
-/** 后端 changeRate24h 为比例，×100 与本地公式单位一致 */
+/** 后端 changeRate24h 已是百分比数值（例如 1.23 表示 1.23%） */
 function formatFromChangeRate24h(changeRate24h) {
   if (changeRate24h === undefined || changeRate24h === null || changeRate24h === '') {
     return null
@@ -34,7 +34,7 @@ function formatFromChangeRate24h(changeRate24h) {
   if (isNaN(raw)) {
     return null
   }
-  const n = _mul(raw, 100)
+  const n = raw
   return normalizeSignedPercent(n)
 }
 

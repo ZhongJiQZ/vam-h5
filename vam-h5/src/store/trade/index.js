@@ -25,7 +25,7 @@ function normalizeSignedPercent(n) {
 }
 
 /**
- * 后端 tick.changeRate24h 为比例，需 ×100 后与手写公式单位一致。
+ * 后端 tick.changeRate24h 已是百分比数值（例如 1.23 表示 1.23%）。
  * priceChangePercent 带符号（供样式判断）；change 为绝对值。
  */
 function formatFromChangeRate24h(changeRate24h) {
@@ -36,7 +36,7 @@ function formatFromChangeRate24h(changeRate24h) {
   if (isNaN(raw)) {
     return null
   }
-  const n = _mul(raw, 100)
+  const n = raw
   return normalizeSignedPercent(n)
 }
 
