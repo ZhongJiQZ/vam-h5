@@ -83,7 +83,7 @@
             <p
               :class="[
                 _isRFDByChangePercent(
-                  allCoinPriceInfo[item.coin]?.priceChangePercent,
+                  (allCoinPriceInfo[item.coin] && allCoinPriceInfo[item.coin].priceChangePercent),
                   'buy',
                   'rise'
                 ),
@@ -94,7 +94,7 @@
             <p
               :class="[
                 _isRFDByChangePercent(
-                  allCoinPriceInfo[item.coin]?.priceChangePercent,
+                  (allCoinPriceInfo[item.coin] && allCoinPriceInfo[item.coin].priceChangePercent),
                   'buy',
                   'rise'
                 ),
@@ -103,7 +103,7 @@
             >
               {{
                 _absChangePercentStr(
-                  allCoinPriceInfo[item.coin]?.priceChangePercent
+                  (allCoinPriceInfo[item.coin] && allCoinPriceInfo[item.coin].priceChangePercent)
                 )
               }}%
             </p>
@@ -170,7 +170,7 @@
                   <div
                     :class="[
                       _isRFDByChangePercent(
-                        allCoinPriceInfo[scope.row.coin]?.priceChangePercent,
+                        (allCoinPriceInfo[scope.row.coin] && allCoinPriceInfo[scope.row.coin].priceChangePercent),
                         'buy',
                         'rise'
                       ),
@@ -179,7 +179,7 @@
                   >
                     {{
                       _absChangePercentStr(
-                        allCoinPriceInfo[scope.row.coin]?.priceChangePercent
+                        (allCoinPriceInfo[scope.row.coin] && allCoinPriceInfo[scope.row.coin].priceChangePercent)
                       )
                     }}%
                   </div>
@@ -232,7 +232,7 @@
                   <div
                     :class="[
                       _isRFDByChangePercent(
-                        allCoinPriceInfo[scope.row.coin]?.priceChangePercent,
+                        (allCoinPriceInfo[scope.row.coin] && allCoinPriceInfo[scope.row.coin].priceChangePercent),
                         'buy',
                         'rise'
                       ),
@@ -241,7 +241,7 @@
                   >
                     {{
                       _absChangePercentStr(
-                        allCoinPriceInfo[scope.row.coin]?.priceChangePercent
+                        (allCoinPriceInfo[scope.row.coin] && allCoinPriceInfo[scope.row.coin].priceChangePercent)
                       )
                     }}%
                   </div>

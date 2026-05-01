@@ -787,7 +787,7 @@
   "optional": "选填",
   "required": "必填",
   "Bank_please_card": "请填写银行卡号",
-  "Bank_please_cardNumber": "请填写正确银行卡号",
+  "Bank_please_cardNumber": "请输入正确的银行卡号",
   "Bank_please_cardName": "请填写银行名称",
   "Bank_edit": "编辑银行卡",
   "Bank_delete": "删除银行卡",

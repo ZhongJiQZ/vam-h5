@@ -328,6 +328,12 @@ const submit = () => {
     showInfo2.value = true
     return
   }
+
+  if (formData.bankName == 'BANK BCA' && formData.cardNumber.length !== 10) {
+    _toast('Bank_please_cardNumber')
+    return
+  }
+
   bindCardSubmit(params).then((res) => {
     if (res.code == '200') {
       // showToast(res.msg)

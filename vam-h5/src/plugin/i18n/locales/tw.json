@@ -787,7 +787,7 @@
   "optional": "選填",
   "required": "必填",
   "Bank_please_card": "請填寫銀行卡號",
-  "Bank_please_cardNumber": "請填寫正確銀行卡號",
+  "Bank_please_cardNumber": "請輸入正確的銀行卡號",
   "Bank_please_cardName": "請填寫銀行名稱",
   "Bank_edit": "編輯銀行卡",
   "Bank_delete": "刪除銀行卡",

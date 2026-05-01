@@ -91,14 +91,14 @@
             <template slot-scope="scope">
               <div :class="[
                 _isRFDByChangePercent(
-                  allCoinPriceInfo[scope.row.coin]?.priceChangePercent,
+                  (allCoinPriceInfo[scope.row.coin] && allCoinPriceInfo[scope.row.coin].priceChangePercent),
                   'buy',
                   'rise'
                 ),
                 'rfd-sign rightNum fw-num num_Bold'
               ]">{{
                 _absChangePercentStr(
-                  allCoinPriceInfo[scope.row.coin]?.priceChangePercent
+                  (allCoinPriceInfo[scope.row.coin] && allCoinPriceInfo[scope.row.coin].priceChangePercent)
                 )
               }}%</div>
             </template>

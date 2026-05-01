@@ -53,7 +53,7 @@
               <div
                 :class="[
                   _isRFDByChangePercent(
-                    allCoinPriceInfo[scope.row.coin]?.priceChangePercent,
+                    (allCoinPriceInfo[scope.row.coin] && allCoinPriceInfo[scope.row.coin].priceChangePercent),
                     'buy',
                     'rise'
                   ),
@@ -62,7 +62,7 @@
               >
                 {{
                   _absChangePercentStr(
-                    allCoinPriceInfo[scope.row.coin]?.priceChangePercent
+                    (allCoinPriceInfo[scope.row.coin] && allCoinPriceInfo[scope.row.coin].priceChangePercent)
                   )
                 }}%
               </div>

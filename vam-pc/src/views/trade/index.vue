@@ -28,7 +28,7 @@
                 >
                   {{ coinPriceInfo.close }}
                 </p>
-                <p>={{ coinPriceInfo.close }}</p>
+                <p>{{ coinPriceInfo.close }}</p>
               </div>
               <div class="coin_detail_item c3 flex-colum-between">
                 <p>{{ $t("trade.hourRiseFall") }}</p>
@@ -731,7 +731,7 @@
                       <div
                         :class="[
                           _isRFDByChangePercent(
-                            allCoinPriceInfo[item.coin]?.priceChangePercent,
+                            (allCoinPriceInfo[item.coin] && allCoinPriceInfo[item.coin].priceChangePercent),
                             'buy',
                             'rise'
                           ),
@@ -740,7 +740,7 @@
                       >
                         {{
                           _absChangePercentStr(
-                            allCoinPriceInfo[item.coin]?.priceChangePercent
+                            (allCoinPriceInfo[item.coin] && allCoinPriceInfo[item.coin].priceChangePercent)
                           )
                         }}%
                       </div>
