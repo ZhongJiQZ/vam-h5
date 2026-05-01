@@ -68,7 +68,7 @@
 </template>
 
 <script setup>
-import { rechargeSubmit, getRechargeList } from '@/api/account.js'
+import { rechargeSubmit } from '@/api/account.js'
 import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import { useMainStore } from '@/store'
 import { useRoute, useRouter } from 'vue-router'
@@ -162,51 +162,6 @@ const onNext = async () => {
     return
   }
   const submitAmountValue = val
-  // 虚拟币：若已有处理中订单，直接进入“地址+我已充值”页，避免重复下单
-  if (isVirtualType.value) {
-    const pendingRes = await getRechargeList('status=0&pageNum=1&pageSize=100')
-    if (pendingRes.code == '200' || pendingRes.code == 200) {
-      const rows = pendingRes.rows || []
-      const wantType = String(route.query.type || '').toUpperCase()
-      const wantCoin = String(route.query.coin || '').toUpperCase()
-      const norm = (s) => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '')
-      const wantTypeN = norm(wantType)
-      const wantCoinN = norm(wantCoin)
-      const pending = rows.find(
-        (item) => {
-          const t = String(item?.type || '')
-          const coin = String(item?.coin || '')
-          const coinName = String(item?.coinName || '')
-          const symbol = String(item?.symbol || '')
-          const tN = norm(t)
-          const coinN = norm(coin)
-          const coinNameN = norm(coinName)
-          const symbolN = norm(symbol)
-          return (
-            tN === wantTypeN ||
-            coinNameN === wantTypeN ||
-            symbolN === wantTypeN ||
-            coinN === wantCoinN ||
-            tN === wantCoinN ||
-            tN.includes(wantTypeN) ||
-            coinNameN.includes(wantTypeN) ||
-            symbolN.includes(wantTypeN) ||
-            wantTypeN.includes(tN)
-          )
-        }
-      )
-      if (pending) {
-        const q = new URLSearchParams({
-          type: String(route.query.type || ''),
-          coin: String(route.query.coin || ''),
-          amount: String(priceFormat(pending?.amount ?? submitAmountValue)),
-          orderId: String(pending?.id || pending?.serialId || '')
-        })
-        router.push(`/recharge-apply?${q.toString()}`)
-        return
-      }
-    }
-  }
 
   const addr = submitAddress.value
   if (!addr) {
@@ -225,17 +180,6 @@ const onNext = async () => {
   let submitPayUrl = ''
   const pickErrMsg = (e) =>
     String(e?.data?.msg || e?.response?.data?.msg || e?.msg || e?.message || '')
-  const waitingMsgHit = (msg) => {
-    const s = String(msg || '').toLowerCase()
-    return (
-      s.includes('waiting for callback') ||
-      s.includes('do not create another one') ||
-      s.includes('充值订单等待回调') ||
-      s.includes('不要重复创建') ||
-      s.includes('正在等待回調') ||
-      s.includes('請勿重複建立')
-    )
-  }
   const jumpToApply = (oid = '') => {
     const q = new URLSearchParams({
       type: String(route.query.type || ''),
@@ -260,81 +204,18 @@ const onNext = async () => {
     }
     if (res.code != '200' && res.code != 200) {
       submitErrorMsg = res.msg || ''
-      if (isVirtualType.value && waitingMsgHit(submitErrorMsg)) {
-        _toast('recharge_waiting')
-        jumpToApply(orderId)
-        return
-      }
+      _toast(submitErrorMsg || 'error')
+      return
     }
   } catch (err) {
     submitErrorMsg = pickErrMsg(err)
-    if (isVirtualType.value && waitingMsgHit(submitErrorMsg)) {
-      _toast('recharge_waiting')
-      jumpToApply(orderId)
-      return
-    }
-  }
-
-  // 虚拟币：后端明确提示“已有等待回调订单”时，直接跳申请页
-  if (isVirtualType.value && waitingMsgHit(submitErrorMsg)) {
-    const listRes = await getRechargeList('status=0&pageNum=1&pageSize=100')
-    let fallbackOrderId = ''
-    if (listRes.code == '200' || listRes.code == 200) {
-      const rows = listRes.rows || []
-      const wantType = String(route.query.type || '').toUpperCase()
-      const wantCoin = String(route.query.coin || '').toUpperCase()
-      const norm = (s) => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '')
-      const wantTypeN = norm(wantType)
-      const wantCoinN = norm(wantCoin)
-      const pending = rows.find((item) => {
-        const tN = norm(item?.type)
-        const coinN = norm(item?.coin)
-        const coinNameN = norm(item?.coinName)
-        const symbolN = norm(item?.symbol)
-        return (
-          tN === wantTypeN ||
-          coinNameN === wantTypeN ||
-          symbolN === wantTypeN ||
-          coinN === wantCoinN ||
-          tN === wantCoinN ||
-          tN.includes(wantTypeN) ||
-          coinNameN.includes(wantTypeN) ||
-          symbolN.includes(wantTypeN) ||
-          wantTypeN.includes(tN)
-        )
-      })
-      fallbackOrderId = String(pending?.id || pending?.serialId || '')
-    }
-    _toast('recharge_waiting')
-    jumpToApply(fallbackOrderId)
+    _toast(submitErrorMsg || 'error')
     return
   }
 
   if (!orderId) {
-    const listRes = await getRechargeList('status=0&pageNum=1&pageSize=20')
-    if (listRes.code == '200' || listRes.code == 200) {
-      const rows = listRes.rows || []
-      const pending = rows.find(
-        (item) => String(item?.type || '').toUpperCase() === String(route.query.type || '').toUpperCase()
-      )
-      if (pending) {
-        orderId = pending?.id || pending?.serialId || ''
-        _toast('recharge_waiting')
-      } else if (submitErrorMsg) {
-        _toast(submitErrorMsg)
-        return
-      } else {
-        _toast('error')
-        return
-      }
-    } else {
-      if (submitErrorMsg) {
-        _toast(submitErrorMsg)
-      } else {
-        _toast(listRes.msg || 'error')
-      }
-      return
-    }
+    _toast('error')
+    return
   }
 
   if (isBankType.value) {
