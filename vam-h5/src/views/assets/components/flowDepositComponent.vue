@@ -44,7 +44,7 @@
 
                 <div class="row">
                   <div class="k">{{ _t18('assets.createTime') }}</div>
-                  <div class="v">{{ item.createTime || '-' }}</div>
+                  <div class="v ff-num">{{ formatCreateTime(item) }}</div>
                 </div>
 
                 <div class="row">
@@ -73,6 +73,7 @@
 import { ref, computed, watch } from 'vue'
 import Tab from '@/components/Tab/index.vue'
 import { _t18, _numberWithCommas } from '@/utils/public'
+import { formatLocalTime } from '@/utils/time'
 
 // ✅ 用你真实的投资记录接口替换这里
 // 例：import { getRecordList } from '@/api/assets'
@@ -111,6 +112,13 @@ const fiatPrefix = (coin) => {
   const c = String(coin || '').toUpperCase()
   if (c === 'IDR') return 'Rp'
   return c || 'Rp'
+}
+
+const formatCreateTime = (item) => {
+  const raw = item?.params?.createTime ?? item?.createTime
+  if (raw === null || raw === undefined || raw === '') return '-'
+  const s = formatLocalTime(raw)
+  return s === '--' ? '-' : s
 }
 
 const formatRecordAmount = (item) => {
