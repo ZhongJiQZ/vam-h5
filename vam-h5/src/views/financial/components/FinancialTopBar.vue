@@ -39,6 +39,7 @@ const logoSrc = computed(() => {
   box-sizing: border-box;
   width: 100%;
   max-width: var(--ex-max-width, 100%);
+  margin: 0 auto;
 }
 
 .logo-img {
