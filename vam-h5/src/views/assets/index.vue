@@ -20,7 +20,7 @@
         />
       </van-tabs>
     </div>
-    <div style="background:#05101a;">
+    <div class="assets-index__body" style="background:#05101a;">
     <div class="assets-index__sheet">
       <div class="assets-index__sheet-bg" aria-hidden="true" />
       <div class="assets-index__panel">
@@ -208,11 +208,19 @@ $assets-accent: #17ac74;
 }
 
 .assets-index__tabs-wrap {
-  position: relative;
-  z-index: 2;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
   background: $assets-top-bg;
-  padding-top: 8px;
+  padding-top: calc(8px + env(safe-area-inset-top, 0px));
   padding-bottom: 8px;
+}
+
+/* 顶栏占位：8 + 48(tab) + 8 + 安全区，与 .assets-index__tabs-wrap 高度一致 */
+.assets-index__body {
+  padding-top: calc(64px + env(safe-area-inset-top, 0px));
 }
 
 .assets-index__tabs {
@@ -259,7 +267,7 @@ $assets-accent: #17ac74;
 .assets-index__sheet {
   position: relative;
   z-index: 0;
-  min-height: calc(100vh - 64px);
+  min-height: calc(100vh - 64px - env(safe-area-inset-top, 0px));
   
   background: #fff;
 }

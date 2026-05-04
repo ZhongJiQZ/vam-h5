@@ -1,6 +1,6 @@
 <!-- 首页 -->
 <template>
-  <div>
+  <div class="header-container">
     <van-popup v-model:show="show" position="left" class="sidebar" @close="closeSideBar">
       <SideBar @closeSideBar="closeSideBar"></SideBar>
     </van-popup>
@@ -146,7 +146,16 @@ onMounted(async () => {
   height: 100%;
 }
 
+.header-container{
+  padding-top: 54px;
+}
+
 .home-top-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: space-between;

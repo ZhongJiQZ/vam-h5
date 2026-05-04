@@ -21,5 +21,6 @@ import FundList from './components/fundList.vue'
   min-height: 100vh;
   background: #eef0f4;
   box-sizing: border-box;
+  padding-top: 64px;
 }
 </style>
