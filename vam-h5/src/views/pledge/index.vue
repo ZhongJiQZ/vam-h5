@@ -169,7 +169,8 @@ const manual = computed(() => {
     <DarkHeaderBar
       :title="_t18('defi_host_lockup')"
       :border_bottom="false"
-      bg-color="transparent"
+      bg-color="#ffffff"
+      class="white-header-bar"
     >
       <template #right>
         <button
@@ -384,5 +385,15 @@ const manual = computed(() => {
 }
 .project {
   padding: 0 15px 50px;
+}
+:deep(.white-header-bar.dark-header) {
+  background-color: #ffffff !important;
+
+  .left {
+    filter: none;
+  }
+  .title {
+    color: #000000;
+  }
 }
 </style>

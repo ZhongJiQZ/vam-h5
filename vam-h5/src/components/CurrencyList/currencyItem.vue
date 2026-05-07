@@ -21,11 +21,21 @@
       <div class="rightBox">
         <div
           :class="[
-            _isRFDByChangePercent(tradeStore.allCoinPriceInfo[currencyItem.coin]?.priceChangePercent),
+            isReady(currencyItem.coin)
+              ? _isRFD(
+                  tradeStore.allCoinPriceInfo[currencyItem.coin]?.openPrice,
+                  tradeStore.allCoinPriceInfo[currencyItem.coin]?.close,
+                  'buy',
+                  'rise'
+                )
+              : '',
             'rfd-sign rfd-bg rightRight fw-num'
           ]"
         >
-          <span>{{ _absChangePercentStr(tradeStore.allCoinPriceInfo[currencyItem.coin]?.priceChangePercent) }}%</span>
+          <span v-if="isReady(currencyItem.coin)">
+            {{ _absChangePercentStr(tradeStore.allCoinPriceInfo[currencyItem.coin]?.priceChangePercent) }}%
+          </span>
+          <span v-else>--</span>
         </div>
       </div>
     </div>
@@ -34,7 +44,7 @@
 <script setup>
 import { useTradeStore } from '@/store/trade/index'
 import { priceFormat } from '@/utils/decimal.js'
-import { _isRFDByChangePercent, _absChangePercentStr } from '@/utils/public'
+import { _isRFD, _absChangePercentStr } from '@/utils/public'
 const tradeStore = useTradeStore()
 const props = defineProps({
   currencyItem: {
@@ -46,6 +56,13 @@ const props = defineProps({
     default: true
   }
 })
+
+// 数据未就绪时返回 false,避免显示中间态导致闪烁
+const isReady = (coin) => {
+  const info = tradeStore.allCoinPriceInfo[coin]
+  if (!info) return false
+  return Number(info.openPrice) > 0 && Number(info.close) > 0
+}
 </script>
 <style lang="scss" scoped>
 .currencyItem {
