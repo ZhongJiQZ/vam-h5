@@ -19,17 +19,22 @@
         </div>
       </div>
       <div class="rightBox">
-        <div
-          :class="[
-            _isRFD(
-              tradeStore.allCoinPriceInfo[currencyItem.coin]?.openPrice,
-              tradeStore.allCoinPriceInfo[currencyItem.coin]?.close
-            ),
-            'rfd-sign rfd-bg rightRight fw-num'
-          ]"
-        >
-          <span>{{ tradeStore.allCoinPriceInfo[currencyItem.coin]?.priceChangePercent }}%</span>
-        </div>
+       <div
+  :class="[
+    isReady(currencyItem.coin)
+      ? _isRFD(
+          tradeStore.allCoinPriceInfo[currencyItem.coin]?.openPrice,
+          tradeStore.allCoinPriceInfo[currencyItem.coin]?.close
+        )
+      : '',
+    'rfd-sign rfd-bg rightRight fw-num'
+  ]"
+>
+  <span v-if="isReady(currencyItem.coin)">
+    {{ tradeStore.allCoinPriceInfo[currencyItem.coin]?.priceChangePercent }}%
+  </span>
+  <span v-else>--</span>
+</div>
       </div>
     </div>
   </div>
@@ -48,6 +53,13 @@ const props = defineProps({
     default: true
   }
 })
+
+// 数据未就绪时返回 false,避免显示中间态导致闪烁
+const isReady = (coin) => {
+  const info = tradeStore.allCoinPriceInfo[coin]
+  if (!info) return false
+  return Number(info.openPrice) > 0 && Number(info.close) > 0
+}
 </script>
 <style lang="scss" scoped>
 .currencyItem {

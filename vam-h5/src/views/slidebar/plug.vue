@@ -36,7 +36,8 @@
     <DarkHeaderBar
       :title="_t18('plug')"
       :border_bottom="false"
-      bg-color="transparent"
+      bg-color="#ffffff"
+      class="white-header-bar"
     >
       <template #right>
         <button
@@ -551,5 +552,15 @@ const changeIndex = (v) => {
 .van-loading {
   text-align: center;
   padding: 30px;
+}
+:deep(.white-header-bar.dark-header) {
+  background-color: #ffffff !important;
+
+  .left {
+    filter: none;
+  }
+  .title {
+    color: #000000;
+  }
 }
 </style>
