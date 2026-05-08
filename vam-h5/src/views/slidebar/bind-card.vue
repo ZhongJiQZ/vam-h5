@@ -293,7 +293,7 @@ const submit = () => {
     showInfo1.value = true
     return
   }
-  formData.cardNumber = formData.cardNumber.replace(/\s+/g, '')
+  formData.cardNumber = formData.cardNumber.replace(/[^a-zA-Z0-9]/g, '')
   if (!['coinmarketcap'].includes(__config._APP_ENV) && formData.cardNumber.length < 8) {
     _toast('Bank_please_cardNumber')
     return
