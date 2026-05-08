@@ -13,9 +13,9 @@
     </van-overlay>
     <div class="content">
       <div v-if="!bindcard">
-<!--        <div class="section-head">-->
-<!--          <h3>{{ _t18('sidebar_bank') }}</h3>-->
-<!--        </div>-->
+        <!--        <div class="section-head">-->
+        <!--          <h3>{{ _t18('sidebar_bank') }}</h3>-->
+        <!--        </div>-->
         <div v-if="bankList.length > 0">
           <BankItem :bankList="bankList"></BankItem>
         </div>
@@ -54,14 +54,8 @@
                 _t18('bank_name')
               }}<span class="info" v-if="showInfo2">（*{{ _t18('required') }}）</span>
             </p>
-            <van-field
-              class="form-input"
-              is-link
-              readonly
-              v-model="formData.bankName"
-              :placeholder="_t18('login_please')"
-              @click="showBankPicker = true"
-            />
+            <van-field class="form-input" is-link readonly v-model="formData.bankName"
+              :placeholder="_t18('login_please')" @click="showBankPicker = true" />
           </div>
           <!-- 账户-->
           <div class="formInput">
@@ -90,7 +84,7 @@
             <p class="label">开户人</p>
             <input placeholder="请输入" v-model="formData.userName" class="form-input" />
           </div> -->
-          <div class="formInput"  >
+          <div class="formInput">
             <p class="label">
               {{ _t18('advanced_name') }}
             </p>
@@ -110,14 +104,8 @@
                 _t18('Bank_own')
               }}<span class="info" v-if="showInfo2">（*{{ _t18('required') }}）</span>
             </p>
-            <van-field
-              class="form-input"
-              is-link
-              readonly
-              v-model="formData.bankName"
-              :placeholder="_t18('login_please')"
-              @click="showBankPicker = true"
-            />
+            <van-field class="form-input" is-link readonly v-model="formData.bankName"
+              :placeholder="_t18('login_please')" @click="showBankPicker = true" />
           </div>
 
           <!-- HFM2 币种选择-->
@@ -168,11 +156,8 @@
         </div>
       </div>
     </div>
-    <van-popup
-      v-model:show="showBankPicker"
-      position="bottom"
-      :style="{ height: '72%', maxWidth: 'var(--ex-max-width)', left: '50%', translate: '-50%' }"
-    >
+    <van-popup v-model:show="showBankPicker" position="bottom"
+      :style="{ height: '72%', maxWidth: 'var(--ex-max-width)', left: '50%', translate: '-50%' }">
       <div class="bank-picker">
         <div class="bank-picker__header">
           <span>{{ _t18('Bank_own') }}</span>
@@ -188,13 +173,8 @@
           </p>
         </div>
         <div class="bank-picker__list">
-          <div
-            v-for="name in filteredBankOptions"
-            :key="name"
-            class="bank-picker__item"
-            :class="{ 'bank-picker__item--active': formData.bankName === name }"
-            @click="selectBankName(name)"
-          >
+          <div v-for="name in filteredBankOptions" :key="name" class="bank-picker__item"
+            :class="{ 'bank-picker__item--active': formData.bankName === name }" @click="selectBankName(name)">
             <span class="txt">{{ name }}</span>
             <span v-if="formData.bankName === name" class="ok">✓</span>
           </div>
@@ -313,7 +293,7 @@ const submit = () => {
     showInfo1.value = true
     return
   }
-
+  formData.cardNumber = formData.cardNumber.replace(/\s+/g, '')
   if (!['coinmarketcap'].includes(__config._APP_ENV) && formData.cardNumber.length < 8) {
     _toast('Bank_please_cardNumber')
     return
@@ -384,7 +364,9 @@ const submit = () => {
     box-shadow: none;
   }
 
-  .tip { display: none; }
+  .tip {
+    display: none;
+  }
 
   .form {
     padding: 6px 14px 16px;
@@ -564,6 +546,7 @@ const submit = () => {
   display: flex;
   align-items: center;
   gap: 8px;
+
   input {
     width: 100%;
     height: 100%;
