@@ -1,6 +1,6 @@
 import days from '@/plugin/dayjs'
 import { _sub, _mul, _toFixed } from '@/utils/decimal'
-import { _t18 } from '@/utils/public'
+import { _t18, _isRFD } from '@/utils/public'
 // import { useMainStore } from '@/store'
 import store from "@/store";
 /**
@@ -94,7 +94,6 @@ export const letterLargeToSmall = (list, key) => {
  * @param {*} obj 币种对象
  * @returns 最新价大到小
  */
-import { _isRFD } from '@/utils/public'
 export const LatestpriceLargeToSmall = (list, obj, type, isRise = 0) => {
   if (!isRise) {
     var newList = list.map(function (item) {
@@ -102,6 +101,14 @@ export const LatestpriceLargeToSmall = (list, obj, type, isRise = 0) => {
     })
   } else {
     list.forEach((item) => {
+      const pctRaw = obj[item.coin]?.priceChangePercent
+      if (type === 'change' && pctRaw !== undefined && pctRaw !== null && pctRaw !== '') {
+        const pctNum = Number(pctRaw)
+        if (!isNaN(pctNum)) {
+          item.latestPrice = pctNum
+          return
+        }
+      }
       switch (_isRFD(obj[item.coin]?.open, obj[item.coin]?.close)) {
         case 'rise':
           item.latestPrice = Number(obj[item.coin][type])
@@ -120,7 +127,6 @@ export const LatestpriceLargeToSmall = (list, obj, type, isRise = 0) => {
     return a.latestPrice - b.latestPrice
   })
 
-  console.log(newArr)
   return newArr
 }
 /**
@@ -136,6 +142,14 @@ export const LatestpriceSmallToLarge = (list, obj, type, isRise = 0) => {
     })
   } else {
     list.forEach((item) => {
+      const pctRaw = obj[item.coin]?.priceChangePercent
+      if (type === 'change' && pctRaw !== undefined && pctRaw !== null && pctRaw !== '') {
+        const pctNum = Number(pctRaw)
+        if (!isNaN(pctNum)) {
+          item.latestPrice = pctNum
+          return
+        }
+      }
       switch (_isRFD(obj[item.coin]?.open, obj[item.coin]?.close)) {
         case 'rise':
           item.latestPrice = Number(obj[item.coin][type])

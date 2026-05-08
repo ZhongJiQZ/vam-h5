@@ -93,22 +93,14 @@
             <van-button
               type="primary"
               size="small"
-              class="btn-redeem"
-              :loading="claimLoading"
-              @click="onClaim"
+              class="btn-action"
+              :class="{ 'btn-action--allocate': !hasVoucherCode }"
+              :plain="!hasVoucherCode"
+              :loading="actionLoading"
+              :disabled="actionDisabled"
+              @click="onAction"
             >
-              {{ t('gift_cert_redeem') }}
-            </van-button>
-            <van-button
-              type="primary"
-              size="small"
-              plain
-              class="btn-allocate"
-              :loading="allocateLoading"
-              :disabled="!progress.canClaim"
-              @click="onAllocate"
-            >
-              {{ t('gift_cert_claim') }}
+              {{ actionBtnText }}
             </van-button>
           </div>
         </div>
@@ -188,6 +180,10 @@ const batchesLoaded = ref(false)
 const voucherCode = ref('')
 const claimLoading = ref(false)
 const allocateLoading = ref(false)
+const hasVoucherCode = computed(() => voucherCode.value.trim().length > 0)
+const actionLoading = computed(() => (hasVoucherCode.value ? claimLoading.value : allocateLoading.value))
+const actionDisabled = computed(() => (!hasVoucherCode.value ? !progress.canClaim : false))
+const actionBtnText = computed(() => (hasVoucherCode.value ? t('gift_cert_redeem') : t('gift_cert_claim')))
 
 const primaryBatch = computed(() => batches.value[0] ?? null)
 
@@ -581,6 +577,14 @@ async function onAllocate() {
   }
 }
 
+function onAction() {
+  if (hasVoucherCode.value) {
+    onClaim()
+    return
+  }
+  onAllocate()
+}
+
 function syncDocTitle() {
   document.title = t('gift_cert_title')
 }
@@ -784,11 +788,11 @@ onMounted(async () => {
 }
 .code-card .code-btns { display: flex; flex-direction: column; gap: 8px; justify-content: center; flex-shrink: 0; }
 .code-card .code-btns .van-button { min-width: 76px; height: 38px; border-radius: 10px; font-size: 13px; font-weight: 600; }
-.code-card .btn-redeem {
+.code-card .btn-action {
   background: linear-gradient(145deg, #3b82f6 0%, #2563eb 100%); border: none;
   box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
 }
-.code-card .btn-allocate { color: var(--gift-accent); border-color: rgba(37, 99, 235, 0.45); background: #fff; }
+.code-card .btn-action--allocate { color: var(--gift-accent); border-color: rgba(37, 99, 235, 0.45); background: #fff; box-shadow: none; }
 .code-card .progress-wrap { margin-top: 18px; }
 .code-card .progress-label-row { margin-bottom: 10px; }
 .code-card .progress-caption { font-size: 13px; line-height: 1.45; color: var(--gift-muted); }

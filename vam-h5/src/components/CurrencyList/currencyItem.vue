@@ -19,22 +19,24 @@
         </div>
       </div>
       <div class="rightBox">
-       <div
-  :class="[
-    isReady(currencyItem.coin)
-      ? _isRFD(
-          tradeStore.allCoinPriceInfo[currencyItem.coin]?.openPrice,
-          tradeStore.allCoinPriceInfo[currencyItem.coin]?.close
-        )
-      : '',
-    'rfd-sign rfd-bg rightRight fw-num'
-  ]"
->
-  <span v-if="isReady(currencyItem.coin)">
-    {{ tradeStore.allCoinPriceInfo[currencyItem.coin]?.priceChangePercent }}%
-  </span>
-  <span v-else>--</span>
-</div>
+        <div
+          :class="[
+            isReady(currencyItem.coin)
+              ? _isRFD(
+                  tradeStore.allCoinPriceInfo[currencyItem.coin]?.openPrice,
+                  tradeStore.allCoinPriceInfo[currencyItem.coin]?.close,
+                  'buy',
+                  'rise'
+                )
+              : '',
+            'rfd-sign rfd-bg rightRight fw-num'
+          ]"
+        >
+          <span v-if="isReady(currencyItem.coin)">
+            {{ _absChangePercentStr(tradeStore.allCoinPriceInfo[currencyItem.coin]?.priceChangePercent) }}%
+          </span>
+          <span v-else>--</span>
+        </div>
       </div>
     </div>
   </div>
@@ -42,6 +44,7 @@
 <script setup>
 import { useTradeStore } from '@/store/trade/index'
 import { priceFormat } from '@/utils/decimal.js'
+import { _isRFD, _absChangePercentStr } from '@/utils/public'
 const tradeStore = useTradeStore()
 const props = defineProps({
   currencyItem: {

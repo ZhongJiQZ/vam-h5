@@ -5,6 +5,7 @@ import { useMainStore } from '@/store'
 import dayjs from '@/plugin/dayjs/index'
 import { customRef, ref } from 'vue'
 import { PLATFORM_12HOURFORMAT } from '@/config'
+import { _toFixed } from '@/utils/decimal.js'
 /**
  * 获取配置
  */
@@ -135,11 +136,12 @@ export const _hideAddress = (str) => {
  * @param {*} default 默认
  * @returns rise 涨 fall 跌 draw 平
  */
-export const _isRFD = (open, close, direction = 'buy', def = 'draw') => {
+export const _isRFD = (open, close, direction = 'buy', def = 'rise') => {
   let tempVal = ''
   open = Number(open)
   close = Number(close)
   if (isNaN(open) || isNaN(close)) {
+    return 'rise'
     return 'draw'
   }
   if (open < close) {
@@ -162,6 +164,35 @@ export const _isRFD = (open, close, direction = 'buy', def = 'draw') => {
   }
 
   return tempVal
+}
+
+/**
+ * 按涨跌幅百分比数值判断涨跌样式（与 _isRFD 的 direction/def 语义一致）
+ * @param {*} percent 已乘 100 后的涨跌幅百分比，可为负
+ */
+export const _isRFDByChangePercent = (percent, direction = 'buy', def = 'rise') => {
+  const p = Number(percent)
+  if (percent === '' || percent === null || percent === undefined || isNaN(p)) {
+    return def
+  }
+  if (p > 0) {
+    return direction === 'buy' ? 'rise' : 'fall'
+  }
+  if (p < 0) {
+    return direction === 'buy' ? 'fall' : 'rise'
+  }
+  return def
+}
+
+/**
+ * 展示用涨跌幅绝对值字符串（两位小数）
+ */
+export const _absChangePercentStr = (percent) => {
+  const p = Number(percent)
+  if (percent === '' || percent === null || percent === undefined || isNaN(p)) {
+    return '0.00'
+  }
+  return _toFixed(Math.abs(p), 2)
 }
 
 /**

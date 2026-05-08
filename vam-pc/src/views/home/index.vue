@@ -82,9 +82,10 @@
           <div class="content flex-between">
             <p
               :class="[
-                _isRFD(
-                  allCoinPriceInfo[item.coin].openPrice,
-                  allCoinPriceInfo[item.coin].close
+                _isRFDByChangePercent(
+                  (allCoinPriceInfo[item.coin] && allCoinPriceInfo[item.coin].priceChangePercent),
+                  'buy',
+                  'rise'
                 ),
               ]"
             >
@@ -92,14 +93,19 @@
             </p>
             <p
               :class="[
-                _isRFD(
-                  allCoinPriceInfo[item.coin].openPrice,
-                  allCoinPriceInfo[item.coin].close
+                _isRFDByChangePercent(
+                  (allCoinPriceInfo[item.coin] && allCoinPriceInfo[item.coin].priceChangePercent),
+                  'buy',
+                  'rise'
                 ),
                 'rfd-sign rightNum fw-num ',
               ]"
             >
-              {{ allCoinPriceInfo[item.coin].priceChangePercent + "%" }}
+              {{
+                _absChangePercentStr(
+                  (allCoinPriceInfo[item.coin] && allCoinPriceInfo[item.coin].priceChangePercent)
+                )
+              }}%
             </p>
           </div>
           <div
@@ -163,14 +169,19 @@
                 <template slot-scope="scope">
                   <div
                     :class="[
-                      _isRFD(
-                        allCoinPriceInfo[scope.row.coin].openPrice,
-                        allCoinPriceInfo[scope.row.coin].close
+                      _isRFDByChangePercent(
+                        (allCoinPriceInfo[scope.row.coin] && allCoinPriceInfo[scope.row.coin].priceChangePercent),
+                        'buy',
+                        'rise'
                       ),
                       'rfd-sign rightNum fw-num num_Bold',
                     ]"
                   >
-                    {{ allCoinPriceInfo[scope.row.coin].priceChangePercent }}%
+                    {{
+                      _absChangePercentStr(
+                        (allCoinPriceInfo[scope.row.coin] && allCoinPriceInfo[scope.row.coin].priceChangePercent)
+                      )
+                    }}%
                   </div>
                 </template>
               </el-table-column>
@@ -220,14 +231,19 @@
                 <template slot-scope="scope">
                   <div
                     :class="[
-                      _isRFD(
-                        allCoinPriceInfo[scope.row.coin].openPrice,
-                        allCoinPriceInfo[scope.row.coin].close
+                      _isRFDByChangePercent(
+                        (allCoinPriceInfo[scope.row.coin] && allCoinPriceInfo[scope.row.coin].priceChangePercent),
+                        'buy',
+                        'rise'
                       ),
                       'rfd-sign rightNum fw-num num_Bold',
                     ]"
                   >
-                    {{ allCoinPriceInfo[scope.row.coin].priceChangePercent }}%
+                    {{
+                      _absChangePercentStr(
+                        (allCoinPriceInfo[scope.row.coin] && allCoinPriceInfo[scope.row.coin].priceChangePercent)
+                      )
+                    }}%
                   </div>
                 </template>
               </el-table-column>

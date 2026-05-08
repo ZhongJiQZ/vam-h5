@@ -109,6 +109,7 @@ export default {
   },
   methods: {
     submit() {
+      this.form.cardNumber = this.form.cardNumber.replace(/[^a-zA-Z0-9]/g, '')
       submitBankInfo({
         ...this.form,
       }).then((res) => {

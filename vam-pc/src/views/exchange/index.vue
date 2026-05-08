@@ -90,12 +90,17 @@
           <el-table-column label="涨跌幅" sortable>
             <template slot-scope="scope">
               <div :class="[
-                _isRFD(
-                  allCoinPriceInfo[scope.row.coin].openPrice,
-                  allCoinPriceInfo[scope.row.coin].close
+                _isRFDByChangePercent(
+                  (allCoinPriceInfo[scope.row.coin] && allCoinPriceInfo[scope.row.coin].priceChangePercent),
+                  'buy',
+                  'rise'
                 ),
                 'rfd-sign rightNum fw-num num_Bold'
-              ]">{{ allCoinPriceInfo[scope.row.coin].priceChangePercent }}%</div>
+              ]">{{
+                _absChangePercentStr(
+                  (allCoinPriceInfo[scope.row.coin] && allCoinPriceInfo[scope.row.coin].priceChangePercent)
+                )
+              }}%</div>
             </template>
           </el-table-column>
           <el-table-column prop="menu" label="操作" align="right" sortable>

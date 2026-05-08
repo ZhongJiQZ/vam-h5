@@ -131,14 +131,19 @@
             <template slot-scope="scope">
               <div
                 :class="[
-                  _isRFD(
-                    allCoinPriceInfo[scope.row.coin].openPrice,
-                    allCoinPriceInfo[scope.row.coin].close
+                  _isRFDByChangePercent(
+                    (allCoinPriceInfo[scope.row.coin] && allCoinPriceInfo[scope.row.coin].priceChangePercent),
+                    'buy',
+                    'rise'
                   ),
                   'rfd-sign rightNum fw-num num_Bold',
                 ]"
               >
-                {{ allCoinPriceInfo[scope.row.coin].priceChangePercent }}%
+                {{
+                  _absChangePercentStr(
+                    (allCoinPriceInfo[scope.row.coin] && allCoinPriceInfo[scope.row.coin].priceChangePercent)
+                  )
+                }}%
               </div>
             </template>
           </el-table-column>
@@ -418,6 +423,23 @@ export default {
     //   return data;
     // }
   },
+  watch: {
+    secondContractCoinList() {
+      if (this.tabsValue === "miao") {
+        this.searchCoin(this.input);
+      }
+    },
+    spotCoinList() {
+      if (this.tabsValue === "bb") {
+        this.searchCoin(this.input);
+      }
+    },
+    contractCoinList() {
+      if (this.tabsValue === "uyue") {
+        this.searchCoin(this.input);
+      }
+    },
+  },
   created() {
     if (!this.isLogin) {
         this.$router.push({ path: "/user/login" });
@@ -427,14 +449,12 @@ export default {
   mounted() {
     // this.getUserCoinApi();
 
-    this.getCoinList();
-    this.tableList = this.secondContractCoinList;
     if (this.$route.query && this.$route.query.text) {
       this.input = this.$route.query.text;
-      this.searchCoin(this.input);
     }
-    console.log("allCoinPriceInfo====>", this.allCoinPriceInfo);
-    console.log("秒合约列表数据====>", this.secondContractCoinList);
+    this.getCoinList().then(() => {
+      this.searchCoin(this.input);
+    });
     //获取类型字典
     // this.getAreaTabsDataFun()
     //获取自选
@@ -560,12 +580,16 @@ export default {
       this.tableList.sort((a, b) => {
         const sortA = this.allCoinPriceInfo[a.coin][finalProp];
         const sortB = this.allCoinPriceInfo[b.coin][finalProp];
+        const valA = Number(sortA)
+        const valB = Number(sortB)
+        const na = Number.isFinite(valA) ? valA : 0
+        const nb = Number.isFinite(valB) ? valB : 0
 
         // 根据排序顺序进行比较
         if (order === "ascending") {
-          return sortA - sortB;
+          return na - nb;
         } else {
-          return sortB - sortA;
+          return nb - na;
         }
       });
     },

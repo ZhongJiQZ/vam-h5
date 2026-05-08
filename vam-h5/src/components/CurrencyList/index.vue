@@ -14,14 +14,11 @@
       <div class="right">
         <div
           :class="[
-            _isRFD(
-              tradeStore.allCoinPriceInfo[item.coin].openPrice,
-              tradeStore.allCoinPriceInfo[item.coin].close
-            ),
+            _isRFDByChangePercent(tradeStore.allCoinPriceInfo[item.coin]?.priceChangePercent),
             'rfd-bg rfd-sign rightNum fw-num'
           ]"
         >
-          {{ tradeStore.allCoinPriceInfo[item.coin]?.priceChangePercent }}%
+          {{ _absChangePercentStr(tradeStore.allCoinPriceInfo[item.coin]?.priceChangePercent) }}%
         </div>
       </div>
     </div>
@@ -30,6 +27,7 @@
 <script setup>
 import LeftItem from '@/components/CurrencyList/left.vue'
 import { useTradeStore } from '@/store/trade'
+import { _isRFDByChangePercent, _absChangePercentStr } from '@/utils/public'
 const props = defineProps({
   showLeftImg: {
     type: Boolean,
