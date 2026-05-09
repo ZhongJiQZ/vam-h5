@@ -104,7 +104,6 @@ export const useTradeStore = defineStore('trade', {
             change = fromApiRate.change
             priceChangePercent = fromApiRate.priceChangePercent
           } else {
-            console.log(JSON.stringify(elem))
             try {
               if (elem.amount > 0 && elem.open > 0) {
                 const n = _mul(_div(_sub(elem.amount, elem.open), elem.open), 100)
@@ -163,7 +162,7 @@ export const useTradeStore = defineStore('trade', {
         const tempObj = {
           open: priceFormat(tempData.open),
           close: priceFormat(tempData.close),
-          low: tempData.low,
+          low: tempData.low, 
           high: tempData.high,
           volume: tempData.vol
         }
@@ -183,10 +182,9 @@ export const useTradeStore = defineStore('trade', {
         // ✅ 非 kline 的 detail：只更新 24h 高低量，不要每次覆盖 openPrice
         if (data.origin !== 'kline') {
           tempObj.volume24 = tempData.vol
-          tempObj.high24 = tempData.high
-          tempObj.low24 = tempData.low
+          tempObj.high24 = tempData.high24h
+          tempObj.low24 = tempData.low24h
         }
-
         // ✅ 写回 allCoinPriceInfo：优先用推送的 changeRate24h，否则沿用本地计算（如 kline 合成推送无该字段）
         const info = this.allCoinPriceInfo[symbol]
         const fromSocketRate = formatFromChangeRate24h(tempData.changeRate24h)
