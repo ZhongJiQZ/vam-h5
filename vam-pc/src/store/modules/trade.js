@@ -213,8 +213,8 @@ const trade = {
 
                     if (data.origin !== 'kline') {
                         tempObj.volume24 = tempData.vol
-                        tempObj.high24 = tempData.high
-                        tempObj.low24 = tempData.low
+                        tempObj.high24 = tempData.high24h
+                        tempObj.low24 = tempData.low24h
                     }
 
                     const info = state.allCoinPriceInfo[symbol]

@@ -850,6 +850,7 @@
   "currently_application": "您目前正在訪問一個去中心化的網站，請在錢包應用程序中運行它",
   "copy_Link": "複製鏈接",
   "notify": "通知",
+  "notify_no_remind": "不再提醒",
   "account_frozen": "賬號已被凍結，請聯繫客服。",
   "payee_name": "收款人姓名",
   "bank_name": "銀行名",

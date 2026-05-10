@@ -847,6 +847,7 @@
   "currently_application": "Actualmente estás visitando un sitio web descentralizado, por favor ejecútalo en la aplicación de billetera",
   "copy_Link": "Copiar enlace",
   "notify": "Notificar",
+  "notify_no_remind": "No volver a mostrar",
   "account_frozen": "La cuenta ha sido congelada, por favor contacta al servicio al cliente.",
   "payee_name": "Nombre del beneficiario",
   "bank_name": "Nombre del banco",

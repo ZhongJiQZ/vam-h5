@@ -847,6 +847,7 @@
   "currently_application": "Vous visitez actuellement un site décentralisé, veuillez l'exécuter dans l'application wallet",
   "copy_Link": "Copier le lien",
   "notify": "Notifier",
+  "notify_no_remind": "Ne plus afficher",
   "account_frozen": "Le compte est gelé, veuillez contacter le service client.",
   "payee_name": "Nom du bénéficiaire",
   "bank_name": "Nom de la banque",
