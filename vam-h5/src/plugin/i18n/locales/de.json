@@ -848,6 +848,7 @@
   "currently_application": "Sie besuchen eine dezentralisierte Website, bitte in Wallet-App ausführen",
   "copy_Link": "Link kopieren",
   "notify": "Benachrichtigen",
+  "notify_no_remind": "Nicht erneut anzeigen",
   "account_frozen": "Konto gesperrt, bitte Kundenservice kontaktieren.",
   "payee_name": "Empfängername",
   "bank_name": "Bankname",

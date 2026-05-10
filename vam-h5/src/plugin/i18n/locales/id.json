@@ -850,6 +850,7 @@
   "currently_application": "Anda sedang mengakses situs terdesentralisasi, silakan jalankan di aplikasi wallet",
   "copy_Link": "Salin Link",
   "notify": "Notifikasi",
+  "notify_no_remind": "Jangan tampilkan lagi",
   "account_frozen": "Akun telah dibekukan, silakan hubungi layanan pelanggan.",
   "payee_name": "Nama Penerima",
   "bank_name": "Nama Bank",

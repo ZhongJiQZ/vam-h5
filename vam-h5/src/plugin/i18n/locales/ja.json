@@ -847,6 +847,7 @@
   "currently_application": "現在分散型ウェブサイトにアクセスしています。ウォレットアプリ内で操作してください",
   "copy_Link": "リンクをコピー",
   "notify": "通知",
+  "notify_no_remind": "次回から表示しない",
   "account_frozen": "アカウントが凍結されています。カスタマーサポートにご連絡ください。",
   "payee_name": "受取人名",
   "bank_name": "銀行名",

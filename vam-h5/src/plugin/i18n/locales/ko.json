@@ -847,6 +847,7 @@
   "currently_application": "현재 분산형 웹사이트에 접속 중입니다. 지갑 앱에서 실행해 주세요",
   "copy_Link": "링크 복사",
   "notify": "알림",
+  "notify_no_remind": "다시 표시 안 함",
   "account_frozen": "계정이 동결되었습니다. 고객센터에 문의해 주세요.",
   "payee_name": "수취인 이름",
   "bank_name": "은행명",

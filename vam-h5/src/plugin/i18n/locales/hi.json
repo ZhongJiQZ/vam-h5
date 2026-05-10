@@ -845,6 +845,7 @@
   "currently_application": "You are currently visiting a decentralized website, please run it in the wallet application",
   "copy_Link": "copy Link",
   "notify": "Notify",
+  "notify_no_remind": "Don't show again",
   "account_frozen": "Account has been frozen, please contact customer service.",
   "payee_name": "Payee name",
   "bank_name": "Bank name",

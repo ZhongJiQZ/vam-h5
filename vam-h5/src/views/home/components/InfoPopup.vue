@@ -1,8 +1,11 @@
 <!-- 站内信弹窗 -->
 <script setup>
+import { ref, watch } from 'vue'
 import { showToast } from 'vant'
 import { haveRead } from '@/api/info'
 import { _t18 } from '@/utils/public'
+
+const noRemind = ref(false)
 
 const props = defineProps({
   data: {
@@ -14,10 +17,20 @@ const props = defineProps({
     default: false
   }
 })
+watch(
+  () => props.show,
+  (open) => {
+    if (open) {
+      noRemind.value = false
+    }
+  }
+)
 const emit = defineEmits(['closeBtn'])
 const closeBtn = () => {
   emit('closeBtn')
-  readMsgs()
+  if (noRemind.value) {
+    readMsgs()
+  }
 }
 console.log(props.data)
 const readMsgs = () => {
@@ -58,6 +71,16 @@ const readMsgs = () => {
             <div class="txt" v-html="item.content"></div>
           </div>
         </div>
+        <div class="no-remind-row">
+          <van-checkbox
+            v-model="noRemind"
+            class="no-remind-checkbox"
+            shape="square"
+            icon-size="18px"
+          >
+            {{ _t18('notify_no_remind') }}
+          </van-checkbox>
+        </div>
         <div class="btnBox" @click="closeBtn">
           <p class="fw-bold">{{ _t18('btnConfirm') }}</p>
         </div>
@@ -73,6 +96,8 @@ const readMsgs = () => {
   width: 340px;
   font-size: 14px;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 
   .head {
     position: relative;
@@ -91,11 +116,11 @@ const readMsgs = () => {
     }
   }
   .conn {
+    flex: 1 1 auto;
     padding: 15px 15px 0;
     min-height: 200px;
-    height: auto;
     max-height: 50vh;
-    overflow: auto;
+    overflow-y: auto;
     border-top: 1px solid var(--ex-border-color6);
     & > div {
       padding-bottom: 30px;
@@ -110,8 +135,36 @@ const readMsgs = () => {
       font-size: 14px;
     }
   }
+  .no-remind-row {
+    flex-shrink: 0;
+    padding: 14px 15px 12px;
+    border-top: 1px solid var(--ex-border-color6);
+
+    :deep(.no-remind-checkbox.van-checkbox) {
+      width: 100%;
+      align-items: flex-start;
+      --van-checkbox-size: 18px;
+      --van-checkbox-checked-icon-color: var(--ex-primary-color);
+      --van-checkbox-border-color: var(--ex-border-color6);
+    }
+
+    :deep(.no-remind-checkbox .van-checkbox__icon) {
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    :deep(.no-remind-checkbox .van-checkbox__label) {
+      margin-left: 10px;
+      line-height: 20px;
+      font-size: 14px;
+      font-weight: normal;
+      color: var(--ex-home-list-ftcolor);
+    }
+  }
   .btnBox {
-    padding: 15px 20px;
+    flex-shrink: 0;
+    padding: 16px 20px;
+    border-top: 1px solid var(--ex-border-color6);
     background-color: var(--ex-div-bgColor1);
     text-align: center;
     p {

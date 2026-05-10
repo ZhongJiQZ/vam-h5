@@ -847,6 +847,7 @@
   "currently_application": "Bạn đang truy cập một trang web phi tập trung, vui lòng chạy trong ứng dụng ví",
   "copy_Link": "Sao chép liên kết",
   "notify": "Thông báo",
+  "notify_no_remind": "Không nhắc lại",
   "account_frozen": "Tài khoản đã bị khóa, vui lòng liên hệ dịch vụ khách hàng.",
   "payee_name": "Tên người nhận",
   "bank_name": "Tên ngân hàng",
