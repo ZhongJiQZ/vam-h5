@@ -36,7 +36,8 @@ const { _toast } = useToast()
 
 const userStore = useUserStore()
 if (userStore.isSign) {
-  userStore.getUserInfo()
+  // 静默刷新：不派发 event_userInfoChange，否则首页 menu 会打开站内信/公告弹窗
+  userStore.getUserInfo({ silent: true })
 }
 
 // 用户信息
