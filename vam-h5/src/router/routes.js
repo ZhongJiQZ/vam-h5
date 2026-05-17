@@ -133,6 +133,11 @@ export default [
     name: 'Aboutus',
     component: () => import('@/views/user/aboutus.vue')
   },
+  {
+    path: '/investment',
+    name: 'Investment',
+    component: () => import('@/views/slidebar/investment.vue')
+  },
   // 首页
   {
     path: '/:catchAll(.*)', // 不识别的path自动匹配404
