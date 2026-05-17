@@ -65,8 +65,10 @@ export const useUserStore = defineStore('user', {
 
     /**
      * 获取用户信息
+     * @param {{ silent?: boolean }} [opts] silent 为 true 时不派发 event_userInfoChange（避免打开侧栏等静默刷新触发首页站内信弹窗）
      */
-    async getUserInfo() {
+    async getUserInfo(opts) {
+      const silent = Boolean(opts && typeof opts === 'object' && opts.silent)
       const res = await getUserInfo()
       if (res.code != 200) { 
         localStorage.clear()
@@ -80,7 +82,9 @@ export const useUserStore = defineStore('user', {
       if (res.code == 200) {
         Object.assign(this.userInfo, res.data || {})
         Object.assign(this.asset, this.userInfo.asset || [])
-        dispatchCustomEvent('event_userInfoChange', this.userInfo)
+        if (!silent) {
+          dispatchCustomEvent('event_userInfoChange', this.userInfo)
+        }
         // dispatchCustomEvent('event_userInfoChange2', this.userInfo)
         localStorage.setItem(storageDict.USER_INFO, JSON.stringify(this.userInfo))
         const mainStore = useMainStore()

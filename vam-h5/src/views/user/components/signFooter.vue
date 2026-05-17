@@ -261,8 +261,9 @@ const toWalletLogin = async () => {
  */
 const toResgister = () => {
   let formData = {}
+  const invitCode = String(props.formDataToRegister.invitCode ?? '').trim()
   formData.loginPassword = props.formDataToRegister.password // 密码
-  formData.activeCode = props.formDataToRegister.invitCode // 邀请码
+  formData.activeCode = invitCode // 邀请码
   formData.code = props.formDataToRegister.code //验证码
   let msg = false
   // 普通注册
@@ -306,17 +307,15 @@ const toResgister = () => {
     // msg = 'register_pwd_diff'
     _toast('register_pwd_diff')
     return
-  } else if (formData.activeCode == '' || formData.activeCode == undefined) {
-    // 邀请码必填（全站统一）
+  } else if (!invitCode) {
+    // 邀请码必填（账号/邮箱/手机注册统一）
     _toast('please_shareCode')
     return
   }
   // 验证码
   if (props.formDataToRegister.type == 2 || props.formDataToRegister.type == 3) {
     if (formData.code == '') {
-      // _toast('请填写验证码')
-      // msg = 'please_code'
-      _toast('please_shareCode')
+      _toast('please_code')
       return
     }
   } else {

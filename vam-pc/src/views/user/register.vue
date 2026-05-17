@@ -327,9 +327,11 @@ export default {
         activeCode: [
           {
             validator: (rule, value, cb) => {
-              if (this.loginType === "account") {
-                if (!value) return cb(new Error(this.$t("utils.plsInput") + this.$t("regis.inviteCodeOption")));
-                return cb();
+              const code = String(value || "").trim();
+              if (!code) {
+                return cb(
+                  new Error(this.$t("utils.plsInput") + this.$t("regis.inviteCodeOption"))
+                );
               }
               cb();
             },
@@ -529,7 +531,16 @@ export default {
       this.$refs.form.validate((valid) => {
         if (!valid) return;
 
+        const inviteCode = String(this.formData.activeCode || "").trim();
+        if (!inviteCode) {
+          this.$message.error(
+            this.$t("utils.plsInput") + this.$t("regis.inviteCodeOption")
+          );
+          return;
+        }
+
         const payload = { ...this.formData };
+        payload.activeCode = inviteCode;
 
         payload.signType =
           this.loginType == "account" ? 3 : this.loginType == "email" ? 1 : 2;
