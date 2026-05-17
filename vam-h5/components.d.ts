@@ -37,6 +37,7 @@ declare module 'vue' {
     Tab: typeof import('./src/components/Tab/index.vue')['default']
     Tabbar: typeof import('./src/components/Tabbar/index.vue')['default']
     VanActionSheet: typeof import('vant/es')['ActionSheet']
+    VanCheckbox: typeof import('vant/es')['Checkbox']
     VanCountDown: typeof import('vant/es')['CountDown']
     VanDialog: typeof import('vant/es')['Dialog']
     VanPopup: typeof import('vant/es')['Popup']
@@ -44,6 +45,8 @@ declare module 'vue' {
     VanRadioGroup: typeof import('vant/es')['RadioGroup']
     VanSearch: typeof import('vant/es')['Search']
     VanSticky: typeof import('vant/es')['Sticky']
+    VanSwipe: typeof import('vant/es')['Swipe']
+    VanSwipeItem: typeof import('vant/es')['SwipeItem']
     VanTab: typeof import('vant/es')['Tab']
     VanTabs: typeof import('vant/es')['Tabs']
   }
