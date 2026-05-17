@@ -262,7 +262,7 @@ $card-grey: #f2f1ed;
 }
 
 .investment-body {
-    padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
 }
 
 /* Hero */
