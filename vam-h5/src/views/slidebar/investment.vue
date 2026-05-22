@@ -1,6 +1,12 @@
 <!-- 团队招商 -->
 <template>
     <div class="investment-page">
+        <DarkHeaderBar
+            class="investment-header"
+            :title="_t18('investment')"
+            :border_bottom="true"
+            bg-color="#f9f7f2"
+        />
         <div class="investment-body">
             <!-- Hero -->
             <section class="hero">
@@ -114,10 +120,11 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { dispatchCustomEvent } from '@/utils'
 import { _t18 } from '@/utils/public'
+import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 
 const { locale } = useI18n()
 
@@ -268,7 +275,7 @@ $card-grey: #f2f1ed;
 /* Hero */
 .hero {
     background: linear-gradient(135deg, #cdf4e6 0%, #fff 100%);
-    padding: 40px 20px 28px;
+    padding: 24px 20px 28px;
     border-radius: 0 0 24px 24px;
 }
 
