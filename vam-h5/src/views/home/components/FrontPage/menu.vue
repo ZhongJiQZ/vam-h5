@@ -222,7 +222,7 @@ const toRecharge = () => {
     }
 
     .itemName {
-      margin-top: 10px;
+      margin: 10px 0 15px;
       font-size: 12px;
       color: var(--ex-default-font-color);
       text-align: center;
