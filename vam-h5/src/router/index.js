@@ -22,9 +22,11 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   // 开启 Progress
   const userStore = useUserStore()
+  userStore.syncSignFromToken()
+  const isLoggedIn = Boolean(userStore.isSign && userStore.token)
   if (to.path == '/no-wallet') {
     next()
-  } else if (userStore.isSign) {
+  } else if (isLoggedIn) {
     // 已登录
     userStore.getUserInfo()
 
@@ -52,6 +54,13 @@ router.beforeEach(async (to, from, next) => {
         }
       }
     } else {
+      // 检测到钱包环境但未走自动登录：仍放行，避免导航挂起
+      if (!noLoginRouterList.includes(to.path)) {
+        next('/sign-in')
+      } else {
+        next()
+      }
+      return
       // // 钱包 必登录
       // let params = {}
       // if (to.path.indexOf('/i&') > -1) {
