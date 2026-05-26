@@ -278,13 +278,24 @@ const toWalletLogin = async () => {
 const toResgister = () => {
   let formData = {}
   const invitCode = String(props.formDataToRegister.invitCode ?? '').trim()
-  formData.loginPassword = props.formDataToRegister.password // 密码
+  const password = String(props.formDataToRegister.password ?? '').replace(
+    /[^a-zA-Z0-9\u4e00-\u9fa5]/g,
+    ''
+  )
+  const password2 = String(props.formDataToRegister.password2 ?? '').replace(
+    /[^a-zA-Z0-9\u4e00-\u9fa5]/g,
+    ''
+  )
+  formData.loginPassword = password // 密码
   formData.activeCode = invitCode // 邀请码
   formData.code = props.formDataToRegister.code //验证码
   let msg = false
   // 普通注册
   if (props.formDataToRegister.type == 1) {
-    formData.loginName = props.formDataToRegister.username //用户名
+    formData.loginName = String(props.formDataToRegister.username ?? '').replace(
+      /[^a-zA-Z0-9\u4e00-\u9fa5]/g,
+      ''
+    ) //用户名
     formData.signType = 3
     if (formData.loginName == '') {
       //用户名
@@ -319,7 +330,7 @@ const toResgister = () => {
     // msg = 'please_pwd'
     _toast('please_pwd')
     return
-  } else if (props.formDataToRegister.password !== props.formDataToRegister.password2) {
+  } else if (password !== password2) {
     // msg = 'register_pwd_diff'
     _toast('register_pwd_diff')
     return

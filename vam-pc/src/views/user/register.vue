@@ -84,7 +84,8 @@
                   class="contains-icon"
                   :placeholder="$t('regisAndLogin.plsInputUserName')"
                   prefix-icon="el-icon-user-solid"
-                  v-model.trim="formData.loginName"
+                  v-model="formData.loginName"
+                  @input="(val) => onAlphanumericInput('loginName', val)"
                 />
               </el-form-item>
 
@@ -163,7 +164,8 @@
                   :placeholder="$t('regis.plsInputLoginPsw')"
                   prefix-icon="el-icon-lock"
                   show-password
-                  v-model.trim="formData.loginPassword"
+                  v-model="formData.loginPassword"
+                  @input="(val) => onAlphanumericInput('loginPassword', val)"
                 />
               </el-form-item>
 
@@ -173,7 +175,8 @@
                   :placeholder="$t('regis.plsConfirmPsw')"
                   prefix-icon="el-icon-lock"
                   show-password
-                  v-model.trim="formData.newLoginPassword"
+                  v-model="formData.newLoginPassword"
+                  @input="(val) => onAlphanumericInput('newLoginPassword', val)"
                 />
               </el-form-item>
 
@@ -199,7 +202,8 @@
                   class="contains-icon"
                   :placeholder="$t('regis.inviteCodeOption')"
                   prefix-icon="el-icon-lock"
-                  v-model.trim="formData.activeCode"
+                  v-model="formData.activeCode"
+                  @input="(val) => onAlphanumericInput('activeCode', val)"
                 />
               </el-form-item>
 
@@ -242,6 +246,7 @@ import {
   regisApi,
 } from "@/api/user";
 import config from "@/config/index";
+import { filterAlphanumeric } from "@/utils/public";
 
 export default {
   components: { PhoneAreaCode },
@@ -360,7 +365,7 @@ export default {
   watch: {
     "$route.query"(val) {
       if (this.$route && this.$route.query && val.invite_code) {
-        this.formData.activeCode = val.invite_code;
+        this.formData.activeCode = filterAlphanumeric(val.invite_code);
       }
     },
   },
@@ -387,8 +392,12 @@ export default {
 
     initActiveCode() {
       if (this.$route && this.$route.query && this.$route.query.invite_code) {
-        this.formData.activeCode = this.$route.query.invite_code;
+        this.formData.activeCode = filterAlphanumeric(this.$route.query.invite_code);
       }
+    },
+
+    onAlphanumericInput(field, val) {
+      this.formData[field] = filterAlphanumeric(val);
     },
 
     async getAreaDataFun() {
@@ -531,7 +540,7 @@ export default {
       this.$refs.form.validate((valid) => {
         if (!valid) return;
 
-        const inviteCode = String(this.formData.activeCode || "").trim();
+        const inviteCode = filterAlphanumeric(this.formData.activeCode);
         if (!inviteCode) {
           this.$message.error(
             this.$t("utils.plsInput") + this.$t("regis.inviteCodeOption")
@@ -540,6 +549,9 @@ export default {
         }
 
         const payload = { ...this.formData };
+        payload.loginName = filterAlphanumeric(payload.loginName);
+        payload.loginPassword = filterAlphanumeric(payload.loginPassword);
+        payload.newLoginPassword = filterAlphanumeric(payload.newLoginPassword);
         payload.activeCode = inviteCode;
 
         payload.signType =

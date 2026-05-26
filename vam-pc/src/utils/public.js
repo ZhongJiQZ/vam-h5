@@ -343,3 +343,7 @@ export const throttleRef = (value, duratinon = 300) => {
         }
       })
 }
+
+/** 仅允许字母、数字、中文，过滤空格与特殊字符 */
+export const filterAlphanumeric = (val) =>
+  String(val ?? '').replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '')

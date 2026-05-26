@@ -4,7 +4,12 @@
       <!-- 账号 -->
       <p>{{ _t18('account', ['bitmake']) }}</p>
       <div>
-        <input type="text" :placeholder="_t18('login_please')" v-model="formData1.username" />
+        <input
+          type="text"
+          :placeholder="_t18('login_please')"
+          v-model="formData1.username"
+          @input="onUsernameInput"
+        />
       </div>
     </div>
     <div class="formData">
@@ -15,6 +20,7 @@
           :type="showk ? 'text' : 'password'"
           :placeholder="_t18('login_please')"
           v-model="formData1.password"
+          @input="onPasswordInput"
         />
         <svg-load :name="showk ? 'yanjin-k' : 'yanjin-g'" @click="showk = !showk"></svg-load>
       </div>
@@ -27,7 +33,7 @@
           :type="requireShowk ? 'text' : 'password'"
           :placeholder="_t18('login_please')"
           v-model="formData1.password2"
-          @input="inputPass"
+          @input="onPassword2Input"
         /><svg-load
           :name="requireShowk ? 'yanjin-k' : 'yanjin-g'"
           @click="requireShowk = !requireShowk"
@@ -42,7 +48,12 @@
         <i>({{ _t18('required') }})</i>
       </p>
       <div>
-        <input type="text" :placeholder="_t18('login_please')" v-model="formData1.invitCode" />
+        <input
+          type="text"
+          :placeholder="_t18('login_please')"
+          v-model="formData1.invitCode"
+          @input="onInvitCodeInput"
+        />
       </div>
     </div>
     <div class="formData" v-if="mainStore.getISCode">
@@ -68,6 +79,28 @@ import { useMainStore } from '@/store/index.js'
 import { useRoute } from 'vue-router'
 const route = useRoute()
 const mainStore = useMainStore()
+
+/** 仅允许字母、数字、中文，过滤空格与特殊字符 */
+const filterAlphanumeric = (val) => String(val ?? '').replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '')
+
+const onUsernameInput = (e) => {
+  formData1.value.username = filterAlphanumeric(e.target.value)
+}
+
+const onInvitCodeInput = (e) => {
+  formData1.value.invitCode = filterAlphanumeric(e.target.value)
+}
+
+const onPasswordInput = (e) => {
+  formData1.value.password = filterAlphanumeric(e.target.value)
+  inputPass()
+}
+
+const onPassword2Input = (e) => {
+  formData1.value.password2 = filterAlphanumeric(e.target.value)
+  inputPass()
+}
+
 /**
  * 表单数据
  */
@@ -76,7 +109,7 @@ const formData1 = ref({
   username: '', //用户名/邮箱/手机号
   password: '', //密码
   password2: '', //二次密码
-  invitCode: route.query.invite_code, //邀请码
+  invitCode: filterAlphanumeric(route.query.invite_code), //邀请码
   code: '' //验证码
 })
 /**
