@@ -23,8 +23,8 @@ jobs:
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     environment: production
     env:
-      DEPLOY_SSH_KEY: ${{ secrets.TEST_KEY }}
-      DEPLOY_HOST: 164.215.103.119
+      DEPLOY_SSH_KEY: ${{ secrets.MAIN_KEY }}
+      DEPLOY_HOST: 45.141.58.54
       DEPLOY_USER: root
       DEPLOY_PORT: "22"
       DEPLOY_PATH: /www/wwwroot/test.zonweb.vip/dist/
