@@ -3,6 +3,16 @@ import { defineStore } from 'pinia'
 import { getAppCurrencyList, getWithDrawSetting, getSwapSetting } from '@/api/account.js'
 
 export const useAccountStore = defineStore('account', () => {
+  const normalizeSwapIcon = (icon, coin) => {
+    const raw = String(icon || '').trim()
+    if (!raw) return String(coin || '').trim().toLowerCase()
+    if (/^https?:\/\//i.test(raw)) return raw
+    if (raw.includes('.svg')) {
+      const m = raw.match(/([^/]+)\.svg(?:\?.*)?$/i)
+      if (m && m[1]) return m[1].toLowerCase()
+    }
+    return raw
+  }
   /**
    * 充值
    */
@@ -42,8 +52,7 @@ export const useAccountStore = defineStore('account', () => {
         list.unshift(obj)
       } else {
         obj['coin'] = item.symbol?.replace('usdt', '').trim()
-        // obj['icon'] = item.symbol?.replace('usdt', '').trim()
-        obj['icon'] = item.logo
+        obj['icon'] = normalizeSwapIcon(item.logo, obj['coin'])
         list.push(obj)
       }
     })

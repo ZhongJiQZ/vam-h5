@@ -24,9 +24,14 @@
                   <div class="swap-coin" @click="showAction('from')">
                     {{ list1Current?.coin?.toLocaleUpperCase() }}
                     <div class="swap-coin__icon">
-                      <image-load v-if="list1Current?.icon?.length > 10" :filePath="list1Current?.icon" alt=""
-                        class="swap-coin__img" />
-                      <svg-load v-else :name="list1Current?.icon" class="swap-coin__svg" />
+                      <image-load
+                        v-if="displayIconUrl(list1Current)"
+                        :filePath="displayIconUrl(list1Current)"
+                        alt=""
+                        class="swap-coin__img"
+                        @error="onIconError(list1Current?.coin)"
+                      />
+                      <svg-load v-else :name="displaySvgIcon(list1Current)" class="swap-coin__svg" />
                     </div>
                   </div>
                 </div>
@@ -47,9 +52,14 @@
                   <div class="swap-coin swap-coin--solo" @click="showAction('to')">
                     {{ list2Current?.coin?.toLocaleUpperCase() }}
                     <div class="swap-coin__icon">
-                      <image-load v-if="list2Current?.icon?.length > 10" :filePath="list2Current?.icon" alt=""
-                        class="swap-coin__img" />
-                      <svg-load v-else :name="list2Current?.icon" class="swap-coin__svg" />
+                      <image-load
+                        v-if="displayIconUrl(list2Current)"
+                        :filePath="displayIconUrl(list2Current)"
+                        alt=""
+                        class="swap-coin__img"
+                        @error="onIconError(list2Current?.coin)"
+                      />
+                      <svg-load v-else :name="displaySvgIcon(list2Current)" class="swap-coin__svg" />
                     </div>
                   </div>
                 </div>
@@ -75,8 +85,14 @@
       <div class="coinList">
         <div v-for="(item, index) in action" :key="item.id" class="coinItem" @click="selectCoin(item, index)">
           <div class="svgImg">
-            <image-load v-if="item?.icon?.length > 10" :filePath="item.icon" alt="" class="iconImg" />
-            <svg-load v-else :name="item.icon" class="icon" />
+            <image-load
+              v-if="displayIconUrl(item)"
+              :filePath="displayIconUrl(item)"
+              alt=""
+              class="iconImg"
+              @error="onIconError(item?.coin)"
+            />
+            <svg-load v-else :name="displaySvgIcon(item)" class="icon" />
           </div>
           <div>
             <p>{{ item.coin?.toLocaleUpperCase() }}</p>
@@ -117,6 +133,46 @@ const list1Current = ref({})
 const list2Current = ref({})
 const list1Coin = ref(0)
 const list2Coin = ref(0)
+const iconLoadFailedMap = ref({})
+
+const normalizeIconName = (icon, coin) => {
+  const raw = String(icon || '').trim()
+  if (!raw) return String(coin || '').trim().toLowerCase()
+  if (/^https?:\/\//i.test(raw)) return raw
+  if (raw.includes('.svg')) {
+    const m = raw.match(/([^/]+)\.svg(?:\?.*)?$/i)
+    if (m && m[1]) return m[1].toLowerCase()
+  }
+  return raw
+}
+
+const displaySvgIcon = (item) => {
+  const normalized = normalizeIconName(item?.icon, item?.coin)
+  if (/^https?:\/\//i.test(normalized)) {
+    return String(item?.coin || '').trim().toLowerCase()
+  }
+  return normalized
+}
+
+const displayIconUrl = (item) => {
+  const coin = String(item?.coin || '').trim().toLowerCase()
+  const normalized = normalizeIconName(item?.icon, coin)
+  if (!normalized) return ''
+  if (!/^https?:\/\//i.test(normalized)) return ''
+  if (iconLoadFailedMap.value[coin]) {
+    return `https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/32/icon/${coin}.png`
+  }
+  return normalized
+}
+
+const onIconError = (coin) => {
+  const key = String(coin || '').trim().toLowerCase()
+  if (!key) return
+  iconLoadFailedMap.value = {
+    ...iconLoadFailedMap.value,
+    [key]: true
+  }
+}
 
 const availableAmount = computed(() => {
   let data = ''
@@ -143,7 +199,7 @@ const init = async () => {
       }
       if (item.symbol != 'usdt') {
         obj['coin'] = item.symbol?.replace('usdt', '').trim()
-        obj['icon'] = item.loge
+        obj['icon'] = normalizeIconName(item.loge, obj['coin'])
         template1.push(obj)
       }
     }
