@@ -279,7 +279,11 @@ export const useMainStore = defineStore('main', {
         const list = self.settingConfig.ASSET_COIN || []
         const toFetch = list.filter((elem) => {
           const v = self.userRechageMap[elem.coinName]
-          return v == undefined || (typeof v === 'object' && v !== null)
+          return (
+            v == undefined ||
+            (typeof v === 'object' && v !== null) ||
+            (typeof v === 'string' && v.trim() === '')
+          )
         })
         if (!toFetch.length) return
         const responses = await Promise.all(

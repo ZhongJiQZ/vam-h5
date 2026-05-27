@@ -68,7 +68,7 @@
 </template>
 
 <script setup>
-import { rechargeSubmit } from '@/api/account.js'
+import { rechargeSubmit, getUserRechageNewApi } from '@/api/account.js'
 import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import { useMainStore } from '@/store'
 import { useRoute, useRouter } from 'vue-router'
@@ -145,11 +145,28 @@ const submitAddress = computed(() => {
   return fromMap || rechargeObj.value?.coinAddress || ''
 })
 
+const refreshCurrentCoinAddress = async () => {
+  if (isBankRecharge.value) return
+  const type = String(route.query.type || '').trim()
+  const coin = String(route.query.coin || '').trim()
+  if (!type || !coin) return
+  try {
+    const res = await getUserRechageNewApi(coin, type)
+    const payload = res?.data?.data ?? res?.data ?? res
+    const raw = payload?.[type] ?? payload
+    const addr = normalizeRechargeAddressFromApi(raw, type)
+    if (addr || mainStore.userRechageMap[type] == null) {
+      mainStore.userRechageMap[type] = addr
+    }
+  } catch (e) {}
+}
+
 watch(
   () => route.query.type,
   () => {
     if (!isBankRecharge.value) {
       mainStore.getUserRechageNew()
+      refreshCurrentCoinAddress()
     }
   },
   { immediate: true }
