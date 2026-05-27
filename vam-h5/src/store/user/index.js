@@ -67,6 +67,11 @@ export const useUserStore = defineStore('user', {
         this.$reset()
         const accountStore = useAccountStore()
         accountStore && accountStore.$reset()
+        const mainStore = useMainStore()
+        if (mainStore) {
+          // 切换账号时清空上一账号的充值地址缓存，避免新账号误用旧缓存导致不再拉取地址
+          mainStore.userRechageMap = {}
+        }
         router.replace('/sign-in')
         
       } catch (error) {}
