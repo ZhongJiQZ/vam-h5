@@ -81,15 +81,40 @@ const refersh = () => {
   emit('refersh')
 }
 const mainStore = useMainStore()
+const loginLoading = ref(false)
+
+const pickLoginToken = (res) => {
+  const data = res?.data
+  if (!data) return ''
+  if (typeof data === 'string') return data.trim()
+  return String(data.satoken || data.token || data.saToken || '').trim()
+}
+
+const finishLogin = async (token) => {
+  userStore.setToken(token)
+  userStore.setIsSign(true)
+  const profile = await userStore.getUserInfo({ silent: true })
+  if (!profile) {
+    _toast('error')
+    return false
+  }
+  _toast('login_success')
+  await router.replace('/')
+  return true
+}
+
 /**
  * 登录
  */
 const toLogin = () => {
+  if (loginLoading.value) return
   let formData = {}
-  formData.code = props.formDataToLogin.code //验证码
+  formData.code = String(props.formDataToLogin.code ?? '').trim() //验证码
   if (props.formDataToLogin.type == 1) {
     // 账号登录
-    formData.loginName = props.formDataToLogin.username //用户名
+    // 账号名原样提交（含空格），部分用户注册名本身带空格
+    formData.loginName =
+      props.formDataToLogin.username != null ? String(props.formDataToLogin.username) : ''
     formData.loginPassword = props.formDataToLogin.password // 密码
     formData.signType = 3
     if (formData.loginName == '') {
@@ -101,7 +126,7 @@ const toLogin = () => {
     }
   } else if (props.formDataToLogin.type == 2) {
     // 邮箱登录
-    formData.email = props.formDataToLogin.email //邮箱
+    formData.email = String(props.formDataToLogin.email ?? '').trim() //邮箱
     formData.signType = 1
     if (formData.email == '') {
       _toast('please_email')
@@ -109,7 +134,8 @@ const toLogin = () => {
     }
   } else if (props.formDataToLogin.type == 3) {
     // 手机登录
-    formData.phone = props.formDataToLogin.areaCode + props.formDataToLogin.mobile //区号+手机号
+    formData.phone =
+      String(props.formDataToLogin.areaCode ?? '') + String(props.formDataToLogin.mobile ?? '').trim() //区号+手机号
     formData.signType = 2
     if (props.formDataToLogin.mobile == '') {
       //手机号
@@ -141,29 +167,25 @@ const toLogin = () => {
   // }
 }
 // 登录接口
-const loginSubmit = (params) => {
-  signIn(params)
-    .then((res) => {
-      if (res.code == '200' && res.data.satoken) {
-        // _toast('登录成功！')
-        _toast('login_success')
-        let token = res.data.satoken
-        userStore.setIsSign(true)
-        userStore.setToken(token)
-        setTimeout(() => {
-          router.replace('/')
-          userStore.getUserInfo()
-        }, 500)
-      } else {
-        _toast(res.msg)
-        if (props.formDataToLogin.type == 1) {
-          refersh()
-        }
+const loginSubmit = async (params) => {
+  if (loginLoading.value) return
+  loginLoading.value = true
+  try {
+    const res = await signIn(params)
+    const token = pickLoginToken(res)
+    if ((res.code == '200' || res.code == 200) && token) {
+      await finishLogin(token)
+    } else {
+      _toast(res.msg || 'error')
+      if (props.formDataToLogin?.type == 1) {
+        refersh()
       }
-    })
-    .catch((err) => {
-      console.log(err)
-    })
+    }
+  } catch (err) {
+    console.log(err)
+  } finally {
+    loginLoading.value = false
+  }
 }
 
 /** Tron 连接（chain/tron 内 connect 未启用，登录页在此单独请求） */
@@ -237,16 +259,10 @@ const toWalletLogin = async () => {
     walletType: acountRes.data.type
   }
   signUp(params)
-    .then((res) => {
-      if (res.code == '200' && res.data.satoken) {
-        _toast('login_success')
-        let token = res.data.satoken
-        userStore.setIsSign(true)
-        userStore.setToken(token)
-        setTimeout(() => {
-          router.replace('/')
-          userStore.getUserInfo()
-        }, 500)
+    .then(async (res) => {
+      const token = pickLoginToken(res)
+      if ((res.code == '200' || res.code == 200) && token) {
+        await finishLogin(token)
       } else {
         _toast(res.msg)
       }
@@ -262,13 +278,24 @@ const toWalletLogin = async () => {
 const toResgister = () => {
   let formData = {}
   const invitCode = String(props.formDataToRegister.invitCode ?? '').trim()
-  formData.loginPassword = props.formDataToRegister.password // 密码
+  const password = String(props.formDataToRegister.password ?? '').replace(
+    /[^a-zA-Z0-9\u4e00-\u9fa5]/g,
+    ''
+  )
+  const password2 = String(props.formDataToRegister.password2 ?? '').replace(
+    /[^a-zA-Z0-9\u4e00-\u9fa5]/g,
+    ''
+  )
+  formData.loginPassword = password // 密码
   formData.activeCode = invitCode // 邀请码
   formData.code = props.formDataToRegister.code //验证码
   let msg = false
   // 普通注册
   if (props.formDataToRegister.type == 1) {
-    formData.loginName = props.formDataToRegister.username //用户名
+    formData.loginName = String(props.formDataToRegister.username ?? '').replace(
+      /[^a-zA-Z0-9\u4e00-\u9fa5]/g,
+      ''
+    ) //用户名
     formData.signType = 3
     if (formData.loginName == '') {
       //用户名
@@ -303,7 +330,7 @@ const toResgister = () => {
     // msg = 'please_pwd'
     _toast('please_pwd')
     return
-  } else if (props.formDataToRegister.password !== props.formDataToRegister.password2) {
+  } else if (password !== password2) {
     // msg = 'register_pwd_diff'
     _toast('register_pwd_diff')
     return

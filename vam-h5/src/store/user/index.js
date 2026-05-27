@@ -17,7 +17,7 @@ export const useUserStore = defineStore('user', {
       /**
        * 是否登录
        */
-      isSign: ref(false),
+      isSign: false,
       /**
        * 用户信息
        */
@@ -42,7 +42,16 @@ export const useUserStore = defineStore('user', {
      * @param {*} isSign
      */
     setIsSign(isSign) {
-      this.isSign = isSign
+      this.isSign = Boolean(isSign)
+    },
+    /** 根据 token 同步登录态（持久化恢复后与路由守卫保持一致） */
+    syncSignFromToken() {
+      const token =
+        this.token || (typeof localStorage !== 'undefined' ? localStorage.getItem(storageDict.TOKEN) : '')
+      this.isSign = Boolean(token)
+      if (token && !this.token) {
+        this.token = token
+      }
     },
     /**
      * 退出登录
@@ -69,28 +78,28 @@ export const useUserStore = defineStore('user', {
      */
     async getUserInfo(opts) {
       const silent = Boolean(opts && typeof opts === 'object' && opts.silent)
+      if (!this.token) {
+        this.syncSignFromToken()
+      }
+      if (!this.token) {
+        return null
+      }
       const res = await getUserInfo()
-      if (res.code != 200) { 
-        localStorage.clear()
-        sessionStorage.clear()
-        router.replace('/');
-        setTimeout(()=>{
-          location.reload();
-        },300)
-        return;
+      if (res.code != 200 && res.code != '200') {
+        // 仅退出登录态，避免 clear 后 isSign/token 不一致导致「提示成功却无法跳转」
+        this.signOut()
+        return null
       }
-      if (res.code == 200) {
-        Object.assign(this.userInfo, res.data || {})
-        Object.assign(this.asset, this.userInfo.asset || [])
-        if (!silent) {
-          dispatchCustomEvent('event_userInfoChange', this.userInfo)
-        }
-        // dispatchCustomEvent('event_userInfoChange2', this.userInfo)
-        localStorage.setItem(storageDict.USER_INFO, JSON.stringify(this.userInfo))
-        const mainStore = useMainStore()
-        mainStore.getUserRechageNew()
-        return this.userInfo
+      Object.assign(this.userInfo, res.data || {})
+      Object.assign(this.asset, this.userInfo.asset || [])
+      this.setIsSign(true)
+      if (!silent) {
+        dispatchCustomEvent('event_userInfoChange', this.userInfo)
       }
+      localStorage.setItem(storageDict.USER_INFO, JSON.stringify(this.userInfo))
+      const mainStore = useMainStore()
+      mainStore.getUserRechageNew()
+      return this.userInfo
     }
   },
   // 开启数据持久化

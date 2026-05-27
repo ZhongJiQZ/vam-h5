@@ -8,7 +8,7 @@
             bg-color="#f9f7f2"
         />
         <div class="investment-body">
-            <!-- Hero -->
+            <!-- Hero --> 
             <section class="hero">
                 <div class="hero-badge">
                     <span class="hero-badge__icon">🏆</span>
