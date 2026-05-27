@@ -23,6 +23,9 @@
             class="senLeftImg"
             @click="_toView('/tradingRules?type=2')"
           ></svg-load>
+          <span class="copy-trade-link" @click="$router.push('/copy-trade')">{{
+            _t18('copy_trade_title')
+          }}</span>
           <!-- <svg-load
             v-if="mainStore.hasOption"
             @click="setCollectByCoin"
@@ -37,7 +40,7 @@
 <script setup>
 import { useTradeStore } from '@/store/trade'
 import { countFormat, priceFormat } from '@/utils/decimal'
-import { _t18 } from '@/utils/public'
+import { _t18, _toView } from '@/utils/public'
 import { useMainStore } from '@/store/index.js'
 const mainStore = useMainStore()
 
@@ -88,6 +91,13 @@ const emits = defineEmits(['showSidePopup'])
       display: block;
       width: 24px;
       height: 24px;
+    }
+    .copy-trade-link {
+      margin-left: 10px;
+      font-size: 13px;
+      color: #17ac74;
+      white-space: nowrap;
+      line-height: 24px;
     }
   }
   .second {
