@@ -29,8 +29,14 @@ import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import List from './recharge-list.vue'
 import { filterCoin2 } from '@/utils/public'
 import { useMainStore } from '@/store/index.js'
+import { onMounted } from 'vue'
 
 const mainStore = useMainStore()
+
+onMounted(() => {
+  // 进入充值页时主动拉取用户定制充值地址（/api/recharge/getAdress）
+  mainStore.getUserRechageNew()
+})
 
 const coinList = computed(() => {
   return mainStore.getRechargeList.map((item) => {
