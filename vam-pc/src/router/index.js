@@ -626,6 +626,34 @@ const routes = [
       // },
     ],
   },
+  // 跟单
+  {
+    path: "/copyTrade",
+    redirect: "/copyTrade/index",
+    component: Layout,
+    children: [
+      {
+        path: "index",
+        component: () =>
+          import(/* webpackChunkName: "views" */ "@/views/copyTrade/index.vue"),
+      },
+      {
+        path: "submit",
+        component: () =>
+          import(/* webpackChunkName: "views" */ "@/views/copyTrade/submit.vue"),
+      },
+      {
+        path: "my",
+        component: () =>
+          import(/* webpackChunkName: "views" */ "@/views/copyTrade/my.vue"),
+      },
+      {
+        path: "detail/:id",
+        component: () =>
+          import(/* webpackChunkName: "views" */ "@/views/copyTrade/detail.vue"),
+      },
+    ],
+  },
 ];
 
 const router = new VueRouter({

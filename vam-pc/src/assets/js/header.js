@@ -61,6 +61,11 @@ export const headerList = [
     linkUrl: "/finance/investment",
     isOpen: true,
   },
+  {
+    name: "navbar.copyTrade",
+    linkUrl: "/copyTrade/index",
+    isOpen: true,
+  },
   // 体验券（顶栏入口暂不开放，需要时取消注释）
   {
     name: "navbar.trialVoucher",

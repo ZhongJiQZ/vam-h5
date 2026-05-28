@@ -1,12 +1,12 @@
 export default {
-  //è‹±æ–‡
+  //è?±æ??
   msg: {
     msg1: "test one",
     msg2: "test two",
     msg3: "test three",
     message: "first value",
     display: "second value",
-    // ææ–™åˆ—è¡¨çš„ææ–™ç±»å‹
+    // ææ??å??è¡¨ç??ææ??ç±»å??
     materialType: {
       nameSteel: "Steel",
       nameAlumialloy: "Aluminum alloy",
@@ -28,6 +28,7 @@ export default {
     rules: "Rules",
     finance: "Finance",
     trialVoucher: "Trial voucher",
+    copyTrade: "Copy Trade",
   },
   bottomNav: {
     nav1: "Spot Prices",
@@ -924,3 +925,4 @@ export default {
   "nation_Zambia": "Zambia",
   "nation_Zimbabwe": "Zimbabwe",
 };
+

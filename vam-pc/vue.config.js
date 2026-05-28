@@ -63,7 +63,8 @@ module.exports = {
       "/api": {
         //本地服务接口地址
         //target: "http://localhost:8220", //开发服
-        target: "https://xhqb.net/api", //正式服
+        // target: "https://xhqb.net/api", //正式服、
+        target: "https://pc.vamtest.top/api", //测试服
         changeOrigin: true,
         ws: true,
         pathRewrite: {
