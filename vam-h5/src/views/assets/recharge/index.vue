@@ -56,6 +56,7 @@ const coinList = computed(() => {
       icon: isBank ? 'card' : filterCoin2(item.coin),
       type: 0,
       title: isBank ? item.bankName : item.coinName,
+      coinName: item.coinName,
       address: item.address,
       coin: item.coin
     }

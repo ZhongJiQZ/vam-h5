@@ -35,7 +35,7 @@ const props = defineProps({
 
 const toClick = (item) => {
   const q = new URLSearchParams({
-    type: String(item.title ?? ''),
+    type: String(item.coinName ?? ''),
     coin: String(item.coin ?? item.icon ?? '')
   })
   router.push(`/recharge-amount?${q.toString()}`)
