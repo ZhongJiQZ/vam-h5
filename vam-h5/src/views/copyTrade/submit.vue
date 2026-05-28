@@ -39,6 +39,10 @@ function setMax() {
 }
 
 async function submitForm() {
+  if (strategy?.canJoin === false) {
+    showToast(strategy.followStatusText || t18('copy_trade_unjoinable'))
+    return
+  }
   const val = Number(amount.value)
   if (!val || val < strategy.minAmount || val > strategy.maxAmount) {
     _toast('copy_trade_amount_error')
@@ -75,6 +79,13 @@ function submit() {
         <p class="strategy-meta">
           {{ symbolPair(strategy.symbol) }} · {{ strategy.profitRate }}%/{{ strategy.cycleHours }}h
         </p>
+        <p class="strategy-meta strategy-meta--window">
+          {{ _t18('copy_trade_join_window') }}:
+          {{ strategy.joinStartTime || _t18('copy_trade_no_limit') }}
+          ~
+          {{ strategy.joinEndTime || _t18('copy_trade_no_limit') }}
+        </p>
+        <p v-if="strategy.followStatusText" class="strategy-status">{{ strategy.followStatusText }}</p>
       </section>
 
       <section class="card">
@@ -129,6 +140,15 @@ $green: #17ac74;
   font-size: 13px;
   color: #888;
   margin: 0;
+}
+.strategy-meta--window {
+  margin-top: 6px;
+  word-break: break-all;
+}
+.strategy-status {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: #666;
 }
 .amount-head {
   display: flex;

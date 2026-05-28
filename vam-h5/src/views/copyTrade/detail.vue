@@ -24,6 +24,10 @@
             <span>{{ _t18('copy_trade_join_time') }}</span>
             <span>{{ detail.startTime || '--' }}</span>
           </div>
+          <div class="kv">
+            <span>{{ _t18('copy_trade_time_range') }}</span>
+            <span>{{ cycleRangeText }}</span>
+          </div>
           <div v-if="detail.status === 1" class="kv">
             <span>{{ _t18('copy_trade_exit_time') }}</span>
             <span>{{ detail.endTime || '--' }}</span>
@@ -31,6 +35,24 @@
           <div v-if="detail.status === 0" class="kv">
             <span>{{ _t18('copy_trade_today_trades') }}</span>
             <span class="ff-num">{{ detail.tradeCount ?? 0 }}</span>
+          </div>
+          <div class="kv">
+            <span>{{ _t18('copy_trade_cycle_progress') }}</span>
+            <span class="ff-num">{{ cycleProgressText }}</span>
+          </div>
+          <div class="kv">
+            <span>{{ _t18('copy_trade_target_profit') }}</span>
+            <span class="ff-num">{{ priceFormat(detail.targetProfit ?? 0) }} USDT</span>
+          </div>
+          <div class="kv">
+            <span>{{ _t18('copy_trade_win_lose') }}</span>
+            <span class="ff-num">{{ winLoseText }}</span>
+          </div>
+          <div class="kv">
+            <span>{{ _t18('copy_trade_profit_loss_breakdown') }}</span>
+            <span class="ff-num">
+              +{{ priceFormat(detail.params?.totalProfitAmt ?? 0) }}/-{{ priceFormat(detail.params?.totalLossAmt ?? 0) }}
+            </span>
           </div>
           <div v-if="detail.status === 1" class="kv">
             <span>{{ _t18('copy_trade_exit_method') }}</span>
@@ -128,6 +150,25 @@ const statusText = computed(() => {
 const displayProfit = computed(() => {
   if (detail.value.status === 1) return detail.value.actualProfit
   return detail.value.params?.totalSettledProfit ?? detail.value.actualProfit ?? 0
+})
+
+const cycleRangeText = computed(() => {
+  const start = detail.value?.startTime || '--'
+  const end = detail.value?.endTime || '--'
+  return `${start} ~ ${end}`
+})
+
+const cycleProgressText = computed(() => {
+  const done = Number(detail.value?.tradeCount ?? 0)
+  const totalCount = Number(detail.value?.expectedTradeCount ?? 0)
+  if (!totalCount) return `${done}`
+  return `${done}/${totalCount}`
+})
+
+const winLoseText = computed(() => {
+  const win = Number(detail.value?.params?.winCount ?? 0)
+  const lose = Number(detail.value?.params?.loseCount ?? 0)
+  return `${win}/${lose}`
 })
 
 async function loadDetail() {

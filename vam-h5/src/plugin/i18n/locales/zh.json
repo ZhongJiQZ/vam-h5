@@ -1367,5 +1367,14 @@
   "copy_trade_close_price": "平仓均价",
   "copy_trade_pnl_usdt": "盈亏(USDT)",
   "copy_trade_open_time": "开仓时间",
-  "copy_trade_close_time": "平仓时间"
+  "copy_trade_close_time": "平仓时间",
+  "copy_trade_join_window": "可加入时间",
+  "copy_trade_no_limit": "不限",
+  "copy_trade_unjoinable": "当前不可加入",
+  "copy_trade_unknown_status": "未知状态",
+  "copy_trade_time_range": "跟单时间",
+  "copy_trade_cycle_progress": "周期进度",
+  "copy_trade_target_profit": "目标收益",
+  "copy_trade_win_lose": "胜/负",
+  "copy_trade_profit_loss_breakdown": "盈利/亏损分解"
 }

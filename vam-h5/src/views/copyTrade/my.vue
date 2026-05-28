@@ -85,8 +85,20 @@
                 <span>{{ item.startTime || '--' }}</span>
               </div>
               <div class="kv">
+                <span>{{ _t18('copy_trade_time_range') }}</span>
+                <span>{{ cycleRange(item) }}</span>
+              </div>
+              <div class="kv">
+                <span>{{ _t18('copy_trade_cycle_progress') }}</span>
+                <span class="ff-num">{{ cycleProgress(item) }}</span>
+              </div>
+              <div class="kv">
                 <span>{{ _t18('copy_trade_current_symbol') }}</span>
                 <span>{{ symbolPair(item.symbol) }}</span>
+              </div>
+              <div class="kv">
+                <span>{{ _t18('copy_trade_tab_ongoing') }}</span>
+                <span>{{ item.params?.statusText || _t18('copy_trade_tab_ongoing') }}</span>
               </div>
               <div class="kv">
                 <span>{{ _t18('copy_trade_today_trades') }}</span>
@@ -135,6 +147,14 @@
                 <span>{{ item.endTime || '--' }}</span>
               </div>
               <div class="kv">
+                <span>{{ _t18('copy_trade_time_range') }}</span>
+                <span>{{ cycleRange(item) }}</span>
+              </div>
+              <div class="kv">
+                <span>{{ _t18('copy_trade_cycle_progress') }}</span>
+                <span class="ff-num">{{ cycleProgress(item) }}</span>
+              </div>
+              <div class="kv">
                 <span>{{ _t18('copy_trade_period_pnl') }}</span>
                 <span class="ff-num" :class="pnlClass(item.actualProfit)">
                   {{ formatPnl(item.actualProfit) }} USDT
@@ -180,6 +200,19 @@ const loadedOnce = ref(false)
 
 function currentPnl(item) {
   return item?.params?.totalSettledProfit ?? item?.actualProfit ?? 0
+}
+
+function cycleRange(item) {
+  const start = item?.startTime || '--'
+  const end = item?.endTime || '--'
+  return `${start} ~ ${end}`
+}
+
+function cycleProgress(item) {
+  const done = Number(item?.tradeCount ?? 0)
+  const totalCount = Number(item?.expectedTradeCount ?? 0)
+  if (!totalCount) return `${done}`
+  return `${done}/${totalCount}`
 }
 
 const endedSummary = computed(() => {

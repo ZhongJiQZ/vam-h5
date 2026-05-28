@@ -1360,5 +1360,14 @@
   "copy_trade_close_price": "Exit",
   "copy_trade_pnl_usdt": "P/L (USDT)",
   "copy_trade_open_time": "Open Time",
-  "copy_trade_close_time": "Close Time"
+  "copy_trade_close_time": "Close Time",
+  "copy_trade_join_window": "Join Window",
+  "copy_trade_no_limit": "No Limit",
+  "copy_trade_unjoinable": "Unavailable to join",
+  "copy_trade_unknown_status": "Unknown Status",
+  "copy_trade_time_range": "Copy Time",
+  "copy_trade_cycle_progress": "Cycle Progress",
+  "copy_trade_target_profit": "Target Profit",
+  "copy_trade_win_lose": "Win/Lose",
+  "copy_trade_profit_loss_breakdown": "Profit/Loss Breakdown"
 }

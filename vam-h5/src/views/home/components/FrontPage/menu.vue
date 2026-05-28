@@ -1,8 +1,7 @@
 <template>
   <div :class="DIFF_HOME_BANNER.includes(_getConfig('_APP_ENV')) ? 'main mainEbc' : 'main'">
-    <div class="item" v-for="item in menuList" :key="item.img || item.key" @click="routeLink(item.linkUrl, item.flag)">
-      <image-load v-if="item.imgUrl || item.img" :filePath="item.imgUrl" :name="item.img" class="itemImg" />
-      <div v-else class="itemImg itemImg--fallback">{{ item.fallbackText || 'C' }}</div>
+    <div class="item" v-for="item in menuList" :key="item.img" @click="routeLink(item.linkUrl, item.flag)">
+      <image-load :filePath="item.imgUrl" :name="item.img" class="itemImg" />
       <div class="itemName text-ellipsis2">
         {{ _t18(`${item.key}`, ['robinhood2']) }}
       </div>
@@ -78,15 +77,6 @@ const menuList = computed(() => {
   let tempData = mainStroe.getJinGangList.filter((item) => {
     return item.isOpen == true
   })
-  const hasCopyTrade = tempData.some((item) => item?.linkUrl === '/copy-trade' || item?.key === 'copy_trade_title')
-  if (!hasCopyTrade) {
-    tempData.push({
-      key: 'copy_trade_title',
-      linkUrl: '/copy-trade',
-      isOpen: true,
-      fallbackText: '跟'
-    })
-  }
   return tempData
 })
 const currentNotice = ref('')
@@ -229,16 +219,6 @@ const toRecharge = () => {
     .itemImg {
       width: 48px;
       height: 48px;
-    }
-    .itemImg--fallback {
-      border-radius: 50%;
-      background: linear-gradient(135deg, #17ac74, #0f8a5a);
-      color: #fff;
-      font-size: 18px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
 
     .itemName {
