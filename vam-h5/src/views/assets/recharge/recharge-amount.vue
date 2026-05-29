@@ -76,7 +76,8 @@ import { _t18, filterCoin2, _numberWithCommas } from '@/utils/public'
 import { useToast } from '@/hook/useToast'
 import { computed, ref, watch } from 'vue'
 import { priceFormat } from '@/utils/decimal'
-import { normalizeRechargeAddressFromApi } from '@/utils/rechargeAddress'
+import { findRechargeListItem } from '@/utils/coinNetworkType'
+import { getRechargeAddressFromMap, normalizeRechargeAddressFromApi } from '@/utils/rechargeAddress'
 
 const route = useRoute()
 const router = useRouter()
@@ -88,7 +89,7 @@ const currentName = `${_t18('recharge', ['latcoin'])} ${route.query.type || ''}`
 const coinIcon = computed(() => filterCoin2(String(route.query.coin || '')))
 
 const rechargeObj = computed(() =>
-  mainStore.getRechargeList.find((elem) => elem.coinName == route.query.type)
+  findRechargeListItem(mainStore.getRechargeList, route.query.type)
 )
 const isBankRecharge = computed(() =>
   Boolean(rechargeObj.value?.bankCardNo && rechargeObj.value?.bankName)
@@ -140,8 +141,8 @@ const limitMaxDisplay = computed(() => {
 })
 const submitAddress = computed(() => {
   if (isBankRecharge.value) return rechargeObj.value?.bankCardNo ?? ''
-  const key = route.query.type
-  const fromMap = key ? normalizeRechargeAddressFromApi(mainStore.userRechageMap[key], key) : ''
+  const key = rechargeObj.value?.coinName || route.query.type
+  const fromMap = key ? getRechargeAddressFromMap(mainStore.userRechageMap, key) : ''
   return fromMap || rechargeObj.value?.coinAddress || ''
 })
 
@@ -153,8 +154,10 @@ const refreshCurrentCoinAddress = async () => {
   try {
     const res = await getUserRechageNewApi(coin, type)
     const payload = res?.data?.data ?? res?.data ?? res
-    const raw = payload?.[type] ?? payload
-    const addr = normalizeRechargeAddressFromApi(raw, type)
+    const addr = getRechargeAddressFromMap(
+      typeof payload === 'object' && payload !== null ? payload : { data: payload },
+      type
+    )
     if (addr || mainStore.userRechageMap[type] == null) {
       mainStore.userRechageMap[type] = addr
     }

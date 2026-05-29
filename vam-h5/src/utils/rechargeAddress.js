@@ -1,3 +1,5 @@
+import { coinNetworkLookupKeys } from '@/utils/coinNetworkType'
+
 /**
  * /api/recharge/getAdress 等接口：data 形如
  * { "USDT-TRC": { "USDT-TRC": "T..." }, "ETH": { "ETH": "0x..." } }
@@ -49,4 +51,18 @@ export function normalizeRechargeAddressFromApi(raw, coinName) {
     }
   }
   return ''
+}
+
+/** 从 userRechageMap 或接口 payload 中按币种名（含别名）取充值地址 */
+export function getRechargeAddressFromMap(map, type) {
+  if (map == null) return ''
+  if (typeof map === 'string' && map.trim()) return map.trim()
+  if (typeof map !== 'object') return ''
+
+  for (const key of coinNetworkLookupKeys(type)) {
+    if (map[key] == null) continue
+    const addr = normalizeRechargeAddressFromApi(map[key], key)
+    if (addr) return addr
+  }
+  return normalizeRechargeAddressFromApi(map, type)
 }

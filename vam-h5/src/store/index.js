@@ -9,7 +9,7 @@ import { debounce } from 'lodash'
 import { getCollect } from '@/api/trade/index'
 
 import { _t18 } from '@/utils/public'
-import { normalizeRechargeAddressFromApi } from '@/utils/rechargeAddress'
+import { getRechargeAddressFromMap, normalizeRechargeAddressFromApi } from '@/utils/rechargeAddress'
 
 export const useMainStore = defineStore('main', {
   state: () => {
@@ -293,10 +293,9 @@ export const useMainStore = defineStore('main', {
           const r = responses[idx]
           const payload = r?.data?.data ?? r?.data ?? r
           const raw = payload?.[elem.coinName] ?? payload
-          self.userRechageMap[elem.coinName] = normalizeRechargeAddressFromApi(
-            raw,
-            elem.coinName
-          )
+          self.userRechageMap[elem.coinName] =
+            getRechargeAddressFromMap(payload, elem.coinName) ||
+            normalizeRechargeAddressFromApi(raw, elem.coinName)
         })
       },
       5000,

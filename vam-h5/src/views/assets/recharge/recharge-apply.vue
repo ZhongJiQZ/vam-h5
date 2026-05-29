@@ -199,7 +199,8 @@ import { useRouter, useRoute } from 'vue-router'
 import { useMainStore } from '@/store'
 import { dispatchCustomEvent } from '@/utils'
 import { reactive, computed, ref, watch, onUnmounted } from 'vue'
-import { normalizeRechargeAddressFromApi } from '@/utils/rechargeAddress'
+import { findRechargeListItem } from '@/utils/coinNetworkType'
+import { getRechargeAddressFromMap } from '@/utils/rechargeAddress'
 import { formatLocalTime } from '@/utils/time'
 
 const { _toast } = useToast()
@@ -341,7 +342,7 @@ const contactService = () => {
 const mainStore = useMainStore()
 
 const rechargeObj = computed(() =>
-  mainStore.getRechargeList.find((elem) => elem.coinName == route.query.type)
+  findRechargeListItem(mainStore.getRechargeList, route.query.type)
 )
 const isBankRecharge = computed(() =>
   Boolean(rechargeObj.value?.bankCardNo && rechargeObj.value?.bankName)
@@ -366,8 +367,8 @@ watch(showPendingPopup, (visible) => {
 
 const address = computed(() => {
   if (isBankRecharge.value) return rechargeObj.value?.coinAddress ?? ''
-  const key = route.query.type
-  const fromMap = key ? normalizeRechargeAddressFromApi(mainStore.userRechageMap[key], key) : ''
+  const key = rechargeObj.value?.coinName || route.query.type
+  const fromMap = key ? getRechargeAddressFromMap(mainStore.userRechageMap, key) : ''
   return fromMap || rechargeObj.value?.coinAddress || ''
 })
 

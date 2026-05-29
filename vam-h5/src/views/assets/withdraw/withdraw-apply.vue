@@ -127,6 +127,11 @@ import { storeToRefs } from 'pinia'
 import { _t18, _getConfig, _numberWithCommas } from '@/utils/public'
 import { useToast } from '@/hook/useToast'
 import { filterCoin2 } from '@/utils/public'
+import {
+  COIN_ADDRESS_LENGTH_SAMPLES,
+  findWithdrawChannelItem,
+  getExpectedAddressLength
+} from '@/utils/coinNetworkType'
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -147,15 +152,6 @@ const currentName = _t18('withdraw', ['latcoin'])
 // Toggle this to true when withdrawal limit hint is needed again.
 const ENABLE_WITHDRAW_LIMIT_HINT = false
 const showk = ref(false)
-const coinLength = ref({
-  'USDT-ERC': '0xF8E687120ECDa2036C4a9f79Aa1aA93C15479F4b',
-  'USDT-TRC': 'TU9w3To3ThVKhqjp3L3TPKXUL9xyML5DxY',
-  'USDC-ERC': '0x3BAed24fe5D7a701cBD583DC77B556d6218404F9',
-  'ETH': '0xa493e9bcb328d126d7F0E1eB8725b3A08B1E06F1',
-  'BTC': '199NEFtTspcP1eR8kHnQwAktMCbNFQY5VS',
-  'SOL': 'AsNjVNZTYj6tbQszPJanMprRngzVwwKQsq2hVtx1r6vM',
-  'TRX': 'T9zTTVfegCiJ5ovip4y2dCPiEdXT9EmtEw'
-})
 // 银行卡数据
 const curBank = ref({})
 const showSheet = ref(false)
@@ -170,13 +166,9 @@ const balanceCoinLabel = computed(() => {
   }
   return (route.query.type || '')?.toString() || ''
 })
-const currentWithdrawConfig = computed(() => {
-  const type = String(route.query.type || '').toUpperCase()
-  return (mainStore.getWithdrawList || []).find((item) => {
-    const rechargeType = String(item?.rechargeType || item?.coinName || '').toUpperCase()
-    return String(item?.type || '') === '1' && rechargeType === type
-  }) || null
-})
+const currentWithdrawConfig = computed(() =>
+  findWithdrawChannelItem(mainStore.getWithdrawList || [], route.query.type)
+)
 
 const amount = computed(() => {
   let data = 0
@@ -342,8 +334,17 @@ const advancedAuth = ref(userInfo.value.detail?.auditStatusAdvanced)
 const submitForm = () => {
   userStore.getUserInfo()
   let flag = true
+  const withdrawQty = Number(String(allAmount.value ?? '').replace(/,/g, ''))
+  const balanceQty = Number(amount.value)
   // 非空判断
-  if (allAmount.value == '' || allAmount.value > amount.value || allAmount.value <= 0) {
+  if (
+    allAmount.value === '' ||
+    allAmount.value === null ||
+    allAmount.value === undefined ||
+    !Number.isFinite(withdrawQty) ||
+    withdrawQty <= 0 ||
+    (Number.isFinite(balanceQty) && withdrawQty > balanceQty)
+  ) {
     // showToast('请输入正确的提现数量')
     _toast('withdraw_please_num')
     return
@@ -362,20 +363,25 @@ const submitForm = () => {
   }
   if (userInfo.value.detail?.userTardPwd == null) {
     // showToast('请设置资金密码')
-    flag = false
     _toast('withdraw_please_fundPwd')
     setTimeout(() => {
       router.push('/fund-password')
     }, 800)
-    // return
-  }
-  let chooseCoin = coinLength.value[route.query?.type]
-  if (route.query?.icon != 'card'&&chooseCoin.length !== address.value.length) {
-    _toast('withdraw_coin_length_error');
     return
   }
+  if (route.query?.icon != 'card') {
+    const expectedLen = getExpectedAddressLength(
+      route.query?.type,
+      COIN_ADDRESS_LENGTH_SAMPLES
+    )
+    const addrLen = String(address.value || '').trim().length
+    if (expectedLen != null && addrLen !== expectedLen) {
+      _toast('withdraw_coin_length_error')
+      return
+    }
+  }
 
-  if (['paxpay'].includes(__config._APP_ENV) && allAmount.value > 500) {
+  if (['paxpay'].includes(__config._APP_ENV) && withdrawQty > 500) {
     flag = false
     if (advancedAuth.value !== '1') {
       _toast('please_advanced')
@@ -419,18 +425,20 @@ const setAddress = (params) => {
   })
 }
 const submitApi = (params) => {
-  withdrawSubmit(params).then((res) => {
-    if (res.code == '200') {
-      // showToast('提现成功')
-      _toast('withdraw_success')
-      // 提交成功
-      setTimeout(() => {
-        router.push('/withdraw')
-      }, 500)
-    }
-  }).catch((err) => {
-    // showToast(err.data.msg)
-  })
+  withdrawSubmit(params)
+    .then((res) => {
+      if (res.code == '200' || res.code == 200) {
+        _toast('withdraw_success')
+        setTimeout(() => {
+          router.push('/withdraw')
+        }, 500)
+      } else {
+        _toast(res.msg || 'error')
+      }
+    })
+    .catch((err) => {
+      _toast(err?.data?.msg || err?.msg || err?.message || 'error')
+    })
 }
 const submit = () => {
   if (DIFF_ISFREEZE.includes(__config._APP_ENV)) {

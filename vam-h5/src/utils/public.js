@@ -257,6 +257,7 @@ export const filterCoin2 = (item) => {
  * 充值币种处理
  * rechargeBtc->BTC
  * rechargeUsdtTrc->USDT-TRC
+ * 新展示名见 @/utils/coinNetworkType（TRC20-USDT、ETH-USDT 等）
  */
 export const filterRechargeToAddress = (item) => {
   item = item.toLocaleLowerCase()
@@ -268,6 +269,8 @@ export const filterRechargeToAddress = (item) => {
     return item.toLocaleUpperCase()
   }
 }
+
+export { normalizeCoinNetworkKey, isSameCoinNetworkType } from '@/utils/coinNetworkType'
 
 /**
  * 防抖
