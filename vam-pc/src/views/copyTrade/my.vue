@@ -10,7 +10,11 @@
     <div class="list" v-loading="loading">
       <div v-for="item in list" :key="item.id" class="card" @click="toDetail(item.id)">
         <div class="head flex-between">
-          <div class="title">{{ item.strategyName }}</div>
+          <div class="head-left">
+            <img v-if="item.icon" :src="item.icon" class="avatar" alt="" />
+            <div v-else class="avatar avatar-empty"></div>
+            <div class="title">{{ item.strategyName }}</div>
+          </div>
           <el-tag size="mini" :type="activeName === '0' ? 'success' : 'info'">
             {{ item.params && item.params.statusText ? item.params.statusText : (activeName === "0" ? $t("pc_copy_trade_tab_ongoing") : $t("pc_copy_trade_tab_ended")) }}
           </el-tag>
@@ -137,6 +141,22 @@ export default {
 }
 .head {
   margin-bottom: 8px;
+}
+.head-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.avatar-empty {
+  background: #eef2f8;
 }
 .title {
   font-size: 16px;

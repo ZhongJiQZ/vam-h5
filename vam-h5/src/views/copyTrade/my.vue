@@ -69,7 +69,8 @@
             @click="goDetail(item.id)"
           >
             <div class="order-card__head">
-              <div class="avatar">{{ (item.strategyName || '?')[0] }}</div>
+              <img v-if="item.icon" :src="item.icon" class="avatar avatar--img" alt="" />
+              <div v-else class="avatar">{{ (item.strategyName || '?')[0] }}</div>
               <div class="head-info">
                 <p class="name">{{ item.strategyName }}</p>
                 <span class="badge badge--ongoing">{{ item.params?.statusText || _t18('copy_trade_tab_ongoing') }}</span>
@@ -130,7 +131,8 @@
             @click="goDetail(item.id)"
           >
             <div class="ended-card__head">
-              <div class="avatar">{{ (item.strategyName || '?')[0] }}</div>
+              <img v-if="item.icon" :src="item.icon" class="avatar avatar--img" alt="" />
+              <div v-else class="avatar">{{ (item.strategyName || '?')[0] }}</div>
               <p class="name">{{ item.strategyName }}</p>
             </div>
             <div class="kv-list">
@@ -387,6 +389,11 @@ $green: #17ac74;
   font-size: 16px;
   color: #666;
   flex-shrink: 0;
+  &--img {
+    display: block;
+    object-fit: cover;
+    background: #f2f4f7;
+  }
 }
 .head-info {
   .name {

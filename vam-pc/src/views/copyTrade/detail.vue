@@ -4,7 +4,11 @@
 
     <div class="panel" v-if="detail.id">
       <div class="head flex-between">
-        <h3>{{ detail.strategyName || "--" }}</h3>
+        <div class="head-left">
+          <img v-if="detail.icon" :src="detail.icon" class="avatar" alt="" />
+          <div v-else class="avatar avatar-empty"></div>
+          <h3>{{ detail.strategyName || "--" }}</h3>
+        </div>
         <el-tag size="mini" :type="detail.status === 0 ? 'success' : 'info'">
           {{ detail.params && detail.params.statusText ? detail.params.statusText : (detail.status === 0 ? $t("pc_copy_trade_tab_ongoing") : $t("pc_copy_trade_tab_ended")) }}
         </el-tag>
@@ -169,6 +173,22 @@ export default {
 }
 .head {
   margin-bottom: 10px;
+}
+.head-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.avatar-empty {
+  background: #eef2f8;
 }
 h3,
 h4 {

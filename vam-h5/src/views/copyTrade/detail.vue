@@ -7,7 +7,8 @@
     <template v-else-if="detail.id">
       <div class="summary-card">
         <div class="summary-card__head">
-          <div class="avatar">{{ (detail.strategyName || '?')[0] }}</div>
+          <img v-if="detail.icon" :src="detail.icon" class="avatar avatar--img" alt="" />
+          <div v-else class="avatar">{{ (detail.strategyName || '?')[0] }}</div>
           <div>
             <p class="name">{{ detail.strategyName }}</p>
             <span class="badge" :class="detail.status === 0 ? 'badge--ongoing' : 'badge--settled'">
@@ -264,6 +265,12 @@ $green: #17ac74;
     justify-content: center;
     font-size: 18px;
     color: #666;
+    flex-shrink: 0;
+    &--img {
+      display: block;
+      object-fit: cover;
+      background: #f2f4f7;
+    }
   }
   .name {
     font-size: 16px;
