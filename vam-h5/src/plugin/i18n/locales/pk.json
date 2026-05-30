@@ -1163,5 +1163,10 @@
   "copy_trade_share_action": "Share",
   "copy_trade_share_wechat": "WeChat",
   "copy_trade_share_more": "More",
-  "copy_trade_trade_fee": "Trading Fee"
+  "copy_trade_trade_fee": "Trading Fee",
+  "copy_trade_profit_share_rate": "Profit Share Rate",
+  "copy_trade_profit_share_rate_none": "No profit share",
+  "copy_trade_profit_share_rate_desc": "Charged on profit portion only",
+  "copy_trade_profit_share_amt": "Profit Share Amount",
+  "copy_trade_net_profit": "Net Profit"
 }

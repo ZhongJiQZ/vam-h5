@@ -6,7 +6,7 @@ import { useFreeze } from '@/hook/useFreeze'
 import { _t18, _getConfig } from '@/utils/public'
 import { submitCopyTrade } from '@/api/copyTrade'
 import { priceFormat } from '@/utils/decimal'
-import { symbolPair } from './utils'
+import { symbolPair, formatProfitShareRate } from './utils'
 import { useUserStore } from '@/store/user/index'
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
@@ -84,6 +84,11 @@ function submit() {
           {{ strategy.joinStartTime || _t18('copy_trade_no_limit') }}
           ~
           {{ strategy.joinEndTime || _t18('copy_trade_no_limit') }}
+        </p>
+        <p class="strategy-meta strategy-meta--window">
+          {{ _t18('copy_trade_profit_share_rate') }}:
+          {{ formatProfitShareRate(strategy.profitShareRate, t18('copy_trade_profit_share_rate_none')) }}
+          ({{ _t18('copy_trade_profit_share_rate_desc') }})
         </p>
         <p v-if="strategy.followStatusText" class="strategy-status">{{ strategy.followStatusText }}</p>
       </section>

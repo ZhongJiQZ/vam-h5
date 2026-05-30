@@ -23,11 +23,15 @@
         <el-col :span="12">{{ $t("pc_copy_trade_target_profit") }}：{{ num(detail.targetProfit) }} USDT</el-col>
         <el-col :span="12">{{ $t("pc_copy_trade_win_lose") }}：{{ winLose }}</el-col>
         <el-col :span="12">{{ $t("pc_copy_trade_profit_loss_breakdown") }}：+{{ num(detail.params && detail.params.totalProfitAmt) }}/-{{ num(detail.params && detail.params.totalLossAmt) }}</el-col>
+        <el-col :span="12">{{ $t("pc_copy_trade_profit_share_rate") }}：{{ profitShareRateText(detail.profitShareRate) }}</el-col>
+        <el-col :span="12">{{ $t("pc_copy_trade_trade_fee") }}：{{ num(detail.tradeFee) }} USDT</el-col>
+        <el-col :span="12">{{ $t("pc_copy_trade_profit_share_amt") }}：{{ num(detail.profitShareAmt) }} USDT</el-col>
       </el-row>
 
       <div class="pnl-box">
         <div>{{ $t("pc_copy_trade_current_pnl") }}：<span :class="pnlClass(displayProfit)">{{ signNum(displayProfit) }} USDT</span></div>
         <div>{{ $t("pc_copy_trade_pnl_rate") }}：<span :class="pnlClass(displayProfit)">{{ pnlRate }}%</span></div>
+        <div>{{ $t("pc_copy_trade_net_profit") }}：<span :class="pnlClass(netProfit)">{{ signNum(netProfit) }} USDT</span></div>
       </div>
 
       <el-button
@@ -101,6 +105,12 @@ export default {
       const lose = Number(this.detail && this.detail.params && this.detail.params.loseCount != null ? this.detail.params.loseCount : 0);
       return `${win}/${lose}`;
     },
+    netProfit() {
+      if (this.detail && this.detail.netProfit != null && this.detail.netProfit !== "") {
+        return Number(this.detail.netProfit || 0);
+      }
+      return Number(this.detail && this.detail.actualProfit != null ? this.detail.actualProfit : 0);
+    },
   },
   created() {
     this.loadData();
@@ -137,6 +147,11 @@ export default {
       const s = String(symbol || "").toUpperCase();
       if (!s) return "--";
       return s.includes("/") ? s : `${s}/USDT`;
+    },
+    profitShareRateText(rate) {
+      const n = Number(rate);
+      if (!Number.isFinite(n) || n === 0) return this.$t("pc_copy_trade_profit_share_rate_none");
+      return `${n}%`;
     },
     pnlClass(v) {
       const n = Number(v);
@@ -204,7 +219,8 @@ h4 {
   padding-top: 10px;
   border-top: 1px dashed #e7eaf0;
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 24px;
 }
 .up {
   color: #17ac74;

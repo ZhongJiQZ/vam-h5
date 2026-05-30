@@ -26,3 +26,10 @@ export function symbolPair(symbol) {
   if (!s) return '--'
   return s.includes('/') ? s : `${s}/USDT`
 }
+
+/** 机构分润比例展示，0 表示不分润 */
+export function formatProfitShareRate(rate, noneText = '0%') {
+  const n = Number(rate)
+  if (!Number.isFinite(n) || n === 0) return noneText
+  return `${priceFormat(n, 2)}%`
+}

@@ -1388,5 +1388,10 @@
   "copy_trade_share_action": "分享",
   "copy_trade_share_wechat": "微信",
   "copy_trade_share_more": "更多",
-  "copy_trade_trade_fee": "交易手续费"
+  "copy_trade_trade_fee": "交易手续费",
+  "copy_trade_profit_share_rate": "机构分润比例",
+  "copy_trade_profit_share_rate_none": "不分润",
+  "copy_trade_profit_share_rate_desc": "仅对盈利部分收取",
+  "copy_trade_profit_share_amt": "机构分润金额",
+  "copy_trade_net_profit": "实际盈利"
 }

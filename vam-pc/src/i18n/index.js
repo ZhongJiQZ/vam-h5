@@ -74,6 +74,12 @@ const pcCopyTradeEn = {
   pc_copy_trade_stop_confirm_desc: "Are you sure to stop this copy trade?",
   pc_copy_trade_tips: "Tips",
   pc_copy_trade_exit_success: "Exited successfully",
+  pc_copy_trade_profit_share_rate: "Profit share rate",
+  pc_copy_trade_profit_share_rate_none: "No profit share",
+  pc_copy_trade_profit_share_rate_desc: "Charged on profit portion only",
+  pc_copy_trade_trade_fee: "Trading fee",
+  pc_copy_trade_profit_share_amt: "Profit share amount",
+  pc_copy_trade_net_profit: "Net profit",
 };
 
 const pcCopyTradeZh = {
@@ -121,6 +127,12 @@ const pcCopyTradeZh = {
   pc_copy_trade_stop_confirm_desc: "确认停止该跟单？",
   pc_copy_trade_tips: "提示",
   pc_copy_trade_exit_success: "退出成功",
+  pc_copy_trade_profit_share_rate: "机构分润比例",
+  pc_copy_trade_profit_share_rate_none: "不分润",
+  pc_copy_trade_profit_share_rate_desc: "仅对盈利部分收取",
+  pc_copy_trade_trade_fee: "交易手续费",
+  pc_copy_trade_profit_share_amt: "机构分润金额",
+  pc_copy_trade_net_profit: "实际盈利",
 };
 
 const pcCopyTradeTw = {
@@ -168,6 +180,12 @@ const pcCopyTradeTw = {
   pc_copy_trade_stop_confirm_desc: "確認停止該跟單？",
   pc_copy_trade_tips: "提示",
   pc_copy_trade_exit_success: "退出成功",
+  pc_copy_trade_profit_share_rate: "機構分潤比例",
+  pc_copy_trade_profit_share_rate_none: "不分潤",
+  pc_copy_trade_profit_share_rate_desc: "僅對盈利部分收取",
+  pc_copy_trade_trade_fee: "交易手續費",
+  pc_copy_trade_profit_share_amt: "機構分潤金額",
+  pc_copy_trade_net_profit: "實際盈利",
 };
 
 function withGiftCert(pack) {

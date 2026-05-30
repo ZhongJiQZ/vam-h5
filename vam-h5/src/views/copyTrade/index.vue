@@ -37,6 +37,10 @@
           <p class="strategy-card__window">
             {{ _t18('copy_trade_join_window') }}: {{ joinWindowText(item) }}
           </p>
+          <p class="strategy-card__window">
+            {{ _t18('copy_trade_profit_share_rate') }}: {{ profitShareRateText(item.profitShareRate) }}
+            <span class="strategy-card__window-tip">({{ _t18('copy_trade_profit_share_rate_desc') }})</span>
+          </p>
           <div class="strategy-card__foot">
             <span class="amount-pill">{{ _t18('copy_trade_amount_range') }}: {{ item.minAmount }}~{{ item.maxAmount }} USDT</span>
             <button
@@ -62,7 +66,7 @@ import { useI18n } from 'vue-i18n'
 import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import { _t18 } from '@/utils/public'
 import { getCopyTradeConfig, getCopyTradeStrategyList } from '@/api/copyTrade'
-import { symbolPair } from './utils'
+import { symbolPair, formatProfitShareRate } from './utils'
 import { showToast } from 'vant'
 
 const router = useRouter()
@@ -114,6 +118,10 @@ function statusClass(item) {
   if (s === 0) return 'joinable'
   if (s === 1) return 'running'
   return 'ended'
+}
+
+function profitShareRateText(rate) {
+  return formatProfitShareRate(rate, t18('copy_trade_profit_share_rate_none'))
 }
 
 function joinWindowText(item) {
@@ -236,6 +244,9 @@ $green: #17ac74;
     margin: 8px 0 0;
     line-height: 1.4;
     word-break: break-all;
+    &-tip {
+      color: #aaa;
+    }
   }
   &__foot {
     display: flex;

@@ -26,6 +26,10 @@
 
           <div class="meta">{{ $t("pc_copy_trade_rate") }}：<span class="rate">{{ item.profitRate }}% / {{ item.cycleHours }}h</span></div>
           <div class="meta">{{ $t("pc_copy_trade_join_window") }}：{{ joinWindowText(item) }}</div>
+          <div class="meta">
+            {{ $t("pc_copy_trade_profit_share_rate") }}：{{ profitShareRateText(item.profitShareRate) }}
+            <span class="meta-tip">({{ $t("pc_copy_trade_profit_share_rate_desc") }})</span>
+          </div>
           <div class="meta">{{ $t("pc_copy_trade_amount") }}：{{ item.minAmount }} ~ {{ item.maxAmount }} USDT</div>
           <div class="desc" v-if="item.description">{{ item.description }}</div>
 
@@ -101,6 +105,11 @@ export default {
       if (!start && end) return `${this.$t("pc_copy_trade_no_limit")} ~ ${end}`;
       return this.$t("pc_copy_trade_no_limit");
     },
+    profitShareRateText(rate) {
+      const n = Number(rate);
+      if (!Number.isFinite(n) || n === 0) return this.$t("pc_copy_trade_profit_share_rate_none");
+      return `${n}%`;
+    },
     toSubmit(item) {
       if (item && item.canJoin === false) {
         this.$message.warning(item.followStatusText || this.$t("pc_copy_trade_unjoinable"));
@@ -174,6 +183,9 @@ export default {
   font-size: 12px;
   color: #667085;
   margin-top: 6px;
+}
+.meta-tip {
+  color: #98a2b3;
 }
 .rate {
   color: #17ac74;

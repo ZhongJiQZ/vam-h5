@@ -38,12 +38,16 @@
             <span>{{ _t18('copy_trade_exit_normal') }}</span>
           </div>
           <div class="kv">
-            <span>{{ _t18('copy_trade_inst_profit_share') }}</span>
-            <span>{{ detail.profitRate ?? '--' }}%</span>
+            <span>{{ _t18('copy_trade_profit_share_rate') }}</span>
+            <span>{{ profitShareRateText(detail.profitShareRate) }}</span>
           </div>
           <div class="kv">
             <span>{{ _t18('copy_trade_trade_fee') }}</span>
-            <span>--</span>
+            <span class="ff-num">{{ priceFormat(detail.tradeFee ?? 0) }} USDT</span>
+          </div>
+          <div class="kv">
+            <span>{{ _t18('copy_trade_profit_share_amt') }}</span>
+            <span class="ff-num">{{ priceFormat(detail.profitShareAmt ?? 0) }} USDT</span>
           </div>
           <div class="kv kv--no-border">
             <span>{{ _t18('copy_trade_period_pnl') }}</span>
@@ -54,9 +58,9 @@
           <span class="ff-num" :class="pnlClass(displayProfit)">{{ formatPnl(displayProfit) }} USDT</span>
           <span class="ff-num" :class="pnlClass(displayProfit)">{{ calcPnlRate(displayProfit, detail.amount) }}%</span>
         </div>
-        <div v-if="detail.status === 1" class="pnl-actual">
-          <span class="label">{{ _t18('copy_trade_actual_profit') }}</span>
-          <span class="ff-num" :class="pnlClass(detail.actualProfit)">{{ formatPnl(detail.actualProfit) }} USDT</span>
+        <div class="pnl-actual">
+          <span class="label">{{ _t18('copy_trade_net_profit') }}</span>
+          <span class="ff-num" :class="pnlClass(netProfit)">{{ formatPnl(netProfit) }} USDT</span>
         </div>
       </div>
 
@@ -102,7 +106,7 @@ import StopConfirmDialog from './components/StopConfirmDialog.vue'
 import { _t18 } from '@/utils/public'
 import { getCopyTradeDetail, exitCopyTrade } from '@/api/copyTrade'
 import { priceFormat } from '@/utils/decimal'
-import { formatPnl, pnlClass, calcPnlRate } from './utils'
+import { formatPnl, pnlClass, calcPnlRate, formatProfitShareRate } from './utils'
 import { showToast } from 'vant'
 
 const route = useRoute()
@@ -125,6 +129,17 @@ const displayProfit = computed(() => {
   if (detail.value.status === 1) return detail.value.actualProfit
   return detail.value.params?.totalSettledProfit ?? detail.value.actualProfit ?? 0
 })
+
+const netProfit = computed(() => {
+  if (detail.value.netProfit != null && detail.value.netProfit !== '') {
+    return detail.value.netProfit
+  }
+  return detail.value.actualProfit ?? 0
+})
+
+function profitShareRateText(rate) {
+  return formatProfitShareRate(rate, t18('copy_trade_profit_share_rate_none'))
+}
 
 const cycleRangeText = computed(() => {
   const start = detail.value?.startTime || '--'
@@ -166,9 +181,21 @@ function openStop() {
     { label: t18('copy_trade_amount'), value: `${priceFormat(detail.value.amount)} USDT`, cls: '' },
     { label: t18('copy_trade_current_pnl'), value: `${formatPnl(pnl)} USDT`, cls: pnlClass(pnl) },
     { label: t18('copy_trade_pnl_rate'), value: `${calcPnlRate(pnl, detail.value.amount)}%`, cls: pnlClass(pnl) },
-    { label: t18('copy_trade_trade_fee'), value: '--', cls: '' },
-    { label: t18('copy_trade_inst_profit_share'), value: '--', cls: '' },
-    { label: t18('copy_trade_actual_profit'), value: '--', cls: '' }
+    {
+      label: t18('copy_trade_trade_fee'),
+      value: `${priceFormat(detail.value.tradeFee ?? 0)} USDT`,
+      cls: ''
+    },
+    {
+      label: t18('copy_trade_profit_share_amt'),
+      value: `${priceFormat(detail.value.profitShareAmt ?? 0)} USDT`,
+      cls: ''
+    },
+    {
+      label: t18('copy_trade_net_profit'),
+      value: `${formatPnl(netProfit.value)} USDT`,
+      cls: pnlClass(netProfit.value)
+    }
   ]
   stopVisible.value = true
 }

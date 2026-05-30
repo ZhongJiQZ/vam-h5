@@ -6,6 +6,10 @@
       <h3>{{ strategy.strategyName || "--" }}</h3>
       <p class="meta">{{ symbolPair(strategy.symbol) }} · {{ strategy.profitRate || 0 }}%/{{ strategy.cycleHours || 0 }}h</p>
       <p class="meta">{{ $t("pc_copy_trade_join_window") }}：{{ joinWindowText(strategy) }}</p>
+      <p class="meta">
+        {{ $t("pc_copy_trade_profit_share_rate") }}：{{ profitShareRateText(strategy.profitShareRate) }}
+        ({{ $t("pc_copy_trade_profit_share_rate_desc") }})
+      </p>
       <p class="meta" v-if="strategy.followStatusText">{{ $t("pc_copy_trade_status") }}：{{ strategy.followStatusText }}</p>
     </div>
 
@@ -62,6 +66,11 @@ export default {
       if (start && !end) return `${start} ~ ${this.$t("pc_copy_trade_no_limit")}`;
       if (!start && end) return `${this.$t("pc_copy_trade_no_limit")} ~ ${end}`;
       return this.$t("pc_copy_trade_no_limit");
+    },
+    profitShareRateText(rate) {
+      const n = Number(rate);
+      if (!Number.isFinite(n) || n === 0) return this.$t("pc_copy_trade_profit_share_rate_none");
+      return `${n}%`;
     },
     async submit() {
       if (this.strategy && this.strategy.canJoin === false) {
