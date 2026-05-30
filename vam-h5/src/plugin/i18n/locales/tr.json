@@ -1369,5 +1369,17 @@
   "copy_trade_cycle_progress": "Cycle Progress",
   "copy_trade_target_profit": "Target Profit",
   "copy_trade_win_lose": "Win/Lose",
-  "copy_trade_profit_loss_breakdown": "Profit/Loss Breakdown"
+  "copy_trade_profit_loss_breakdown": "Profit/Loss Breakdown",
+  "copy_trade_start_time": "Start Time",
+  "copy_trade_service_fee": "Service Fee",
+  "copy_trade_share_title": "Share",
+  "copy_trade_share_save": "Save Image",
+  "copy_trade_share_caption": "Profit Share",
+  "copy_trade_share_rate_label": "P/L Rate",
+  "copy_trade_share_strategy": "Quant Copy",
+  "copy_trade_share_link": "Share Link",
+  "copy_trade_share_action": "Share",
+  "copy_trade_share_wechat": "WeChat",
+  "copy_trade_share_more": "More",
+  "copy_trade_trade_fee": "Trading Fee"
 }

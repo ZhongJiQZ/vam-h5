@@ -25,35 +25,13 @@
             <span>{{ _t18('copy_trade_join_time') }}</span>
             <span>{{ detail.startTime || '--' }}</span>
           </div>
-          <div class="kv">
-            <span>{{ _t18('copy_trade_time_range') }}</span>
-            <span>{{ cycleRangeText }}</span>
-          </div>
           <div v-if="detail.status === 1" class="kv">
             <span>{{ _t18('copy_trade_exit_time') }}</span>
             <span>{{ detail.endTime || '--' }}</span>
           </div>
-          <div v-if="detail.status === 0" class="kv">
+          <div class="kv">
             <span>{{ _t18('copy_trade_today_trades') }}</span>
             <span class="ff-num">{{ detail.tradeCount ?? 0 }}</span>
-          </div>
-          <div class="kv">
-            <span>{{ _t18('copy_trade_cycle_progress') }}</span>
-            <span class="ff-num">{{ cycleProgressText }}</span>
-          </div>
-          <div class="kv">
-            <span>{{ _t18('copy_trade_target_profit') }}</span>
-            <span class="ff-num">{{ priceFormat(detail.targetProfit ?? 0) }} USDT</span>
-          </div>
-          <div class="kv">
-            <span>{{ _t18('copy_trade_win_lose') }}</span>
-            <span class="ff-num">{{ winLoseText }}</span>
-          </div>
-          <div class="kv">
-            <span>{{ _t18('copy_trade_profit_loss_breakdown') }}</span>
-            <span class="ff-num">
-              +{{ priceFormat(detail.params?.totalProfitAmt ?? 0) }}/-{{ priceFormat(detail.params?.totalLossAmt ?? 0) }}
-            </span>
           </div>
           <div v-if="detail.status === 1" class="kv">
             <span>{{ _t18('copy_trade_exit_method') }}</span>
@@ -63,26 +41,22 @@
             <span>{{ _t18('copy_trade_inst_profit_share') }}</span>
             <span>{{ detail.profitRate ?? '--' }}%</span>
           </div>
+          <div class="kv">
+            <span>{{ _t18('copy_trade_trade_fee') }}</span>
+            <span>--</span>
+          </div>
+          <div class="kv kv--no-border">
+            <span>{{ _t18('copy_trade_period_pnl') }}</span>
+            <span>{{ _t18('copy_trade_pnl_rate') }}</span>
+          </div>
         </div>
-        <div class="pnl-block">
-          <div class="pnl-item">
-            <span class="label">{{ _t18('copy_trade_period_pnl') }}</span>
-            <span class="value ff-num" :class="pnlClass(displayProfit)">
-              {{ formatPnl(displayProfit) }} USDT
-            </span>
-          </div>
-          <div class="pnl-item">
-            <span class="label">{{ _t18('copy_trade_pnl_rate') }}</span>
-            <span class="value ff-num" :class="pnlClass(displayProfit)">
-              {{ calcPnlRate(displayProfit, detail.amount) }}%
-            </span>
-          </div>
-          <div v-if="detail.status === 1" class="pnl-actual">
-            <span class="label">{{ _t18('copy_trade_actual_profit') }}</span>
-            <span class="value ff-num" :class="pnlClass(detail.actualProfit)">
-              {{ formatPnl(detail.actualProfit) }} USDT
-            </span>
-          </div>
+        <div class="pnl-row">
+          <span class="ff-num" :class="pnlClass(displayProfit)">{{ formatPnl(displayProfit) }} USDT</span>
+          <span class="ff-num" :class="pnlClass(displayProfit)">{{ calcPnlRate(displayProfit, detail.amount) }}%</span>
+        </div>
+        <div v-if="detail.status === 1" class="pnl-actual">
+          <span class="label">{{ _t18('copy_trade_actual_profit') }}</span>
+          <span class="ff-num" :class="pnlClass(detail.actualProfit)">{{ formatPnl(detail.actualProfit) }} USDT</span>
         </div>
       </div>
 
@@ -111,7 +85,6 @@
 
     <StopConfirmDialog
       v-model:show="stopVisible"
-      :warn-open="Number(detail.tradeCount) > 0"
       :rows="stopRows"
       :loading="stopLoading"
       @confirm="confirmStop"
@@ -191,21 +164,11 @@ function openStop() {
   const pnl = displayProfit.value
   stopRows.value = [
     { label: t18('copy_trade_amount'), value: `${priceFormat(detail.value.amount)} USDT`, cls: '' },
-    {
-      label: t18('copy_trade_current_pnl'),
-      value: `${formatPnl(pnl)} USDT`,
-      cls: pnlClass(pnl)
-    },
-    {
-      label: t18('copy_trade_pnl_rate'),
-      value: `${calcPnlRate(pnl, detail.value.amount)}%`,
-      cls: pnlClass(pnl)
-    },
-    {
-      label: t18('copy_trade_actual_profit'),
-      value: `${formatPnl(pnl)} USDT`,
-      cls: pnlClass(pnl)
-    }
+    { label: t18('copy_trade_current_pnl'), value: `${formatPnl(pnl)} USDT`, cls: pnlClass(pnl) },
+    { label: t18('copy_trade_pnl_rate'), value: `${calcPnlRate(pnl, detail.value.amount)}%`, cls: pnlClass(pnl) },
+    { label: t18('copy_trade_trade_fee'), value: '--', cls: '' },
+    { label: t18('copy_trade_inst_profit_share'), value: '--', cls: '' },
+    { label: t18('copy_trade_actual_profit'), value: '--', cls: '' }
   ]
   stopVisible.value = true
 }
@@ -297,45 +260,34 @@ $green: #17ac74;
   padding: 8px 0;
   font-size: 14px;
   border-bottom: 1px solid #f8f8f8;
-  span:first-child {
-    color: #888;
-  }
+  span:first-child { color: #888; }
+  &.kv--no-border { border-bottom: none; }
 }
-.pnl-block {
-  margin-top: 16px;
-  padding-top: 12px;
-  border-top: 1px dashed #eee;
-}
-.pnl-item {
+.pnl-row {
   display: flex;
   justify-content: space-between;
-  padding: 6px 0;
-  font-size: 14px;
-  .is-up {
-    color: $green;
-  }
-  .is-down {
-    color: #e8503a;
+  padding: 6px 0 4px;
+  .ff-num {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a1a;
+    &.is-up { color: $green; }
+    &.is-down { color: #e8503a; }
   }
 }
 .pnl-actual {
-  margin-top: 12px;
-  text-align: center;
-  .label {
-    display: block;
-    font-size: 13px;
-    color: #888;
-    margin-bottom: 6px;
-  }
-  .value {
-    font-size: 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed #eee;
+  .label { font-size: 14px; color: #888; }
+  .ff-num {
+    font-size: 20px;
     font-weight: 700;
-    &.is-up {
-      color: $green;
-    }
-    &.is-down {
-      color: #e8503a;
-    }
+    &.is-up { color: $green; }
+    &.is-down { color: #e8503a; }
   }
 }
 .records-section {

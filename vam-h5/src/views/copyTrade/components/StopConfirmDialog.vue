@@ -1,15 +1,16 @@
 <template>
-  <van-dialog
-    v-model:show="visible"
-    :show-confirm-button="false"
-    class="copy-stop-dialog"
-    close-on-click-overlay
+  <van-popup
+    :show="show"
+    position="bottom"
+    round
+    :overlay-style="{ background: 'rgba(0,0,0,0.5)' }"
+    @update:show="emit('update:show', $event)"
   >
     <div class="dialog-body">
-      <div class="dialog-icon" :class="warnOpen ? 'dialog-icon--warn' : 'dialog-icon--info'">
+      <div class="dialog-icon">
         <span>i</span>
       </div>
-      <h3 class="dialog-title">{{ titleText }}</h3>
+      <h3 class="dialog-title">{{ _t18('copy_trade_stop_confirm_title') }}</h3>
       <p class="dialog-desc">{{ _t18('copy_trade_stop_desc') }}</p>
       <div class="dialog-rows">
         <div v-for="row in rows" :key="row.label" class="dialog-row">
@@ -18,106 +19,78 @@
         </div>
       </div>
       <div class="dialog-actions">
-        <button type="button" class="btn-cancel" @click="visible = false">
+        <button type="button" class="btn-cancel" @click="emit('update:show', false)">
           {{ _t18('cancel') }}
         </button>
-        <button type="button" class="btn-confirm" :disabled="loading" @click="$emit('confirm')">
+        <button type="button" class="btn-confirm" :disabled="loading" @click="emit('confirm')">
           {{ _t18('copy_trade_confirm_stop') }}
         </button>
       </div>
     </div>
-  </van-dialog>
+  </van-popup>
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { _t18 } from '@/utils/public'
 
-const i18n = useI18n()
-const t18 = (key, platform = []) => _t18(key, platform, i18n)
-
-const props = defineProps({
+defineProps({
   show: { type: Boolean, default: false },
-  warnOpen: { type: Boolean, default: false },
   rows: { type: Array, default: () => [] },
   loading: { type: Boolean, default: false }
 })
 
 const emit = defineEmits(['update:show', 'confirm'])
-
-const visible = computed({
-  get: () => props.show,
-  set: (v) => emit('update:show', v)
-})
-
-const titleText = computed(() =>
-  props.warnOpen ? t18('copy_trade_stop_warn_title') : t18('copy_trade_stop_confirm_title')
-)
 </script>
-
-<style lang="scss">
-.copy-stop-dialog {
-  border-radius: 16px;
-  width: 320px;
-}
-</style>
 
 <style lang="scss" scoped>
 $green: #17ac74;
 
 .dialog-body {
-  padding: 24px 20px 20px;
+  padding: 28px 20px calc(24px + env(safe-area-inset-bottom, 0));
   text-align: center;
 }
 .dialog-icon {
-  width: 56px;
-  height: 56px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
+  background: $green;
   margin: 0 auto 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 28px;
+  font-size: 30px;
   font-weight: 700;
+  font-style: italic;
   color: #fff;
-  &--info {
-    background: $green;
-  }
-  &--warn {
-    background: #e8503a;
-  }
+  box-shadow: 0 6px 20px rgba(23, 172, 116, 0.4);
 }
 .dialog-title {
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 600;
   color: #1a1a1a;
-  margin: 0 0 10px;
+  margin: 0 0 8px;
 }
 .dialog-desc {
   font-size: 13px;
-  color: #666;
-  line-height: 1.5;
-  margin: 0 0 16px;
-  text-align: left;
+  color: #888;
+  line-height: 1.6;
+  margin: 0 0 20px;
 }
 .dialog-rows {
   text-align: left;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  border-top: 1px solid #f5f5f5;
 }
 .dialog-row {
   display: flex;
   justify-content: space-between;
-  padding: 8px 0;
+  padding: 10px 0;
   font-size: 14px;
   color: #333;
   border-bottom: 1px solid #f5f5f5;
-  .is-up {
-    color: $green;
-  }
-  .is-down {
-    color: #e8503a;
-  }
+  span:first-child { color: #888; }
+  .is-up { color: $green; }
+  .is-down { color: #e8503a; }
 }
 .dialog-actions {
   display: flex;
@@ -126,9 +99,10 @@ $green: #17ac74;
 .btn-cancel,
 .btn-confirm {
   flex: 1;
-  height: 44px;
-  border-radius: 8px;
+  height: 48px;
+  border-radius: 10px;
   font-size: 15px;
+  font-weight: 500;
   border: none;
 }
 .btn-cancel {
@@ -139,8 +113,7 @@ $green: #17ac74;
 .btn-confirm {
   background: $green;
   color: #fff;
-  &:disabled {
-    opacity: 0.6;
-  }
+  box-shadow: 0 4px 12px rgba(23, 172, 116, 0.35);
+  &:disabled { opacity: 0.6; }
 }
 </style>

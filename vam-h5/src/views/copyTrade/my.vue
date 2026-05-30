@@ -25,31 +25,37 @@
     <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
       <!-- 已结束：汇总 -->
       <div v-if="activeTab === 1 && endedSummary" class="ended-summary">
-        <div class="ended-summary__grid">
-          <div class="cell">
-            <span class="label">{{ _t18('copy_trade_subscribe_time') }}</span>
-            <span class="value">{{ endedSummary.firstTime || '--' }}</span>
-          </div>
-          <div class="cell">
-            <span class="label">{{ _t18('copy_trade_days') }}</span>
-            <span class="value">{{ endedSummary.days }}{{ _t18('copy_trade_day_unit') }}</span>
-          </div>
-          <div class="cell">
-            <span class="label">{{ _t18('copy_trade_times') }}</span>
-            <span class="value">{{ endedSummary.count }}{{ _t18('copy_trade_times_unit') }}</span>
-          </div>
-          <div class="cell">
-            <span class="label">{{ _t18('copy_trade_total_profit') }}</span>
-            <span class="value ff-num is-up">{{ formatPnl(endedSummary.totalProfit) }} USDT</span>
-          </div>
-          <div class="cell">
-            <span class="label">{{ _t18('copy_trade_total_profit_rate') }}</span>
-            <span class="value ff-num is-up">{{ endedSummary.totalRate }}%</span>
-          </div>
-          <div class="cell">
-            <span class="label">{{ _t18('copy_trade_actual_profit') }}</span>
-            <span class="value ff-num is-up big">{{ formatPnl(endedSummary.totalProfit) }} USDT</span>
-          </div>
+        <div class="kv">
+          <span>{{ _t18('copy_trade_subscribe_time') }}</span>
+          <span>{{ endedSummary.firstTime || '--' }}</span>
+        </div>
+        <div class="kv">
+          <span>{{ _t18('copy_trade_days') }}</span>
+          <span>{{ endedSummary.days }}{{ _t18('copy_trade_day_unit') }}</span>
+        </div>
+        <div class="kv">
+          <span>{{ _t18('copy_trade_times') }}</span>
+          <span>{{ endedSummary.count }}{{ _t18('copy_trade_times_unit') }}</span>
+        </div>
+        <div class="kv">
+          <span>{{ _t18('copy_trade_total_profit') }}</span>
+          <span class="ff-num is-up">{{ formatPnl(endedSummary.totalProfit) }} USDT</span>
+        </div>
+        <div class="kv">
+          <span>{{ _t18('copy_trade_total_profit_rate') }}</span>
+          <span class="ff-num is-up">{{ endedSummary.totalRate }}%</span>
+        </div>
+        <div class="kv">
+          <span>{{ _t18('copy_trade_service_fee') }}</span>
+          <span>--</span>
+        </div>
+        <div class="kv">
+          <span>{{ _t18('copy_trade_inst_profit_share') }}</span>
+          <span>--</span>
+        </div>
+        <div class="kv kv--no-border">
+          <span>{{ _t18('copy_trade_actual_profit') }}</span>
+          <span class="ff-num is-up summary-actual">--</span>
         </div>
       </div>
 
@@ -82,41 +88,25 @@
                 <span class="ff-num">{{ priceFormat(item.amount) }} USDT</span>
               </div>
               <div class="kv">
-                <span>{{ _t18('copy_trade_join_time') }}</span>
+                <span>{{ _t18('copy_trade_start_time') }}</span>
                 <span>{{ item.startTime || '--' }}</span>
-              </div>
-              <div class="kv">
-                <span>{{ _t18('copy_trade_time_range') }}</span>
-                <span>{{ cycleRange(item) }}</span>
-              </div>
-              <div class="kv">
-                <span>{{ _t18('copy_trade_cycle_progress') }}</span>
-                <span class="ff-num">{{ cycleProgress(item) }}</span>
               </div>
               <div class="kv">
                 <span>{{ _t18('copy_trade_current_symbol') }}</span>
                 <span>{{ symbolPair(item.symbol) }}</span>
               </div>
               <div class="kv">
-                <span>{{ _t18('copy_trade_tab_ongoing') }}</span>
-                <span>{{ item.params?.statusText || _t18('copy_trade_tab_ongoing') }}</span>
-              </div>
-              <div class="kv">
                 <span>{{ _t18('copy_trade_today_trades') }}</span>
                 <span class="ff-num">{{ item.tradeCount ?? 0 }}</span>
               </div>
-              <div class="kv">
+              <div class="kv kv--no-border">
                 <span>{{ _t18('copy_trade_current_pnl') }}</span>
-                <span class="ff-num" :class="pnlClass(currentPnl(item))">
-                  {{ formatPnl(currentPnl(item)) }} USDT
-                </span>
-              </div>
-              <div class="kv">
                 <span>{{ _t18('copy_trade_pnl_rate') }}</span>
-                <span class="ff-num" :class="pnlClass(currentPnl(item))">
-                  {{ calcPnlRate(currentPnl(item), item.amount) }}%
-                </span>
               </div>
+            </div>
+            <div class="pnl-row">
+              <span class="ff-num" :class="pnlClass(currentPnl(item))">{{ formatPnl(currentPnl(item)) }} USDT</span>
+              <span class="ff-num" :class="pnlClass(currentPnl(item))">{{ calcPnlRate(currentPnl(item), item.amount) }}%</span>
             </div>
             <p class="detail-link">{{ _t18('copy_trade_view_detail') }} ›</p>
           </div>
@@ -134,6 +124,12 @@
               <img v-if="item.icon" :src="item.icon" class="avatar avatar--img" alt="" />
               <div v-else class="avatar">{{ (item.strategyName || '?')[0] }}</div>
               <p class="name">{{ item.strategyName }}</p>
+              <button class="share-btn" @click.stop="openShare(item)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                </svg>
+              </button>
             </div>
             <div class="kv-list">
               <div class="kv">
@@ -148,26 +144,14 @@
                 <span>{{ _t18('copy_trade_exit_time') }}</span>
                 <span>{{ item.endTime || '--' }}</span>
               </div>
-              <div class="kv">
-                <span>{{ _t18('copy_trade_time_range') }}</span>
-                <span>{{ cycleRange(item) }}</span>
-              </div>
-              <div class="kv">
-                <span>{{ _t18('copy_trade_cycle_progress') }}</span>
-                <span class="ff-num">{{ cycleProgress(item) }}</span>
-              </div>
-              <div class="kv">
+              <div class="kv kv--no-border">
                 <span>{{ _t18('copy_trade_period_pnl') }}</span>
-                <span class="ff-num" :class="pnlClass(item.actualProfit)">
-                  {{ formatPnl(item.actualProfit) }} USDT
-                </span>
-              </div>
-              <div class="kv">
                 <span>{{ _t18('copy_trade_pnl_rate') }}</span>
-                <span class="ff-num" :class="pnlClass(item.actualProfit)">
-                  {{ calcPnlRate(item.actualProfit, item.amount) }}%
-                </span>
               </div>
+            </div>
+            <div class="pnl-row">
+              <span class="ff-num" :class="pnlClass(item.actualProfit)">{{ formatPnl(item.actualProfit) }} USDT</span>
+              <span class="ff-num" :class="pnlClass(item.actualProfit)">{{ calcPnlRate(item.actualProfit, item.amount) }}%</span>
             </div>
             <p class="detail-link">{{ _t18('copy_trade_view_detail') }} ›</p>
           </div>
@@ -176,6 +160,7 @@
         <Nodata v-if="!loading && list.length === 0 && loadedOnce" />
       </van-list>
     </van-pull-refresh>
+  <ShareDialog v-model:show="shareVisible" :item="shareItem" />
   </div>
 </template>
 
@@ -183,6 +168,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
+import ShareDialog from './components/ShareDialog.vue'
 import { _t18 } from '@/utils/public'
 import { getCopyTradeList } from '@/api/copyTrade'
 import { priceFormat, _add } from '@/utils/decimal'
@@ -199,6 +185,8 @@ const loading = ref(false)
 const finished = ref(false)
 const refreshing = ref(false)
 const loadedOnce = ref(false)
+const shareVisible = ref(false)
+const shareItem = ref({})
 
 function currentPnl(item) {
   return item?.params?.totalSettledProfit ?? item?.actualProfit ?? 0
@@ -302,6 +290,11 @@ function goDetail(id) {
   router.push({ path: '/copy-trade/detail', query: { id } })
 }
 
+function openShare(item) {
+  shareItem.value = item
+  shareVisible.value = true
+}
+
 onMounted(() => resetList())
 </script>
 
@@ -336,31 +329,41 @@ $green: #17ac74;
 }
 .ended-summary {
   margin: 0 15px 12px;
-  background: #fff;
+  background: linear-gradient(135deg, #061a0f 0%, #0d5535 55%, #17ac74 100%);
   border-radius: 12px;
-  padding: 16px;
-  &__grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
+  padding: 4px 16px;
+  position: relative;
+  overflow: hidden;
+  &::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 140px; height: 140px;
+    border: 22px solid rgba(255,255,255,0.05);
+    border-radius: 50%;
+    pointer-events: none;
   }
-  .label {
-    display: block;
-    font-size: 12px;
-    color: #888;
-    margin-bottom: 4px;
+  &::after {
+    content: '';
+    position: absolute;
+    top: 20px; right: 30px;
+    width: 70px; height: 70px;
+    border: 12px solid rgba(255,255,255,0.04);
+    border-radius: 50%;
+    pointer-events: none;
   }
-  .value {
+  .kv {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
     font-size: 14px;
-    color: #1a1a1a;
-    &.big {
-      font-size: 18px;
-      font-weight: 600;
-    }
-    &.is-up {
-      color: $green;
-    }
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    span:first-child { color: rgba(255,255,255,0.6); }
+    span:last-child { color: rgba(255,255,255,0.9); }
+    &.kv--no-border { border-bottom: none; }
   }
+  .is-up { color: #4dffa8 !important; }
+  .summary-actual { font-size: 17px; font-weight: 600; color: #4dffa8 !important; }
 }
 
 .order-card,
@@ -428,6 +431,21 @@ $green: #17ac74;
     color: #e8503a;
   }
 }
+.kv--no-border {
+  border-bottom: none !important;
+}
+.pnl-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0 4px;
+  .ff-num {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a1a;
+    &.is-up { color: $green; }
+    &.is-down { color: #e8503a; }
+  }
+}
 .order-card,
 .ended-card {
   .detail-link {
@@ -442,7 +460,17 @@ $green: #17ac74;
     font-size: 16px;
     font-weight: 600;
     margin: 0;
+    flex: 1;
   }
+}
+.share-btn {
+  background: none;
+  border: none;
+  padding: 4px;
+  color: #999;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
 }
 :deep(.van-list) {
   padding: 0 15px;

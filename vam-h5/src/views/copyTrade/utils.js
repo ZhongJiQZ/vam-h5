@@ -17,9 +17,8 @@ export function formatPnl(val, digits = 2) {
 
 export function pnlClass(val) {
   const n = Number(val)
-  if (n > 0) return 'is-up'
   if (n < 0) return 'is-down'
-  return ''
+  return 'is-up'
 }
 
 export function symbolPair(symbol) {

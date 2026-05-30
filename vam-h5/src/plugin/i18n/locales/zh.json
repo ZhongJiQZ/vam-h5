@@ -1376,5 +1376,17 @@
   "copy_trade_cycle_progress": "周期进度",
   "copy_trade_target_profit": "目标收益",
   "copy_trade_win_lose": "胜/负",
-  "copy_trade_profit_loss_breakdown": "盈利/亏损分解"
+  "copy_trade_profit_loss_breakdown": "盈利/亏损分解",
+  "copy_trade_start_time": "开始时间",
+  "copy_trade_service_fee": "手续费",
+  "copy_trade_share_title": "分享页面",
+  "copy_trade_share_save": "保存图片",
+  "copy_trade_share_caption": "跟单收益分享",
+  "copy_trade_share_rate_label": "本次盈亏率",
+  "copy_trade_share_strategy": "量化跟单",
+  "copy_trade_share_link": "分享链接",
+  "copy_trade_share_action": "分享",
+  "copy_trade_share_wechat": "微信",
+  "copy_trade_share_more": "更多",
+  "copy_trade_trade_fee": "交易手续费"
 }
