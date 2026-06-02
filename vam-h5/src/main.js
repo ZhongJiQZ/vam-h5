@@ -13,6 +13,7 @@ import { setupI18n } from './plugin/i18n/index'
 import * as publicFun from '@/utils/public'
 import { useTradeStore } from '@/store/trade/index'
 import { useMainStore } from '@/store/index.js'
+import { preloadHomeCriticalImages } from '@/utils/imagePreload'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import { _initCoinWebSocket } from '@/plugin/socket/index.js'
 import { initSwitchWalletEvent } from './plugin/chain'
@@ -56,6 +57,9 @@ app.use(BreathingColors)
 const tradeStore = useTradeStore()
 const mainStore = useMainStore()
 
+// 持久化配置中的金刚区图标尽早预加载（文字可先渲染，图标走缓存）
+preloadHomeCriticalImages(mainStore.settingConfig)
+
 // 获取平台地址 获取平台配置 币种列表 语言列表
 Promise.all([
   mainStore.getPlatFormConfig(),
@@ -63,6 +67,7 @@ Promise.all([
   tradeStore.getCoinList(),
   // mainStore.getLanguageList()
 ]).then(async () => {
+  preloadHomeCriticalImages(mainStore.settingConfig)
   const languageList = mainStore.languageList || []
   const norm = (s) => String(s || '').toLowerCase().replace(/_/g, '-')
 

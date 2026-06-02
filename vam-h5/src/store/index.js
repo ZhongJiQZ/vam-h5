@@ -10,6 +10,7 @@ import { getCollect } from '@/api/trade/index'
 
 import { _t18 } from '@/utils/public'
 import { getRechargeAddressFromMap, normalizeRechargeAddressFromApi } from '@/utils/rechargeAddress'
+import { preloadHomeCriticalImages } from '@/utils/imagePreload'
 
 export const useMainStore = defineStore('main', {
   state: () => {
@@ -256,6 +257,7 @@ export const useMainStore = defineStore('main', {
         //   this.hasOption = res.data.PLAYING_SETTING[0].isOpen
         // }
         this.hasOption = true
+        preloadHomeCriticalImages(res.data)
       }
     },
     /**

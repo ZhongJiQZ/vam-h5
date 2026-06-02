@@ -1,7 +1,24 @@
 <template>
   <div :class="DIFF_HOME_BANNER.includes(_getConfig('_APP_ENV')) ? 'main mainEbc' : 'main'">
-    <div class="item" v-for="item in menuList" :key="item.img" @click="routeLink(item.linkUrl, item.flag)" :style="{ opacity: (!item.imgUrl || loadedImages[item.imgUrl]) ? 1 : 0, transition: 'opacity 0.3s' }">
-      <image-load :filePath="item.imgUrl" :name="item.img" class="itemImg" @load="onImageLoad(item.imgUrl)" @error="onImageLoad(item.imgUrl)" />
+    <div
+      class="item"
+      v-for="item in menuList"
+      :key="item.img || item.key"
+      @click="routeLink(item.linkUrl, item.flag)"
+    >
+      <div class="item-icon-wrap">
+        <div v-if="item.imgUrl && !isIconLoaded(item.imgUrl)" class="item-icon-skeleton" aria-hidden="true" />
+        <image-load
+          :filePath="item.imgUrl"
+          :name="item.img"
+          class="itemImg"
+          :class="{ 'itemImg--ready': !item.imgUrl || isIconLoaded(item.imgUrl) }"
+          loading="eager"
+          fetchpriority="high"
+          @load="onImageLoad(item.imgUrl)"
+          @error="onImageLoad(item.imgUrl)"
+        />
+      </div>
       <div class="itemName text-ellipsis2">
         {{ _t18(`${item.key}`, ['robinhood2']) }}
       </div>
@@ -57,7 +74,8 @@
 <script setup>
 import { DIFF_RECHARGE_COSTORM, DIFF_HOME_BANNER } from '@/config/index'
 import { publiceNotice } from '@/api/common/index'
-import { onMounted, computed, onUnmounted, ref } from 'vue'
+import { onMounted, computed, onUnmounted, ref, watch } from 'vue'
+import { preloadImages, resolveImageLoadUrl } from '@/utils/imagePreload'
 import { useRouter } from 'vue-router'
 import { useMainStore } from '@/store/index.js'
 import { useUserStore } from '@/store/user/index'
@@ -75,8 +93,11 @@ const $router = useRouter()
 // DeFi挖矿 质押挖矿 助力货 闪兑 下载中心 推广中心 秒合约 理财 申购 直播 福利活动
 const loadedImages = ref({})
 
+const isIconLoaded = (url) => !url || loadedImages.value[url]
+
 const onImageLoad = (url) => {
-  loadedImages.value[url] = true
+  if (!url) return
+  loadedImages.value = { ...loadedImages.value, [url]: true }
 }
 
 const menuList = computed(() => {
@@ -85,6 +106,15 @@ const menuList = computed(() => {
   })
   return tempData
 })
+
+watch(
+  menuList,
+  (list) => {
+    const urls = list.map((item) => resolveImageLoadUrl(item.imgUrl)).filter(Boolean)
+    preloadImages(urls)
+  },
+  { immediate: true }
+)
 const currentNotice = ref('')
 
 /** 首页体验券入口文案：与礼券页一致取批次列表首项名称 */
@@ -222,9 +252,33 @@ const toRecharge = () => {
     align-items: center;
     // margin-bottom: 20px;
 
-    .itemImg {
+    .item-icon-wrap {
+      position: relative;
       width: 48px;
       height: 48px;
+      flex-shrink: 0;
+    }
+
+    .item-icon-skeleton {
+      position: absolute;
+      inset: 0;
+      border-radius: 12px;
+      background: linear-gradient(90deg, #f0f2f5 25%, #e8eaed 50%, #f0f2f5 75%);
+      background-size: 200% 100%;
+      animation: menu-icon-shimmer 1.2s ease-in-out infinite;
+    }
+
+    .itemImg {
+      position: relative;
+      z-index: 1;
+      width: 48px;
+      height: 48px;
+      opacity: 0;
+      transition: opacity 0.2s ease-out;
+
+      &--ready {
+        opacity: 1;
+      }
     }
 
     .itemName {
@@ -373,6 +427,15 @@ const toRecharge = () => {
       height: 22px;
       margin-bottom: 5px;
     }
+  }
+}
+
+@keyframes menu-icon-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
   }
 }
 

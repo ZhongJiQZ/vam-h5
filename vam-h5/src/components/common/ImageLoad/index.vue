@@ -1,6 +1,7 @@
 <!-- 加载 image-->
 <script setup name="img-load">
 import { computed, ref, onMounted } from 'vue'
+import { resolveImageLoadUrl } from '@/utils/imagePreload'
 
 const props = defineProps({
   /**
@@ -14,43 +15,14 @@ const props = defineProps({
   /**
    * 公共主题资源
    */
-  isPublic: { type: Boolean, default: true }
+  isPublic: { type: Boolean, default: true },
+  /** native img loading: eager | lazy */
+  loading: { type: String, default: 'lazy' },
+  /** high | low | auto */
+  fetchpriority: { type: String, default: 'auto' }
 })
-/**
- * 是否 平台定制
- */
-const isCustomized = computed(() => props.platform.includes(__config._APP_ENV))
-/**
- * 资源路径
- */
-const path = computed(() => {
-  let tempPath = ''
-  // 判断是否为公共资源
-  let tempTheme = ''
-  if (!props.filePath.includes('/')) {
-    tempTheme = `${__theme}/`
-  }
-  if (props.filePath.includes('http')) {
-    if (
-      ['dev', 'dev_dark', 'spark', 'gatedefi', 'hfm2', 'robinhood2'].includes(__config._APP_ENV) &&
-      props.filePath.includes('aliyuncs.com')
-    ) {
-      tempPath = `${props.filePath.replace(
-        'https://echo-res.oss-cn-hongkong.aliyuncs.com',
-        __config._STATIC_API
-      )}?v=${_APP_VERSION}`
-    } else {
-      tempPath = `${props.filePath}?v=${_APP_VERSION}`
-    }
-  } else if (props.filePath) {
-    if (isCustomized.value) {
-      tempPath = `/resource/images/${tempTheme}${__config._APP_ENV}/${props.filePath}?v=${_APP_VERSION}`
-    } else {
-      tempPath = `/resource/images/${tempTheme}${props.filePath}?v=${_APP_VERSION}`
-    }
-  }
-  return tempPath
-})
+
+const path = computed(() => resolveImageLoadUrl(props.filePath, props.platform))
 
 const imgRef = ref(null)
 const emit = defineEmits(['load', 'error'])
@@ -62,7 +34,15 @@ onMounted(() => {
 })
 </script>
 <template>
-  <img ref="imgRef" :src="path" class="img" @load="$emit('load', $event)" @error="$emit('error', $event)" />
+  <img
+    ref="imgRef"
+    :src="path"
+    class="img"
+    :loading="loading"
+    :fetchpriority="fetchpriority"
+    @load="$emit('load', $event)"
+    @error="$emit('error', $event)"
+  />
 </template>
 <style lang="scss" scoped>
 .img {
