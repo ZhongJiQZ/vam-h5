@@ -1,5 +1,7 @@
 <!-- 加载 image-->
 <script setup name="img-load">
+import { computed, ref, onMounted } from 'vue'
+
 const props = defineProps({
   /**
    * 路径
@@ -49,9 +51,18 @@ const path = computed(() => {
   }
   return tempPath
 })
+
+const imgRef = ref(null)
+const emit = defineEmits(['load', 'error'])
+
+onMounted(() => {
+  if (imgRef.value && imgRef.value.complete) {
+    emit('load')
+  }
+})
 </script>
 <template>
-  <img :src="path" class="img" />
+  <img ref="imgRef" :src="path" class="img" @load="$emit('load', $event)" @error="$emit('error', $event)" />
 </template>
 <style lang="scss" scoped>
 .img {

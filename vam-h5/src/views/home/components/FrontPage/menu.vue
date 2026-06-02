@@ -1,7 +1,7 @@
 <template>
   <div :class="DIFF_HOME_BANNER.includes(_getConfig('_APP_ENV')) ? 'main mainEbc' : 'main'">
-    <div class="item" v-for="item in menuList" :key="item.img" @click="routeLink(item.linkUrl, item.flag)">
-      <image-load :filePath="item.imgUrl" :name="item.img" class="itemImg" />
+    <div class="item" v-for="item in menuList" :key="item.img" @click="routeLink(item.linkUrl, item.flag)" :style="{ opacity: (!item.imgUrl || loadedImages[item.imgUrl]) ? 1 : 0, transition: 'opacity 0.3s' }">
+      <image-load :filePath="item.imgUrl" :name="item.img" class="itemImg" @load="onImageLoad(item.imgUrl)" @error="onImageLoad(item.imgUrl)" />
       <div class="itemName text-ellipsis2">
         {{ _t18(`${item.key}`, ['robinhood2']) }}
       </div>
@@ -73,6 +73,12 @@ const userStore = useUserStore()
 const tokenStatus = ref(userStore.isSign)
 const $router = useRouter()
 // DeFi挖矿 质押挖矿 助力货 闪兑 下载中心 推广中心 秒合约 理财 申购 直播 福利活动
+const loadedImages = ref({})
+
+const onImageLoad = (url) => {
+  loadedImages.value[url] = true
+}
+
 const menuList = computed(() => {
   let tempData = mainStroe.getJinGangList.filter((item) => {
     return item.isOpen == true
