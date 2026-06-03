@@ -12,6 +12,9 @@ export const submitCopyTrade = (data) => post('/api/copyTrade/submit', data)
 /** 退出跟单 */
 export const exitCopyTrade = (data) => post('/api/copyTrade/exit', data)
 
+/** 追加投资 */
+export const appendCopyTrade = (data) => post('/api/copyTrade/append', data)
+
 /** 跟单记录列表 status: 0=跟单中 1=已退出 */
 export const getCopyTradeList = (params) => {
   const q = new URLSearchParams()

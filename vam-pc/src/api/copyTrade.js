@@ -26,6 +26,13 @@ export const exitCopyTrade = (data) =>
     data,
   });
 
+export const appendCopyTrade = (data) =>
+  request({
+    url: "/api/copyTrade/append",
+    method: "post",
+    data,
+  });
+
 export const getCopyTradeList = ({ pageNum = 1, pageSize = 10, status } = {}) => {
   const statusQuery = status === undefined || status === null ? "" : `&status=${status}`;
   return request({

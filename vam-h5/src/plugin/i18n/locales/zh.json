@@ -1393,5 +1393,12 @@
   "copy_trade_profit_share_rate_none": "不分润",
   "copy_trade_profit_share_rate_desc": "仅对盈利部分收取",
   "copy_trade_profit_share_amt": "机构分润金额",
-  "copy_trade_net_profit": "实际盈利"
+  "copy_trade_net_profit": "实际盈利",
+  "copy_trade_append": "追加投资",
+  "copy_trade_append_title": "追加投资",
+  "copy_trade_append_amount": "追加金额",
+  "copy_trade_append_amount_placeholder": "请输入追加金额",
+  "copy_trade_append_amount_error": "请输入有效追加金额",
+  "copy_trade_append_success": "追加投资成功",
+  "copy_trade_append_tip": "追加金额将从合约账户扣除"
 }

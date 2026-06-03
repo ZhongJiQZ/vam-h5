@@ -108,6 +108,11 @@
               <span class="ff-num" :class="pnlClass(currentPnl(item))">{{ formatPnl(currentPnl(item)) }} USDT</span>
               <span class="ff-num" :class="pnlClass(currentPnl(item))">{{ calcPnlRate(currentPnl(item), item.amount) }}%</span>
             </div>
+            <div class="card-actions" @click.stop>
+              <button type="button" class="append-btn" @click="openAppend(item)">
+                {{ _t18('copy_trade_append') }}
+              </button>
+            </div>
             <p class="detail-link">{{ _t18('copy_trade_view_detail') }} ›</p>
           </div>
         </template>
@@ -161,6 +166,12 @@
       </van-list>
     </van-pull-refresh>
   <ShareDialog v-model:show="shareVisible" :item="shareItem" />
+  <AppendDialog
+    v-model:show="appendVisible"
+    :item="appendItem"
+    :loading="appendLoading"
+    @confirm="confirmAppend"
+  />
   </div>
 </template>
 
@@ -169,13 +180,18 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import ShareDialog from './components/ShareDialog.vue'
+import AppendDialog from './components/AppendDialog.vue'
 import { _t18 } from '@/utils/public'
-import { getCopyTradeList } from '@/api/copyTrade'
+import { getCopyTradeList, appendCopyTrade } from '@/api/copyTrade'
 import { priceFormat, _add } from '@/utils/decimal'
 import { symbolPair, formatPnl, pnlClass, calcPnlRate } from './utils'
 import dayjs from '@/plugin/dayjs/index'
+import { showToast } from 'vant'
+import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
+const i18n = useI18n()
+const t18 = (key, platform = []) => _t18(key, platform, i18n)
 const activeTab = ref(0)
 const list = ref([])
 const pageNum = ref(1)
@@ -187,6 +203,9 @@ const refreshing = ref(false)
 const loadedOnce = ref(false)
 const shareVisible = ref(false)
 const shareItem = ref({})
+const appendVisible = ref(false)
+const appendItem = ref({})
+const appendLoading = ref(false)
 
 function currentPnl(item) {
   return item?.params?.totalSettledProfit ?? item?.actualProfit ?? 0
@@ -293,6 +312,29 @@ function goDetail(id) {
 function openShare(item) {
   shareItem.value = item
   shareVisible.value = true
+}
+
+function openAppend(item) {
+  appendItem.value = item
+  appendVisible.value = true
+}
+
+async function confirmAppend(amount) {
+  appendLoading.value = true
+  try {
+    const res = await appendCopyTrade({ id: appendItem.value.id, amount })
+    if (res?.code == 200) {
+      showToast(res.msg || t18('copy_trade_append_success'))
+      appendVisible.value = false
+      onRefresh()
+    } else {
+      showToast(res?.msg)
+    }
+  } catch (e) {
+    void e
+  } finally {
+    appendLoading.value = false
+  }
 }
 
 onMounted(() => resetList())
@@ -445,6 +487,19 @@ $green: #17ac74;
     &.is-up { color: $green; }
     &.is-down { color: #e8503a; }
   }
+}
+.card-actions {
+  margin-top: 12px;
+}
+.append-btn {
+  width: 100%;
+  height: 36px;
+  border: 1px solid $green;
+  border-radius: 8px;
+  background: rgba($green, 0.08);
+  color: $green;
+  font-size: 14px;
+  font-weight: 500;
 }
 .order-card,
 .ended-card {

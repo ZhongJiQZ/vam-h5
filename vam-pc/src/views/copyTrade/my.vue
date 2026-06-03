@@ -29,9 +29,46 @@
           <el-col :span="12">{{ $t("pc_copy_trade_current_pnl") }}：<span :class="pnlClass(currentPnl(item))">{{ signNum(currentPnl(item)) }} USDT</span></el-col>
         </el-row>
 
-        <div class="detail-link">{{ $t("pc_copy_trade_view_detail") }} ></div>
+        <div class="card-foot" @click.stop>
+          <el-button
+            v-if="activeName === '0'"
+            size="mini"
+            type="primary"
+            plain
+            @click="openAppend(item)"
+          >
+            {{ $t("pc_copy_trade_append") }}
+          </el-button>
+          <div class="detail-link" @click="toDetail(item.id)">{{ $t("pc_copy_trade_view_detail") }} ></div>
+        </div>
       </div>
     </div>
+
+    <el-dialog
+      :title="$t('pc_copy_trade_append_title')"
+      :visible.sync="appendVisible"
+      width="420px"
+      @open="onAppendOpen"
+    >
+      <p v-if="appendItem.strategyName" class="append-name">{{ appendItem.strategyName }}</p>
+      <p class="append-tip">{{ $t("pc_copy_trade_append_tip") }}</p>
+      <el-form label-width="100px">
+        <el-form-item :label="$t('pc_copy_trade_append_amount')">
+          <el-input v-model="appendAmount" type="number" :placeholder="$t('pc_copy_trade_append_amount_placeholder')">
+            <template slot="append">USDT</template>
+          </el-input>
+        </el-form-item>
+        <el-form-item :label="$t('pc_copy_trade_contract_balance')">
+          <span>{{ num(contractBalance) }} USDT</span>
+        </el-form-item>
+      </el-form>
+      <span slot="footer">
+        <el-button @click="appendVisible = false">{{ $t("utils.cancel") }}</el-button>
+        <el-button type="primary" :loading="appendLoading" @click="confirmAppend">
+          {{ $t("pc_copy_trade_append") }}
+        </el-button>
+      </span>
+    </el-dialog>
 
     <div class="pager" v-if="total > 0">
       <el-pagination
@@ -48,7 +85,8 @@
 </template>
 
 <script>
-import { getCopyTradeList } from "@/api/copyTrade";
+import { getCopyTradeList, appendCopyTrade } from "@/api/copyTrade";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   name: "CopyTradeMy",
@@ -60,12 +98,27 @@ export default {
       pageNum: 1,
       pageSize: 10,
       total: 0,
+      appendVisible: false,
+      appendItem: {},
+      appendAmount: "",
+      appendLoading: false,
     };
+  },
+  computed: {
+    ...mapGetters(["userInfo"]),
+    contractBalance() {
+      if (this.userInfo && this.userInfo.asset && this.userInfo.asset.length > 0) {
+        const cur = this.userInfo.asset.filter((item) => item.type == 3);
+        return cur.length ? Number(cur[0].availableAmount || 0) : 0;
+      }
+      return 0;
+    },
   },
   created() {
     this.loadData();
   },
   methods: {
+    ...mapActions(["getUserInfo"]),
     async loadData() {
       this.loading = true;
       try {
@@ -86,6 +139,34 @@ export default {
     },
     toDetail(id) {
       this.$router.push(`/copyTrade/detail/${id}`);
+    },
+    openAppend(item) {
+      this.appendItem = item || {};
+      this.appendAmount = "";
+      this.appendVisible = true;
+    },
+    onAppendOpen() {
+      this.getUserInfo();
+    },
+    async confirmAppend() {
+      const val = Number(this.appendAmount);
+      if (!val || val <= 0) {
+        this.$message.warning(this.$t("pc_copy_trade_append_amount_invalid"));
+        return;
+      }
+      if (val > this.contractBalance) {
+        this.$message.warning(this.$t("pc_copy_trade_insufficient_balance"));
+        return;
+      }
+      this.appendLoading = true;
+      try {
+        const res = await appendCopyTrade({ id: this.appendItem.id, amount: val });
+        this.$message.success((res && res.data && res.data.msg) || this.$t("pc_copy_trade_append_success"));
+        this.appendVisible = false;
+        this.loadData();
+      } finally {
+        this.appendLoading = false;
+      }
     },
     symbolPair(symbol) {
       const s = String(symbol || "").toUpperCase();
@@ -177,7 +258,23 @@ export default {
   text-align: right;
   color: #17ac74;
   font-size: 12px;
+  cursor: pointer;
+}
+.card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-top: 8px;
+  gap: 12px;
+}
+.append-name {
+  margin: 0 0 6px;
+  font-weight: 600;
+}
+.append-tip {
+  margin: 0 0 16px;
+  font-size: 12px;
+  color: #667085;
 }
 .pager {
   margin-top: 16px;

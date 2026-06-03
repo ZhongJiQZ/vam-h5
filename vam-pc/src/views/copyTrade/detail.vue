@@ -34,16 +34,39 @@
         <div>{{ $t("pc_copy_trade_net_profit") }}：<span :class="pnlClass(netProfit)">{{ signNum(netProfit) }} USDT</span></div>
       </div>
 
-      <el-button
-        v-if="detail.status === 0"
-        class="stop-btn"
-        type="danger"
-        :loading="stopping"
-        @click="confirmExit"
-      >
-        {{ $t("pc_copy_trade_stop") }}
-      </el-button>
+      <div v-if="detail.status === 0" class="action-btns">
+        <el-button type="primary" plain @click="openAppend">{{ $t("pc_copy_trade_append") }}</el-button>
+        <el-button class="stop-btn" type="danger" :loading="stopping" @click="confirmExit">
+          {{ $t("pc_copy_trade_stop") }}
+        </el-button>
+      </div>
     </div>
+
+    <el-dialog
+      :title="$t('pc_copy_trade_append_title')"
+      :visible.sync="appendVisible"
+      width="420px"
+      @open="onAppendOpen"
+    >
+      <p v-if="detail.strategyName" class="append-name">{{ detail.strategyName }}</p>
+      <p class="append-tip">{{ $t("pc_copy_trade_append_tip") }}</p>
+      <el-form label-width="100px">
+        <el-form-item :label="$t('pc_copy_trade_append_amount')">
+          <el-input v-model="appendAmount" type="number" :placeholder="$t('pc_copy_trade_append_amount_placeholder')">
+            <template slot="append">USDT</template>
+          </el-input>
+        </el-form-item>
+        <el-form-item :label="$t('pc_copy_trade_contract_balance')">
+          <span>{{ num(contractBalance) }} USDT</span>
+        </el-form-item>
+      </el-form>
+      <span slot="footer">
+        <el-button @click="appendVisible = false">{{ $t("utils.cancel") }}</el-button>
+        <el-button type="primary" :loading="appendLoading" @click="confirmAppend">
+          {{ $t("pc_copy_trade_append") }}
+        </el-button>
+      </span>
+    </el-dialog>
 
     <div class="panel" v-if="records.length">
       <h4>{{ $t("pc_copy_trade_history_positions") }}</h4>
@@ -70,7 +93,8 @@
 </template>
 
 <script>
-import { getCopyTradeDetail, exitCopyTrade } from "@/api/copyTrade";
+import { getCopyTradeDetail, exitCopyTrade, appendCopyTrade } from "@/api/copyTrade";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   name: "CopyTradeDetail",
@@ -80,9 +104,20 @@ export default {
       stopping: false,
       detail: {},
       records: [],
+      appendVisible: false,
+      appendAmount: "",
+      appendLoading: false,
     };
   },
   computed: {
+    ...mapGetters(["userInfo"]),
+    contractBalance() {
+      if (this.userInfo && this.userInfo.asset && this.userInfo.asset.length > 0) {
+        const cur = this.userInfo.asset.filter((item) => item.type == 3);
+        return cur.length ? Number(cur[0].availableAmount || 0) : 0;
+      }
+      return 0;
+    },
     displayProfit() {
       if (Number(this.detail.status) === 1) return Number(this.detail.actualProfit || 0);
       if (this.detail && this.detail.params && this.detail.params.totalSettledProfit != null) {
@@ -116,6 +151,7 @@ export default {
     this.loadData();
   },
   methods: {
+    ...mapActions(["getUserInfo"]),
     async loadData() {
       this.loading = true;
       try {
@@ -142,6 +178,33 @@ export default {
           }
         })
         .catch(() => {});
+    },
+    openAppend() {
+      this.appendAmount = "";
+      this.appendVisible = true;
+    },
+    onAppendOpen() {
+      this.getUserInfo();
+    },
+    async confirmAppend() {
+      const val = Number(this.appendAmount);
+      if (!val || val <= 0) {
+        this.$message.warning(this.$t("pc_copy_trade_append_amount_invalid"));
+        return;
+      }
+      if (val > this.contractBalance) {
+        this.$message.warning(this.$t("pc_copy_trade_insufficient_balance"));
+        return;
+      }
+      this.appendLoading = true;
+      try {
+        const res = await appendCopyTrade({ id: this.detail.id, amount: val });
+        this.$message.success((res && res.data && res.data.msg) || this.$t("pc_copy_trade_append_success"));
+        this.appendVisible = false;
+        this.loadData();
+      } finally {
+        this.appendLoading = false;
+      }
     },
     symbolPair(symbol) {
       const s = String(symbol || "").toUpperCase();
@@ -229,6 +292,20 @@ h4 {
   color: #f04438;
 }
 .stop-btn {
+  margin-top: 0;
+}
+.action-btns {
   margin-top: 14px;
+  display: flex;
+  gap: 12px;
+}
+.append-name {
+  margin: 0 0 6px;
+  font-weight: 600;
+}
+.append-tip {
+  margin: 0 0 16px;
+  font-size: 12px;
+  color: #667085;
 }
 </style>

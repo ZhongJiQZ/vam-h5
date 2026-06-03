@@ -77,14 +77,14 @@
       <p v-else-if="detail.status === 0" class="empty-hint">{{ _t18('copy_trade_no_positions_hint') }}</p>
       <Nodata v-else />
 
-      <button
-        v-if="detail.status === 0"
-        type="button"
-        class="stop-btn"
-        @click="openStop"
-      >
-        {{ _t18('copy_trade_stop') }}
-      </button>
+      <div v-if="detail.status === 0" class="action-bar">
+        <button type="button" class="append-btn" @click="openAppend">
+          {{ _t18('copy_trade_append') }}
+        </button>
+        <button type="button" class="stop-btn" @click="openStop">
+          {{ _t18('copy_trade_stop') }}
+        </button>
+      </div>
     </template>
 
     <StopConfirmDialog
@@ -92,6 +92,12 @@
       :rows="stopRows"
       :loading="stopLoading"
       @confirm="confirmStop"
+    />
+    <AppendDialog
+      v-model:show="appendVisible"
+      :item="detail"
+      :loading="appendLoading"
+      @confirm="confirmAppend"
     />
   </div>
 </template>
@@ -103,8 +109,9 @@ import { useI18n } from 'vue-i18n'
 import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import PositionRecordCard from './components/PositionRecordCard.vue'
 import StopConfirmDialog from './components/StopConfirmDialog.vue'
+import AppendDialog from './components/AppendDialog.vue'
 import { _t18 } from '@/utils/public'
-import { getCopyTradeDetail, exitCopyTrade } from '@/api/copyTrade'
+import { getCopyTradeDetail, exitCopyTrade, appendCopyTrade } from '@/api/copyTrade'
 import { priceFormat } from '@/utils/decimal'
 import { formatPnl, pnlClass, calcPnlRate, formatProfitShareRate } from './utils'
 import { showToast } from 'vant'
@@ -119,6 +126,8 @@ const pageLoading = ref(true)
 const stopVisible = ref(false)
 const stopLoading = ref(false)
 const stopRows = ref([])
+const appendVisible = ref(false)
+const appendLoading = ref(false)
 
 const statusText = computed(() => {
   if (detail.value.status === 0) return detail.value.params?.statusText || t18('copy_trade_tab_ongoing')
@@ -172,6 +181,28 @@ async function loadDetail() {
     void e
   } finally {
     pageLoading.value = false
+  }
+}
+
+function openAppend() {
+  appendVisible.value = true
+}
+
+async function confirmAppend(amount) {
+  appendLoading.value = true
+  try {
+    const res = await appendCopyTrade({ id: detail.value.id, amount })
+    if (res?.code == 200) {
+      showToast(res.msg || t18('copy_trade_append_success'))
+      appendVisible.value = false
+      await loadDetail()
+    } else {
+      showToast(res?.msg)
+    }
+  } catch (e) {
+    void e
+  } finally {
+    appendLoading.value = false
   }
 }
 
@@ -331,18 +362,31 @@ $green: #17ac74;
   font-size: 13px;
   padding: 24px;
 }
-.stop-btn {
+.action-bar {
   position: fixed;
   left: 15px;
   right: 15px;
   bottom: calc(16px + env(safe-area-inset-bottom, 0));
   max-width: calc(var(--ex-max-width, 100%) - 30px);
   margin: 0 auto;
+  display: flex;
+  gap: 10px;
+}
+.append-btn,
+.stop-btn {
+  flex: 1;
   height: 48px;
-  border: none;
   border-radius: 8px;
+  font-size: 16px;
+  border: none;
+}
+.append-btn {
+  background: #fff;
+  border: 1px solid $green;
+  color: $green;
+}
+.stop-btn {
   background: $green;
   color: #fff;
-  font-size: 16px;
 }
 </style>

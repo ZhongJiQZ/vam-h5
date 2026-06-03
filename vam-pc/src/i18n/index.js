@@ -80,6 +80,16 @@ const pcCopyTradeEn = {
   pc_copy_trade_trade_fee: "Trading fee",
   pc_copy_trade_profit_share_amt: "Profit share amount",
   pc_copy_trade_net_profit: "Net profit",
+  pc_copy_trade_append: "Add investment",
+  pc_copy_trade_append_title: "Add investment",
+  pc_copy_trade_append_amount: "Add amount",
+  pc_copy_trade_append_amount_placeholder: "Enter add amount",
+  pc_copy_trade_append_amount_invalid: "Please enter a valid amount",
+  pc_copy_trade_append_success: "Investment added successfully",
+  pc_copy_trade_append_failed: "Failed to add investment",
+  pc_copy_trade_append_tip: "Amount will be deducted from contract account",
+  pc_copy_trade_contract_balance: "Contract balance",
+  pc_copy_trade_insufficient_balance: "Insufficient balance",
 };
 
 const pcCopyTradeZh = {
@@ -133,6 +143,16 @@ const pcCopyTradeZh = {
   pc_copy_trade_trade_fee: "交易手续费",
   pc_copy_trade_profit_share_amt: "机构分润金额",
   pc_copy_trade_net_profit: "实际盈利",
+  pc_copy_trade_append: "追加投资",
+  pc_copy_trade_append_title: "追加投资",
+  pc_copy_trade_append_amount: "追加金额",
+  pc_copy_trade_append_amount_placeholder: "请输入追加金额",
+  pc_copy_trade_append_amount_invalid: "请输入有效追加金额",
+  pc_copy_trade_append_success: "追加投资成功",
+  pc_copy_trade_append_failed: "追加投资失败",
+  pc_copy_trade_append_tip: "追加金额将从合约账户扣除",
+  pc_copy_trade_contract_balance: "合约账户余额",
+  pc_copy_trade_insufficient_balance: "余额不足",
 };
 
 const pcCopyTradeTw = {
@@ -186,6 +206,16 @@ const pcCopyTradeTw = {
   pc_copy_trade_trade_fee: "交易手續費",
   pc_copy_trade_profit_share_amt: "機構分潤金額",
   pc_copy_trade_net_profit: "實際盈利",
+  pc_copy_trade_append: "追加投資",
+  pc_copy_trade_append_title: "追加投資",
+  pc_copy_trade_append_amount: "追加金額",
+  pc_copy_trade_append_amount_placeholder: "請輸入追加金額",
+  pc_copy_trade_append_amount_invalid: "請輸入有效追加金額",
+  pc_copy_trade_append_success: "追加投資成功",
+  pc_copy_trade_append_failed: "追加投資失敗",
+  pc_copy_trade_append_tip: "追加金額將從合約賬戶扣除",
+  pc_copy_trade_contract_balance: "合約賬戶餘額",
+  pc_copy_trade_insufficient_balance: "餘額不足",
 };
 
 function withGiftCert(pack) {
