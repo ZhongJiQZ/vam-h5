@@ -19,9 +19,29 @@
       </div>
     </div>
     <div class="carousel">
-      <van-swipe :autoplay="3000" lazy-render :loop="true" :show-indicators="false">
-        <van-swipe-item v-for="(item, index) in carouselList.slice(0,1)" :key="index">
-          <image-load :filePath="item.imgUrl" alt="" class="carouselItem" @click="linkto(item)" />
+      <div
+        v-if="primaryBanner?.imgUrl && !bannerImageReady"
+        class="carousel-skeleton"
+        aria-hidden="true"
+      />
+      <van-swipe
+        v-if="carouselList.length"
+        :autoplay="3000"
+        :loop="carouselList.length > 1"
+        :show-indicators="false"
+      >
+        <van-swipe-item v-for="(item, index) in carouselList.slice(0, 1)" :key="item.noticeId || index">
+          <image-load
+            :filePath="item.imgUrl"
+            alt=""
+            class="carouselItem"
+            :class="{ 'carouselItem--ready': bannerImageReady }"
+            loading="eager"
+            fetchpriority="high"
+            @load="onBannerImageReady"
+            @error="onBannerImageReady"
+            @click="linkto(item)"
+          />
         </van-swipe-item>
       </van-swipe>
       <div class="currentList">
@@ -58,9 +78,13 @@
 import { useTradeStore } from '@/store/trade/index'
 import { useMainStore } from '@/store/index.js'
 import { useRouter } from 'vue-router'
-import { onMounted, computed } from 'vue'
-import { publiceNotice } from '@/api/common/index'
+import { onMounted, computed, ref, watch } from 'vue'
 import { _isRFDByChangePercent, _absChangePercentStr } from '@/utils/public'
+import {
+  collectHomeBannerImageUrls,
+  preloadImages,
+  resolveImageLoadUrl
+} from '@/utils/imagePreload'
 import SideBar from '@/views/home/sidebar/index.vue'
 import logoFallback from '@/assets/images/logo-black.png'
 const show = ref(false)
@@ -116,7 +140,43 @@ const linkTo = (item) => {
   mainStroe.setTradeStatus(Number(0))
   $router.push(`/trade?symbol=${item.coin}`)
 }
-const carouselList = ref([])
+const bannerImageReady = ref(false)
+
+const carouselList = computed(() => mainStroe.homeBannerList || [])
+
+const primaryBanner = computed(() => carouselList.value[0] || null)
+
+const onBannerImageReady = () => {
+  bannerImageReady.value = true
+}
+
+watch(
+  () => primaryBanner.value?.imgUrl,
+  (imgUrl) => {
+    bannerImageReady.value = false
+    if (!imgUrl) return
+    const url = resolveImageLoadUrl(imgUrl)
+    if (!url) return
+    const img = new Image()
+    img.onload = onBannerImageReady
+    img.onerror = onBannerImageReady
+    if (img.complete) {
+      onBannerImageReady()
+    } else {
+      img.src = url
+    }
+  },
+  { immediate: true }
+)
+
+watch(
+  carouselList,
+  (list) => {
+    preloadImages(collectHomeBannerImageUrls(list), { linkPreloadCount: 2 })
+  },
+  { immediate: true, deep: true }
+)
+
 // 轮播图跳转
 const linkto = (detail) => {
   if (detail.noticeContent && detail.noticeContent !== '<p><br></p>') {
@@ -126,15 +186,10 @@ const linkto = (detail) => {
   }
 }
 
-onMounted(async () => {
-  try {
-    const res = await publiceNotice('ACTIVITY_NOTICE', 'HOME_ACTIVITY ')
-    if (res.code === 200) {
-      carouselList.value = res.data.filter((item) => {
-        return item.status != '1'
-      })
-    }
-  } catch (error) {}
+onMounted(() => {
+  if (!carouselList.value.length) {
+    mainStroe.fetchHomeBanner()
+  }
 })
 </script>
 <style lang="scss" scoped>
@@ -200,11 +255,29 @@ onMounted(async () => {
 .carousel {
   position: relative;
   height: 250px;
+  background: #f0f2f5;
+
+  .carousel-skeleton {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: linear-gradient(90deg, #eef0f3 25%, #e4e7eb 50%, #eef0f3 75%);
+    background-size: 200% 100%;
+    animation: carousel-shimmer 1.2s ease-in-out infinite;
+  }
 
   .carouselItem {
+    position: relative;
+    z-index: 1;
     height: 250px;
     width: 100%;
     object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.25s ease-out;
+
+    &--ready {
+      opacity: 1;
+    }
   }
 
   .currentList {
@@ -284,6 +357,15 @@ onMounted(async () => {
       font-weight: 700;
       line-height: 1.2;
     }
+  }
+}
+
+@keyframes carousel-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
   }
 }
 </style>

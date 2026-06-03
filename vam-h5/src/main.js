@@ -57,14 +57,15 @@ app.use(BreathingColors)
 const tradeStore = useTradeStore()
 const mainStore = useMainStore()
 
-// 持久化配置中的金刚区图标尽早预加载（文字可先渲染，图标走缓存）
+// 持久化配置 + 上次会话轮播图 URL，尽早预加载
 preloadHomeCriticalImages(mainStore.settingConfig)
 
-// 获取平台地址 获取平台配置 币种列表 语言列表
+// 获取平台地址 获取平台配置 币种列表 语言列表（含首页轮播背景）
 Promise.all([
   mainStore.getPlatFormConfig(),
   mainStore.getSettingConfig(),
   tradeStore.getCoinList(),
+  mainStore.fetchHomeBanner()
   // mainStore.getLanguageList()
 ]).then(async () => {
   preloadHomeCriticalImages(mainStore.settingConfig)

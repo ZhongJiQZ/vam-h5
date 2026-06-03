@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { setLanguage } from '../plugin/i18n'
 import { storageDict } from '@/config/dict'
-import { dict, getPlatFormConfigApi, getSettingConfigApi } from '@/api/common/index.js'
+import { dict, getPlatFormConfigApi, getSettingConfigApi, publiceNotice } from '@/api/common/index.js'
 import { TIMEZONE_DICT } from '@/config/index'
 import { useUserStore } from './user'
 import { getUserRechageNewApi } from '@/api/account'
@@ -10,7 +10,7 @@ import { getCollect } from '@/api/trade/index'
 
 import { _t18 } from '@/utils/public'
 import { getRechargeAddressFromMap, normalizeRechargeAddressFromApi } from '@/utils/rechargeAddress'
-import { preloadHomeCriticalImages } from '@/utils/imagePreload'
+import { preloadHomeBannerList, preloadHomeCriticalImages } from '@/utils/imagePreload'
 
 export const useMainStore = defineStore('main', {
   state: () => {
@@ -64,7 +64,10 @@ export const useMainStore = defineStore('main', {
       /**
        * 自定义充值列表
        */
-      userRechageMap: {}
+      userRechageMap: {},
+      /** 首页轮播/活动背景（ACTIVITY_NOTICE） */
+      homeBannerList: [],
+      _homeBannerLoading: null
     }
   },
   getters: {
@@ -259,6 +262,34 @@ export const useMainStore = defineStore('main', {
         this.hasOption = true
         preloadHomeCriticalImages(res.data)
       }
+    },
+    /**
+     * 首页轮播背景：应用启动时拉取并预加载，避免 header 挂载后才请求
+     */
+    async fetchHomeBanner(force = false) {
+      if (!force && this.homeBannerList.length) {
+        preloadHomeBannerList(this.homeBannerList)
+        return this.homeBannerList
+      }
+      if (this._homeBannerLoading) {
+        return this._homeBannerLoading
+      }
+      this._homeBannerLoading = (async () => {
+        try {
+          const res = await publiceNotice('ACTIVITY_NOTICE', 'HOME_ACTIVITY ')
+          if (res.code === 200 && Array.isArray(res.data)) {
+            const list = res.data.filter((item) => item.status != '1')
+            this.homeBannerList = list
+            preloadHomeBannerList(list)
+          }
+        } catch {
+          /* ignore */
+        } finally {
+          this._homeBannerLoading = null
+        }
+        return this.homeBannerList
+      })()
+      return this._homeBannerLoading
     },
     /**
      * 获取用户收藏列表

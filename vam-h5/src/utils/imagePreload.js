@@ -60,11 +60,17 @@ export function preloadImages(urls, { linkPreloadCount = 8 } = {}) {
   })
 }
 
+const HOME_BANNER_CACHE_KEY = 'vam_home_banner_urls'
+
 export function collectHomeCriticalImageUrls(settingConfig = {}) {
   const paths = []
   const push = (filePath) => {
     if (filePath) paths.push(filePath)
   }
+
+  const logo = settingConfig.LOGO_SETTING || {}
+  push(logo.logo)
+  push(logo.logoD)
 
   ;(settingConfig.MIDDLE_MENU_SETTING || []).forEach((item) => {
     if (item?.isOpen !== false && item?.imgUrl) push(item.imgUrl)
@@ -76,6 +82,47 @@ export function collectHomeCriticalImageUrls(settingConfig = {}) {
   return paths.map((p) => resolveImageLoadUrl(p)).filter(Boolean)
 }
 
+/** 首页轮播/活动区背景图 URL（与 header 筛选逻辑一致） */
+export function collectHomeBannerImageUrls(bannerList = []) {
+  return (bannerList || [])
+    .filter((item) => item?.status != '1' && item?.imgUrl)
+    .map((item) => resolveImageLoadUrl(item.imgUrl))
+    .filter(Boolean)
+}
+
+export function cacheHomeBannerImageUrls(urls) {
+  if (typeof sessionStorage === 'undefined') return
+  try {
+    sessionStorage.setItem(HOME_BANNER_CACHE_KEY, JSON.stringify((urls || []).slice(0, 5)))
+  } catch {
+    /* ignore */
+  }
+}
+
+/** 用上次会话缓存的轮播图 URL 尽早预加载 */
+export function preloadCachedHomeBannerImages() {
+  if (typeof sessionStorage === 'undefined') return
+  try {
+    const raw = sessionStorage.getItem(HOME_BANNER_CACHE_KEY)
+    if (!raw) return
+    const urls = JSON.parse(raw)
+    if (Array.isArray(urls) && urls.length) {
+      preloadImages(urls, { linkPreloadCount: 2 })
+    }
+  } catch {
+    /* ignore */
+  }
+}
+
+export function preloadHomeBannerList(bannerList) {
+  const urls = collectHomeBannerImageUrls(bannerList)
+  if (urls.length) {
+    cacheHomeBannerImageUrls(urls)
+    preloadImages(urls, { linkPreloadCount: 2 })
+  }
+}
+
 export function preloadHomeCriticalImages(settingConfig) {
-  preloadImages(collectHomeCriticalImageUrls(settingConfig))
+  preloadImages(collectHomeCriticalImageUrls(settingConfig), { linkPreloadCount: 8 })
+  preloadCachedHomeBannerImages()
 }
