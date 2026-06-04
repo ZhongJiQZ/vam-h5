@@ -84,8 +84,9 @@ export default {
       }
       this.submitting = true;
       try {
-        await submitCopyTrade({ strategyId: this.strategy.id, amount: val });
-        this.$message.success(this.$t("pc_copy_trade_submit_success"));
+        const res = await submitCopyTrade({ strategyId: this.strategy.id, amount: val });
+        const msg = res?.data?.msg;
+        this.$message.success(msg || this.$t("pc_copy_trade_submit_success"));
         this.$router.replace("/copyTrade/my");
       } finally {
         this.submitting = false;

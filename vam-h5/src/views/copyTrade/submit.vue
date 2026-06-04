@@ -54,7 +54,7 @@ async function submitForm() {
   }
   const res = await submitCopyTrade({ strategyId: strategy.id, amount: val })
   if (res.code == 200) {
-    _toast('copy_trade_submit_success')
+    showToast(res.msg || t18('copy_trade_submit_success'))
     setTimeout(() => router.replace('/copy-trade/my'), 500)
   } else {
     showToast(res.msg)
