@@ -1,8 +1,10 @@
 <script setup>
 import { _t18 } from '@/utils/public'
 import { computed } from 'vue'
-import { useRouter } from 'vue-router'
-const router = useRouter()
+import { useUserStore } from '@/store/user/index'
+import { openCustomerService } from '@/utils/salesmartly'
+
+const userStore = useUserStore()
 const emits = defineEmits(['update:value'])
 const props = defineProps({
   value: {
@@ -19,15 +21,16 @@ const show = computed(() => props.value)
  * 跳转客服页面
  * @param {*} href
  */
-const toWin = (href) => {
-  if (href) {
-    /* if (['gmmoin', 'rxce', 'coinsexpto'].includes(__config._APP_ENV)) {
-      location.href = href
-    } else {
-      router.push(`/service?url=${encodeURIComponent(href)}`)
-    } */
-    location.href = href
+const toWin = (item) => {
+  const href = typeof item === 'string' ? item : item?.url
+  if (!href) return
+  if (item?.callback) {
+    item.callback()
+    close()
+    return
   }
+  openCustomerService({ userInfo: userStore.userInfo, appEnv: __config._APP_ENV })
+  close()
 }
 const close = () => {
   emits('update:value', false)
@@ -43,7 +46,7 @@ const close = () => {
         </div>
         <div class="scroll-container">
           <div class="item-list">
-            <div class="item" v-for="(item, index) in data" :key="index" @click="toWin(item.url)">
+            <div class="item" v-for="(item, index) in data" :key="index" @click="toWin(item)">
               <image-load :filePath="item.imgUrl" class="img" alt="Customer Service" />
             </div>
           </div>

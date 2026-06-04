@@ -14,6 +14,12 @@
   <link rel="stylesheet" href="<%= BASE_URL %>cdn/avue/2.9.5/index.css" />
   <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
   <script async type="text/javascript" src="./charting_library/charting_library.min.js"></script>
+  <!-- SaleSmartly：须在插件脚本加载前设置 hideIcon，否则默认悬浮图标会显示 -->
+  <script>
+    window.__ssc = window.__ssc || {};
+    window.__ssc.setting = Object.assign({}, window.__ssc.setting || {}, { hideIcon: true });
+  </script>
+  <script async src="https://plugin-code.salesmartly.com/js/project_674021_695120_1775457049.js"></script>
   <title>VeloxAM</title>
   <style>
     html,

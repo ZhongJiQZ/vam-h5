@@ -1,7 +1,7 @@
 <template>
   <HeaderBar :currentName="_t18(`home_service`)" />
   <div class="onlineService" v-if="list.length > 0">
-    <div class="item" v-for="(item, index) in list" :key="index" @click="linkTo(item.url)">
+    <div class="item" v-for="(item, index) in list" :key="index" @click="linkTo(item)">
       <image-load :filePath="item.imgUrl" alt="" class="itemImg" />
       <div class="right"><svg-load name="jiantou" class="jiantou"></svg-load></div>
     </div>
@@ -14,11 +14,21 @@ import HeaderBar from '@/components/HeaderBar/index.vue'
 import { getCustomerService } from '@/api/common/index'
 import { _t18 } from '@/utils/public'
 import { useMainStore } from '@/store/index.js'
+import { useUserStore } from '@/store/user/index'
+import { openCustomerService } from '@/utils/salesmartly'
+
 const mainStroe = useMainStore()
+const userStore = useUserStore()
 const list = ref([])
 const isShow = ref(false)
-const linkTo = (link) => {
-  location.href = link
+const linkTo = (item) => {
+  const url = typeof item === 'string' ? item : item?.getUrl?.() || item?.url
+  if (!url) return
+  if (item?.callback) {
+    item.callback()
+    return
+  }
+  openCustomerService({ userInfo: userStore.userInfo, appEnv: __config._APP_ENV })
 }
 onMounted(async () => {
   list.value = mainStroe.getCustomerServiceList || []

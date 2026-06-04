@@ -10,6 +10,7 @@ import ServicePopup from '@/components/CustomerService/ServicePopup.vue'
 // import FreezePopup from '@/components/Freeze/FreezePopup.vue'
 import { useToast } from './hook/useToast'
 import { _t18, _toView } from '@/utils/public'
+import { openCustomerService, syncSaleSmartlyLogin, injectSaleSmartlyPlatformScript } from '@/utils/salesmartly'
 import { useRouter } from 'vue-router'
 import { initWebSocket } from '@/plugin/socket'
 import { showDialog } from 'vant'
@@ -128,6 +129,8 @@ const event_userInfoChange = (e) => {
 
   // 消息通知订阅
   initWebSocket(e.detail?.user.userId)
+  // SaleSmartly 预同步用户（跳转客服前客服侧可识别）
+  syncSaleSmartlyLogin(userStore.userInfo)
 }
 
 // 冻结弹窗
@@ -158,31 +161,25 @@ const confirmFreezeDialog = () => {
  * 客服点击监听
  */
 const event_serviceChange = () => {
-  // console.log('客服')
-  if (mainStroe.getCustomerServiceList.length) {
-    if (mainStroe.getCustomerServiceList.length == 1) {
-      // 自定义客服事件
-      if (mainStroe.getCustomerServiceList[0]?.callback) {
-        mainStroe.getCustomerServiceList[0].callback()
-      } else {
-        let href = mainStroe.getCustomerServiceList[0]?.url
-        if (['gmmoin', 'coinsexpto', 'paxpay', 'dev', 'bitbyex','robinhood2'].includes(__config._APP_ENV)) {
-          location.href = href
-        } else if (mainStroe.getCustomerServiceList[0]?.getUrl) {
-          href = mainStroe.getCustomerServiceList[0].getUrl()
-          // router.push(`/service?url=${encodeURIComponent(href)}`)
-          location.href = href
-        } else {
-          // router.push(`/service?url=${encodeURIComponent(href)}`)
-          location.href = href
-        }
-      }
-    } else {
-      showServicePopup.value = true
+  const list = mainStroe.getCustomerServiceList
+  if (!list.length) return
+  if (list.length === 1) {
+    const item = list[0]
+    if (item?.callback) {
+      item.callback()
+      return
     }
+    openCustomerService({
+      userInfo: userStore.userInfo,
+      preferWidget: true,
+      appEnv: __config._APP_ENV
+    })
+  } else {
+    showServicePopup.value = true
   }
 }
 onMounted(() => {
+  injectSaleSmartlyPlatformScript(__config._APP_ENV)
   userStore.token && userStore.getUserInfo()
 
   document.addEventListener('event_toastChange', event_toastChange)

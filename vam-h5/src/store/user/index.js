@@ -6,6 +6,7 @@ import { dispatchCustomEvent } from '@/utils'
 import { useAccountStore } from '../account'
 import { useMainStore } from '../index'
 import router from '@/router'
+import { clearSaleSmartlyLogin } from '@/utils/salesmartly'
 
 export const useUserStore = defineStore('user', {
   state: () => {
@@ -58,6 +59,7 @@ export const useUserStore = defineStore('user', {
      */
     signOut() {
       try {
+        clearSaleSmartlyLogin()
         let testPlatform = localStorage.getItem(storageDict.TEST_PLATFORM)
         localStorage.clear()
         sessionStorage.clear()

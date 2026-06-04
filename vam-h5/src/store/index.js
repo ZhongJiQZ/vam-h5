@@ -11,6 +11,7 @@ import { getCollect } from '@/api/trade/index'
 import { _t18 } from '@/utils/public'
 import { getRechargeAddressFromMap, normalizeRechargeAddressFromApi } from '@/utils/rechargeAddress'
 import { preloadHomeBannerList, preloadHomeCriticalImages } from '@/utils/imagePreload'
+import { injectSaleSmartlyPlatformScript, openCustomerService } from '@/utils/salesmartly'
 
 export const useMainStore = defineStore('main', {
   state: () => {
@@ -207,15 +208,11 @@ export const useMainStore = defineStore('main', {
           // SaleSmartly
           tempObj.callback = () => {
             const userStore = useUserStore()
-            ssq.push('setLoginInfo', {
-              user_id: userStore.userInfo.user?.userId || '',
-              user_name: userStore.userInfo.user?.userId || ''
-              // language: '', // 插件语言
-              // phone: '', // 手机（注意！带上手机区号）
-              // email: '', // 邮箱
-              // description: '' // 描述
+            openCustomerService({
+              url: tempObj.url,
+              userInfo: userStore.userInfo,
+              preferWidget: true
             })
-            ssq.push('chatOpen')
           }
         } else {
           // LiveChatWidget
@@ -243,7 +240,23 @@ export const useMainStore = defineStore('main', {
         }
         return [tempObj]
       }
-      return state.settingConfig.SUPPORT_STAFF_SETTING || []
+      // 默认：SaleSmartly 插件打开客服（setLoginInfo 带入 user_id + custom_fields_ext）
+      if (typeof document !== 'undefined') {
+        injectSaleSmartlyPlatformScript(__config._APP_ENV)
+      }
+      return (state.settingConfig.SUPPORT_STAFF_SETTING || []).map((item) => {
+        const tempObj = { ...item }
+        const rawUrl = item.url || ''
+        tempObj.callback = () => {
+          const userStore = useUserStore()
+          openCustomerService({
+            userInfo: userStore.userInfo,
+            preferWidget: true,
+            appEnv: __config._APP_ENV
+          })
+        }
+        return tempObj
+      })
     }
   },
   actions: {

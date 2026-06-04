@@ -15,7 +15,7 @@
       <div class="top-operation">
         <top-operation
           ref="topOperation"
-          @openDialog="showDialog = true"
+          @openDialog="openOnlineCustomerService"
         ></top-operation>
       </div>
     </div>
@@ -33,35 +33,11 @@
     </div> -->
     <div class="coin-foot" v-if="isFooter">
       <bottom-footer
-        @openDialog="showDialog = true"
+        @openDialog="openOnlineCustomerService"
         :openSetLangFun="openSetLangFun"
       ></bottom-footer>
     </div>
 
-    <el-dialog
-      :title="$t('home.onlineCustomer')"
-      :visible.sync="showDialog"
-      width="532px"
-      :modal-append-to-body="false"
-      :append-to-body="true"
-    >
-      <span slot="title">
-        <div class="dialogTitle">
-          <div class="box-tabs">
-            <p class="box-tabs-item flex-center">
-              {{ $t("home.onlineCustomer") }}
-            </p>
-          </div>
-        </div>
-      </span>
-
-      <div class="bottom_content">
-        <p>
-          {{ $t("home.customerTip1") }}
-        </p>
-        <p>{{ $t("home.customerTip2") }}</p>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
@@ -78,6 +54,11 @@ import { getDataApi } from "@/api/system";
 import website from "@/config/index";
 import mqtt from "@/mixins/mqtt";
 import { getCurrentDateFun } from "@/util/util";
+import {
+  openCustomerService,
+  syncSaleSmartlyLogin,
+  injectSaleSmartlyPlatformScript,
+} from "@/utils/salesmartly";
 
 export default {
   mixins: [mqtt],
@@ -98,7 +79,6 @@ export default {
       mqttArr: [],
       merchantMqtt: null, //商家账户mqtt
       userMqtt: null, //用户账户mqtt
-      showDialog: false,
     };
   },
   computed: {
@@ -134,10 +114,12 @@ export default {
 
     if (this.isLogin) {
       let userInfo = await this.getUserInfoData();
-      this.SET_USER_INFO({
+      const mergedUserInfo = {
         ...this.userInfo,
         ...userInfo,
-      });
+      };
+      this.SET_USER_INFO(mergedUserInfo);
+      syncSaleSmartlyLogin(mergedUserInfo);
       // this.getPlatFormConfigApi();
     }
     //获取网站logo
@@ -183,6 +165,11 @@ export default {
       }, */
   },
   mounted() {
+    injectSaleSmartlyPlatformScript(
+      typeof window !== "undefined" && window.__config
+        ? window.__config._APP_ENV
+        : "vam"
+    );
     //监听滚动
     // window.addEventListener('scroll', () => {
     //   let scrollTop =
@@ -220,6 +207,16 @@ export default {
     ]),
     openSetLangFun() {
       this.$refs.topOperation.langDialog = true;
+    },
+    openOnlineCustomerService() {
+      openCustomerService({
+        userInfo: this.userInfo,
+        preferWidget: true,
+        appEnv:
+          typeof window !== "undefined" && window.__config
+            ? window.__config._APP_ENV
+            : "vam",
+      });
     },
     currCoinLangFun(code, type = "user") {
       return this.coinLangFun(type, code);

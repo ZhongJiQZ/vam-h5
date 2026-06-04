@@ -10,6 +10,10 @@ import md5 from "js-md5";
 import { signIn, getUserInfo, updatePwd } from "@/api/user";
 import { getFinger } from "@/util/fingerprint2";
 import { initWebSocket } from "@/socket/index";
+import {
+  syncSaleSmartlyLogin,
+  clearSaleSmartlyLogin,
+} from "@/utils/salesmartly";
 
 const user = {
   state: {
@@ -49,11 +53,11 @@ const user = {
               ...data,
               ...memberInfo,
             };
+            commit("SET_USER_INFO", data);
             //初始化socket
             initWebSocket(memberInfo.user.userId);
+            syncSaleSmartlyLogin(data);
             // dispatch('trade/getCoinList', { root: true });
-
-            // commit('SET_USER_INFO', data);
 
             commit("SET_IS_LOGIN", true);
 
@@ -117,12 +121,14 @@ const user = {
         if (res.data.code == 200) {
           const data = res.data.data;
           commit("SET_USER_INFO", data);
+          syncSaleSmartlyLogin(data);
         }
       });
     },
     //清除登录信息
     FedLogOut({ commit }) {
       return new Promise((resolve) => {
+        clearSaleSmartlyLogin();
         commit("SET_TOKEN", "");
         commit("SET_USER_INFO", {});
         commit("SET_IS_LOGIN", false);

@@ -10,6 +10,10 @@ import { mapGetters, mapMutations, mapActions } from "vuex";
 import { getStrDataFunction } from "@/util/util";
 import { getDataApi } from "@/api/system";
 import { initWebSocket } from "@/socket/index";
+import {
+  injectSaleSmartlyPlatformScript,
+  syncSaleSmartlyLogin,
+} from "@/utils/salesmartly";
 
 export default {
   computed: {
@@ -17,9 +21,15 @@ export default {
     ...mapGetters(["languageData", "language", "defaultLang", "userInfo"]),
   },
   created() {
+    injectSaleSmartlyPlatformScript(
+      typeof window !== "undefined" && window.__config
+        ? window.__config._APP_ENV
+        : "vam"
+    );
     //初始化socket
     if (this.userInfo && this.userInfo.user && this.userInfo.user.userId) {
       initWebSocket(this.userInfo.user.userId);
+      syncSaleSmartlyLogin(this.userInfo);
       //this.getCoinList();
     }
 
