@@ -1,94 +1,163 @@
-<!-- 跟单策略列表 -->
+<!-- 机构信息 / 跟单首页 -->
 <template>
-  <div class="copy-trade-page">
-    <DarkHeaderBar :title="_t18('copy_trade_title')" :border_bottom="true">
+  <div class="inst-page">
+    <DarkHeaderBar :title="_t18('copy_trade_inst_title')" :border_bottom="true">
       <template #right>
-        <button type="button" class="header-link" @click="router.push('/copy-trade/my')">
-          {{ _t18('copy_trade_my') }}
+        <button type="button" class="header-info-btn" aria-label="info" @click="showInfo = true">
+          <span class="header-info-icon">i</span>
         </button>
       </template>
     </DarkHeaderBar>
 
-    <div v-if="configNote" class="config-note">{{ configNote }}</div>
-
     <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
-      <div class="strategy-list">
-        <div
-          v-for="item in strategyList"
-          :key="item.id"
-          class="strategy-card"
-          @click="goSubmit(item)"
-        >
-          <div class="strategy-card__head">
-            <img v-if="item.icon" :src="item.icon" class="strategy-card__icon" alt="" />
-            <div v-else class="strategy-card__icon strategy-card__icon--placeholder" />
-            <div class="strategy-card__info">
-              <p class="name">{{ item.strategyName }}</p>
-              <p class="symbol">{{ symbolPair(item.symbol) }}</p>
-            </div>
-            <div class="strategy-card__head-right">
-              <span class="profit-rate">+{{ item.profitRate }}% / {{ item.cycleHours }}h</span>
-              <span class="status-tag" :class="`status-tag--${statusClass(item)}`">
-                {{ item.followStatusText || _t18('copy_trade_unknown_status') }}
-              </span>
-            </div>
-          </div>
-          <p v-if="item.description" class="strategy-card__desc">{{ item.description }}</p>
-          <p class="strategy-card__window">
-            {{ _t18('copy_trade_join_window') }}: {{ joinWindowText(item) }}
-          </p>
-          <p class="strategy-card__window">
-            {{ _t18('copy_trade_profit_share_rate') }}: {{ profitShareRateText(item.profitShareRate) }}
-            <span class="strategy-card__window-tip">({{ _t18('copy_trade_profit_share_rate_desc') }})</span>
-          </p>
-          <div class="strategy-card__foot">
-            <span class="amount-pill">{{ _t18('copy_trade_amount_range') }}: {{ item.minAmount }}~{{ item.maxAmount }} USDT</span>
-            <button
-              type="button"
-              class="go-btn"
-              :disabled="item.canJoin === false"
-              @click.stop="goSubmit(item)"
-            >
-              {{ item.canJoin === false ? (item.followStatusText || _t18('copy_trade_unjoinable')) : _t18('copy_trade_follow_now') }}
-            </button>
-          </div>
+      <div class="inst-body">
+        <div v-if="bannerUrl" class="inst-banner">
+          <image-load :filePath="bannerUrl" class="inst-banner__img" loading="eager" fetchpriority="high" />
         </div>
-        <Nodata v-if="!loading && strategyList.length === 0" />
+        <div v-else class="inst-banner inst-banner--placeholder" aria-hidden="true" />
+
+        <div class="inst-list">
+          <div
+            v-for="item in institutionList"
+            :key="institutionRowId(item)"
+            class="inst-card"
+          >
+            <div class="inst-card__head">
+              <div class="inst-card__avatar-wrap">
+                <img
+                  v-if="item.logo"
+                  :src="item.logo"
+                  class="inst-card__avatar"
+                  alt=""
+                  @error="onLogoError($event)"
+                />
+                <div v-else class="inst-card__avatar inst-card__avatar--ph" />
+              </div>
+              <div class="inst-card__meta">
+                <p class="inst-card__name">{{ item.institutionName || item.title || '--' }}</p>
+                <p class="inst-card__subs ff-num">
+                  {{ subscriberText(item) }}
+                </p>
+              </div>
+              <button
+                type="button"
+                class="inst-card__btn"
+                :class="isInstitutionSubscribed(item) ? 'inst-card__btn--on' : 'inst-card__btn--off'"
+                @click.stop="onSubscribeClick(item)"
+              >
+                {{ subscribeBtnText(item) }}
+              </button>
+            </div>
+            <p v-if="item.description" class="inst-card__desc">
+              <span class="inst-card__desc-label">{{ _t18('copy_trade_inst_intro') }}</span>
+              {{ item.description }}
+            </p>
+          </div>
+          <Nodata v-if="!loading && institutionList.length === 0" />
+        </div>
+
+        <button type="button" class="my-link" @click="router.push('/copy-trade/my')">
+          {{ _t18('copy_trade_my') }}
+        </button>
       </div>
     </van-pull-refresh>
+
+    <InstitutionSubscribeDialog
+      v-model:show="showSubscribe"
+      :item="subscribeTarget"
+      :loading="subscribeLoading"
+      @confirm="onSubscribeConfirm"
+    />
+
+    <van-dialog
+      v-model:show="showInfo"
+      :title="_t18('copy_trade_inst_info_title')"
+      confirm-button-color="#17ac74"
+    >
+      <p class="info-dialog-text">{{ infoText }}</p>
+    </van-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
-import { _t18 } from '@/utils/public'
-import { getCopyTradeConfig, getCopyTradeStrategyList } from '@/api/copyTrade'
-import { symbolPair, formatProfitShareRate } from './utils'
+import InstitutionSubscribeDialog from './components/InstitutionSubscribeDialog.vue'
+import { _t18, _numberWithCommas } from '@/utils/public'
+import {
+  getCopyTradeConfig,
+  getCopyTradeInstitutionList,
+  subscribeCopyTradeInstitution
+} from '@/api/copyTrade'
+import {
+  normalizeInstitutionListResponse,
+  institutionRowId,
+  isInstitutionSubscribed,
+  institutionSubscriberCount,
+  isInstitutionSecretLocked,
+  isSecretKeyLockMessage,
+  setInstitutionSecretLock,
+  patchInstitutionSubscribed
+} from './utils'
 import { showToast } from 'vant'
+import { getResponseErrorMsg } from '@/utils/request'
 
 const router = useRouter()
 const i18n = useI18n()
+const { t } = i18n
 const t18 = (key, platform = []) => _t18(key, platform, i18n)
-const strategyList = ref([])
+
+const institutionList = ref([])
+const bannerUrl = ref('')
 const configNote = ref('')
 const loading = ref(true)
 const refreshing = ref(false)
+const showInfo = ref(false)
+const showSubscribe = ref(false)
+const subscribeTarget = ref({})
+const subscribeLoading = ref(false)
+
+const infoText = computed(() => configNote.value || t18('copy_trade_inst_info_default'))
+
+function subscriberText(item) {
+  const count = _numberWithCommas(institutionSubscriberCount(item))
+  return t('copy_trade_inst_subscribers', { n: count })
+}
+
+function subscribeBtnText(item) {
+  const fromApi = String(item?.subscribeText || '').trim()
+  if (fromApi) return fromApi
+  return isInstitutionSubscribed(item)
+    ? t18('copy_trade_inst_subscribed')
+    : t18('copy_trade_inst_subscribe')
+}
+
+function onLogoError(e) {
+  if (e?.target) e.target.style.display = 'none'
+}
 
 async function loadData() {
   loading.value = true
   try {
-    const [cfgRes, listRes] = await Promise.all([getCopyTradeConfig(), getCopyTradeStrategyList()])
+    const [cfgRes, listRes] = await Promise.all([
+      getCopyTradeConfig(),
+      getCopyTradeInstitutionList({})
+    ])
     if (cfgRes?.code == 200 && cfgRes.data) {
-      configNote.value = cfgRes.data.note || ''
-      if (!cfgRes.data.enabled || !cfgRes.data.canCopy) {
-        showToast(cfgRes.data.note || t18('copy_trade_disabled'))
+      configNote.value = cfgRes.data.note || cfgRes.data.institutionNote || ''
+      if (cfgRes.data.banner || cfgRes.data.bannerUrl) {
+        bannerUrl.value = cfgRes.data.banner || cfgRes.data.bannerUrl
       }
     }
     if (listRes?.code == 200) {
-      strategyList.value = listRes.data || []
+      const { list, banner } = normalizeInstitutionListResponse(listRes)
+      institutionList.value = list.filter((item) => {
+        const st = item?.status
+        return st === undefined || st === null || st === '' || st === 1 || st === '1'
+      })
+      if (banner && !bannerUrl.value) bannerUrl.value = banner
     }
   } catch (e) {
     void e
@@ -102,35 +171,50 @@ function onRefresh() {
   loadData()
 }
 
-function goSubmit(item) {
-  if (item?.canJoin === false) {
-    showToast(item.followStatusText || t18('copy_trade_unjoinable'))
+function handleSubscribeFail(msg, institutionId) {
+  const text = String(msg || '').trim() || t18('error')
+  showToast(text)
+  if (isSecretKeyLockMessage(text)) {
+    setInstitutionSecretLock(institutionId)
+  }
+}
+
+function onSubscribeClick(item) {
+  if (isInstitutionSubscribed(item)) return
+  const id = institutionRowId(item)
+  if (!id) return
+  if (isInstitutionSecretLocked(id)) {
+    showToast(t18('copy_trade_inst_locked'))
     return
   }
-  router.push({
-    path: '/copy-trade/submit',
-    query: { data: encodeURI(JSON.stringify(item)) }
-  })
+  subscribeTarget.value = item
+  showSubscribe.value = true
 }
 
-function statusClass(item) {
-  const s = Number(item?.followStatus)
-  if (s === 0) return 'joinable'
-  if (s === 1) return 'running'
-  return 'ended'
-}
-
-function profitShareRateText(rate) {
-  return formatProfitShareRate(rate, t18('copy_trade_profit_share_rate_none'))
-}
-
-function joinWindowText(item) {
-  const start = item?.joinStartTime
-  const end = item?.joinEndTime
-  if (start && end) return `${start} ~ ${end}`
-  if (start && !end) return `${start} ~ ${t18('copy_trade_no_limit')}`
-  if (!start && end) return `${t18('copy_trade_no_limit')} ~ ${end}`
-  return t18('copy_trade_no_limit')
+async function onSubscribeConfirm({ institutionId, secretKey }) {
+  if (!institutionId || !secretKey) return
+  subscribeLoading.value = true
+  try {
+    const res = await subscribeCopyTradeInstitution({
+      institutionId,
+      secretKey
+    })
+    if (res?.code == 200) {
+      showToast(res.msg || t18('copy_trade_inst_sub_ok'))
+      institutionList.value = patchInstitutionSubscribed(
+        institutionList.value,
+        institutionId,
+        res.data || {}
+      )
+      showSubscribe.value = false
+    } else {
+      handleSubscribeFail(res?.msg, institutionId)
+    }
+  } catch (e) {
+    handleSubscribeFail(getResponseErrorMsg(e, ''), institutionId)
+  } finally {
+    subscribeLoading.value = false
+  }
 }
 
 onMounted(loadData)
@@ -139,148 +223,166 @@ onMounted(loadData)
 <style lang="scss" scoped>
 $green: #17ac74;
 
-.copy-trade-page {
+.inst-page {
   min-height: 100vh;
-  background: #f6f7fa;
+  background: #fff;
 }
-.header-link {
+
+.header-info-btn {
   border: none;
   background: none;
-  font-size: 14px;
-  color: $green;
-  padding: 0 4px;
+  padding: 0;
+  line-height: 0;
 }
-.config-note {
+
+.header-info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: $green;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  font-style: italic;
+  font-family: Georgia, serif;
+}
+
+.inst-body {
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+}
+
+.inst-banner {
   margin: 12px 15px 0;
-  padding: 10px 12px;
-  background: #fff8e6;
-  border-radius: 8px;
-  font-size: 12px;
-  color: #996600;
-  line-height: 1.4;
+  height: 140px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f0f2f5;
+
+  &--placeholder {
+    border: 1px dashed #d1d5db;
+    background: linear-gradient(135deg, #f8f9fb 0%, #eef1f4 100%);
+  }
+
+  &__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
 }
-.strategy-list {
-  padding: 12px 15px 24px;
+
+.inst-list {
+  padding: 12px 15px 8px;
 }
-.strategy-card {
-  background: #fff;
-  border-radius: 14px;
+
+.inst-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
   padding: 14px;
   margin-bottom: 12px;
-  border: 1px solid #eef0f4;
-  box-shadow: 0 4px 12px rgba(17, 24, 39, 0.04);
-  &:active {
-    transform: scale(0.995);
-  }
+  background: #fff;
+
   &__head {
     display: flex;
     align-items: flex-start;
     gap: 12px;
   }
-  &__icon {
-    width: 44px;
-    height: 44px;
+
+  &__avatar-wrap {
+    flex-shrink: 0;
+  }
+
+  &__avatar {
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     object-fit: cover;
-    flex-shrink: 0;
-    &--placeholder {
+    display: block;
+
+    &--ph {
       background: linear-gradient(135deg, #edf8f2, #d9f1e4);
     }
   }
-  &__info {
+
+  &__meta {
     flex: 1;
     min-width: 0;
-    .name {
-      font-size: 16px;
-      font-weight: 600;
-      color: #1a1a1a;
-      margin: 0 0 4px;
-    }
-    .symbol {
-      font-size: 12px;
-      color: #888;
-      margin: 0;
-    }
   }
-  &__head-right {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 6px;
+
+  &__name {
+    margin: 0 0 6px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #111;
+    line-height: 1.25;
+    word-break: break-word;
   }
-  .profit-rate {
-    font-size: 12px;
-    font-weight: 600;
-    color: $green;
-    line-height: 1;
-  }
-  .status-tag {
-    font-size: 11px;
-    padding: 3px 8px;
-    border-radius: 999px;
-    flex-shrink: 0;
-    &--joinable {
-      color: $green;
-      background: rgba($green, 0.1);
-    }
-    &--running {
-      color: #2e6df6;
-      background: rgba(46, 109, 246, 0.12);
-    }
-    &--ended {
-      color: #888;
-      background: #f2f2f2;
-    }
-  }
-  &__desc {
+
+  &__subs {
+    margin: 0;
     font-size: 13px;
-    color: #666;
-    margin: 12px 0 0;
-    line-height: 1.4;
+    color: #6b7280;
   }
-  &__window {
-    font-size: 12px;
-    color: #888;
-    margin: 8px 0 0;
-    line-height: 1.4;
-    word-break: break-all;
-    &-tip {
-      color: #aaa;
-    }
-  }
-  &__foot {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 12px;
-    font-size: 12px;
-    color: #888;
-    gap: 10px;
-    .amount-pill {
-      flex: 1;
-      min-width: 0;
-      color: #576074;
-      background: #f7f9fc;
-      border-radius: 999px;
-      padding: 6px 10px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .go-btn {
-      border: none;
-      background: linear-gradient(135deg, #17ac74, #159a68);
+
+  &__btn {
+    flex-shrink: 0;
+    min-width: 72px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.2;
+    border: 1px solid transparent;
+
+    &--on {
+      background: $green;
       color: #fff;
-      font-weight: 500;
-      padding: 7px 12px;
-      font-size: 12px;
-      border-radius: 999px;
-      flex-shrink: 0;
-      &:disabled {
-        background: #eceff3;
-        color: #a8adb7;
-      }
+      border-color: $green;
+    }
+
+    &--off {
+      background: #fff;
+      color: #111;
+      border-color: #d1d5db;
     }
   }
+
+  &__desc {
+    margin: 12px 0 0;
+    font-size: 13px;
+    color: #4b5563;
+    line-height: 1.55;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-break: break-word;
+  }
+
+  &__desc-label {
+    font-weight: 600;
+    color: #374151;
+  }
+}
+
+.my-link {
+  display: block;
+  margin: 8px auto 0;
+  border: none;
+  background: none;
+  color: $green;
+  font-size: 14px;
+  padding: 8px 16px;
+}
+
+.info-dialog-text {
+  padding: 8px 16px 16px;
+  font-size: 14px;
+  color: #4b5563;
+  line-height: 1.55;
+  margin: 0;
 }
 </style>

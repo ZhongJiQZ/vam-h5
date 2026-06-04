@@ -86,7 +86,9 @@ _axios.interceptors.response.use((response) => {
     if (response.data && (ok || isPriceConfirmRequired)) {
       return Promise.resolve(response.data)
     } else {
-      showToast(response.data.msg || 'System error')
+      if (!response.config?.skipBizErrorToast) {
+        showToast(response.data.msg || 'System error')
+      }
       return Promise.reject(response)
     }
   } else {
@@ -95,12 +97,23 @@ _axios.interceptors.response.use((response) => {
   }
 })
 
+/** 从拦截器 reject 的 axios response 或异常中取出业务 msg */
+export function getResponseErrorMsg(err, fallback = 'System error') {
+  const msg =
+    err?.data?.msg ??
+    err?.response?.data?.msg ??
+    err?.msg ??
+    err?.message
+  const s = String(msg ?? '').trim()
+  return s || fallback
+}
+
 /**
- * post 请求
+ * post 请求（第三参为 axios config，如 { skipBizErrorToast: true }）
  */
-export const post = (url, params) => _axios.post(url, params)
+export const post = (url, params, config) => _axios.post(url, params, config)
 
 /**
  * get 请求
  */
-export const get = (url, params) => _axios.get(url, params)
+export const get = (url, params, config) => _axios.get(url, params, config)

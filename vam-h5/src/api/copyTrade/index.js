@@ -27,3 +27,11 @@ export const getCopyTradeList = (params) => {
 
 /** 跟单详情 */
 export const getCopyTradeDetail = (id) => post(`/api/copyTrade/detail/${id}`)
+
+/** 机构列表（跟单首页） */
+export const getCopyTradeInstitutionList = (data) =>
+  post('/api/copyTrade/institutionList', data || {})
+
+/** 订阅机构（密钥验证） institutionId + secretKey */
+export const subscribeCopyTradeInstitution = (data) =>
+  post('/api/copyTrade/institutionSubscribe', data, { skipBizErrorToast: true })
