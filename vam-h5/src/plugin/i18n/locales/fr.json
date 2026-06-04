@@ -1397,5 +1397,11 @@
   "copy_trade_append_amount_placeholder": "Enter add amount",
   "copy_trade_append_amount_error": "Please enter a valid amount",
   "copy_trade_append_success": "Investment added successfully",
-  "copy_trade_append_tip": "Amount will be deducted from contract account"
+  "copy_trade_append_tip": "Amount will be deducted from contract account",
+  "plug_oneCopyTradeNum": "L1 Copy Trading",
+  "plug_twoCopyTradeNum": "L2 Copy Trading",
+  "plug_threeCopyTradeNum": "L3 Copy Trading",
+  "aams_plug_oneCopyTradeNum": "L1 Copy Trading",
+  "aams_plug_twoCopyTradeNum": "L2 Copy Trading",
+  "aams_plug_threeCopyTradeNum": "L3 Copy Trading"
 }
