@@ -5,6 +5,16 @@ export default [
     component: () => import('@/views/copyTrade/index.vue')
   },
   {
+    path: '/copy-trade/institution',
+    name: 'CopyTradeInstitution',
+    component: () => import('@/views/copyTrade/institution.vue')
+  },
+  {
+    path: '/copy-trade/strategies',
+    name: 'CopyTradeStrategies',
+    component: () => import('@/views/copyTrade/strategies.vue')
+  },
+  {
     path: '/copy-trade/submit',
     name: 'CopyTradeSubmit',
     component: () => import('@/views/copyTrade/submit.vue')

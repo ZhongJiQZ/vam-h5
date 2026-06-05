@@ -61,10 +61,10 @@ export function isInstitutionSubscribed(item) {
 
 export function institutionSubscriberCount(item) {
   const n =
+    item?.useCount ??
     item?.usePeopleCount ??
     item?.realUseCount ??
     item?.fakeUserCount ??
-    item?.useCount ??
     0
   const num = Number(n)
   return Number.isFinite(num) ? num : 0
@@ -114,4 +114,199 @@ export function patchInstitutionSubscribed(list, institutionId, patch = {}) {
       subscribeText: patch.subscribeText || item.subscribeText || '已订阅'
     }
   })
+}
+
+/** 将接口多种字段格式统一为图表可用结构 */
+function toArray(maybeList) {
+  if (Array.isArray(maybeList)) return maybeList
+  if (maybeList && typeof maybeList === 'object') {
+    return Object.entries(maybeList).map(([key, val]) => {
+      if (val && typeof val === 'object') {
+        return { date: key, ...val }
+      }
+      return { date: key, dailyRate: val, rate: val, value: val }
+    })
+  }
+  return []
+}
+
+function normalizeDailyRow(row, idx) {
+  if (row == null) return null
+  if (typeof row !== 'object') {
+    const n = Number(row)
+    return Number.isFinite(n) ? { date: String(idx + 1), dailyRate: n, cumulativeRate: n } : null
+  }
+  const date =
+    row.date ||
+    row.day ||
+    row.statDate ||
+    row.stat_date ||
+    row.time ||
+    row.label ||
+    row.x ||
+    row.name ||
+    ''
+  const dailyRate =
+    row.dailyRate ??
+    row.daily_rate ??
+    row.dayRate ??
+    row.day_rate ??
+    row.rate ??
+    row.profitRate ??
+    row.profit_rate ??
+    row.value ??
+    row.y
+  const cumulativeRate =
+    row.cumulativeRate ??
+    row.cumulative_rate ??
+    row.totalRate ??
+    row.total_rate ??
+    row.accRate ??
+    row.acc_rate
+  if (date === '' && dailyRate == null && cumulativeRate == null) return null
+  return { ...row, date: date || `D${idx + 1}`, dailyRate, cumulativeRate }
+}
+
+function normalizeWeeklyRow(row, idx) {
+  if (row == null) return null
+  if (typeof row !== 'object') {
+    const n = Number(row)
+    return Number.isFinite(n)
+      ? { week: `${idx + 1}周`, weeklyRate: n, cumulativeRate: n }
+      : null
+  }
+  const week =
+    row.week ||
+    row.weekLabel ||
+    row.week_label ||
+    row.label ||
+    row.name ||
+    (row.weekNo != null ? `${row.weekNo}周` : row.weekIndex != null ? `${row.weekIndex}周` : `${idx + 1}周`)
+  const weeklyRate =
+    row.weeklyRate ??
+    row.weekly_rate ??
+    row.weekRate ??
+    row.week_rate ??
+    row.rate ??
+    row.profitRate ??
+    row.value ??
+    row.y
+  const cumulativeRate = row.cumulativeRate ?? row.cumulative_rate ?? row.totalRate
+  if (weeklyRate == null && cumulativeRate == null) return null
+  return { ...row, week, weeklyRate, cumulativeRate }
+}
+
+/** 折线图优先用累计收益率；无累计字段时按日收益累加 */
+export function buildDailyChartPoints(rows = []) {
+  const list = toArray(rows)
+    .map((row, idx) => normalizeDailyRow(row, idx))
+    .filter(Boolean)
+  if (!list.length) return []
+
+  let acc = 0
+  return list.map((row) => {
+    const daily = Number(row.dailyRate)
+    if (row.cumulativeRate != null && row.cumulativeRate !== '') {
+      acc = Number(row.cumulativeRate) || 0
+    } else if (Number.isFinite(daily)) {
+      acc += daily
+    }
+    return {
+      ...row,
+      chartValue: Number.isFinite(acc) ? acc : 0
+    }
+  })
+}
+
+export function buildWeeklyChartPoints(rows = []) {
+  return toArray(rows)
+    .map((row, idx) => normalizeWeeklyRow(row, idx))
+    .filter(Boolean)
+    .map((row) => {
+      const weekly = Number(row.weeklyRate)
+      const cumulative = Number(row.cumulativeRate)
+      const chartValue = Number.isFinite(cumulative)
+        ? cumulative
+        : Number.isFinite(weekly)
+          ? Math.abs(weekly)
+          : 0
+      return { ...row, chartValue }
+    })
+}
+
+export function normalizePerfData(raw) {
+  if (!raw) return {}
+  if (Array.isArray(raw)) {
+    return { dailySeries: buildDailyChartPoints(raw) }
+  }
+  if (typeof raw !== 'object') return {}
+
+  const dailyRaw =
+    raw.dailySeries ||
+    raw.dailyList ||
+    raw.dailyChart ||
+    raw.dailyData ||
+    raw.daily ||
+    raw.daySeries ||
+    []
+  const weeklyRaw =
+    raw.weeklySeries ||
+    raw.weeklyList ||
+    raw.weeklyChart ||
+    raw.weeklyData ||
+    raw.weekly ||
+    raw.weekSeries ||
+    []
+  return {
+    ...raw,
+    dailySeries: buildDailyChartPoints(dailyRaw),
+    weeklySeries: buildWeeklyChartPoints(weeklyRaw),
+    coinPreference: normalizeCoinPreference(raw)
+  }
+}
+
+/** 币种偏好列表归一化 */
+export function normalizeCoinPreference(raw) {
+  if (!raw) return []
+  let list = []
+  if (Array.isArray(raw)) {
+    list = raw
+  } else if (typeof raw === 'object') {
+    const coinRaw =
+      raw.coinPreference ||
+      raw.coinPref ||
+      raw.coins ||
+      raw.coinList ||
+      raw.list ||
+      raw.data
+    if (Array.isArray(coinRaw)) list = coinRaw
+    else if (coinRaw && typeof coinRaw === 'object') list = toArray(coinRaw)
+  }
+  return list
+    .map((row) => {
+      if (!row || typeof row !== 'object') return null
+      const rate = Number(
+        row.rate ?? row.ratio ?? row.percent ?? row.percentage ?? row.proportion ?? 0
+      )
+      const count = Number(row.count ?? row.tradeCount ?? row.num ?? 0)
+      const symbol = row.symbol || row.coin || row.coinName || row.name || ''
+      if (!symbol && !rate && !count) return null
+      return {
+        ...row,
+        symbol: symbol || '--',
+        rate: Number.isFinite(rate) ? rate : 0,
+        count: Number.isFinite(count) ? count : 0,
+        icon: row.icon || row.logo || row.coinIcon || ''
+      }
+    })
+    .filter(Boolean)
+}
+
+export function buildInstitutionChartPayload(institutionId, range) {
+  const id = institutionId != null && institutionId !== '' ? institutionId : undefined
+  return {
+    institutionId: id,
+    id,
+    range: range || '7d'
+  }
 }

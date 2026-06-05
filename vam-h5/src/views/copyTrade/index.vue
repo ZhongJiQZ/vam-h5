@@ -21,6 +21,7 @@
             v-for="item in institutionList"
             :key="institutionRowId(item)"
             class="inst-card"
+            @click="goInstitution(item)"
           >
             <div class="inst-card__head">
               <div class="inst-card__avatar-wrap">
@@ -37,13 +38,16 @@
                 <p class="inst-card__name">{{ item.institutionName || item.title || '--' }}</p>
                 <p class="inst-card__subs ff-num">
                   {{ subscriberText(item) }}
+                  <span v-if="item.totalProfitRate != null" class="inst-card__rate">
+                    · {{ formatProfitRate(item.totalProfitRate) }}%
+                  </span>
                 </p>
               </div>
               <button
                 type="button"
                 class="inst-card__btn"
                 :class="isInstitutionSubscribed(item) ? 'inst-card__btn--on' : 'inst-card__btn--off'"
-                @click.stop="onSubscribeClick(item)"
+                @click.stop.prevent="onSubscribeClick(item)"
               >
                 {{ subscribeBtnText(item) }}
               </button>
@@ -103,6 +107,7 @@ import {
 } from './utils'
 import { showToast } from 'vant'
 import { getResponseErrorMsg } from '@/utils/request'
+import { priceFormat } from '@/utils/decimal'
 
 const router = useRouter()
 const i18n = useI18n()
@@ -120,6 +125,12 @@ const subscribeTarget = ref({})
 const subscribeLoading = ref(false)
 
 const infoText = computed(() => configNote.value || t18('copy_trade_inst_info_default'))
+
+function formatProfitRate(val) {
+  const n = Number(val)
+  if (!Number.isFinite(n)) return '0.00'
+  return priceFormat(n, 2)
+}
 
 function subscriberText(item) {
   const count = _numberWithCommas(institutionSubscriberCount(item))
@@ -177,6 +188,12 @@ function handleSubscribeFail(msg, institutionId) {
   if (isSecretKeyLockMessage(text)) {
     setInstitutionSecretLock(institutionId)
   }
+}
+
+function goInstitution(item) {
+  const id = institutionRowId(item)
+  if (!id) return
+  router.push({ path: '/copy-trade/institution', query: { institutionId: id } })
 }
 
 function onSubscribeClick(item) {
@@ -325,6 +342,11 @@ $green: #17ac74;
     margin: 0;
     font-size: 13px;
     color: #6b7280;
+  }
+
+  &__rate {
+    color: #17ac74;
+    font-weight: 600;
   }
 
   &__btn {

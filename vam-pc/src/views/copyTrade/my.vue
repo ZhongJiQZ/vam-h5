@@ -122,13 +122,15 @@ export default {
     async loadData() {
       this.loading = true;
       try {
-        const res = await getCopyTradeList({
+        const params = {
           pageNum: this.pageNum,
           pageSize: this.pageSize,
           status: Number(this.activeName),
-        });
-        this.list = res?.data?.rows || [];
-        this.total = Number(res?.data?.total || 0);
+        };
+        if (this.$route.query.institutionId) params.institutionId = this.$route.query.institutionId;
+        const res = await getCopyTradeList(params);
+        this.list = (res && res.data && res.data.rows) || [];
+        this.total = Number((res && res.data && res.data.total) || 0);
       } finally {
         this.loading = false;
       }

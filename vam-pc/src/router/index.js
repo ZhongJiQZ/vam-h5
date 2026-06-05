@@ -638,6 +638,16 @@ const routes = [
           import(/* webpackChunkName: "views" */ "@/views/copyTrade/index.vue"),
       },
       {
+        path: "institution",
+        component: () =>
+          import(/* webpackChunkName: "views" */ "@/views/copyTrade/institution.vue"),
+      },
+      {
+        path: "strategies",
+        component: () =>
+          import(/* webpackChunkName: "views" */ "@/views/copyTrade/strategies.vue"),
+      },
+      {
         path: "submit",
         component: () =>
           import(/* webpackChunkName: "views" */ "@/views/copyTrade/submit.vue"),

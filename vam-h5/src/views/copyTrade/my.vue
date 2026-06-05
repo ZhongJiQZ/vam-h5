@@ -47,15 +47,15 @@
         </div>
         <div class="kv">
           <span>{{ _t18('copy_trade_service_fee') }}</span>
-          <span>--</span>
+          <span class="ff-num">{{ endedSummary.tradeFee }}</span>
         </div>
         <div class="kv">
           <span>{{ _t18('copy_trade_inst_profit_share') }}</span>
-          <span>--</span>
+          <span class="ff-num">{{ endedSummary.profitShareAmt }}</span>
         </div>
         <div class="kv kv--no-border">
           <span>{{ _t18('copy_trade_actual_profit') }}</span>
-          <span class="ff-num is-up summary-actual">--</span>
+          <span class="ff-num is-up summary-actual">{{ endedSummary.netProfit }}</span>
         </div>
       </div>
 
@@ -155,8 +155,12 @@
               </div>
             </div>
             <div class="pnl-row">
-              <span class="ff-num" :class="pnlClass(item.actualProfit)">{{ formatPnl(item.actualProfit) }} USDT</span>
-              <span class="ff-num" :class="pnlClass(item.actualProfit)">{{ calcPnlRate(item.actualProfit, item.amount) }}%</span>
+              <span class="ff-num" :class="pnlClass(endedPnl(item))">{{ formatPnl(endedPnl(item)) }} USDT</span>
+              <span class="ff-num" :class="pnlClass(endedPnl(item))">{{ calcPnlRate(endedPnl(item), item.amount) }}%</span>
+            </div>
+            <div v-if="item.params?.netProfit != null" class="net-row">
+              <span>{{ _t18('copy_trade_net_profit') }}</span>
+              <span class="ff-num" :class="pnlClass(item.params.netProfit)">{{ formatPnl(item.params.netProfit) }} USDT</span>
             </div>
             <p class="detail-link">{{ _t18('copy_trade_view_detail') }} ›</p>
           </div>
@@ -176,13 +180,13 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import ShareDialog from './components/ShareDialog.vue'
 import AppendDialog from './components/AppendDialog.vue'
 import { _t18 } from '@/utils/public'
-import { getCopyTradeList, appendCopyTrade } from '@/api/copyTrade'
+import { getCopyTradeList, appendCopyTrade, getCopyTradeMyPerformance } from '@/api/copyTrade'
 import { priceFormat, _add } from '@/utils/decimal'
 import { symbolPair, formatPnl, pnlClass, calcPnlRate } from './utils'
 import dayjs from '@/plugin/dayjs/index'
@@ -190,6 +194,8 @@ import { showToast } from 'vant'
 import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
+const route = useRoute()
+const myPerf = ref(null)
 const i18n = useI18n()
 const t18 = (key, platform = []) => _t18(key, platform, i18n)
 const activeTab = ref(0)
@@ -211,6 +217,10 @@ function currentPnl(item) {
   return item?.params?.totalSettledProfit ?? item?.actualProfit ?? 0
 }
 
+function endedPnl(item) {
+  return item?.params?.totalSettledProfit ?? item?.actualProfit ?? item?.params?.netProfit ?? 0
+}
+
 function cycleRange(item) {
   const start = item?.startTime || '--'
   const end = item?.endTime || '--'
@@ -225,14 +235,34 @@ function cycleProgress(item) {
 }
 
 const endedSummary = computed(() => {
-  if (activeTab.value !== 1 || !list.value.length) return null
+  if (activeTab.value !== 1) return null
+  if (myPerf.value) {
+    const p = myPerf.value
+    return {
+      firstTime: p.subscribeTime || '--',
+      days: p.copyDays ?? 0,
+      count: total.value || list.value.length,
+      totalProfit: formatPnl(p.totalProfit),
+      totalRate: p.totalProfitRate ?? '0.00',
+      tradeFee: '--',
+      profitShareAmt: '--',
+      netProfit: formatPnl(p.totalProfit)
+    }
+  }
+  if (!list.value.length) return null
   let totalProfit = 0
   let totalAmount = 0
+  let totalFee = 0
+  let totalShare = 0
+  let totalNet = 0
   let firstTime = ''
   list.value.forEach((item) => {
-    const p = Number(item.actualProfit) || 0
+    const p = Number(item.params?.totalSettledProfit ?? item.actualProfit) || 0
     totalProfit = _add(totalProfit, p)
     totalAmount = _add(totalAmount, Number(item.amount) || 0)
+    totalFee = _add(totalFee, Number(item.params?.tradeFee ?? item.tradeFee) || 0)
+    totalShare = _add(totalShare, Number(item.params?.profitShareAmt ?? item.profitShareAmt) || 0)
+    totalNet = _add(totalNet, Number(item.params?.netProfit ?? item.netProfit) || 0)
     if (!firstTime && item.startTime) firstTime = item.startTime.split(' ')[0]
   })
   const totalRate = totalAmount ? calcPnlRate(totalProfit, totalAmount) : '0.00'
@@ -244,15 +274,20 @@ const endedSummary = computed(() => {
     firstTime,
     days,
     count: total.value || list.value.length,
-    totalProfit,
-    totalRate
+    totalProfit: formatPnl(totalProfit),
+    totalRate,
+    tradeFee: `${formatPnl(totalFee)} USDT`,
+    profitShareAmt: `${formatPnl(totalShare)} USDT`,
+    netProfit: `${formatPnl(totalNet)} USDT`
   }
 })
 
 function switchTab(tab) {
   if (activeTab.value === tab) return
   activeTab.value = tab
+  myPerf.value = null
   resetList()
+  if (tab === 1) loadMyPerformance()
 }
 
 function resetList() {
@@ -263,12 +298,28 @@ function resetList() {
   onLoad()
 }
 
+async function loadMyPerformance() {
+  const institutionId = route.query.institutionId
+  if (!institutionId || activeTab.value !== 1) {
+    myPerf.value = null
+    return
+  }
+  try {
+    const res = await getCopyTradeMyPerformance({ institutionId, range: 'all' })
+    if (res?.code == 200) myPerf.value = res.data
+  } catch {
+    myPerf.value = null
+  }
+}
+
 async function fetchList() {
-  const res = await getCopyTradeList({
+  const params = {
     pageNum: pageNum.value,
     pageSize: pageSize.value,
     status: activeTab.value
-  })
+  }
+  if (route.query.institutionId) params.institutionId = route.query.institutionId
+  const res = await getCopyTradeList(params)
   if (res?.code == 200) {
     total.value = res.total ?? 0
     return res.rows || []
@@ -337,7 +388,18 @@ async function confirmAppend(amount) {
   }
 }
 
-onMounted(() => resetList())
+onMounted(() => {
+  resetList()
+  if (activeTab.value === 1) loadMyPerformance()
+})
+
+watch(
+  () => route.query.institutionId,
+  () => {
+    resetList()
+    if (activeTab.value === 1) loadMyPerformance()
+  }
+)
 </script>
 
 <style lang="scss" scoped>
@@ -476,6 +538,14 @@ $green: #17ac74;
 .kv--no-border {
   border-bottom: none !important;
 }
+.net-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #6b7280;
+  padding-bottom: 4px;
+}
+
 .pnl-row {
   display: flex;
   justify-content: space-between;

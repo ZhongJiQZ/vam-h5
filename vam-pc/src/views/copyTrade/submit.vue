@@ -1,11 +1,14 @@
 <template>
-  <div class="submit-page">
+  <div class="submit-page" v-loading="pageLoading">
     <el-page-header @back="$router.back()" :content="$t('pc_copy_trade_submit_title')"></el-page-header>
 
     <div class="panel">
       <h3>{{ strategy.strategyName || "--" }}</h3>
       <p class="meta">{{ symbolPair(strategy.symbol) }} · {{ strategy.profitRate || 0 }}%/{{ strategy.cycleHours || 0 }}h</p>
       <p class="meta">{{ $t("pc_copy_trade_join_window") }}：{{ joinWindowText(strategy) }}</p>
+      <p class="meta" v-if="strategy.tradeFeeRate != null">
+        {{ $t("pc_copy_trade_trade_fee") }}：{{ strategy.tradeFeeRate }}%
+      </p>
       <p class="meta">
         {{ $t("pc_copy_trade_profit_share_rate") }}：{{ profitShareRateText(strategy.profitShareRate) }}
         ({{ $t("pc_copy_trade_profit_share_rate_desc") }})
@@ -15,11 +18,19 @@
 
     <div class="panel">
       <el-form label-width="100px">
+        <el-form-item v-if="needSecretKey" :label="$t('pc_copy_trade_inst_secret_ph')">
+          <el-input v-model="secretKey" />
+        </el-form-item>
         <el-form-item :label="$t('pc_copy_trade_amount')">
           <el-input v-model="amount" type="number" :placeholder="$t('pc_copy_trade_amount_placeholder')">
             <template slot="append">USDT</template>
           </el-input>
           <p class="range">{{ $t("pc_copy_trade_range") }}：{{ strategy.minAmount || 0 }} ~ {{ strategy.maxAmount || 0 }}</p>
+          <p class="range">{{ $t("pc_copy_trade_contract_balance") }}：{{ displayBalance }} USDT</p>
+        </el-form-item>
+        <el-form-item v-if="agreementDoc || riskDoc">
+          <el-button v-if="agreementDoc" type="text" @click="showDoc(agreementDoc)">{{ $t("pc_copy_trade_agreement") }}</el-button>
+          <el-button v-if="riskDoc" type="text" @click="showDoc(riskDoc)">{{ $t("pc_copy_trade_risk") }}</el-button>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" :loading="submitting" @click="submit">{{ $t("pc_copy_trade_follow_now") }}</el-button>
@@ -30,7 +41,9 @@
 </template>
 
 <script>
-import { submitCopyTrade } from "@/api/copyTrade";
+import { submitCopyTrade, getCopyTradeStrategyDetail, getCopyTradeDocuments } from "@/api/copyTrade";
+import { symbolPair } from "./utils";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   name: "CopyTradeSubmit",
@@ -38,30 +51,78 @@ export default {
     return {
       strategy: {},
       amount: "",
+      secretKey: "",
       submitting: false,
+      pageLoading: false,
+      agreementDoc: null,
+      riskDoc: null,
     };
+  },
+  computed: {
+    ...mapGetters(["userInfo"]),
+    needSecretKey() {
+      if (this.strategy.subscribed) return false;
+      return this.strategy.secretKeyRequired !== false;
+    },
+    contractBalance() {
+      if (this.userInfo && this.userInfo.asset && this.userInfo.asset.length > 0) {
+        const cur = this.userInfo.asset.filter((item) => item.type == 3);
+        return cur.length ? Number(cur[0].availableAmount || 0) : 0;
+      }
+      return 0;
+    },
+    displayBalance() {
+      if (this.strategy.contractBalance != null && this.strategy.contractBalance !== "") {
+        return this.strategy.contractBalance;
+      }
+      return this.contractBalance;
+    },
   },
   created() {
     this.parseStrategy();
+    this.getUserInfo();
+    if (this.$route.query.strategyId) this.loadStrategyDetail();
   },
   methods: {
+    ...mapActions(["getUserInfo"]),
+    symbolPair,
     parseStrategy() {
       const raw = this.$route.query.data;
-      if (!raw) return;
-      try {
-        this.strategy = JSON.parse(decodeURIComponent(raw));
-      } catch (e) {
-        this.strategy = {};
+      if (raw) {
+        try {
+          this.strategy = JSON.parse(decodeURIComponent(raw));
+        } catch (e) {
+          this.strategy = {};
+        }
+      } else if (this.$route.query.strategyId) {
+        this.strategy = { id: this.$route.query.strategyId };
       }
     },
-    symbolPair(symbol) {
-      const s = String(symbol || "").toUpperCase();
-      if (!s) return "--";
-      return s.includes("/") ? s : `${s}/USDT`;
+    async loadStrategyDetail() {
+      const strategyId = this.$route.query.strategyId || this.strategy.id;
+      if (!strategyId) return;
+      this.pageLoading = true;
+      try {
+        const res = await getCopyTradeStrategyDetail({ strategyId });
+        if (res && res.data && res.data.code == 200 && res.data.data) {
+          this.strategy = { ...this.strategy, ...res.data.data, id: res.data.data.id || strategyId };
+        }
+        const institutionId = this.$route.query.institutionId || this.strategy.institutionId;
+        if (institutionId) {
+          const [a, r] = await Promise.all([
+            getCopyTradeDocuments({ type: "agreement", institutionId }),
+            getCopyTradeDocuments({ type: "risk", institutionId }),
+          ]);
+          if (a && a.data && a.data.code == 200) this.agreementDoc = a.data.data;
+          if (r && r.data && r.data.code == 200) this.riskDoc = r.data.data;
+        }
+      } finally {
+        this.pageLoading = false;
+      }
     },
     joinWindowText(item) {
-      const start = item?.joinStartTime;
-      const end = item?.joinEndTime;
+      const start = item && item.joinStartTime;
+      const end = item && item.joinEndTime;
       if (start && end) return `${start} ~ ${end}`;
       if (start && !end) return `${start} ~ ${this.$t("pc_copy_trade_no_limit")}`;
       if (!start && end) return `${this.$t("pc_copy_trade_no_limit")} ~ ${end}`;
@@ -71,6 +132,9 @@ export default {
       const n = Number(rate);
       if (!Number.isFinite(n) || n === 0) return this.$t("pc_copy_trade_profit_share_rate_none");
       return `${n}%`;
+    },
+    showDoc(doc) {
+      this.$alert(doc.content || "", doc.title || "", { confirmButtonText: "OK" });
     },
     async submit() {
       if (this.strategy && this.strategy.canJoin === false) {
@@ -82,10 +146,20 @@ export default {
         this.$message.warning(this.$t("pc_copy_trade_amount_invalid"));
         return;
       }
+      if (val > Number(this.displayBalance)) {
+        this.$message.warning(this.$t("pc_copy_trade_insufficient_balance"));
+        return;
+      }
+      if (this.needSecretKey && !String(this.secretKey || "").trim()) {
+        this.$message.warning(this.$t("pc_copy_trade_inst_secret_required"));
+        return;
+      }
       this.submitting = true;
       try {
-        const res = await submitCopyTrade({ strategyId: this.strategy.id, amount: val });
-        const msg = res?.data?.msg;
+        const payload = { strategyId: this.strategy.id, amount: val };
+        if (this.needSecretKey) payload.secretKey = this.secretKey.trim();
+        const res = await submitCopyTrade(payload);
+        const msg = res && res.data && res.data.msg;
         this.$message.success(msg || this.$t("pc_copy_trade_submit_success"));
         this.$router.replace("/copyTrade/my");
       } finally {

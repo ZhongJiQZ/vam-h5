@@ -1,124 +1,188 @@
 <template>
   <div class="copy-page">
     <div class="page-top">
-      <h2 class="page-title">{{ $t("pc_copy_trade_title") }}</h2>
+      <h2 class="page-title">{{ $t("pc_copy_trade_inst_title") }}</h2>
       <el-button size="mini" type="primary" plain @click="$router.push('/copyTrade/my')">
         {{ $t("pc_copy_trade_my") }}
       </el-button>
     </div>
 
-    <!-- <div v-if="configNote" class="note">{{ configNote }}</div> -->
-
     <el-row :gutter="16" v-loading="loading">
-      <el-col v-for="item in list" :key="item.id" :xs="24" :sm="12" :md="8" :lg="6">
-        <div class="card">
+      <el-col
+        v-for="item in institutionList"
+        :key="institutionRowId(item)"
+        :xs="24"
+        :sm="12"
+        :md="8"
+      >
+        <div class="card inst-card" @click="goInstitution(item)">
           <div class="head flex-between">
             <div class="left flex-center">
-              <img v-if="item.icon" :src="item.icon" class="avatar" />
+              <img v-if="item.logo" :src="item.logo" class="avatar" />
               <div v-else class="avatar avatar-empty"></div>
               <div>
-                <p class="name">{{ item.strategyName }}</p>
-                <p class="symbol">{{ symbolPair(item.symbol) }}</p>
+                <p class="name">{{ item.institutionName || item.title }}</p>
+                <p class="subs">
+                  {{ $t("pc_copy_trade_inst_subscribers", { n: subscriberCount(item) }) }}
+                  <span v-if="item.totalProfitRate != null" class="rate">
+                    · {{ formatRate(item.totalProfitRate) }}%
+                  </span>
+                </p>
               </div>
             </div>
-          <el-tag size="mini" :type="statusType(item)">{{ item.followStatusText || $t("pc_copy_trade_unknown_status") }}</el-tag>
+            <el-button
+              size="mini"
+              :type="isInstitutionSubscribed(item) ? 'success' : 'default'"
+              @click.stop="onSubscribeClick(item)"
+            >
+              {{ subscribeBtnText(item) }}
+            </el-button>
           </div>
-
-          <div class="meta">{{ $t("pc_copy_trade_rate") }}：<span class="rate">{{ item.profitRate }}% / {{ item.cycleHours }}h</span></div>
-          <div class="meta">{{ $t("pc_copy_trade_join_window") }}：{{ joinWindowText(item) }}</div>
-          <div class="meta">
-            {{ $t("pc_copy_trade_profit_share_rate") }}：{{ profitShareRateText(item.profitShareRate) }}
-            <span class="meta-tip">({{ $t("pc_copy_trade_profit_share_rate_desc") }})</span>
-          </div>
-          <div class="meta">{{ $t("pc_copy_trade_amount") }}：{{ item.minAmount }} ~ {{ item.maxAmount }} USDT</div>
-          <div class="desc" v-if="item.description">{{ item.description }}</div>
-
-          <el-button
-            class="btn"
-            type="primary"
-            size="small"
-            :disabled="item.canJoin === false"
-            @click="toSubmit(item)"
-          >
-            {{ item.canJoin === false ? (item.followStatusText || $t("pc_copy_trade_unjoinable")) : $t("pc_copy_trade_follow_now") }}
-          </el-button>
+          <p v-if="item.description" class="desc">{{ item.description }}</p>
         </div>
       </el-col>
     </el-row>
 
-    <el-empty v-if="!loading && list.length === 0" :description="$t('pc_copy_trade_empty')">
-      <el-button size="mini" type="primary" @click="$router.push('/copyTrade/my')">
-        {{ $t("pc_copy_trade_my") }}
-      </el-button>
-    </el-empty>
+    <el-empty v-if="!loading && institutionList.length === 0" :description="$t('pc_copy_trade_inst_empty')" />
+
+    <el-dialog
+      :title="subscribeTarget.institutionName || subscribeTarget.title"
+      :visible.sync="showSubscribe"
+      width="420px"
+      @close="secretKey = ''"
+    >
+      <p class="sub-hint">{{ $t("pc_copy_trade_inst_sub_hint") }}</p>
+      <el-input v-model="secretKey" :placeholder="$t('pc_copy_trade_inst_secret_ph')" :disabled="subscribeLocked" />
+      <p class="sub-warn">{{ $t("pc_copy_trade_inst_lock_warn") }}</p>
+      <span slot="footer">
+        <el-button @click="showSubscribe = false">{{ $t("utils.cancel") }}</el-button>
+        <el-button type="primary" :loading="subscribeLoading" :disabled="subscribeLocked" @click="confirmSubscribe">
+          {{ $t("pc_copy_trade_inst_subscribe") }}
+        </el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getCopyTradeConfig, getCopyTradeStrategyList } from "@/api/copyTrade";
+import {
+  getCopyTradeConfig,
+  getCopyTradeInstitutionList,
+  subscribeCopyTradeInstitution,
+} from "@/api/copyTrade";
+import {
+  normalizeInstitutionListResponse,
+  institutionRowId,
+  isInstitutionSubscribed,
+  institutionSubscriberCount,
+  isInstitutionSecretLocked,
+  isSecretKeyLockMessage,
+  setInstitutionSecretLock,
+  patchInstitutionSubscribed,
+} from "./utils";
 
 export default {
   name: "CopyTradeIndex",
   data() {
     return {
       loading: false,
-      configNote: "",
-      list: [],
+      institutionList: [],
+      showSubscribe: false,
+      subscribeTarget: {},
+      secretKey: "",
+      subscribeLoading: false,
     };
+  },
+  computed: {
+    subscribeLocked() {
+      const id = institutionRowId(this.subscribeTarget);
+      return isInstitutionSecretLocked(id);
+    },
   },
   created() {
     this.loadData();
   },
   methods: {
+    institutionRowId,
+    isInstitutionSubscribed,
+    subscriberCount: institutionSubscriberCount,
+    formatRate(val) {
+      const n = Number(val);
+      return Number.isFinite(n) ? n.toFixed(2) : "0.00";
+    },
+    subscribeBtnText(item) {
+      const fromApi = String((item && item.subscribeText) || "").trim();
+      if (fromApi) return fromApi;
+      return isInstitutionSubscribed(item)
+        ? this.$t("pc_copy_trade_inst_subscribed")
+        : this.$t("pc_copy_trade_inst_subscribe");
+    },
     async loadData() {
       this.loading = true;
       try {
-        const [cfg, res] = await Promise.all([getCopyTradeConfig(), getCopyTradeStrategyList()]);
-    if (cfg && cfg.data && cfg.data.data) {
+        const [cfg, listRes] = await Promise.all([
+          getCopyTradeConfig(),
+          getCopyTradeInstitutionList({}),
+        ]);
+        if (cfg && cfg.data && cfg.data.data) {
           const d = cfg.data.data;
-          this.configNote = d.note || "";
           if (!d.enabled || !d.canCopy) {
             this.$message.warning(d.note || this.$t("pc_copy_trade_disabled"));
           }
         }
-        this.list = res && res.data && res.data.data ? res.data.data : [];
+        const parsed = normalizeInstitutionListResponse(listRes);
+        this.institutionList = parsed.list.filter((item) => {
+          const st = item && item.status;
+          return st === undefined || st === null || st === "" || st === 1 || st === "1";
+        });
       } finally {
         this.loading = false;
       }
     },
-    symbolPair(symbol) {
-      const s = String(symbol || "").toUpperCase();
-      if (!s) return "--";
-      return s.includes("/") ? s : `${s}/USDT`;
+    goInstitution(item) {
+      const id = institutionRowId(item);
+      if (!id) return;
+      this.$router.push({ path: "/copyTrade/institution", query: { institutionId: id } });
     },
-    statusType(item) {
-      const s = Number(item && item.followStatus != null ? item.followStatus : 0);
-      if (s === 0) return "success";
-      if (s === 1) return "";
-      return "info";
-    },
-    joinWindowText(item) {
-      const start = item && item.joinStartTime;
-      const end = item && item.joinEndTime;
-      if (start && end) return `${start} ~ ${end}`;
-      if (start && !end) return `${start} ~ ${this.$t("pc_copy_trade_no_limit")}`;
-      if (!start && end) return `${this.$t("pc_copy_trade_no_limit")} ~ ${end}`;
-      return this.$t("pc_copy_trade_no_limit");
-    },
-    profitShareRateText(rate) {
-      const n = Number(rate);
-      if (!Number.isFinite(n) || n === 0) return this.$t("pc_copy_trade_profit_share_rate_none");
-      return `${n}%`;
-    },
-    toSubmit(item) {
-      if (item && item.canJoin === false) {
-        this.$message.warning(item.followStatusText || this.$t("pc_copy_trade_unjoinable"));
+    onSubscribeClick(item) {
+      if (isInstitutionSubscribed(item)) return;
+      const id = institutionRowId(item);
+      if (!id) return;
+      if (isInstitutionSecretLocked(id)) {
+        this.$message.warning(this.$t("pc_copy_trade_inst_locked"));
         return;
       }
-      this.$router.push({
-        path: "/copyTrade/submit",
-        query: { data: encodeURIComponent(JSON.stringify(item)) },
-      });
+      this.subscribeTarget = item;
+      this.showSubscribe = true;
+    },
+    async confirmSubscribe() {
+      const institutionId = institutionRowId(this.subscribeTarget);
+      if (!institutionId || !this.secretKey) {
+        this.$message.warning(this.$t("pc_copy_trade_inst_secret_required"));
+        return;
+      }
+      this.subscribeLoading = true;
+      try {
+        const res = await subscribeCopyTradeInstitution({
+          institutionId,
+          secretKey: this.secretKey.trim(),
+        });
+        if (res && res.data && res.data.code == 200) {
+          this.$message.success(res.data.msg || this.$t("pc_copy_trade_inst_sub_ok"));
+          this.institutionList = patchInstitutionSubscribed(
+            this.institutionList,
+            institutionId,
+            (res.data && res.data.data) || {}
+          );
+          this.showSubscribe = false;
+        } else {
+          const msg = (res && res.data && res.data.msg) || this.$t("error");
+          this.$message.error(msg);
+          if (isSecretKeyLockMessage(msg)) setInstitutionSecretLock(institutionId);
+        }
+      } finally {
+        this.subscribeLoading = false;
+      }
     },
   },
 };
@@ -140,64 +204,47 @@ export default {
 .page-title {
   margin: 0;
 }
-.note {
-  margin-bottom: 14px;
-  background: #fff6e6;
-  border-radius: 6px;
-  padding: 10px 12px;
-  color: #9b6b00;
-  font-size: 12px;
-}
 .card {
   background: #fff;
-  border: 1px solid #eceff3;
-  border-radius: 10px;
+  border: 1px solid #eee;
+  border-radius: 8px;
   padding: 14px;
   margin-bottom: 16px;
+  cursor: pointer;
 }
-.head {
-  margin-bottom: 10px;
-}
-.left {
-  gap: 10px;
-}
-.avatar {
-  width: 42px;
-  height: 42px;
+.head .avatar {
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
+  margin-right: 10px;
   object-fit: cover;
 }
 .avatar-empty {
-  background: #eef2f8;
+  background: #edf8f2;
 }
 .name {
-  margin: 0;
+  margin: 0 0 4px;
   font-weight: 600;
 }
-.symbol {
-  margin: 4px 0 0;
+.subs {
+  margin: 0;
   font-size: 12px;
-  color: #8c93a1;
-}
-.meta {
-  font-size: 12px;
-  color: #667085;
-  margin-top: 6px;
-}
-.meta-tip {
-  color: #98a2b3;
+  color: #888;
 }
 .rate {
   color: #17ac74;
   font-weight: 600;
 }
 .desc {
-  margin-top: 8px;
-  font-size: 12px;
-  color: #8c93a1;
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: #666;
+  line-height: 1.5;
 }
-.btn {
-  margin-top: 12px;
-  width: 100%;
+.sub-hint,
+.sub-warn {
+  font-size: 13px;
+  color: #666;
+  margin: 0 0 12px;
 }
 </style>
