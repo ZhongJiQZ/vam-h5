@@ -551,6 +551,7 @@
   "please_pwd": "Inserisci la password",
   "please_email": "Inserisci l'indirizzo email",
   "please_mobile": "Inserisci il tuo numero di cellulare",
+  "mobile_id_length_error": "Il numero mobile indonesiano deve avere 10–13 cifre (escluso il prefisso)",
   "please_code": "Inserisci il codice di verifica",
   "reset_success": "Reset completato",
   "areacode": "Seleziona prefisso",

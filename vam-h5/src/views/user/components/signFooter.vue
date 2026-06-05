@@ -311,12 +311,17 @@ const toResgister = () => {
     }
   } else if (props.formDataToRegister.type == 2) {
     formData.email = props.formDataToRegister.email //邮箱
-    if (['aams'].includes(__config._APP_ENV)) {
-      formData.phone = props.formDataToRegister.areaCode + props.formDataToRegister.mobile //区号+手机号
-      if (props.formDataToRegister.mobile == '') {
-        _toast('please_mobile')
+    if (['vam'].includes(__config._APP_ENV)) {
+      
+      const mobileCheck = validateMobileByAreaCode(
+        props.formDataToRegister.areaCode,
+        props.formDataToRegister.mobile
+      )
+      if (!mobileCheck.ok) {
+        _toast(mobileCheck.key)
         return
       }
+      formData.phone = String(props.formDataToRegister.areaCode ?? '') + mobileCheck.digits
     }
     // 邮箱注册
     formData.signType = 1

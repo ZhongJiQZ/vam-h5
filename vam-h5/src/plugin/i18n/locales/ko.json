@@ -551,6 +551,7 @@
   "please_pwd": "비밀번호를 입력하세요",
   "please_email": "이메일 주소를 입력하세요",
   "please_mobile": "휴대폰 번호를 입력하세요",
+  "mobile_id_length_error": "인도네시아 휴대폰 번호(국가번호 제외)는 10~13자리여야 합니다",
   "please_code": "인증코드를 입력하세요",
   "reset_success": "재설정 성공",
   "areacode": "국가 코드 선택",

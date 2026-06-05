@@ -9,26 +9,15 @@
           <p>{{ formData3.areaCode }}</p>
           <svg-load name="jiantou10x5-x" class="jiantou"></svg-load>
         </div>
-        <input
-          style="margin-left: 5px"
-          type="tel"
-          inputmode="numeric"
-          :maxlength="mobileMaxLength"
-          :placeholder="mobilePlaceholder"
-          v-model="formData3.mobile"
-          @input="onMobileInput"
-        />
+        <input style="margin-left: 5px" type="tel" inputmode="numeric" :maxlength="mobileMaxLength"
+          :placeholder="mobilePlaceholder" v-model="formData3.mobile" @input="onMobileInput" />
       </div>
     </div>
     <div class="formData">
       <!-- 密码 -->
       <p>{{ _t18('login_pwd') }}</p>
       <div>
-        <input
-          :type="showk ? 'text' : 'password'"
-          :placeholder="_t18('login_please')"
-          v-model="formData3.password"
-        />
+        <input :type="showk ? 'text' : 'password'" :placeholder="_t18('login_please')" v-model="formData3.password" />
         <svg-load :name="showk ? 'yanjin-k' : 'yanjin-g'" @click="showk = !showk"></svg-load>
       </div>
     </div>
@@ -36,16 +25,9 @@
       <!-- 确认密码 -->
       <p>{{ _t18('register_pwd_require') }}</p>
       <div>
-        <input
-          :type="requireShowk ? 'text' : 'password'"
-          :placeholder="_t18('login_please')"
-          v-model="formData3.password2"
-          @input="inputPass"
-        />
-        <svg-load
-          :name="requireShowk ? 'yanjin-k' : 'yanjin-g'"
-          @click="requireShowk = !requireShowk"
-        ></svg-load>
+        <input :type="requireShowk ? 'text' : 'password'" :placeholder="_t18('login_please')"
+          v-model="formData3.password2" @input="inputPass" />
+        <svg-load :name="requireShowk ? 'yanjin-k' : 'yanjin-g'" @click="requireShowk = !requireShowk"></svg-load>
       </div>
     </div>
     <p class="requirePass" v-if="requirePass">*{{ _t18('register_pwd_diff') }}</p>

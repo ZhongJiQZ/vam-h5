@@ -7,17 +7,17 @@
         <input type="text" :placeholder="_t18('login_emailCode')" v-model="formData2.email" />
       </div>
     </div>
-    <div v-if="['aams'].includes(_getConfig('_APP_ENV'))" class="formData">
+    <div v-if="['vam'].includes(_getConfig('_APP_ENV'))" class="formData">
       <!-- 手机号 -->
       <p>{{ _t18('login_mobileCode') }}</p>
       <div>
-        <input type="text" :placeholder="_t18('login_mobileCode')" v-model="formData2.mobile" />
         <div class="right" @click="shouAreaCode">
           <i>+</i>
           <p>{{ formData2.areaCode }}</p>
           <svg-load name="jiantou10x5-x" class="jiantou"></svg-load>
         </div>
-      </div>
+        <input type="text" :placeholder="_t18('login_mobileCode')" v-model="formData2.mobile" />
+      </div> 
     </div>
     <div class="formData">
       <!-- 密码 -->
