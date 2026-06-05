@@ -2,7 +2,10 @@
   <div>
     <div class="formData">
       <!-- 手机号 -->
-      <p>{{ _t18('login_mobileCode') }}</p>
+      <p>
+        {{ _t18('login_mobileCode') }}
+        <i>({{ _t18('required') }})</i>
+      </p>
       <div>
         <div class="right" @click="shouAreaCode">
           <i>+</i>

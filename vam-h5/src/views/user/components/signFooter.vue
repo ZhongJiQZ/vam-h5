@@ -279,6 +279,14 @@ const toWalletLogin = async () => {
     })
 }
 
+/** 注册时手机号是否必填（手机注册；vam 账号/邮箱注册也需手机号） */
+const isRegisterPhoneRequired = (type) => {
+  if (type == 3) return true
+  return (
+    ['vam'].includes(__config._APP_ENV) && (type == 1 || type == 2)
+  )
+}
+
 /**
  * 注册
  */
@@ -303,15 +311,6 @@ const toResgister = () => {
       /[^a-zA-Z0-9\u4e00-\u9fa5]/g,
       ''
     ) //用户名
-    const mobileCheck = validateMobileByAreaCode(
-      props.formDataToRegister.areaCode,
-      props.formDataToRegister.mobile
-    )
-    if (!mobileCheck.ok) {
-      _toast(mobileCheck.key)
-      return
-    }
-    formData.phone = String(props.formDataToRegister.areaCode ?? '') + mobileCheck.digits
     formData.signType = 3
     if (formData.loginName == '') {
       //用户名
@@ -320,18 +319,6 @@ const toResgister = () => {
     }
   } else if (props.formDataToRegister.type == 2) {
     formData.email = props.formDataToRegister.email //邮箱
-    if (['vam'].includes(__config._APP_ENV)) {
-      
-      const mobileCheck = validateMobileByAreaCode(
-        props.formDataToRegister.areaCode,
-        props.formDataToRegister.mobile
-      )
-      if (!mobileCheck.ok) {
-        _toast(mobileCheck.key)
-        return
-      }
-      formData.phone = String(props.formDataToRegister.areaCode ?? '') + mobileCheck.digits
-    }
     // 邮箱注册
     formData.signType = 1
     if (formData.email == '') {
@@ -340,6 +327,10 @@ const toResgister = () => {
     }
   } else if (props.formDataToRegister.type == 3) {
     // 手机注册：无需短信验证码
+    formData.signType = 2
+  }
+
+  if (isRegisterPhoneRequired(props.formDataToRegister.type)) {
     const mobileCheck = validateMobileByAreaCode(
       props.formDataToRegister.areaCode,
       props.formDataToRegister.mobile
@@ -349,8 +340,8 @@ const toResgister = () => {
       return
     }
     formData.phone = String(props.formDataToRegister.areaCode ?? '') + mobileCheck.digits
-    formData.signType = 2
   }
+
   if (formData.loginPassword == '') {
     // msg = 'please_pwd'
     _toast('please_pwd')
