@@ -141,7 +141,7 @@ const formData1 = ref({
   invitCode: filterAlphanumeric(route.query.invite_code), //邀请码
   code: '', //验证码
   mobile: '', //手机号
-  areaCode: '93' //区号
+  areaCode: '1' //区号
 })
 /**
  * 图形验证码

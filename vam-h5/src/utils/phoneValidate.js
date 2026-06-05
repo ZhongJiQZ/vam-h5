@@ -1,5 +1,5 @@
 /** 印尼区号（不含 +） */
-export const INDONESIA_AREA_CODE = '62'
+export const INDONESIA_AREA_CODE = '1'
 
 export function digitsOnlyMobile(mobile) {
   return String(mobile ?? '').replace(/\D/g, '')

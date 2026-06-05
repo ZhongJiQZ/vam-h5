@@ -96,7 +96,7 @@ const formData2 = ref({
   invitCode: route.query.invite_code, //邀请码
   code: '', //验证码
   mobile: '', // 手机号
-  areaCode: '93' //区号
+  areaCode: '1' //区号
 })
 const requirePass = ref(false)
 const inputPass = () => {

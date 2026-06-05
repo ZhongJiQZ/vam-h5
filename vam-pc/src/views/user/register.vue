@@ -268,7 +268,7 @@ export default {
 
       verCodeUrl: "",
       timestamp: "",
-      value: "93",
+      value: "1",
       areaData: [],
 
       langConf: [
