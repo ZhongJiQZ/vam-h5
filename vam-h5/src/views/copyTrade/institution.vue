@@ -195,11 +195,13 @@ import {
 } from '@/api/copyTrade'
 import {
   institutionSubscriberCount,
+  isInstitutionSubscribed,
   normalizePerfData,
   normalizeCoinPreference,
   buildInstitutionChartPayload
 } from './utils'
 import { priceFormat } from '@/utils/decimal'
+import { showToast } from 'vant'
 
 const route = useRoute()
 const router = useRouter()
@@ -289,7 +291,14 @@ async function loadDetail() {
   pageLoading.value = true
   try {
     const res = await getCopyTradeInstitutionDetail({ institutionId: institutionId.value })
-    if (res?.code == 200 && res.data) detail.value = res.data
+    if (res?.code == 200 && res.data) {
+      if (!isInstitutionSubscribed(res.data)) {
+        showToast(t18('copy_trade_inst_subscribe_first'))
+        router.replace('/copy-trade')
+        return
+      }
+      detail.value = res.data
+    }
   } finally {
     pageLoading.value = false
   }

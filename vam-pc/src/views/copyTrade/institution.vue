@@ -87,7 +87,7 @@ import {
   getCopyTradeMyPerformance,
   getCopyTradeMyCoinPreference,
 } from "@/api/copyTrade";
-import { normalizeCoinPreference, buildInstitutionChartPayload } from "./utils";
+import { normalizeCoinPreference, buildInstitutionChartPayload, isInstitutionSubscribed } from "./utils";
 
 export default {
   name: "CopyTradeInstitution",
@@ -130,7 +130,15 @@ export default {
       this.pageLoading = true;
       try {
         const res = await getCopyTradeInstitutionDetail({ institutionId: this.institutionId });
-        if (res && res.data && res.data.code == 200) this.detail = res.data.data || {};
+        if (res && res.data && res.data.code == 200) {
+          const data = res.data.data || {};
+          if (!isInstitutionSubscribed(data)) {
+            this.$message.warning(this.$t("pc_copy_trade_inst_subscribe_first"));
+            this.$router.replace("/copyTrade");
+            return;
+          }
+          this.detail = data;
+        }
       } finally {
         this.pageLoading = false;
       }

@@ -1450,5 +1450,6 @@
   "copy_trade_range_7d_total": "7-day total return",
   "copy_trade_range_15d_total": "15-day total return",
   "copy_trade_range_30d_total": "30-day total return",
-  "copy_trade_range_all_total": "All-time total return"
+  "copy_trade_range_all_total": "All-time total return",
+  "copy_trade_inst_subscribe_first": "Please subscribe to this institution first"
 }

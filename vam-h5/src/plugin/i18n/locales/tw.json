@@ -1421,6 +1421,7 @@
   "copy_trade_inst_secret_footer": "訂閱後永久有效 · 一密鑰一機構一用戶",
   "copy_trade_inst_secret_required": "請輸入機構密鑰",
   "copy_trade_inst_locked": "密鑰錯誤次數過多，請1小時後再試",
+  "copy_trade_inst_subscribe_first": "請先訂閱該機構後再查看",
   "copy_trade_join_date": "入駐時間",
   "copy_trade_normal_share": "正常退出分潤",
   "copy_trade_force_share": "強平分潤",

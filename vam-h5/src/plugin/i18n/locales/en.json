@@ -1333,6 +1333,7 @@
   "copy_trade_inst_secret_footer": "Valid permanently after subscription · One key per institution per user",
   "copy_trade_inst_secret_required": "Please enter the institution key",
   "copy_trade_inst_locked": "Too many failed attempts. Please try again in 1 hour.",
+  "copy_trade_inst_subscribe_first": "Please subscribe to this institution first",
   "copy_trade_title": "Copy Trade",
   "copy_trade_my": "My Copy Trades",
   "copy_trade_tab_ongoing": "Ongoing",

@@ -1333,6 +1333,7 @@
   "copy_trade_inst_secret_footer": "订阅后永久有效 · 一密钥一机构一用户",
   "copy_trade_inst_secret_required": "请输入机构密钥",
   "copy_trade_inst_locked": "密钥错误次数过多，请1小时后再试",
+  "copy_trade_inst_subscribe_first": "请先订阅该机构后再查看",
   "copy_trade_title": "跟单",
   "copy_trade_my": "我的跟单",
   "copy_trade_tab_ongoing": "进行中",

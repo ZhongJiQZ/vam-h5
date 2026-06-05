@@ -142,6 +142,10 @@ export default {
     goInstitution(item) {
       const id = institutionRowId(item);
       if (!id) return;
+      if (!isInstitutionSubscribed(item)) {
+        this.onSubscribeClick(item);
+        return;
+      }
       this.$router.push({ path: "/copyTrade/institution", query: { institutionId: id } });
     },
     onSubscribeClick(item) {

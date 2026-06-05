@@ -193,6 +193,10 @@ function handleSubscribeFail(msg, institutionId) {
 function goInstitution(item) {
   const id = institutionRowId(item)
   if (!id) return
+  if (!isInstitutionSubscribed(item)) {
+    onSubscribeClick(item)
+    return
+  }
   router.push({ path: '/copy-trade/institution', query: { institutionId: id } })
 }
 
