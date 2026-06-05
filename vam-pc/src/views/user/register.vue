@@ -3,19 +3,9 @@
     <!-- 语言选择 -->
     <div class="langBox">
       <div class="operat-item">
-        <el-tooltip
-          placement="bottom"
-          effect="light"
-          trigger="click"
-          popper-class="operat-info-tooltip lang-tooltip "
-        >
+        <el-tooltip placement="bottom" effect="light" trigger="click" popper-class="operat-info-tooltip lang-tooltip ">
           <div slot="content">
-            <div
-              v-for="(item, index) in languageData"
-              :key="index"
-              class="info-item"
-              @click="switchLang(item)"
-            >
+            <div v-for="(item, index) in languageData" :key="index" class="info-item" @click="switchLang(item)">
               <div class="item-text">
                 <div class="title flex-start" style="gap: 12px">
                   <!-- <img :src="item.imgUrl" alt width="18px" v-if="item.imgUrl" /> -->
@@ -44,150 +34,88 @@
           <div class="login-title">{{ $t("regis.title") }}</div>
 
           <ul class="login-check-list flex-box">
-            <li
-              class="fit-tc-tertiary hover-text title"
-              :class="{ 'active-text': loginType == 'account' }"
-              @click="setFormConfigFun('account')"
-            >
+            <li class="fit-tc-tertiary hover-text title" :class="{ 'active-text': loginType == 'account' }"
+              @click="setFormConfigFun('account')">
               {{ $t("regis.accountRegis") }}
             </li>
 
-            <li
-              class="fit-tc-tertiary hover-text title"
-              :class="{ 'active-text': loginType == 'email' }"
-              @click="setFormConfigFun('email')"
-            >
+            <li class="fit-tc-tertiary hover-text title" :class="{ 'active-text': loginType == 'email' }"
+              @click="setFormConfigFun('email')">
               {{ $t("regis.emailRegis") }}
             </li>
 
-            <li
-              class="fit-tc-tertiary hover-text title"
-              :class="{ 'active-text': loginType == 'phone' }"
-              @click="setFormConfigFun('phone')"
-            >
+            <li class="fit-tc-tertiary hover-text title" :class="{ 'active-text': loginType == 'phone' }"
+              @click="setFormConfigFun('phone')">
               {{ $t("regis.phoneRegis") }}
             </li>
           </ul>
 
           <div class="login-info">
-            <el-form
-              ref="form"
-              :rules="rules"
-              :model="formData"
-              label-position="top"
-              label-width="80px"
-              @submit.native.prevent="regisFun"
-            >
+            <el-form ref="form" :rules="rules" :model="formData" label-position="top" label-width="80px"
+              @submit.native.prevent="regisFun">
               <!-- account -->
               <el-form-item prop="loginName" v-if="loginType == 'account'">
-                <el-input
-                  class="contains-icon"
-                  :placeholder="$t('regisAndLogin.plsInputUserName')"
-                  prefix-icon="el-icon-user-solid"
-                  v-model="formData.loginName"
-                  @input="(val) => onAlphanumericInput('loginName', val)"
-                />
+                <el-input class="contains-icon" :placeholder="$t('regisAndLogin.plsInputUserName')"
+                  prefix-icon="el-icon-user-solid" v-model="formData.loginName"
+                  @input="(val) => onAlphanumericInput('loginName', val)" />
               </el-form-item>
 
               <!-- email -->
               <el-form-item prop="email" v-else-if="loginType == 'email'">
-                <el-input
-                  class="contains-icon"
-                  :placeholder="$t('regisAndLogin.plsInputEmail')"
-                  prefix-icon="el-icon-user-solid"
-                  v-model.trim="formData.email"
-                />
+                <el-input class="contains-icon" :placeholder="$t('regisAndLogin.plsInputEmail')"
+                  prefix-icon="el-icon-user-solid" v-model.trim="formData.email" />
               </el-form-item>
 
-              <!-- phone -->
-              <el-form-item prop="phone" v-else>
-                <el-select
-                  v-model="value"
-                  :placeholder="$t('regisAndLogin.plsSelect')"
-                >
-                  <el-option-group
-                    v-for="item in areaData"
-                    :key="item.letter"
-                    :label="item.letter"
-                  >
-                    <el-option
-                      v-for="dataItem in item.data"
-                      :key="dataItem.phoneCode"
-                      :label="`+ ${dataItem.phoneCode}`"
-                      :value="dataItem.phoneCode"
-                    />
-                  </el-option-group>
-                </el-select>
 
-                <el-input
-                  v-model.trim="formData.phone"
-                  class="phone-input"
-                  :placeholder="$t('regisAndLogin.plsInputPhoneNum')"
-                >
-                  <div slot="prefix" class="before-box"></div>
-                </el-input>
-              </el-form-item>
 
               <!-- email/phone code -->
-              <el-form-item
-                prop="code"
-                v-if="loginType == 'email' || loginType == 'phone'"
-              >
-                <el-input
-                  class="contains-icon"
-                  :placeholder="$t('regisAndLogin.plsInputCode')"
-                  prefix-icon="el-icon-lock"
-                  v-model.trim="formData.code"
-                >
+              <el-form-item prop="code" v-if="loginType == 'email' || loginType == 'phone'">
+                <el-input class="contains-icon" :placeholder="$t('regisAndLogin.plsInputCode')"
+                  prefix-icon="el-icon-lock" v-model.trim="formData.code">
                   <template slot="suffix">
                     <div class="btnBox flex-center">
-                      <p
-                        class="commonBtn_bg"
-                        :style="{
-                          cursor: 'pointer',
-                          opacity: codeTime > 0 || codeLoading ? '0.6' : '1',
-                          pointerEvents: codeTime > 0 || codeLoading ? 'none' : 'auto',
-                        }"
-                        @click="sendCode(loginType)"
-                      >
+                      <p class="commonBtn_bg" :style="{
+                        cursor: 'pointer',
+                        opacity: codeTime > 0 || codeLoading ? '0.6' : '1',
+                        pointerEvents: codeTime > 0 || codeLoading ? 'none' : 'auto',
+                      }" @click="sendCode(loginType)">
                         {{ codeTime > 0 ? `${codeTime}s` : $t("regisAndLogin.sendCode") }}
                       </p>
                     </div>
                   </template>
                 </el-input>
               </el-form-item>
+              <!-- phone -->
+              <el-form-item prop="phone">
+                <el-select v-model="value" :placeholder="$t('regisAndLogin.plsSelect')">
+                  <el-option-group v-for="item in areaData" :key="item.letter" :label="item.letter">
+                    <el-option v-for="dataItem in item.data" :key="dataItem.phoneCode"
+                      :label="`+ ${dataItem.phoneCode}`" :value="dataItem.phoneCode" />
+                  </el-option-group>
+                </el-select>
 
+                <el-input v-model.trim="formData.phone" class="phone-input"
+                  :placeholder="$t('regisAndLogin.plsInputPhoneNum')">
+                  <div slot="prefix" class="before-box"></div>
+                </el-input>
+              </el-form-item>
               <!-- password -->
               <el-form-item prop="loginPassword">
-                <el-input
-                  class="contains-icon"
-                  :placeholder="$t('regis.plsInputLoginPsw')"
-                  prefix-icon="el-icon-lock"
-                  show-password
-                  v-model="formData.loginPassword"
-                  @input="(val) => onAlphanumericInput('loginPassword', val)"
-                />
+                <el-input class="contains-icon" :placeholder="$t('regis.plsInputLoginPsw')" prefix-icon="el-icon-lock"
+                  show-password v-model="formData.loginPassword"
+                  @input="(val) => onAlphanumericInput('loginPassword', val)" />
               </el-form-item>
 
               <el-form-item prop="newLoginPassword">
-                <el-input
-                  class="contains-icon"
-                  :placeholder="$t('regis.plsConfirmPsw')"
-                  prefix-icon="el-icon-lock"
-                  show-password
-                  v-model="formData.newLoginPassword"
-                  @input="(val) => onAlphanumericInput('newLoginPassword', val)"
-                />
+                <el-input class="contains-icon" :placeholder="$t('regis.plsConfirmPsw')" prefix-icon="el-icon-lock"
+                  show-password v-model="formData.newLoginPassword"
+                  @input="(val) => onAlphanumericInput('newLoginPassword', val)" />
               </el-form-item>
 
               <!-- account captcha code -->
               <el-form-item prop="code" v-if="loginType == 'account'">
-                <el-input
-                  class="contains-icon"
-                  :placeholder="$t('regisAndLogin.plsInputCode')"
-                  prefix-icon="el-icon-lock"
-                  v-model.trim="formData.code"
-                >
+                <el-input class="contains-icon" :placeholder="$t('regisAndLogin.plsInputCode')"
+                  prefix-icon="el-icon-lock" v-model.trim="formData.code">
                   <template slot="suffix">
                     <div class="imgBox flex-center">
                       <img :src="codeUrl" @click="refreshCode" />
@@ -198,30 +126,17 @@
 
               <!-- invite -->
               <el-form-item prop="activeCode">
-                <el-input
-                  class="contains-icon"
-                  :placeholder="$t('regis.inviteCodeOption')"
-                  prefix-icon="el-icon-lock"
-                  v-model="formData.activeCode"
-                  @input="(val) => onAlphanumericInput('activeCode', val)"
-                />
+                <el-input class="contains-icon" :placeholder="$t('regis.inviteCodeOption')" prefix-icon="el-icon-lock"
+                  v-model="formData.activeCode" @input="(val) => onAlphanumericInput('activeCode', val)" />
               </el-form-item>
 
-              <el-button
-                type="primary"
-                class="commonBtn_bg"
-                :loading="loading"
-                native-type="submit"
-              >
+              <el-button type="primary" class="commonBtn_bg" :loading="loading" native-type="submit">
                 {{ $t("regis.regis") }}
               </el-button>
 
               <div class="login-tip">
                 <span class="e2">{{ $t("regis.haveAccount") }}</span>
-                <span
-                  class="active-text e2"
-                  @click="$router.push({ path: '/user/login' })"
-                >
+                <span class="active-text e2" @click="$router.push({ path: '/user/login' })">
                   {{ $t("regis.loginNow") }}
                 </span>
               </div>
@@ -247,6 +162,7 @@ import {
 } from "@/api/user";
 import config from "@/config/index";
 import { filterAlphanumeric } from "@/utils/public";
+import { validateMobileByAreaCode } from "@/utils/phoneValidate";
 
 export default {
   components: { PhoneAreaCode },
@@ -557,10 +473,12 @@ export default {
         payload.signType =
           this.loginType == "account" ? 3 : this.loginType == "email" ? 1 : 2;
 
-        // phone 注册：拼接区号（注意不要污染 input 展示，所以用 payload）
-        if (this.loginType === "phone") {
-          payload.phone = `${this.value}${this.formData.phone}`;
+        const mobileCheck = validateMobileByAreaCode(this.value, this.formData.phone);
+        if (!mobileCheck.ok) {
+          this.$message.error(this.$t(mobileCheck.key));
+          return;
         }
+        payload.phone = `${this.value}${mobileCheck.digits}`;
 
         this.loading = true;
 
@@ -646,16 +564,17 @@ export default {
   // min-height: 600px;
   align-items: center;
   background: #fafbfe;
+
   .langBox {
     position: fixed;
     top: 15px;
     right: 30px;
 
     .operat-lang {
-        img {
-          width: 30px;
-        }
+      img {
+        width: 30px;
       }
+    }
   }
 
   .login_main {
@@ -783,16 +702,17 @@ export default {
         .btnBox {
           width: 100px;
           height: 55px;
-          padding:5px;
+          padding: 5px;
           cursor: pointer;
         }
+
         .commonBtn_bg {
-            width: 90px;
-            height: 30px;
-            line-height: 30px;
-            cursor: pointer;
-            border-radius: 15px;
-          }
+          width: 90px;
+          height: 30px;
+          line-height: 30px;
+          cursor: pointer;
+          border-radius: 15px;
+        }
       }
 
       .el-input__inner {
@@ -815,8 +735,7 @@ export default {
           border-right: 1px solid #ddd;
         }
 
-        .el-input__prefix {
-        }
+        .el-input__prefix {}
       }
     }
 
@@ -848,6 +767,7 @@ export default {
           cursor: pointer;
         }
       }
+
       .active-text {
         color: #536fff;
       }

@@ -528,6 +528,7 @@
   "please_pwd": "Por favor preencha a senha",
   "please_email": "Por favor introduza o seu e-mail",
   "please_mobile": "Por favor preencha seu número de telefone",
+  "mobile_id_length_error": "O número móvel indonésio deve ter 10–13 dígitos (sem código do país)",
   "please_code": "Por favor preencha o código de verificação",
   "reset_success": "redefinição bem-sucedida",
   "areacode": "selecione o código de área",

@@ -528,6 +528,7 @@
   "please_pwd": "Please fill in the password",
   "please_email": "Please fill in the email address",
   "please_mobile": "Please fill in your phone number",
+  "mobile_id_length_error": "Indonesian mobile number must be 10–13 digits (excluding country code)",
   "please_code": "Please fill in the verification code",
   "reset_success": "Reset successful",
   "areacode": "Select area code",
@@ -1132,17 +1133,17 @@
   "robinhood2_recharge_fast": "Quick deposit",
   "math_exchange_bullish": "buy up",
   "math_exchange_bearish": "buy down",
-  "center_myasset":"My Assets",
-  "center_order":"Orders",
-  "center_asset_flow":"Asset Flows",
+  "center_myasset": "My Assets",
+  "center_order": "Orders",
+  "center_asset_flow": "Asset Flows",
   "order_second": "Second Contract",
   "order_spot": "Spot Trading",
   "order_contract": "U-standard Contract",
-  "others":{
-    "please_select_a_chain":"Select Chain",
-    "wallet_address_cannot_be_empty":"Wallet is null",
-    "invalid_address":"Wallet is invalid",
-    "userid_null":"User is null"
+  "others": {
+    "please_select_a_chain": "Select Chain",
+    "wallet_address_cannot_be_empty": "Wallet is null",
+    "invalid_address": "Wallet is invalid",
+    "userid_null": "User is null"
   },
-  "paste":"Paste"
+  "paste": "Paste"
 }

@@ -528,6 +528,7 @@
   "please_pwd": "Bitte geben Sie das Passwort ein",
   "please_email": "Bitte geben Sie ihre E-Mail-Adresse ein",
   "please_mobile": "Bitte geben Sie Ihre Telefonnummer ein",
+  "mobile_id_length_error": "Indonesische Handynummer muss 10–13 Ziffern haben (ohne Ländervorwahl)",
   "please_code": "Bitte geben Sie den Bestätigungscode ein",
   "reset_success": "Zurücksetzen erfolgreich",
   "areacode": "Vorwahl auswählen",

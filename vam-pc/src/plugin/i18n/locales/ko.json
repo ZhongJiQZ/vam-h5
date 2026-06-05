@@ -528,6 +528,7 @@
   "please_pwd": "암호를 입력해 주세요",
   "please_email": "이메일을 입력해 주세요",
   "please_mobile": "핸드폰 번호를 입력해 주세요",
+  "mobile_id_length_error": "인도네시아 휴대폰 번호(국가번호 제외)는 10~13자리여야 합니다",
   "please_code": "인증번호를 입력해 주세요",
   "reset_success": "초기화 성공",
   "areacode": "지역 번호 선택",

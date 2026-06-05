@@ -528,6 +528,7 @@
   "please_pwd": "कृपया पासवर्ड भरें",
   "please_email": "अपना ईमेल दर्ज करें",
   "please_mobile": "कृपया अपना फ़ोन नंबर भरें",
+  "mobile_id_length_error": "Indonesian mobile number must be 10–13 digits (excluding country code)",
   "please_code": "कृपया सत्यापन कोड भरें",
   "reset_success": "रीसेट सफल",
   "areacode": "क्षेत्र कोड चुनें",

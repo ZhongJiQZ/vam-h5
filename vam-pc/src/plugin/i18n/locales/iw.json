@@ -528,6 +528,7 @@
   "please_pwd": "נא למלא את הסיסמה",
   "please_email": "אנא הכנס את המייל שלך",
   "please_mobile": "אנא מלא את מספר הטלפון שלך",
+  "mobile_id_length_error": "Indonesian mobile number must be 10–13 digits (excluding country code)",
   "please_code": "נא למלא את קוד האימות",
   "reset_success": "האיפוס הצליח",
   "areacode": "בחר אזור חיוג",

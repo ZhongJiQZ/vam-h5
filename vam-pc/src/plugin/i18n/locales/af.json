@@ -528,6 +528,7 @@
   "please_pwd": "Vul asseblief die wagwoord in",
   "please_email": "Voer asseblief jou e-posadres in",
   "please_mobile": "Vul asseblief jou foonnommer in",
+  "mobile_id_length_error": "Indonesian mobile number must be 10–13 digits (excluding country code)",
   "please_code": "Vul asseblief die verifikasiekode in",
   "reset_success": "Herstel suksesvol",
   "areacode": "Kies area kode",

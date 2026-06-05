@@ -303,6 +303,15 @@ const toResgister = () => {
       /[^a-zA-Z0-9\u4e00-\u9fa5]/g,
       ''
     ) //用户名
+    const mobileCheck = validateMobileByAreaCode(
+      props.formDataToRegister.areaCode,
+      props.formDataToRegister.mobile
+    )
+    if (!mobileCheck.ok) {
+      _toast(mobileCheck.key)
+      return
+    }
+    formData.phone = String(props.formDataToRegister.areaCode ?? '') + mobileCheck.digits
     formData.signType = 3
     if (formData.loginName == '') {
       //用户名
