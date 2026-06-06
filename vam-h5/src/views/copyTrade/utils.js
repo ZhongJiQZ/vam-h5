@@ -116,6 +116,75 @@ export function patchInstitutionSubscribed(list, institutionId, patch = {}) {
   })
 }
 
+/** 策略列表：是否已跟单（跟单中） */
+export function isStrategyFollowing(item) {
+  if (!item) return false
+  const status = Number(item.followStatus)
+  if (status === 1) return true
+  const text = String(item.followStatusText || item.statusText || '')
+  return /已跟单|跟单中/i.test(text)
+}
+
+function calcCopyDaysFromSubscribeTime(timeStr) {
+  if (!timeStr) return null
+  const ts = Date.parse(String(timeStr).replace(/-/g, '/'))
+  if (!Number.isFinite(ts)) return null
+  const diff = Math.floor((Date.now() - ts) / 86400000) + 1
+  return diff > 0 ? diff : 1
+}
+
+/** 表现汇总字段归一化（入驻/订阅时间、跟单天数等） */
+export function normalizePerfSummary(raw) {
+  if (!raw || typeof raw !== 'object') return {}
+  const nested = raw.summary || raw.stat || raw.stats || raw.overview || raw.info || {}
+  const src = { ...nested, ...raw }
+  const subscribeTime =
+    src.subscribeTime ||
+    src.subscribeDate ||
+    src.userSubscribeTime ||
+    src.instSubscribeTime ||
+    src.copyStartTime ||
+    src.firstSubscribeTime ||
+    src.startTime ||
+    src.joinTime ||
+    src.joinDate ||
+    ''
+  const copyDaysRaw =
+    src.copyDays ??
+    src.followDays ??
+    src.copyDayCount ??
+    src.followDayCount ??
+    src.myCopyDays ??
+    src.days ??
+    null
+  let copyDays =
+    copyDaysRaw != null && copyDaysRaw !== '' ? Number(copyDaysRaw) : calcCopyDaysFromSubscribeTime(subscribeTime)
+  if (!Number.isFinite(copyDays)) copyDays = null
+  let tradingDays =
+    src.tradingDays ??
+    src.leadDays ??
+    src.institutionTradingDays ??
+    src.instTradingDays ??
+    null
+  if (tradingDays != null && tradingDays !== '') tradingDays = Number(tradingDays)
+  if (!Number.isFinite(tradingDays)) tradingDays = null
+  return {
+    subscribeTime: subscribeTime || '',
+    copyDays,
+    joinTime:
+      src.joinTime ||
+      src.joinDate ||
+      src.settleTime ||
+      src.institutionJoinTime ||
+      src.instJoinTime ||
+      '',
+    tradingDays,
+    totalProfitRate: src.totalProfitRate ?? src.totalRate ?? src.profitRate,
+    totalProfit: src.totalProfit ?? src.totalProfitAmt,
+    rangeTotalProfitRate: src.rangeTotalProfitRate ?? src.rangeProfitRate
+  }
+}
+
 /** 将接口多种字段格式统一为图表可用结构 */
 function toArray(maybeList) {
   if (Array.isArray(maybeList)) return maybeList
@@ -259,6 +328,7 @@ export function normalizePerfData(raw) {
     []
   return {
     ...raw,
+    ...normalizePerfSummary(raw),
     dailySeries: buildDailyChartPoints(dailyRaw),
     weeklySeries: buildWeeklyChartPoints(weeklyRaw),
     coinPreference: normalizeCoinPreference(raw)

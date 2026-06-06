@@ -201,9 +201,12 @@ function goInstitution(item) {
 }
 
 function onSubscribeClick(item) {
-  if (isInstitutionSubscribed(item)) return
   const id = institutionRowId(item)
   if (!id) return
+  if (isInstitutionSubscribed(item)) {
+    router.push({ path: '/copy-trade/institution', query: { institutionId: id } })
+    return
+  }
   if (isInstitutionSecretLocked(id)) {
     showToast(t18('copy_trade_inst_locked'))
     return
@@ -362,6 +365,7 @@ $green: #17ac74;
     font-weight: 600;
     line-height: 1.2;
     border: 1px solid transparent;
+    cursor: pointer;
 
     &--on {
       background: $green;

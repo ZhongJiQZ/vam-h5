@@ -149,9 +149,12 @@ export default {
       this.$router.push({ path: "/copyTrade/institution", query: { institutionId: id } });
     },
     onSubscribeClick(item) {
-      if (isInstitutionSubscribed(item)) return;
       const id = institutionRowId(item);
       if (!id) return;
+      if (isInstitutionSubscribed(item)) {
+        this.$router.push({ path: "/copyTrade/institution", query: { institutionId: id } });
+        return;
+      }
       if (isInstitutionSecretLocked(id)) {
         this.$message.warning(this.$t("pc_copy_trade_inst_locked"));
         return;

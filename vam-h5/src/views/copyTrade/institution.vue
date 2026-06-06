@@ -191,12 +191,14 @@ import {
   getCopyTradeMyWeeklyChart,
   getCopyTradeMyPerformance,
   getCopyTradeInstitutionCoinPreference,
-  getCopyTradeMyCoinPreference
+  getCopyTradeMyCoinPreference,
+  getCopyTradeList
 } from '@/api/copyTrade'
 import {
   institutionSubscriberCount,
   isInstitutionSubscribed,
   normalizePerfData,
+  normalizePerfSummary,
   normalizeCoinPreference,
   buildInstitutionChartPayload
 } from './utils'
@@ -243,12 +245,29 @@ const hasWeeklyChart = computed(() => weeklySeries.value.length > 0)
 const hasCoinPreference = computed(() => coinPreference.value.length > 0)
 
 const summaryJoinTime = computed(() => {
-  if (perfTab.value === 'my') return perf.value.subscribeTime || perf.value.joinTime || '--'
-  return perf.value.joinTime || detail.value.joinTime || detail.value.joinDate || '--'
+  const summary = normalizePerfSummary(perf.value)
+  if (perfTab.value === 'my') {
+    return (
+      summary.subscribeTime ||
+      detail.value.subscribeTime ||
+      detail.value.userSubscribeTime ||
+      '--'
+    )
+  }
+  return (
+    summary.joinTime ||
+    perf.value.joinTime ||
+    detail.value.joinTime ||
+    detail.value.joinDate ||
+    '--'
+  )
 })
 const summaryTradingDays = computed(() => {
-  if (perfTab.value === 'my') return perf.value.copyDays ?? '--'
-  return perf.value.tradingDays ?? detail.value.tradingDays ?? '--'
+  const summary = normalizePerfSummary(perf.value)
+  if (perfTab.value === 'my') {
+    return summary.copyDays != null && summary.copyDays !== '' ? summary.copyDays : '--'
+  }
+  return summary.tradingDays ?? perf.value.tradingDays ?? detail.value.tradingDays ?? '--'
 })
 const summaryTotalRate = computed(() => perf.value.totalProfitRate ?? detail.value.totalProfitRate ?? 0)
 const tradingDaysLabel = computed(() =>
@@ -376,6 +395,51 @@ async function loadWeeklyChart() {
   }
 }
 
+async function loadMyRecordFallback() {
+  try {
+    const res = await getCopyTradeList({
+      institutionId: institutionId.value,
+      status: 0,
+      pageNum: 1,
+      pageSize: 1
+    })
+    if (res?.code != 200 || !Array.isArray(res.rows) || !res.rows.length) return
+    const row = res.rows[0]
+    const subscribeTime = row.startTime || row.subscribeTime || row.joinTime || ''
+    const summary = normalizePerfSummary({ ...row, subscribeTime, startTime: row.startTime })
+    perf.value = mergePerfData(
+      {
+        subscribeTime: summary.subscribeTime || subscribeTime,
+        copyDays: summary.copyDays,
+        startTime: row.startTime
+      },
+      perf.value
+    )
+  } catch (e) {
+    void e
+  }
+}
+
+async function loadPerfSummary() {
+  if (!institutionId.value) return
+  const payload = buildInstitutionChartPayload(institutionId.value, range.value)
+  const isMy = perfTab.value === 'my'
+  const perfRes = isMy
+    ? await getCopyTradeMyPerformance(payload)
+    : await getCopyTradeInstitutionPerformance(payload)
+  if (perfRes?.code == 200 && perfRes.data) {
+    perf.value = mergePerfData(perfRes.data, perf.value)
+    if (isMy) {
+      const summary = normalizePerfSummary(perf.value)
+      if (!summary.subscribeTime || summary.copyDays == null) {
+        await loadMyRecordFallback()
+      }
+    }
+  } else if (isMy) {
+    await loadMyRecordFallback()
+  }
+}
+
 async function loadCoinPreference() {
   if (!institutionId.value) return
   const payload = buildInstitutionChartPayload(institutionId.value, range.value)
@@ -409,6 +473,7 @@ async function loadPerformance() {
   perfLoading.value = true
   try {
     await Promise.all([loadDailyChart(), loadWeeklyChart(), loadCoinPreference()])
+    await loadPerfSummary()
   } finally {
     perfLoading.value = false
   }

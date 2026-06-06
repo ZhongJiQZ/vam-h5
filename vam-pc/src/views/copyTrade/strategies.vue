@@ -25,7 +25,7 @@
 
 <script>
 import { getCopyTradeInstitutionStrategyList } from "@/api/copyTrade";
-import { symbolPair } from "./utils";
+import { symbolPair, isStrategyFollowing } from "./utils";
 
 export default {
   name: "CopyTradeStrategies",
@@ -49,6 +49,10 @@ export default {
       }
     },
     toSubmit(item) {
+      if (isStrategyFollowing(item)) {
+        this.$router.push("/copyTrade/my");
+        return;
+      }
       if (item && item.canJoin === false) {
         this.$message.warning(item.followStatusText || this.$t("pc_copy_trade_unjoinable"));
         return;

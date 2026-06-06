@@ -1450,5 +1450,19 @@
   "copy_trade_range_15d_total": "15-day total return",
   "copy_trade_range_30d_total": "30-day total return",
   "copy_trade_range_all_total": "All-time total return",
-  "copy_trade_inst_subscribe_first": "Please subscribe to this institution first"
+  "copy_trade_inst_subscribe_first": "Please subscribe to this institution first",
+  "copy_trade_join_strategy_page": "Join Strategy",
+  "copy_trade_fee_desc_title": "Fee details",
+  "copy_trade_inst_semi_share": "Semi-managed profit share",
+  "copy_trade_inst_full_share": "Fully-managed profit share",
+  "copy_trade_profit_share_method": "Profit share method",
+  "copy_trade_loss_share": "Profit share on loss",
+  "copy_trade_loss_share_no": "Not charged",
+  "copy_trade_agreement_prefix": "I have read and agree to",
+  "copy_trade_agreement_user": "User Copy Agreement",
+  "copy_trade_agreement_and": "and",
+  "copy_trade_confirm_join": "Confirm join",
+  "copy_trade_amount_all": "All",
+  "copy_trade_contract_balance_label": "Contract balance",
+  "copy_trade_amount_range_tip": "Copy amount {min}USDT--{max}USDT"
 }

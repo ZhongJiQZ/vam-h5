@@ -37,6 +37,21 @@
         </el-form-item>
       </el-form>
     </div>
+
+    <el-drawer
+      :title="activeDoc && activeDoc.title ? activeDoc.title : ''"
+      :visible.sync="docDrawerVisible"
+      direction="btt"
+      size="75%"
+      :wrapper-closable="true"
+      custom-class="copy-doc-drawer"
+    >
+      <div v-if="activeDoc && activeDoc.content" class="doc-content" v-html="activeDoc.content"></div>
+      <el-empty v-else :description="$t('pc_copy_trade_no_data')" />
+      <div class="doc-drawer-foot">
+        <el-button type="primary" @click="docDrawerVisible = false">{{ $t("utils.confirm") }}</el-button>
+      </div>
+    </el-drawer>
   </div>
 </template>
 
@@ -56,6 +71,8 @@ export default {
       pageLoading: false,
       agreementDoc: null,
       riskDoc: null,
+      docDrawerVisible: false,
+      activeDoc: null,
     };
   },
   computed: {
@@ -134,7 +151,9 @@ export default {
       return `${n}%`;
     },
     showDoc(doc) {
-      this.$alert(doc.content || "", doc.title || "", { confirmButtonText: "OK" });
+      if (!doc || !doc.content) return;
+      this.activeDoc = doc;
+      this.docDrawerVisible = true;
     },
     async submit() {
       if (this.strategy && this.strategy.canJoin === false) {
@@ -193,5 +212,29 @@ export default {
   color: #8c93a1;
   font-size: 12px;
   margin-top: 8px;
+}
+.doc-content {
+  font-size: 14px;
+  color: #374151;
+  line-height: 1.7;
+  word-break: break-word;
+  padding: 0 4px 16px;
+}
+.doc-drawer-foot {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 12px 20px 20px;
+  background: #fff;
+  border-top: 1px solid #eee;
+  text-align: center;
+}
+</style>
+
+<style lang="scss">
+.copy-doc-drawer .el-drawer__body {
+  padding-bottom: 72px;
+  overflow-y: auto;
 }
 </style>

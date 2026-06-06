@@ -18,7 +18,10 @@
               <p class="name">{{ item.strategyName }}</p>
               <p class="symbol">{{ symbolPair(item.symbol) }}</p>
             </div>
-            <span class="badge" :class="item.canJoin === false ? 'badge--off' : 'badge--on'">
+            <span
+              class="badge"
+              :class="isStrategyFollowing(item) ? 'badge--following' : item.canJoin === false ? 'badge--off' : 'badge--on'"
+            >
               {{ item.followStatusText || (item.canJoin === false ? t18('copy_trade_unjoinable') : t18('copy_trade_follow_now')) }}
             </span>
           </div>
@@ -44,7 +47,7 @@ import { useI18n } from 'vue-i18n'
 import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import { _t18 } from '@/utils/public'
 import { getCopyTradeInstitutionStrategyList } from '@/api/copyTrade'
-import { symbolPair } from './utils'
+import { symbolPair, isStrategyFollowing } from './utils'
 import { showToast } from 'vant'
 
 const route = useRoute()
@@ -74,6 +77,10 @@ async function loadData() {
 }
 
 function toSubmit(item) {
+  if (isStrategyFollowing(item)) {
+    router.push('/copy-trade/my')
+    return
+  }
   if (item?.canJoin === false) {
     showToast(item.followStatusText || t18('copy_trade_unjoinable'))
     return
@@ -152,6 +159,11 @@ $green: #17ac74;
   flex-shrink: 0;
 
   &--on {
+    background: #edf8f2;
+    color: $green;
+  }
+
+  &--following {
     background: #edf8f2;
     color: $green;
   }

@@ -69,6 +69,15 @@ export function patchInstitutionSubscribed(list, institutionId, patch = {}) {
   });
 }
 
+/** 策略列表：是否已跟单（跟单中） */
+export function isStrategyFollowing(item) {
+  if (!item) return false;
+  const status = Number(item.followStatus);
+  if (status === 1) return true;
+  const text = String(item.followStatusText || item.statusText || "");
+  return /已跟单|跟单中/i.test(text);
+}
+
 function toCoinArray(maybeList) {
   if (Array.isArray(maybeList)) return maybeList;
   if (maybeList && typeof maybeList === "object") {

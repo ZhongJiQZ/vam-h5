@@ -1457,5 +1457,19 @@
   "copy_trade_range_7d_total": "7天总收益率",
   "copy_trade_range_15d_total": "15天总收益率",
   "copy_trade_range_30d_total": "30天总收益率",
-  "copy_trade_range_all_total": "全部总收益率"
+  "copy_trade_range_all_total": "全部总收益率",
+  "copy_trade_join_strategy_page": "加入策略",
+  "copy_trade_fee_desc_title": "费用说明",
+  "copy_trade_inst_semi_share": "机构半托管分润",
+  "copy_trade_inst_full_share": "机构全托管分润",
+  "copy_trade_profit_share_method": "分润计算方式",
+  "copy_trade_loss_share": "亏损是否分润",
+  "copy_trade_loss_share_no": "不收取",
+  "copy_trade_agreement_prefix": "我已阅读并同意",
+  "copy_trade_agreement_user": "《用户跟单协议》",
+  "copy_trade_agreement_and": "与",
+  "copy_trade_confirm_join": "确认加入",
+  "copy_trade_amount_all": "全部",
+  "copy_trade_contract_balance_label": "合约账户余额",
+  "copy_trade_amount_range_tip": "跟单金额{min}USDT--{max}USDT"
 }
