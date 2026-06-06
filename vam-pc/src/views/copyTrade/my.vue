@@ -27,6 +27,7 @@
           <el-col :span="12">{{ $t("pc_copy_trade_end_time") }}：{{ item.endTime || "--" }}</el-col>
           <el-col :span="12">{{ $t("pc_copy_trade_cycle_progress") }}：{{ cycleProgress(item) }}</el-col>
           <el-col :span="12">{{ $t("pc_copy_trade_current_pnl") }}：<span :class="pnlClass(currentPnl(item))">{{ signNum(currentPnl(item)) }} USDT</span></el-col>
+          <el-col v-if="activeName === '0'" :span="12">{{ $t("pc_copy_trade_pnl_rate") }}：<span :class="pnlClass(currentPnl(item))">{{ copyTradePnlRate(item) }}%</span></el-col>
         </el-row>
 
         <div class="card-foot" @click.stop>
@@ -87,6 +88,7 @@
 <script>
 import { getCopyTradeList, appendCopyTrade } from "@/api/copyTrade";
 import { mapGetters, mapActions } from "vuex";
+import { copyTradeNetProfit, copyTradeTradeCount, copyTradePnlRate } from "./utils";
 
 export default {
   name: "CopyTradeMy",
@@ -176,15 +178,14 @@ export default {
       return s.includes("/") ? s : `${s}/USDT`;
     },
     cycleProgress(item) {
-      const done = Number(item && item.tradeCount != null ? item.tradeCount : 0);
+      const done = copyTradeTradeCount(item);
       const total = Number(item && item.expectedTradeCount != null ? item.expectedTradeCount : 0);
       return total ? `${done}/${total}` : `${done}`;
     },
     currentPnl(item) {
-      if (!item) return 0;
-      if (item.params && item.params.totalSettledProfit != null) return item.params.totalSettledProfit;
-      return item.actualProfit != null ? item.actualProfit : 0;
+      return copyTradeNetProfit(item);
     },
+    copyTradePnlRate,
     pnlClass(v) {
       const n = Number(v);
       if (n > 0) return "up";

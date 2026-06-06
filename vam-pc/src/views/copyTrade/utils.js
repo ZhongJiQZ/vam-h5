@@ -121,3 +121,122 @@ export function buildInstitutionChartPayload(institutionId, range) {
   const id = institutionId != null && institutionId !== "" ? institutionId : undefined;
   return { institutionId: id, id, range: range || "7d" };
 }
+
+/** 进行中跟单盈亏：netProfit */
+export function copyTradeNetProfit(item) {
+  if (!item) return 0;
+  const params = item.params || {};
+  const raw = params.netProfit != null ? params.netProfit : item.netProfit;
+  if (raw == null || raw === "") return 0;
+  const n = Number(raw);
+  return Number.isFinite(n) ? n : 0;
+}
+
+/** 跟单交易次数：winCount + loseCount */
+export function copyTradeTradeCount(item) {
+  if (!item) return 0;
+  const params = item.params || {};
+  const hasWinLose =
+    params.winCount != null ||
+    params.loseCount != null ||
+    item.winCount != null ||
+    item.loseCount != null;
+  if (hasWinLose) {
+    const win = Number(params.winCount != null ? params.winCount : item.winCount != null ? item.winCount : 0);
+    const lose = Number(params.loseCount != null ? params.loseCount : item.loseCount != null ? item.loseCount : 0);
+    return (Number.isFinite(win) ? win : 0) + (Number.isFinite(lose) ? lose : 0);
+  }
+  const fallback = params.tradeCount != null ? params.tradeCount : item.tradeCount;
+  return fallback != null && fallback !== "" ? Number(fallback) || 0 : 0;
+}
+
+/** 跟单盈亏率 %：netProfit / amount * 100 */
+export function copyTradePnlRate(item) {
+  const amount = Number(item && item.amount != null ? item.amount : 0);
+  const profit = copyTradeNetProfit(item);
+  if (!amount) return "0.00";
+  return ((profit / amount) * 100).toFixed(2);
+}
+
+const MIN_AMOUNT_KEYS = [
+  "minAmount",
+  "minCopyAmount",
+  "copyMinAmount",
+  "amountMin",
+  "minFollowAmount",
+  "followMinAmount",
+  "copyAmountMin",
+  "minInvestAmount",
+];
+const MAX_AMOUNT_KEYS = [
+  "maxAmount",
+  "maxCopyAmount",
+  "copyMaxAmount",
+  "amountMax",
+  "maxFollowAmount",
+  "followMaxAmount",
+  "copyAmountMax",
+  "maxInvestAmount",
+];
+
+function pickAmountField(src, keys) {
+  if (!src || typeof src !== "object") return null;
+  for (let i = 0; i < keys.length; i++) {
+    const val = src[keys[i]];
+    if (val != null && val !== "") {
+      const n = Number(val);
+      return Number.isFinite(n) ? n : val;
+    }
+  }
+  return null;
+}
+
+export function normalizeStrategyAmountRange(raw) {
+  if (!raw || typeof raw !== "object") return { minAmount: null, maxAmount: null };
+  const nested = raw.strategy || raw.detail || raw.limit || raw.amountLimit || raw.rule || {};
+  const src = Object.assign({}, nested, raw);
+  return {
+    minAmount: pickAmountField(src, MIN_AMOUNT_KEYS),
+    maxAmount: pickAmountField(src, MAX_AMOUNT_KEYS),
+  };
+}
+
+export function normalizeStrategyDetail(raw) {
+  if (!raw || typeof raw !== "object") return {};
+  const limits = normalizeStrategyAmountRange(raw);
+  return Object.assign({}, raw, limits);
+}
+
+export function resolveStrategyAmountRange(strategy, institution) {
+  strategy = strategy || {};
+  institution = institution || {};
+  const fromStrategy = normalizeStrategyAmountRange(strategy);
+  const fromInstitution = normalizeStrategyAmountRange(institution);
+  return {
+    minAmount: fromStrategy.minAmount != null ? fromStrategy.minAmount : fromInstitution.minAmount,
+    maxAmount: fromStrategy.maxAmount != null ? fromStrategy.maxAmount : fromInstitution.maxAmount,
+  };
+}
+
+export function parseCopyTradeStrategyQuery(raw) {
+  if (!raw) return null;
+  try {
+    return JSON.parse(decodeURIComponent(String(raw)));
+  } catch (e) {
+    try {
+      return JSON.parse(decodeURI(String(raw)));
+    } catch (e2) {
+      return null;
+    }
+  }
+}
+
+export function formatAmountRangeText(minAmount, maxAmount, fallback) {
+  fallback = fallback || "--";
+  const fmt = (v) => {
+    if (v == null || v === "") return fallback;
+    const n = Number(v);
+    return Number.isFinite(n) ? n.toFixed(2) : String(v);
+  };
+  return `${fmt(minAmount)} ~ ${fmt(maxAmount)} USDT`;
+}

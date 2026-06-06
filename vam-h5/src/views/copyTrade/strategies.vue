@@ -89,7 +89,8 @@ function toSubmit(item) {
     path: '/copy-trade/submit',
     query: {
       strategyId: item.id,
-      institutionId: route.query.institutionId || item.institutionId || ''
+      institutionId: route.query.institutionId || item.institutionId || '',
+      data: encodeURIComponent(JSON.stringify(item))
     }
   })
 }

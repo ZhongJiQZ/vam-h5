@@ -8,6 +8,120 @@ export function calcPnlRate(profit, amount) {
   return priceFormat(_mul(_div(p, a), 100), 2)
 }
 
+/** 进行中跟单盈亏：netProfit */
+export function copyTradeNetProfit(item) {
+  if (!item) return 0
+  const params = item.params || {}
+  const raw = params.netProfit ?? item.netProfit
+  if (raw == null || raw === '') return 0
+  const n = Number(raw)
+  return Number.isFinite(n) ? n : 0
+}
+
+/** 跟单交易次数：winCount + loseCount */
+export function copyTradeTradeCount(item) {
+  if (!item) return 0
+  const params = item.params || {}
+  const hasWinLose =
+    params.winCount != null ||
+    params.loseCount != null ||
+    item.winCount != null ||
+    item.loseCount != null
+  if (hasWinLose) {
+    const win = Number(params.winCount ?? item.winCount ?? 0)
+    const lose = Number(params.loseCount ?? item.loseCount ?? 0)
+    return (Number.isFinite(win) ? win : 0) + (Number.isFinite(lose) ? lose : 0)
+  }
+  const fallback = params.tradeCount ?? item.tradeCount
+  return fallback != null && fallback !== '' ? Number(fallback) || 0 : 0
+}
+
+/** 跟单盈亏率 %：netProfit / amount * 100 */
+export function copyTradePnlRate(item) {
+  return calcPnlRate(copyTradeNetProfit(item), item?.amount)
+}
+
+const MIN_AMOUNT_KEYS = [
+  'minAmount',
+  'minCopyAmount',
+  'copyMinAmount',
+  'amountMin',
+  'minFollowAmount',
+  'followMinAmount',
+  'copyAmountMin',
+  'minInvestAmount'
+]
+const MAX_AMOUNT_KEYS = [
+  'maxAmount',
+  'maxCopyAmount',
+  'copyMaxAmount',
+  'amountMax',
+  'maxFollowAmount',
+  'followMaxAmount',
+  'copyAmountMax',
+  'maxInvestAmount'
+]
+
+function pickAmountField(src, keys) {
+  if (!src || typeof src !== 'object') return null
+  for (const key of keys) {
+    const val = src[key]
+    if (val != null && val !== '') {
+      const n = Number(val)
+      return Number.isFinite(n) ? n : val
+    }
+  }
+  return null
+}
+
+/** 解析策略/机构跟单金额上下限 */
+export function normalizeStrategyAmountRange(raw) {
+  if (!raw || typeof raw !== 'object') return { minAmount: null, maxAmount: null }
+  const nested = raw.strategy || raw.detail || raw.limit || raw.amountLimit || raw.rule || {}
+  const src = { ...nested, ...raw }
+  return {
+    minAmount: pickAmountField(src, MIN_AMOUNT_KEYS),
+    maxAmount: pickAmountField(src, MAX_AMOUNT_KEYS)
+  }
+}
+
+/** 策略详情归一化（含金额范围） */
+export function normalizeStrategyDetail(raw) {
+  if (!raw || typeof raw !== 'object') return {}
+  const limits = normalizeStrategyAmountRange(raw)
+  return { ...raw, ...limits }
+}
+
+/** 策略优先，机构详情兜底金额范围 */
+export function resolveStrategyAmountRange(strategy = {}, institution = {}) {
+  const fromStrategy = normalizeStrategyAmountRange(strategy)
+  const fromInstitution = normalizeStrategyAmountRange(institution)
+  return {
+    minAmount: fromStrategy.minAmount ?? fromInstitution.minAmount ?? null,
+    maxAmount: fromStrategy.maxAmount ?? fromInstitution.maxAmount ?? null
+  }
+}
+
+/** 路由 query.data 解析策略快照 */
+export function parseCopyTradeStrategyQuery(raw) {
+  if (!raw) return null
+  try {
+    return JSON.parse(decodeURIComponent(String(raw)))
+  } catch {
+    try {
+      return JSON.parse(decodeURI(String(raw)))
+    } catch {
+      return null
+    }
+  }
+}
+
+export function formatAmountRangeText(minAmount, maxAmount, fallback = '--') {
+  const minText = minAmount != null && minAmount !== '' ? priceFormat(minAmount) : fallback
+  const maxText = maxAmount != null && maxAmount !== '' ? priceFormat(maxAmount) : fallback
+  return `${minText} ~ ${maxText} USDT`
+}
+
 export function formatPnl(val, digits = 2) {
   const n = Number(val)
   if (!Number.isFinite(n)) return '0.00'

@@ -31,7 +31,7 @@
           </div>
           <div class="kv">
             <span>{{ _t18('copy_trade_today_trades') }}</span>
-            <span class="ff-num">{{ detail.tradeCount ?? 0 }}</span>
+            <span class="ff-num">{{ copyTradeTradeCount(detail) }}</span>
           </div>
           <div v-if="detail.status === 1" class="kv">
             <span>{{ _t18('copy_trade_exit_method') }}</span>
@@ -56,7 +56,7 @@
         </div>
         <div class="pnl-row">
           <span class="ff-num" :class="pnlClass(displayProfit)">{{ formatPnl(displayProfit) }} USDT</span>
-          <span class="ff-num" :class="pnlClass(displayProfit)">{{ calcPnlRate(displayProfit, detail.amount) }}%</span>
+          <span class="ff-num" :class="pnlClass(displayProfit)">{{ displayPnlRate }}%</span>
         </div>
         <div class="pnl-actual">
           <span class="label">{{ _t18('copy_trade_net_profit') }}</span>
@@ -113,7 +113,7 @@ import AppendDialog from './components/AppendDialog.vue'
 import { _t18 } from '@/utils/public'
 import { getCopyTradeDetail, exitCopyTrade, appendCopyTrade } from '@/api/copyTrade'
 import { priceFormat } from '@/utils/decimal'
-import { formatPnl, pnlClass, calcPnlRate, formatProfitShareRate } from './utils'
+import { formatPnl, pnlClass, calcPnlRate, formatProfitShareRate, copyTradeNetProfit, copyTradeTradeCount, copyTradePnlRate } from './utils'
 import { showToast } from 'vant'
 
 const route = useRoute()
@@ -136,14 +136,14 @@ const statusText = computed(() => {
 
 const displayProfit = computed(() => {
   if (detail.value.status === 1) return detail.value.actualProfit
-  return detail.value.params?.totalSettledProfit ?? detail.value.actualProfit ?? 0
+  return copyTradeNetProfit(detail.value)
 })
 
-const netProfit = computed(() => {
-  if (detail.value.netProfit != null && detail.value.netProfit !== '') {
-    return detail.value.netProfit
-  }
-  return detail.value.actualProfit ?? 0
+const netProfit = computed(() => copyTradeNetProfit(detail.value))
+
+const displayPnlRate = computed(() => {
+  if (detail.value.status === 1) return calcPnlRate(displayProfit.value, detail.value.amount)
+  return copyTradePnlRate(detail.value)
 })
 
 function profitShareRateText(rate) {
@@ -157,7 +157,7 @@ const cycleRangeText = computed(() => {
 })
 
 const cycleProgressText = computed(() => {
-  const done = Number(detail.value?.tradeCount ?? 0)
+  const done = copyTradeTradeCount(detail.value)
   const totalCount = Number(detail.value?.expectedTradeCount ?? 0)
   if (!totalCount) return `${done}`
   return `${done}/${totalCount}`
@@ -207,11 +207,11 @@ async function confirmAppend(amount) {
 }
 
 function openStop() {
-  const pnl = displayProfit.value
+  const pnl = copyTradeNetProfit(detail.value)
   stopRows.value = [
     { label: t18('copy_trade_amount'), value: `${priceFormat(detail.value.amount)} USDT`, cls: '' },
     { label: t18('copy_trade_current_pnl'), value: `${formatPnl(pnl)} USDT`, cls: pnlClass(pnl) },
-    { label: t18('copy_trade_pnl_rate'), value: `${calcPnlRate(pnl, detail.value.amount)}%`, cls: pnlClass(pnl) },
+    { label: t18('copy_trade_pnl_rate'), value: `${copyTradePnlRate(detail.value)}%`, cls: pnlClass(pnl) },
     {
       label: t18('copy_trade_trade_fee'),
       value: `${priceFormat(detail.value.tradeFee ?? 0)} USDT`,

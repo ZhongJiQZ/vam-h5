@@ -14,7 +14,7 @@ import {
   subscribeCopyTradeInstitution
 } from '@/api/copyTrade'
 import { priceFormat } from '@/utils/decimal'
-import { isInstitutionSubscribed, patchInstitutionSubscribed, isInstitutionSecretLocked, isSecretKeyLockMessage, setInstitutionSecretLock } from './utils'
+import { isInstitutionSubscribed, patchInstitutionSubscribed, isInstitutionSecretLocked, isSecretKeyLockMessage, setInstitutionSecretLock, normalizeStrategyDetail, resolveStrategyAmountRange, parseCopyTradeStrategyQuery, formatAmountRangeText } from './utils'
 import { useUserStore } from '@/store/user/index'
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
@@ -31,9 +31,15 @@ const { _isFreeze } = useFreeze()
 const { _toast } = useToast()
 const route = useRoute()
 const router = useRouter()
-const strategy = reactive(
-  route.query.data ? JSON.parse(decodeURI(route.query.data)) : { id: route.query.strategyId }
-)
+function initStrategyFromRoute() {
+  const fromQuery = parseCopyTradeStrategyQuery(route.query.data)
+  const strategyId = route.query.strategyId || fromQuery?.id
+  if (fromQuery) return normalizeStrategyDetail({ ...fromQuery, id: fromQuery.id || strategyId })
+  if (strategyId) return { id: strategyId }
+  return {}
+}
+
+const strategy = reactive(initStrategyFromRoute())
 
 const userStore = useUserStore()
 const { asset } = storeToRefs(userStore)
@@ -122,17 +128,29 @@ const feeRows = computed(() => {
   ]
 })
 
+const amountLimits = computed(() => resolveStrategyAmountRange(strategy, institution.value))
+
 const amountRangeTip = computed(() => {
+  const { minAmount, maxAmount } = amountLimits.value
+  const rangeText = formatAmountRangeText(minAmount, maxAmount)
   const text = t18('copy_trade_amount_range_tip')
-  return text
-    .replace('{min}', strategy.minAmount ?? '--')
-    .replace('{max}', strategy.maxAmount ?? '--')
+  if (text && text !== 'copy_trade_amount_range_tip' && (text.includes('{min}') || text.includes('{max}'))) {
+    const [minText, maxText] = rangeText.replace(' USDT', '').split(' ~ ')
+    return text.replace('{min}', minText || '--').replace('{max}', maxText || '--')
+  }
+  return `${t18('copy_trade_amount_range')} ${rangeText}`
 })
 
 const canSubmit = computed(() => agreed.value && !pageLoading.value)
 
+function applyAmountLimits(extra = {}) {
+  const limits = resolveStrategyAmountRange({ ...strategy, ...extra }, institution.value)
+  if (limits.minAmount != null) strategy.minAmount = limits.minAmount
+  if (limits.maxAmount != null) strategy.maxAmount = limits.maxAmount
+}
+
 function setMax() {
-  const max = Math.min(Number(displayBalance.value) || 0, Number(strategy.maxAmount) || Infinity)
+  const max = Math.min(Number(displayBalance.value) || 0, Number(amountLimits.value.maxAmount) || Infinity)
   amount.value = max > 0 ? String(max) : ''
 }
 
@@ -143,7 +161,7 @@ async function loadStrategyDetail() {
   try {
     const res = await getCopyTradeStrategyDetail({ strategyId })
     if (res?.code == 200 && res.data) {
-      Object.assign(strategy, res.data, { id: res.data.id || strategyId })
+      Object.assign(strategy, normalizeStrategyDetail(res.data), { id: res.data.id || strategyId })
     }
     const institutionId = route.query.institutionId || strategy.institutionId
     if (institutionId) {
@@ -156,6 +174,7 @@ async function loadStrategyDetail() {
       if (agreementRes?.code == 200) agreementDoc.value = agreementRes.data
       if (riskRes?.code == 200) riskDoc.value = riskRes.data
     }
+    applyAmountLimits()
   } finally {
     pageLoading.value = false
   }
@@ -212,7 +231,8 @@ async function onSubscribeConfirm({ institutionId, secretKey: key }) {
 }
 
 onMounted(() => {
-  if (route.query.strategyId) loadStrategyDetail()
+  applyAmountLimits()
+  if (route.query.strategyId || strategy.id) loadStrategyDetail()
 })
 
 async function submitForm() {
@@ -222,7 +242,8 @@ async function submitForm() {
     return
   }
   const val = Number(amount.value)
-  if (!val || val < strategy.minAmount || val > strategy.maxAmount) {
+  const { minAmount, maxAmount } = amountLimits.value
+  if (!val || minAmount == null || maxAmount == null || val < minAmount || val > maxAmount) {
     _toast('copy_trade_amount_error')
     return
   }

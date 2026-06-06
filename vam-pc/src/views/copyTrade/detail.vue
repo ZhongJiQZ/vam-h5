@@ -95,6 +95,7 @@
 <script>
 import { getCopyTradeDetail, exitCopyTrade, appendCopyTrade } from "@/api/copyTrade";
 import { mapGetters, mapActions } from "vuex";
+import { copyTradeNetProfit, copyTradeTradeCount, copyTradePnlRate } from "./utils";
 
 export default {
   name: "CopyTradeDetail",
@@ -120,18 +121,18 @@ export default {
     },
     displayProfit() {
       if (Number(this.detail.status) === 1) return Number(this.detail.actualProfit || 0);
-      if (this.detail && this.detail.params && this.detail.params.totalSettledProfit != null) {
-        return Number(this.detail.params.totalSettledProfit || 0);
-      }
-      return Number(this.detail && this.detail.actualProfit != null ? this.detail.actualProfit : 0);
+      return copyTradeNetProfit(this.detail);
     },
     pnlRate() {
-      const amount = Number(this.detail.amount || 0);
-      if (!amount) return "0.00";
-      return ((this.displayProfit / amount) * 100).toFixed(2);
+      if (Number(this.detail.status) === 1) {
+        const amount = Number(this.detail.amount || 0);
+        if (!amount) return "0.00";
+        return ((this.displayProfit / amount) * 100).toFixed(2);
+      }
+      return copyTradePnlRate(this.detail);
     },
     cycleProgress() {
-      const done = Number(this.detail && this.detail.tradeCount != null ? this.detail.tradeCount : 0);
+      const done = copyTradeTradeCount(this.detail);
       const total = Number(this.detail && this.detail.expectedTradeCount != null ? this.detail.expectedTradeCount : 0);
       return total ? `${done}/${total}` : `${done}`;
     },
@@ -141,10 +142,7 @@ export default {
       return `${win}/${lose}`;
     },
     netProfit() {
-      if (this.detail && this.detail.netProfit != null && this.detail.netProfit !== "") {
-        return Number(this.detail.netProfit || 0);
-      }
-      return Number(this.detail && this.detail.actualProfit != null ? this.detail.actualProfit : 0);
+      return copyTradeNetProfit(this.detail);
     },
   },
   created() {

@@ -59,7 +59,11 @@ export default {
       }
       this.$router.push({
         path: "/copyTrade/submit",
-        query: { strategyId: item.id, institutionId: this.$route.query.institutionId || item.institutionId },
+        query: {
+          strategyId: item.id,
+          institutionId: this.$route.query.institutionId || item.institutionId,
+          data: encodeURIComponent(JSON.stringify(item)),
+        },
       });
     },
   },

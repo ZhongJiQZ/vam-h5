@@ -25,7 +25,7 @@
           <el-input v-model="amount" type="number" :placeholder="$t('pc_copy_trade_amount_placeholder')">
             <template slot="append">USDT</template>
           </el-input>
-          <p class="range">{{ $t("pc_copy_trade_range") }}：{{ strategy.minAmount || 0 }} ~ {{ strategy.maxAmount || 0 }}</p>
+          <p class="range">{{ $t("pc_copy_trade_range") }}：{{ amountRangeText }}</p>
           <p class="range">{{ $t("pc_copy_trade_contract_balance") }}：{{ displayBalance }} USDT</p>
         </el-form-item>
         <el-form-item v-if="agreementDoc || riskDoc">
@@ -56,8 +56,14 @@
 </template>
 
 <script>
-import { submitCopyTrade, getCopyTradeStrategyDetail, getCopyTradeDocuments } from "@/api/copyTrade";
-import { symbolPair } from "./utils";
+import { submitCopyTrade, getCopyTradeStrategyDetail, getCopyTradeDocuments, getCopyTradeInstitutionDetail } from "@/api/copyTrade";
+import {
+  symbolPair,
+  normalizeStrategyDetail,
+  resolveStrategyAmountRange,
+  parseCopyTradeStrategyQuery,
+  formatAmountRangeText,
+} from "./utils";
 import { mapGetters, mapActions } from "vuex";
 
 export default {
@@ -65,6 +71,7 @@ export default {
   data() {
     return {
       strategy: {},
+      institution: {},
       amount: "",
       secretKey: "",
       submitting: false,
@@ -94,6 +101,13 @@ export default {
       }
       return this.contractBalance;
     },
+    amountLimits() {
+      return resolveStrategyAmountRange(this.strategy, this.institution);
+    },
+    amountRangeText() {
+      const limits = this.amountLimits;
+      return formatAmountRangeText(limits.minAmount, limits.maxAmount, "0");
+    },
   },
   created() {
     this.parseStrategy();
@@ -104,16 +118,20 @@ export default {
     ...mapActions(["getUserInfo"]),
     symbolPair,
     parseStrategy() {
-      const raw = this.$route.query.data;
-      if (raw) {
-        try {
-          this.strategy = JSON.parse(decodeURIComponent(raw));
-        } catch (e) {
-          this.strategy = {};
-        }
+      const parsed = parseCopyTradeStrategyQuery(this.$route.query.data);
+      if (parsed) {
+        this.strategy = normalizeStrategyDetail(Object.assign({}, parsed, { id: parsed.id || this.$route.query.strategyId }));
       } else if (this.$route.query.strategyId) {
         this.strategy = { id: this.$route.query.strategyId };
+      } else {
+        this.strategy = {};
       }
+      this.applyAmountLimits();
+    },
+    applyAmountLimits() {
+      const limits = resolveStrategyAmountRange(this.strategy, this.institution);
+      if (limits.minAmount != null) this.$set(this.strategy, "minAmount", limits.minAmount);
+      if (limits.maxAmount != null) this.$set(this.strategy, "maxAmount", limits.maxAmount);
     },
     async loadStrategyDetail() {
       const strategyId = this.$route.query.strategyId || this.strategy.id;
@@ -122,17 +140,24 @@ export default {
       try {
         const res = await getCopyTradeStrategyDetail({ strategyId });
         if (res && res.data && res.data.code == 200 && res.data.data) {
-          this.strategy = { ...this.strategy, ...res.data.data, id: res.data.data.id || strategyId };
+          this.strategy = normalizeStrategyDetail(
+            Object.assign({}, this.strategy, res.data.data, { id: res.data.data.id || strategyId })
+          );
         }
         const institutionId = this.$route.query.institutionId || this.strategy.institutionId;
         if (institutionId) {
-          const [a, r] = await Promise.all([
+          const [instRes, a, r] = await Promise.all([
+            getCopyTradeInstitutionDetail({ institutionId }),
             getCopyTradeDocuments({ type: "agreement", institutionId }),
             getCopyTradeDocuments({ type: "risk", institutionId }),
           ]);
+          if (instRes && instRes.data && instRes.data.code == 200 && instRes.data.data) {
+            this.institution = instRes.data.data;
+          }
           if (a && a.data && a.data.code == 200) this.agreementDoc = a.data.data;
           if (r && r.data && r.data.code == 200) this.riskDoc = r.data.data;
         }
+        this.applyAmountLimits();
       } finally {
         this.pageLoading = false;
       }
@@ -161,7 +186,8 @@ export default {
         return;
       }
       const val = Number(this.amount);
-      if (!val || val < Number(this.strategy.minAmount) || val > Number(this.strategy.maxAmount)) {
+      const limits = this.amountLimits;
+      if (!val || limits.minAmount == null || limits.maxAmount == null || val < Number(limits.minAmount) || val > Number(limits.maxAmount)) {
         this.$message.warning(this.$t("pc_copy_trade_amount_invalid"));
         return;
       }
