@@ -107,10 +107,10 @@
             :key="rec.orderNo || idx"
             :record="rec"
             :parent-symbol="copyTradeRunningSymbol(order)"
+            :masked="activeTab === 0"
             closed
           />
         </div>
-        <p v-else-if="activeTab === 0" class="empty-hint">{{ _t18('copy_trade_no_positions_hint') }}</p>
       </div>
 
       <div v-if="activeTab === 0 && primaryOrder.id && primaryOrder.status === 0" class="action-bar">
@@ -431,12 +431,6 @@ $green: #17ac74;
   font-size: 15px;
   font-weight: 600;
   margin: 0 0 12px;
-}
-.empty-hint {
-  text-align: center;
-  color: #999;
-  font-size: 13px;
-  padding: 0 24px 24px;
 }
 .action-bar {
   position: fixed;

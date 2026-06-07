@@ -56,21 +56,34 @@
           <el-table :data="order.records" border>
             <el-table-column :label="$t('pc_copy_trade_direction')" width="120">
               <template slot-scope="scope">
-                <el-tag size="mini" :type="scope.row.type === 0 ? 'success' : 'danger'">
-                  {{ scope.row.type === 0 ? $t("pc_copy_trade_long") : $t("pc_copy_trade_short") }}
-                </el-tag>
-                <span v-if="recordLeverageText(scope.row)" class="leverage-tag">{{ recordLeverageText(scope.row) }}</span>
+                <template v-if="activeName === '0'">
+                  <span class="cross-tag">{{ $t('pc_copy_trade_cross') }}</span>
+                </template>
+                <template v-else>
+                  <el-tag size="mini" :type="scope.row.type === 0 ? 'success' : 'danger'">
+                    {{ scope.row.type === 0 ? $t("pc_copy_trade_long") : $t("pc_copy_trade_short") }}
+                  </el-tag>
+                  <span v-if="recordLeverageText(scope.row)" class="leverage-tag">{{ recordLeverageText(scope.row) }}</span>
+                </template>
               </template>
             </el-table-column>
-            <el-table-column prop="openPrice" :label="$t('pc_copy_trade_open_price')" min-width="110" />
-            <el-table-column prop="closePrice" :label="$t('pc_copy_trade_close_price')" min-width="110" />
+            <el-table-column :label="$t('pc_copy_trade_open_price')" min-width="110">
+              <template slot-scope="scope">{{ scope.row.openPrice }}</template>
+            </el-table-column>
+            <el-table-column :label="$t('pc_copy_trade_close_price')" min-width="110">
+              <template slot-scope="scope">{{ maskRecordValue(scope.row.closePrice) }}</template>
+            </el-table-column>
             <el-table-column :label="$t('pc_copy_trade_pnl_usdt')" min-width="120">
               <template slot-scope="scope">
-                <span :class="pnlClass(scope.row.earn)">{{ signNum(scope.row.earn) }}</span>
+                <span :class="activeName === '0' ? '' : pnlClass(scope.row.earn)">{{ maskRecordValue(signNum(scope.row.earn)) }}</span>
               </template>
             </el-table-column>
-            <el-table-column prop="openTime" :label="$t('pc_copy_trade_open_time')" min-width="160" />
-            <el-table-column prop="closeTime" :label="$t('pc_copy_trade_close_time')" min-width="160" />
+            <el-table-column :label="$t('pc_copy_trade_open_time')" min-width="160">
+              <template slot-scope="scope">{{ scope.row.openTime || '--' }}</template>
+            </el-table-column>
+            <el-table-column :label="$t('pc_copy_trade_close_time')" min-width="160">
+              <template slot-scope="scope">{{ maskRecordValue(scope.row.closeTime || '--') }}</template>
+            </el-table-column>
           </el-table>
         </div>
       </div>
@@ -279,6 +292,10 @@ export default {
       const val = Number.isInteger(n) ? n : n.toFixed(2);
       return `${val}x`;
     },
+    maskRecordValue(value) {
+      if (this.activeName !== "0") return value;
+      return "***";
+    },
   },
 };
 </script>
@@ -347,6 +364,10 @@ h4 {
 }
 .leverage-tag {
   margin-left: 6px;
+  font-size: 12px;
+  color: #667085;
+}
+.cross-tag {
   font-size: 12px;
   color: #667085;
 }

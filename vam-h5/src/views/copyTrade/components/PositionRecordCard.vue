@@ -2,19 +2,24 @@
   <div class="position-card">
     <div class="position-card__head">
       <div class="position-card__pair">
-        <span class="pair">{{ symbolPair(record.symbol || parentSymbol) }}</span>
-        <span class="tag tag--muted">{{ _t18('copy_trade_usdt_contract') }}</span>
+        <span class="pair">{{ masked ? MASK : symbolPair(record.symbol || parentSymbol) }}</span>
+        <span class="tag tag--muted">{{ masked ? MASK : _t18('copy_trade_usdt_contract') }}</span>
       </div>
       <span class="status-tag" :class="closed ? 'status-tag--closed' : 'status-tag--open'">
-        {{ closed ? _t18('copy_trade_position_closed') : _t18('copy_trade_position_holding') }}
+        {{ masked ? MASK : (closed ? _t18('copy_trade_position_closed') : _t18('copy_trade_position_holding')) }}
       </span>
     </div>
     <div class="position-card__tags">
-      <span v-if="record.type != null" class="tag" :class="record.type === 0 ? 'tag--long' : 'tag--short'">
-        {{ record.type === 0 ? _t18('copy_trade_long') : _t18('copy_trade_short') }}
-      </span>
-      <span class="tag tag--muted">{{ _t18('copy_trade_cross') }}</span>
-      <span v-if="recordLeverageText(record)" class="tag tag--muted">{{ recordLeverageText(record) }}</span>
+      <template v-if="masked">
+        <span class="tag tag--muted">{{ _t18('copy_trade_cross') }}</span>
+      </template>
+      <template v-else>
+        <span v-if="record.type != null" class="tag" :class="record.type === 0 ? 'tag--long' : 'tag--short'">
+          {{ record.type === 0 ? _t18('copy_trade_long') : _t18('copy_trade_short') }}
+        </span>
+        <span class="tag tag--muted">{{ _t18('copy_trade_cross') }}</span>
+        <span v-if="recordLeverageText(record)" class="tag tag--muted">{{ recordLeverageText(record) }}</span>
+      </template>
     </div>
     <div class="position-card__grid">
       <div class="cell">
@@ -23,15 +28,15 @@
       </div>
       <div class="cell">
         <span class="label">{{ _t18('copy_trade_pnl_usdt') }}</span>
-        <span class="value ff-num" :class="pnlClass(record.earn)">{{ formatPnl(record.earn) }}</span>
+        <span class="value ff-num" :class="masked ? '' : pnlClass(record.earn)">{{ masked ? MASK : formatPnl(record.earn) }}</span>
       </div>
       <div class="cell">
         <span class="label">{{ _t18('copy_trade_close_price') }}</span>
-        <span class="value ff-num">{{ priceFormat(record.closePrice) }}</span>
+        <span class="value ff-num">{{ masked ? MASK : priceFormat(record.closePrice) }}</span>
       </div>
       <div class="cell">
         <span class="label">{{ _t18('copy_trade_pnl_rate') }}</span>
-        <span class="value ff-num" :class="pnlClass(record.earn)">{{ recordPnlRate(record) }}%</span>
+        <span class="value ff-num" :class="masked ? '' : pnlClass(record.earn)">{{ masked ? MASK : `${recordPnlRate(record)}%` }}</span>
       </div>
       <div class="cell cell--full">
         <span class="label">{{ _t18('copy_trade_open_time') }}</span>
@@ -39,7 +44,7 @@
       </div>
       <div class="cell cell--full">
         <span class="label">{{ _t18('copy_trade_close_time') }}</span>
-        <span class="value">{{ record.closeTime || '--' }}</span>
+        <span class="value">{{ masked ? MASK : (record.closeTime || '--') }}</span>
       </div>
     </div>
   </div>
@@ -49,6 +54,8 @@
 import { _t18 } from '@/utils/public'
 import { _div, _mul, _sub, priceFormat } from '@/utils/decimal'
 import { symbolPair, formatPnl, pnlClass } from '../utils'
+
+const MASK = '***'
 
 function recordLeverageText(record) {
   const n = Number(record?.leverage)
@@ -69,7 +76,8 @@ function recordPnlRate(record) {
 defineProps({
   record: { type: Object, default: () => ({}) },
   parentSymbol: { type: String, default: '' },
-  closed: { type: Boolean, default: true }
+  closed: { type: Boolean, default: true },
+  masked: { type: Boolean, default: false }
 })
 </script>
 
