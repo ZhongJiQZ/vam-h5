@@ -32,21 +32,27 @@ function pickCopyTradeMillis(item, key) {
 }
 
 /** 策略开始时间（毫秒时间戳 → 设备本地时间） */
-export function formatCopyTradeStrategyStartTime(item, fmt = "YYYY-MM-DD HH:mm:ss") {
+export function formatCopyTradeStrategyStartTime(item, fmt = "YYYY-MM-DD HH:mm") {
   const ms = pickCopyTradeMillis(item, "strategyStartTimeMillis");
   if (ms != null) return formatLocalTime(ms, fmt);
-  return item && item.startTime ? item.startTime : item && item.cycleStartTime ? item.cycleStartTime : "--";
+  const fallback = item && item.startTime ? item.startTime : item && item.cycleStartTime ? item.cycleStartTime : "";
+  if (!fallback) return "--";
+  const formatted = formatLocalTime(fallback, fmt);
+  return formatted !== "--" ? formatted : fallback;
 }
 
 /** 策略结束时间（毫秒时间戳 → 设备本地时间） */
-export function formatCopyTradeStrategyEndTime(item, fmt = "YYYY-MM-DD HH:mm:ss") {
+export function formatCopyTradeStrategyEndTime(item, fmt = "YYYY-MM-DD HH:mm") {
   const ms = pickCopyTradeMillis(item, "strategyEndTimeMillis");
   if (ms != null) return formatLocalTime(ms, fmt);
-  return item && item.endTime ? item.endTime : "--";
+  const fallback = item && item.endTime ? item.endTime : "";
+  if (!fallback) return "--";
+  const formatted = formatLocalTime(fallback, fmt);
+  return formatted !== "--" ? formatted : fallback;
 }
 
 /** 策略时间范围 */
-export function formatCopyTradeStrategyTimeRange(item, fmt = "YYYY-MM-DD HH:mm:ss") {
+export function formatCopyTradeStrategyTimeRange(item, fmt = "YYYY-MM-DD HH:mm") {
   const start = formatCopyTradeStrategyStartTime(item, fmt);
   const end = formatCopyTradeStrategyEndTime(item, fmt);
   if (start === "--" && end === "--") return "--";
