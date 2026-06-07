@@ -1,4 +1,4 @@
-import { post } from '@/utils/request'
+import { post, get } from '@/utils/request'
 
 /** 跟单前置配置 */
 export const getCopyTradeConfig = () => post('/api/copyTrade/config')
@@ -28,8 +28,9 @@ export const appendCopyTrade = (data) => post('/api/copyTrade/append', data)
 /** 跟单记录列表 status: 0=跟单中 1=已退出；可选 institutionId */
 export const getCopyTradeList = (params = {}) => post('/api/copyTrade/list', params)
 
-/** 跟单详情 */
-export const getCopyTradeDetail = (id) => post(`/api/copyTrade/detail/${id}`)
+/** 跟单详情 status: 0=进行中 1=已结束 */
+export const getCopyTradeDetail = (id, status = 0) =>
+  get(`/api/copyTrade/detail/${id}?status=${Number(status)}`)
 
 /** 机构列表（跟单首页） */
 export const getCopyTradeInstitutionList = (data) =>

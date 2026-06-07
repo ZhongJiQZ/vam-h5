@@ -51,6 +51,56 @@ export function formatCopyTradeStrategyEndTime(item, fmt = "YYYY-MM-DD HH:mm") {
   return formatted !== "--" ? formatted : fallback;
 }
 
+/** 加入时间（毫秒时间戳 / ISO → 设备本地时间） */
+export function formatCopyTradeJoinTime(item, fmt = "YYYY-MM-DD HH:mm") {
+  if (!item) return "--";
+  const params = item.params || {};
+  const ms = params.joinTimeMillis != null ? params.joinTimeMillis : item.joinTimeMillis;
+  if (ms != null) return formatLocalTime(ms, fmt);
+  const fallback =
+    item && item.joinTime
+      ? item.joinTime
+      : params.joinTime
+        ? params.joinTime
+        : item && item.startTime
+          ? item.startTime
+          : "";
+  if (!fallback) return "--";
+  const formatted = formatLocalTime(fallback, fmt);
+  return formatted !== "--" ? formatted : fallback;
+}
+
+/** 跟单详情接口响应归一化 */
+export function normalizeCopyTradeDetailResponse(res) {
+  const payload = res && res.data && res.data.data != null ? res.data.data : res && res.data;
+  if (!payload || typeof payload !== "object") {
+    return { meta: {}, orders: [] };
+  }
+  if (payload.id != null && !payload.orderList && !payload.order) {
+    return { meta: payload, orders: [payload] };
+  }
+  const orders = [];
+  const seen = new Set();
+  const pushOrder = (item) => {
+    if (!item || item.id == null || seen.has(item.id)) return;
+    seen.add(item.id);
+    orders.push(item);
+  };
+  pushOrder(payload.order);
+  (payload.orderList || []).forEach(pushOrder);
+  return {
+    meta: {
+      strategyId: payload.strategyId,
+      strategyName: payload.strategyName,
+      statusFilter: payload.statusFilter,
+      statusFilterText: payload.statusFilterText,
+      anchorOrderId: payload.anchorOrderId,
+      total: payload.total,
+    },
+    orders,
+  };
+}
+
 /** 策略时间范围 */
 export function formatCopyTradeStrategyTimeRange(item, fmt = "YYYY-MM-DD HH:mm") {
   const start = formatCopyTradeStrategyStartTime(item, fmt);

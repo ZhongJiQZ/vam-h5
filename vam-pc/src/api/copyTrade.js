@@ -1,5 +1,11 @@
 import request from "@/router/axios";
 
+const get = (url) =>
+  request({
+    url,
+    method: "get",
+  });
+
 const post = (url, data) =>
   request({
     url,
@@ -26,7 +32,8 @@ export const appendCopyTrade = (data) => post("/api/copyTrade/append", data);
 
 export const getCopyTradeList = (params = {}) => post("/api/copyTrade/list", params);
 
-export const getCopyTradeDetail = (id) => post(`/api/copyTrade/detail/${id}`);
+export const getCopyTradeDetail = (id, status = 0) =>
+  get(`/api/copyTrade/detail/${id}?status=${Number(status)}`);
 
 export const getCopyTradeInstitutionList = (data) =>
   post("/api/copyTrade/institutionList", data);

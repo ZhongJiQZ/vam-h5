@@ -3,97 +3,117 @@
   <div class="copy-detail-page">
     <DarkHeaderBar :title="_t18('copy_trade_detail_title')" :border_bottom="true" />
 
+    <div class="tabs">
+      <button
+        type="button"
+        class="tab"
+        :class="{ active: activeTab === 0 }"
+        @click="switchTab(0)"
+      >
+        {{ _t18('copy_trade_tab_ongoing') }}
+      </button>
+      <button
+        type="button"
+        class="tab"
+        :class="{ active: activeTab === 1 }"
+        @click="switchTab(1)"
+      >
+        {{ _t18('copy_trade_tab_ended') }}
+      </button>
+    </div>
+
     <van-loading v-if="pageLoading" class="page-loading" />
-    <template v-else-if="detail.id">
-      <div class="summary-card">
-        <div class="summary-card__head">
-          <img v-if="detail.icon" :src="detail.icon" class="avatar avatar--img" alt="" />
-          <div v-else class="avatar">{{ (detail.strategyName || '?')[0] }}</div>
-          <div>
-            <p class="name">{{ detail.strategyName }}</p>
-            <span class="badge" :class="detail.status === 0 ? 'badge--ongoing' : 'badge--settled'">
-              {{ statusText }}
-            </span>
+    <template v-else-if="orders.length">
+      <div v-for="order in orders" :key="order.id" class="order-block">
+        <div class="summary-card">
+          <div class="summary-card__head">
+            <img v-if="order.icon" :src="order.icon" class="avatar avatar--img" alt="" />
+            <div v-else class="avatar">{{ (order.strategyName || meta.strategyName || '?')[0] }}</div>
+            <div>
+              <p class="name">{{ order.strategyName || meta.strategyName }}</p>
+              <span class="badge" :class="order.status === 0 ? 'badge--ongoing' : 'badge--settled'">
+                {{ orderStatusText(order) }}
+              </span>
+            </div>
           </div>
-        </div>
-        <div class="kv-list">
-          <div class="kv">
-            <span>{{ _t18('copy_trade_amount') }}</span>
-            <span class="ff-num">{{ priceFormat(detail.amount) }} USDT</span>
+          <div class="kv-list">
+            <div class="kv">
+              <span>{{ _t18('copy_trade_amount') }}</span>
+              <span class="ff-num">{{ priceFormat(order.amount) }} USDT</span>
+            </div>
+            <div class="kv">
+              <span>{{ _t18('copy_trade_strategy_start_time') }}</span>
+              <span>{{ formatCopyTradeStrategyStartTime(order) }}</span>
+            </div>
+            <div class="kv">
+              <span>{{ _t18('copy_trade_strategy_end_time') }}</span>
+              <span>{{ formatCopyTradeStrategyEndTime(order) }}</span>
+            </div>
+            <div class="kv">
+              <span>{{ _t18('copy_trade_join_time') }}</span>
+              <span>{{ formatCopyTradeJoinTime(order) }}</span>
+            </div>
+            <div v-if="order.status === 1" class="kv">
+              <span>{{ _t18('copy_trade_exit_time') }}</span>
+              <span>{{ order.endTime || '--' }}</span>
+            </div>
+            <div v-if="order.status === 0" class="kv">
+              <span>{{ _t18('copy_trade_current_symbol') }}</span>
+              <span>{{ copyTradePositionSymbol(order) }}</span>
+            </div>
+            <div class="kv">
+              <span>{{ _t18('copy_trade_today_trades') }}</span>
+              <span class="ff-num">{{ copyTradeTradeCount(order) }}</span>
+            </div>
+            <div v-if="order.status === 1" class="kv">
+              <span>{{ _t18('copy_trade_exit_method') }}</span>
+              <span>{{ _t18('copy_trade_exit_normal') }}</span>
+            </div>
+            <div class="kv">
+              <span>{{ _t18('copy_trade_profit_share_rate') }}</span>
+              <span>{{ profitShareRateText(order.profitShareRate) }}</span>
+            </div>
+            <div class="kv">
+              <span>{{ _t18('copy_trade_trade_fee') }}</span>
+              <span class="ff-num">{{ priceFormat(order.tradeFee ?? 0, 2) }} USDT</span>
+            </div>
+            <div class="kv">
+              <span>{{ _t18('copy_trade_profit_share_amt') }}</span>
+              <span class="ff-num">{{ priceFormat(order.profitShareAmt ?? 0) }} USDT</span>
+            </div>
+            <template v-if="order.status === 1">
+              <div class="kv kv--no-border">
+                <span>{{ _t18('copy_trade_period_pnl') }}</span>
+                <span>{{ _t18('copy_trade_pnl_rate') }}</span>
+              </div>
+            </template>
           </div>
-          <div class="kv">
-            <span>{{ _t18('copy_trade_strategy_start_time') }}</span>
-            <span>{{ formatCopyTradeStrategyStartTime(detail) }}</span>
-          </div>
-          <div class="kv">
-            <span>{{ _t18('copy_trade_strategy_end_time') }}</span>
-            <span>{{ formatCopyTradeStrategyEndTime(detail) }}</span>
-          </div>
-          <div class="kv">
-            <span>{{ _t18('copy_trade_join_time') }}</span>
-            <span>{{ detail.startTime || '--' }}</span>
-          </div>
-          <div v-if="detail.status === 1" class="kv">
-            <span>{{ _t18('copy_trade_exit_time') }}</span>
-            <span>{{ detail.endTime || '--' }}</span>
-          </div>
-          <div v-if="detail.status === 0" class="kv">
-            <span>{{ _t18('copy_trade_current_symbol') }}</span>
-            <span>{{ copyTradePositionSymbol(detail) }}</span>
-          </div>
-          <div class="kv">
-            <span>{{ _t18('copy_trade_today_trades') }}</span>
-            <span class="ff-num">{{ copyTradeTradeCount(detail) }}</span>
-          </div>
-          <div v-if="detail.status === 1" class="kv">
-            <span>{{ _t18('copy_trade_exit_method') }}</span>
-            <span>{{ _t18('copy_trade_exit_normal') }}</span>
-          </div>
-          <div class="kv">
-            <span>{{ _t18('copy_trade_profit_share_rate') }}</span>
-            <span>{{ profitShareRateText(detail.profitShareRate) }}</span>
-          </div>
-          <div class="kv">
-            <span>{{ _t18('copy_trade_trade_fee') }}</span>
-            <span class="ff-num">{{ priceFormat(detail.tradeFee ?? 0, 2) }} USDT</span>
-          </div>
-          <div class="kv">
-            <span>{{ _t18('copy_trade_profit_share_amt') }}</span>
-            <span class="ff-num">{{ priceFormat(detail.profitShareAmt ?? 0) }} USDT</span>
-          </div>
-          <template v-if="detail.status === 1">
-            <div class="kv kv--no-border">
-              <span>{{ _t18('copy_trade_period_pnl') }}</span>
-              <span>{{ _t18('copy_trade_pnl_rate') }}</span>
+          <template v-if="order.status === 1">
+            <div class="pnl-row">
+              <span class="ff-num" :class="pnlClass(orderProfit(order))">{{ formatPnl(orderProfit(order)) }} USDT</span>
+              <span class="ff-num" :class="pnlClass(orderProfit(order))">{{ orderPnlRate(order) }}%</span>
+            </div>
+            <div class="pnl-actual">
+              <span class="label">{{ _t18('copy_trade_net_profit') }}</span>
+              <span class="ff-num" :class="pnlClass(orderNetProfit(order))">{{ formatPnl(orderNetProfit(order)) }} USDT</span>
             </div>
           </template>
         </div>
-        <template v-if="detail.status === 1">
-          <div class="pnl-row">
-            <span class="ff-num" :class="pnlClass(displayProfit)">{{ formatPnl(displayProfit) }} USDT</span>
-            <span class="ff-num" :class="pnlClass(displayProfit)">{{ displayPnlRate }}%</span>
-          </div>
-          <div class="pnl-actual">
-            <span class="label">{{ _t18('copy_trade_net_profit') }}</span>
-            <span class="ff-num" :class="pnlClass(netProfit)">{{ formatPnl(netProfit) }} USDT</span>
-          </div>
-        </template>
+
+        <div v-if="order.records?.length" class="records-section">
+          <h3 class="section-title">{{ _t18('copy_trade_history_positions') }}</h3>
+          <PositionRecordCard
+            v-for="(rec, idx) in order.records"
+            :key="rec.orderNo || idx"
+            :record="rec"
+            :parent-symbol="copyTradeRunningSymbol(order)"
+            closed
+          />
+        </div>
+        <p v-else-if="order.status === 0" class="empty-hint">{{ _t18('copy_trade_no_positions_hint') }}</p>
       </div>
 
-      <div v-if="records.length" class="records-section">
-        <h3 class="section-title">{{ _t18('copy_trade_history_positions') }}</h3>
-        <PositionRecordCard
-          v-for="(rec, idx) in records"
-          :key="rec.orderNo || idx"
-          :record="rec"
-          :parent-symbol="copyTradeRunningSymbol(detail)"
-          closed
-        />
-      </div>
-      <p v-else-if="detail.status === 0" class="empty-hint">{{ _t18('copy_trade_no_positions_hint') }}</p>
-      <Nodata v-else />
-
-      <div v-if="detail.status === 0" class="action-bar">
+      <div v-if="activeTab === 0 && primaryOrder.id && primaryOrder.status === 0" class="action-bar">
         <button type="button" class="append-btn" @click="openAppend">
           {{ _t18('copy_trade_append') }}
         </button>
@@ -102,6 +122,7 @@
         </button>
       </div>
     </template>
+    <Nodata v-else />
 
     <StopConfirmDialog
       v-model:show="stopVisible"
@@ -111,7 +132,7 @@
     />
     <AppendDialog
       v-model:show="appendVisible"
-      :item="detail"
+      :item="primaryOrder"
       :loading="appendLoading"
       @confirm="confirmAppend"
     />
@@ -129,14 +150,29 @@ import AppendDialog from './components/AppendDialog.vue'
 import { _t18 } from '@/utils/public'
 import { getCopyTradeDetail, exitCopyTrade, appendCopyTrade } from '@/api/copyTrade'
 import { priceFormat } from '@/utils/decimal'
-import { formatPnl, pnlClass, calcPnlRate, formatProfitShareRate, copyTradeNetProfit, copyTradeTradeCount, copyTradePnlRate, copyTradePositionSymbol, copyTradeRunningSymbol, formatCopyTradeStrategyStartTime, formatCopyTradeStrategyEndTime } from './utils'
+import {
+  formatPnl,
+  pnlClass,
+  calcPnlRate,
+  formatProfitShareRate,
+  copyTradeNetProfit,
+  copyTradeTradeCount,
+  copyTradePnlRate,
+  copyTradePositionSymbol,
+  copyTradeRunningSymbol,
+  formatCopyTradeStrategyStartTime,
+  formatCopyTradeStrategyEndTime,
+  formatCopyTradeJoinTime,
+  normalizeCopyTradeDetailResponse
+} from './utils'
 import { showToast } from 'vant'
 
 const route = useRoute()
 const i18n = useI18n()
 const t18 = (key, platform = []) => _t18(key, platform, i18n)
-const detail = ref({})
-const records = ref([])
+const activeTab = ref(0)
+const meta = ref({})
+const orders = ref([])
 const pageLoading = ref(true)
 
 const stopVisible = ref(false)
@@ -145,55 +181,60 @@ const stopRows = ref([])
 const appendVisible = ref(false)
 const appendLoading = ref(false)
 
-const statusText = computed(() => {
-  if (detail.value.status === 0) return detail.value.params?.statusText || t18('copy_trade_tab_ongoing')
+const primaryOrder = computed(() => {
+  const anchorId = route.query.id
+  if (anchorId != null) {
+    const matched = orders.value.find((o) => String(o.id) === String(anchorId))
+    if (matched) return matched
+  }
+  return orders.value[0] || {}
+})
+
+function orderStatusText(order) {
+  if (order?.params?.statusText) return order.params.statusText
+  if (order?.status === 0) return t18('copy_trade_tab_ongoing')
   return t18('copy_trade_settled')
-})
+}
 
-const displayProfit = computed(() => {
-  if (detail.value.status === 1) return detail.value.actualProfit
-  return copyTradeNetProfit(detail.value)
-})
+function orderProfit(order) {
+  if (order?.status === 1) return order.actualProfit
+  return copyTradeNetProfit(order)
+}
 
-const netProfit = computed(() => copyTradeNetProfit(detail.value))
+function orderNetProfit(order) {
+  return copyTradeNetProfit(order)
+}
 
-const displayPnlRate = computed(() => {
-  if (detail.value.status === 1) return calcPnlRate(displayProfit.value, detail.value.amount)
-  return copyTradePnlRate(detail.value)
-})
+function orderPnlRate(order) {
+  if (order?.status === 1) return calcPnlRate(orderProfit(order), order.amount)
+  return copyTradePnlRate(order)
+}
 
 function profitShareRateText(rate) {
   return formatProfitShareRate(rate, t18('copy_trade_profit_share_rate_none'))
 }
 
-const cycleRangeText = computed(() => {
-  const start = detail.value?.startTime || '--'
-  const end = detail.value?.endTime || '--'
-  return `${start} ~ ${end}`
-})
-
-const cycleProgressText = computed(() => {
-  const done = copyTradeTradeCount(detail.value)
-  const totalCount = Number(detail.value?.expectedTradeCount ?? 0)
-  if (!totalCount) return `${done}`
-  return `${done}/${totalCount}`
-})
-
-const winLoseText = computed(() => {
-  const win = Number(detail.value?.params?.winCount ?? 0)
-  const lose = Number(detail.value?.params?.loseCount ?? 0)
-  return `${win}/${lose}`
-})
+function switchTab(tab) {
+  if (activeTab.value === tab) return
+  activeTab.value = tab
+  loadDetail()
+}
 
 async function loadDetail() {
   pageLoading.value = true
   try {
-    const res = await getCopyTradeDetail(route.query.id)
-    if (res?.code == 200 && res.data) {
-      detail.value = res.data
-      records.value = res.data.records || []
+    const res = await getCopyTradeDetail(route.query.id, activeTab.value)
+    if (res?.code == 200) {
+      const parsed = normalizeCopyTradeDetailResponse(res)
+      meta.value = parsed.meta
+      orders.value = parsed.orders
+    } else {
+      meta.value = {}
+      orders.value = []
     }
   } catch (e) {
+    meta.value = {}
+    orders.value = []
     void e
   } finally {
     pageLoading.value = false
@@ -207,7 +248,7 @@ function openAppend() {
 async function confirmAppend(amount) {
   appendLoading.value = true
   try {
-    const res = await appendCopyTrade({ id: detail.value.id, amount })
+    const res = await appendCopyTrade({ id: primaryOrder.value.id, amount })
     if (res?.code == 200) {
       showToast(res.msg || t18('copy_trade_append_success'))
       appendVisible.value = false
@@ -223,16 +264,17 @@ async function confirmAppend(amount) {
 }
 
 function openStop() {
+  const order = primaryOrder.value
   stopRows.value = [
-    { label: t18('copy_trade_amount'), value: `${priceFormat(detail.value.amount)} USDT`, cls: '' },
+    { label: t18('copy_trade_amount'), value: `${priceFormat(order.amount)} USDT`, cls: '' },
     {
       label: t18('copy_trade_trade_fee'),
-      value: `${priceFormat(detail.value.tradeFee ?? 0, 2)} USDT`,
+      value: `${priceFormat(order.tradeFee ?? 0, 2)} USDT`,
       cls: ''
     },
     {
       label: t18('copy_trade_profit_share_amt'),
-      value: `${priceFormat(detail.value.profitShareAmt ?? 0)} USDT`,
+      value: `${priceFormat(order.profitShareAmt ?? 0)} USDT`,
       cls: ''
     }
   ]
@@ -242,13 +284,13 @@ function openStop() {
 async function confirmStop() {
   stopLoading.value = true
   try {
-    const res = await exitCopyTrade({ id: detail.value.id })
+    const res = await exitCopyTrade({ id: primaryOrder.value.id })
     if (res?.code == 200) {
       showToast(res.msg || t18('copy_trade_exit_success'))
       stopVisible.value = false
       await loadDetail()
     } else {
-      showToast(res.msg)
+      showToast(res?.msg)
     }
   } catch (e) {
     void e
@@ -268,10 +310,34 @@ $green: #17ac74;
   background: #f6f7fa;
   padding-bottom: 80px;
 }
+.tabs {
+  display: flex;
+  margin: 12px 15px 0;
+  background: #fff;
+  border-radius: 8px;
+  padding: 4px;
+  .tab {
+    flex: 1;
+    height: 36px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    font-size: 14px;
+    color: #666;
+    &.active {
+      background: #2c2c2c;
+      color: #fff;
+      font-weight: 500;
+    }
+  }
+}
 .page-loading {
   display: flex;
   justify-content: center;
   padding: 48px;
+}
+.order-block {
+  margin-bottom: 8px;
 }
 .summary-card {
   margin: 12px 15px;
@@ -368,7 +434,7 @@ $green: #17ac74;
   text-align: center;
   color: #999;
   font-size: 13px;
-  padding: 24px;
+  padding: 0 24px 24px;
 }
 .action-bar {
   position: fixed;
