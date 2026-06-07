@@ -1,7 +1,82 @@
+import dayjs from "dayjs";
+
 export function symbolPair(symbol) {
   const s = String(symbol || "").toUpperCase();
   if (!s) return "--";
   return s.includes("/") ? s : `${s}/USDT`;
+}
+
+function toEpochMs(v) {
+  if (v === null || v === undefined || v === "") return null;
+  const s = typeof v === "string" ? v.trim() : v;
+  if (typeof s === "string" && !/^\d+$/.test(s)) return null;
+  const n = Number(s);
+  if (!Number.isFinite(n) || n <= 0) return null;
+  return n < 1e12 ? n * 1000 : n;
+}
+
+function formatLocalTime(input, fmt = "YYYY-MM-DD HH:mm:ss") {
+  if (input === null || input === undefined || input === "") return "--";
+  const ms = toEpochMs(input);
+  const parsed = ms != null ? ms : input;
+  const d = dayjs(parsed);
+  return d.isValid() ? d.format(fmt) : "--";
+}
+
+function pickCopyTradeMillis(item, key) {
+  if (!item) return null;
+  const params = item.params || {};
+  const raw = params[key] != null ? params[key] : item[key];
+  if (raw == null || raw === "") return null;
+  return raw;
+}
+
+/** 策略开始时间（毫秒时间戳 → 设备本地时间） */
+export function formatCopyTradeStrategyStartTime(item, fmt = "YYYY-MM-DD HH:mm:ss") {
+  const ms = pickCopyTradeMillis(item, "strategyStartTimeMillis");
+  if (ms != null) return formatLocalTime(ms, fmt);
+  return item && item.startTime ? item.startTime : item && item.cycleStartTime ? item.cycleStartTime : "--";
+}
+
+/** 策略结束时间（毫秒时间戳 → 设备本地时间） */
+export function formatCopyTradeStrategyEndTime(item, fmt = "YYYY-MM-DD HH:mm:ss") {
+  const ms = pickCopyTradeMillis(item, "strategyEndTimeMillis");
+  if (ms != null) return formatLocalTime(ms, fmt);
+  return item && item.endTime ? item.endTime : "--";
+}
+
+/** 策略时间范围 */
+export function formatCopyTradeStrategyTimeRange(item, fmt = "YYYY-MM-DD HH:mm:ss") {
+  const start = formatCopyTradeStrategyStartTime(item, fmt);
+  const end = formatCopyTradeStrategyEndTime(item, fmt);
+  if (start === "--" && end === "--") return "--";
+  if (start === "--") return end;
+  if (end === "--") return start;
+  return `${start} ~ ${end}`;
+}
+
+/** 跟单当前持仓币种：优先 params.runningSymbol */
+export function copyTradeRunningSymbol(item) {
+  if (!item) return "";
+  const params = item.params || {};
+  const raw =
+    params.runningSymbol != null
+      ? params.runningSymbol
+      : params.activeSymbol != null
+        ? params.activeSymbol
+        : params.currentCoin != null
+          ? params.currentCoin
+          : item.runningSymbol != null
+            ? item.runningSymbol
+            : "";
+  return String(raw || "").trim();
+}
+
+/** 当前持仓展示 */
+export function copyTradePositionSymbol(item) {
+  const running = copyTradeRunningSymbol(item);
+  if (running) return running.toUpperCase();
+  return "--";
 }
 
 export function normalizeInstitutionListResponse(res) {

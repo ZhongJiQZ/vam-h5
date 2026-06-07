@@ -1,4 +1,5 @@
 import { _mul, _div, priceFormat } from '@/utils/decimal'
+import { formatLocalTime } from '@/utils/time'
 
 /** 盈亏率 % */
 export function calcPnlRate(profit, amount) {
@@ -139,6 +140,54 @@ export function symbolPair(symbol) {
   const s = (symbol || '').toUpperCase()
   if (!s) return '--'
   return s.includes('/') ? s : `${s}/USDT`
+}
+
+/** 跟单当前持仓币种：优先 params.runningSymbol */
+export function copyTradeRunningSymbol(item) {
+  if (!item) return ''
+  const params = item.params || {}
+  const raw =
+    params.runningSymbol ?? params.activeSymbol ?? params.currentCoin ?? item.runningSymbol ?? ''
+  return String(raw || '').trim()
+}
+
+/** 当前持仓展示 */
+export function copyTradePositionSymbol(item) {
+  const running = copyTradeRunningSymbol(item)
+  if (running) return running.toUpperCase()
+  return '--'
+}
+
+function pickCopyTradeMillis(item, key) {
+  if (!item) return null
+  const params = item.params || {}
+  const raw = params[key] ?? item[key]
+  if (raw == null || raw === '') return null
+  return raw
+}
+
+/** 策略开始时间（毫秒时间戳 → 设备本地时间） */
+export function formatCopyTradeStrategyStartTime(item, fmt = 'YYYY-MM-DD HH:mm:ss') {
+  const ms = pickCopyTradeMillis(item, 'strategyStartTimeMillis')
+  if (ms != null) return formatLocalTime(ms, fmt)
+  return item?.startTime || item?.cycleStartTime || '--'
+}
+
+/** 策略结束时间（毫秒时间戳 → 设备本地时间） */
+export function formatCopyTradeStrategyEndTime(item, fmt = 'YYYY-MM-DD HH:mm:ss') {
+  const ms = pickCopyTradeMillis(item, 'strategyEndTimeMillis')
+  if (ms != null) return formatLocalTime(ms, fmt)
+  return item?.endTime || '--'
+}
+
+/** 策略时间范围 */
+export function formatCopyTradeStrategyTimeRange(item, fmt = 'YYYY-MM-DD HH:mm:ss') {
+  const start = formatCopyTradeStrategyStartTime(item, fmt)
+  const end = formatCopyTradeStrategyEndTime(item, fmt)
+  if (start === '--' && end === '--') return '--'
+  if (start === '--') return end
+  if (end === '--') return start
+  return `${start} ~ ${end}`
 }
 
 /** 机构分润比例展示，0 表示不分润 */

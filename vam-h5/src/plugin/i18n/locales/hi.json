@@ -1466,5 +1466,7 @@
   "copy_trade_confirm_join": "Confirm join",
   "copy_trade_amount_all": "All",
   "copy_trade_contract_balance_label": "Contract balance",
-  "copy_trade_amount_range_tip": "Copy amount {min}USDT--{max}USDT"
+  "copy_trade_amount_range_tip": "Copy amount {min}USDT--{max}USDT",
+  "copy_trade_strategy_start_time": "रणनीति प्रारंभ समय",
+  "copy_trade_strategy_end_time": "रणनीति समाप्ति समय"
 }

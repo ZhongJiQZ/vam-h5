@@ -88,12 +88,16 @@
                 <span class="ff-num">{{ priceFormat(item.amount) }} USDT</span>
               </div>
               <div class="kv">
-                <span>{{ _t18('copy_trade_start_time') }}</span>
-                <span>{{ item.startTime || '--' }}</span>
+                <span>{{ _t18('copy_trade_strategy_start_time') }}</span>
+                <span>{{ formatCopyTradeStrategyStartTime(item) }}</span>
+              </div>
+              <div class="kv">
+                <span>{{ _t18('copy_trade_strategy_end_time') }}</span>
+                <span>{{ formatCopyTradeStrategyEndTime(item) }}</span>
               </div>
               <div class="kv">
                 <span>{{ _t18('copy_trade_current_symbol') }}</span>
-                <span>{{ symbolPair(item.symbol) }}</span>
+                <span>{{ copyTradePositionSymbol(item) }}</span>
               </div>
               <div class="kv kv--no-border">
                 <span>{{ _t18('copy_trade_today_trades') }}</span>
@@ -132,6 +136,14 @@
               <div class="kv">
                 <span>{{ _t18('copy_trade_amount') }}</span>
                 <span class="ff-num">{{ priceFormat(item.amount) }} USDT</span>
+              </div>
+              <div class="kv">
+                <span>{{ _t18('copy_trade_strategy_start_time') }}</span>
+                <span>{{ formatCopyTradeStrategyStartTime(item) }}</span>
+              </div>
+              <div class="kv">
+                <span>{{ _t18('copy_trade_strategy_end_time') }}</span>
+                <span>{{ formatCopyTradeStrategyEndTime(item) }}</span>
               </div>
               <div class="kv">
                 <span>{{ _t18('copy_trade_join_time') }}</span>
@@ -180,7 +192,7 @@ import AppendDialog from './components/AppendDialog.vue'
 import { _t18 } from '@/utils/public'
 import { getCopyTradeList, appendCopyTrade, getCopyTradeMyPerformance } from '@/api/copyTrade'
 import { priceFormat, _add } from '@/utils/decimal'
-import { symbolPair, formatPnl, pnlClass, calcPnlRate, copyTradeTradeCount } from './utils'
+import { copyTradePositionSymbol, formatPnl, pnlClass, calcPnlRate, copyTradeTradeCount, formatCopyTradeStrategyStartTime, formatCopyTradeStrategyEndTime } from './utils'
 import dayjs from '@/plugin/dayjs/index'
 import { showToast } from 'vant'
 import { useI18n } from 'vue-i18n'

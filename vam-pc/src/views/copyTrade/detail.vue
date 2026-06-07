@@ -16,9 +16,9 @@
 
       <el-row :gutter="12" class="meta-grid">
         <el-col :span="12">{{ $t("pc_copy_trade_amount") }}：{{ num(detail.amount) }} USDT</el-col>
-        <el-col :span="12">{{ $t("pc_copy_trade_symbol") }}：{{ symbolPair(detail.symbol) }}</el-col>
-        <el-col :span="12">{{ $t("pc_copy_trade_join_time") }}：{{ detail.startTime || "--" }}</el-col>
-        <el-col :span="12">{{ $t("pc_copy_trade_end_time") }}：{{ detail.endTime || "--" }}</el-col>
+        <el-col :span="12">{{ $t("pc_copy_trade_symbol") }}：{{ copyTradePositionSymbol(detail) }}</el-col>
+        <el-col :span="12">{{ $t("pc_copy_trade_strategy_start_time") }}：{{ formatCopyTradeStrategyStartTime(detail) }}</el-col>
+        <el-col :span="12">{{ $t("pc_copy_trade_strategy_end_time") }}：{{ formatCopyTradeStrategyEndTime(detail) }}</el-col>
         <el-col :span="12">{{ $t("pc_copy_trade_cycle_progress") }}：{{ cycleProgress }}</el-col>
         <el-col :span="12">{{ $t("pc_copy_trade_target_profit") }}：{{ num(detail.targetProfit) }} USDT</el-col>
         <el-col :span="12">{{ $t("pc_copy_trade_win_lose") }}：{{ winLose }}</el-col>
@@ -95,7 +95,7 @@
 <script>
 import { getCopyTradeDetail, exitCopyTrade, appendCopyTrade } from "@/api/copyTrade";
 import { mapGetters, mapActions } from "vuex";
-import { copyTradeNetProfit, copyTradeTradeCount, copyTradePnlRate } from "./utils";
+import { copyTradeNetProfit, copyTradeTradeCount, copyTradePnlRate, copyTradePositionSymbol, formatCopyTradeStrategyStartTime, formatCopyTradeStrategyEndTime } from "./utils";
 
 export default {
   name: "CopyTradeDetail",
@@ -204,11 +204,9 @@ export default {
         this.appendLoading = false;
       }
     },
-    symbolPair(symbol) {
-      const s = String(symbol || "").toUpperCase();
-      if (!s) return "--";
-      return s.includes("/") ? s : `${s}/USDT`;
-    },
+    formatCopyTradeStrategyStartTime,
+    formatCopyTradeStrategyEndTime,
+    copyTradePositionSymbol,
     profitShareRateText(rate) {
       const n = Number(rate);
       if (!Number.isFinite(n) || n === 0) return this.$t("pc_copy_trade_profit_share_rate_none");

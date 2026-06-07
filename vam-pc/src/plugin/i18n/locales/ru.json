@@ -1173,5 +1173,7 @@
   "pc_copy_trade_close_time": "Close time",
   "pc_copy_trade_stop_confirm_desc": "After stopping, settlement will be executed when current strategy ends. Continue?",
   "pc_copy_trade_exit_success": "Copy trade exited",
-  "pc_copy_trade_tips": "Tips"
+  "pc_copy_trade_tips": "Tips",
+  "pc_copy_trade_strategy_start_time": "Время запуска стратегии",
+  "pc_copy_trade_strategy_end_time": "Время окончания стратегии"
 }

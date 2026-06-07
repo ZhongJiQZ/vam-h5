@@ -22,9 +22,9 @@
 
         <el-row :gutter="10" class="meta-grid">
           <el-col :span="12">{{ $t("pc_copy_trade_amount") }}：{{ num(item.amount) }} USDT</el-col>
-          <el-col :span="12">{{ $t("pc_copy_trade_symbol") }}：{{ symbolPair(item.symbol) }}</el-col>
-          <el-col :span="12">{{ $t("pc_copy_trade_join_time") }}：{{ item.startTime || "--" }}</el-col>
-          <el-col :span="12">{{ $t("pc_copy_trade_end_time") }}：{{ item.endTime || "--" }}</el-col>
+          <el-col :span="12">{{ $t("pc_copy_trade_symbol") }}：{{ copyTradePositionSymbol(item) }}</el-col>
+          <el-col :span="12">{{ $t("pc_copy_trade_strategy_start_time") }}：{{ formatCopyTradeStrategyStartTime(item) }}</el-col>
+          <el-col :span="12">{{ $t("pc_copy_trade_strategy_end_time") }}：{{ formatCopyTradeStrategyEndTime(item) }}</el-col>
           <el-col :span="12">{{ $t("pc_copy_trade_cycle_progress") }}：{{ cycleProgress(item) }}</el-col>
           <el-col v-if="activeName === '1'" :span="12">{{ $t("pc_copy_trade_current_pnl") }}：<span :class="pnlClass(currentPnl(item))">{{ signNum(currentPnl(item)) }} USDT</span></el-col>
           <el-col v-if="activeName === '1'" :span="12">{{ $t("pc_copy_trade_pnl_rate") }}：<span :class="pnlClass(currentPnl(item))">{{ copyTradePnlRate(item) }}%</span></el-col>
@@ -88,7 +88,7 @@
 <script>
 import { getCopyTradeList, appendCopyTrade } from "@/api/copyTrade";
 import { mapGetters, mapActions } from "vuex";
-import { copyTradeNetProfit, copyTradeTradeCount, copyTradePnlRate } from "./utils";
+import { copyTradeNetProfit, copyTradeTradeCount, copyTradePnlRate, copyTradePositionSymbol, formatCopyTradeStrategyStartTime, formatCopyTradeStrategyEndTime } from "./utils";
 
 export default {
   name: "CopyTradeMy",
@@ -172,11 +172,6 @@ export default {
         this.appendLoading = false;
       }
     },
-    symbolPair(symbol) {
-      const s = String(symbol || "").toUpperCase();
-      if (!s) return "--";
-      return s.includes("/") ? s : `${s}/USDT`;
-    },
     cycleProgress(item) {
       const done = copyTradeTradeCount(item);
       const total = Number(item && item.expectedTradeCount != null ? item.expectedTradeCount : 0);
@@ -185,6 +180,9 @@ export default {
     currentPnl(item) {
       return copyTradeNetProfit(item);
     },
+    formatCopyTradeStrategyStartTime,
+    formatCopyTradeStrategyEndTime,
+    copyTradePositionSymbol,
     copyTradePnlRate,
     pnlClass(v) {
       const n = Number(v);

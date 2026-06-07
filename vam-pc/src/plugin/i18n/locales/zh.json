@@ -1191,5 +1191,7 @@
   "pc_copy_trade_close_time": "平仓时间",
   "pc_copy_trade_stop_confirm_desc": "停止跟单后将等待当前策略结算，是否继续？",
   "pc_copy_trade_exit_success": "已退出跟单",
-  "pc_copy_trade_tips": "提示"
+  "pc_copy_trade_tips": "提示",
+  "pc_copy_trade_strategy_start_time": "策略启动时间",
+  "pc_copy_trade_strategy_end_time": "策略结束时间"
 }

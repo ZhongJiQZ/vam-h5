@@ -22,12 +22,24 @@
             <span class="ff-num">{{ priceFormat(detail.amount) }} USDT</span>
           </div>
           <div class="kv">
+            <span>{{ _t18('copy_trade_strategy_start_time') }}</span>
+            <span>{{ formatCopyTradeStrategyStartTime(detail) }}</span>
+          </div>
+          <div class="kv">
+            <span>{{ _t18('copy_trade_strategy_end_time') }}</span>
+            <span>{{ formatCopyTradeStrategyEndTime(detail) }}</span>
+          </div>
+          <div class="kv">
             <span>{{ _t18('copy_trade_join_time') }}</span>
             <span>{{ detail.startTime || '--' }}</span>
           </div>
           <div v-if="detail.status === 1" class="kv">
             <span>{{ _t18('copy_trade_exit_time') }}</span>
             <span>{{ detail.endTime || '--' }}</span>
+          </div>
+          <div v-if="detail.status === 0" class="kv">
+            <span>{{ _t18('copy_trade_current_symbol') }}</span>
+            <span>{{ copyTradePositionSymbol(detail) }}</span>
           </div>
           <div class="kv">
             <span>{{ _t18('copy_trade_today_trades') }}</span>
@@ -74,7 +86,7 @@
           v-for="(rec, idx) in records"
           :key="rec.orderNo || idx"
           :record="rec"
-          :parent-symbol="detail.symbol"
+          :parent-symbol="copyTradeRunningSymbol(detail)"
           closed
         />
       </div>
@@ -117,7 +129,7 @@ import AppendDialog from './components/AppendDialog.vue'
 import { _t18 } from '@/utils/public'
 import { getCopyTradeDetail, exitCopyTrade, appendCopyTrade } from '@/api/copyTrade'
 import { priceFormat } from '@/utils/decimal'
-import { formatPnl, pnlClass, calcPnlRate, formatProfitShareRate, copyTradeNetProfit, copyTradeTradeCount, copyTradePnlRate } from './utils'
+import { formatPnl, pnlClass, calcPnlRate, formatProfitShareRate, copyTradeNetProfit, copyTradeTradeCount, copyTradePnlRate, copyTradePositionSymbol, copyTradeRunningSymbol, formatCopyTradeStrategyStartTime, formatCopyTradeStrategyEndTime } from './utils'
 import { showToast } from 'vant'
 
 const route = useRoute()
