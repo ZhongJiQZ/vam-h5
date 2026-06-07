@@ -1473,5 +1473,6 @@
   "copy_trade_contract_balance_label": "合约账户余额",
   "copy_trade_amount_range_tip": "跟单金额{min}USDT--{max}USDT",
   "copy_trade_strategy_start_time": "策略启动时间",
-  "copy_trade_strategy_end_time": "策略结束时间"
+  "copy_trade_strategy_end_time": "策略结束时间",
+  "copy_trade_profit_rate_range": "收益率区间"
 }

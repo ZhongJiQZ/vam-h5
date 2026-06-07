@@ -1193,5 +1193,6 @@
   "pc_copy_trade_exit_success": "已退出跟单",
   "pc_copy_trade_tips": "提示",
   "pc_copy_trade_strategy_start_time": "策略启动时间",
-  "pc_copy_trade_strategy_end_time": "策略结束时间"
+  "pc_copy_trade_strategy_end_time": "策略结束时间",
+  "pc_copy_trade_profit_rate_range": "收益率区间"
 }

@@ -1177,5 +1177,6 @@
   "pc_copy_trade_exit_success": "Copy trade exited",
   "pc_copy_trade_tips": "Tips",
   "pc_copy_trade_strategy_start_time": "전략 시작 시간",
-  "pc_copy_trade_strategy_end_time": "전략 종료 시간"
+  "pc_copy_trade_strategy_end_time": "전략 종료 시간",
+  "pc_copy_trade_profit_rate_range": "수익률 구간"
 }

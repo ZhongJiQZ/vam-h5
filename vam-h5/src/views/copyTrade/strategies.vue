@@ -16,7 +16,6 @@
             <div v-else class="avatar avatar--ph" />
             <div class="meta">
               <p class="name">{{ item.strategyName }}</p>
-              <p class="symbol">{{ symbolPair(item.symbol) }}</p>
             </div>
             <span
               class="badge"
@@ -26,8 +25,16 @@
             </span>
           </div>
           <div class="kv">
-            <span>{{ t18('copy_trade_rate') }}</span>
-            <span class="ff-num">{{ item.profitRate }}% / {{ item.cycleHours }}h</span>
+            <span>{{ t18('copy_trade_strategy_start_time') }}</span>
+            <span>{{ formatCopyTradeStrategyStartTime(item) }}</span>
+          </div>
+          <div class="kv">
+            <span>{{ t18('copy_trade_strategy_end_time') }}</span>
+            <span>{{ formatCopyTradeStrategyEndTime(item) }}</span>
+          </div>
+          <div class="kv">
+            <span>{{ t18('copy_trade_profit_rate_range') }}</span>
+            <span class="ff-num">{{ formatStrategyProfitRateRange(item) }}</span>
           </div>
           <div class="kv">
             <span>{{ t18('copy_trade_amount_range') }}</span>
@@ -47,7 +54,12 @@ import { useI18n } from 'vue-i18n'
 import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import { _t18 } from '@/utils/public'
 import { getCopyTradeInstitutionStrategyList } from '@/api/copyTrade'
-import { symbolPair, isStrategyFollowing } from './utils'
+import {
+  formatCopyTradeStrategyStartTime,
+  formatCopyTradeStrategyEndTime,
+  formatStrategyProfitRateRange,
+  isStrategyFollowing
+} from './utils'
 import { showToast } from 'vant'
 
 const route = useRoute()
@@ -145,12 +157,6 @@ $green: #17ac74;
   margin: 0 0 4px;
   font-size: 15px;
   font-weight: 700;
-}
-
-.symbol {
-  margin: 0;
-  font-size: 12px;
-  color: #6b7280;
 }
 
 .badge {

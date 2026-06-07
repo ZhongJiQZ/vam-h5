@@ -1190,5 +1190,6 @@
   "pc_copy_trade_exit_success": "Copy trade exited",
   "pc_copy_trade_tips": "Tips",
   "pc_copy_trade_strategy_start_time": "Strategy Start Time",
-  "pc_copy_trade_strategy_end_time": "Strategy End Time"
+  "pc_copy_trade_strategy_end_time": "Strategy End Time",
+  "pc_copy_trade_profit_rate_range": "Return Rate Range"
 }

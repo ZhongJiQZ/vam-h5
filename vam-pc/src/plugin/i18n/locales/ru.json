@@ -1175,5 +1175,6 @@
   "pc_copy_trade_exit_success": "Copy trade exited",
   "pc_copy_trade_tips": "Tips",
   "pc_copy_trade_strategy_start_time": "Время запуска стратегии",
-  "pc_copy_trade_strategy_end_time": "Время окончания стратегии"
+  "pc_copy_trade_strategy_end_time": "Время окончания стратегии",
+  "pc_copy_trade_profit_rate_range": "Диапазон доходности"
 }

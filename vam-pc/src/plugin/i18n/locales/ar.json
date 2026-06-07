@@ -1045,5 +1045,6 @@
   "pc_copy_trade_exit_success": "Copy trade exited",
   "pc_copy_trade_tips": "Tips",
   "pc_copy_trade_strategy_start_time": "وقت بدء الاستراتيجية",
-  "pc_copy_trade_strategy_end_time": "وقت انتهاء الاستراتيجية"
+  "pc_copy_trade_strategy_end_time": "وقت انتهاء الاستراتيجية",
+  "pc_copy_trade_profit_rate_range": "نطاق معدل العائد"
 }

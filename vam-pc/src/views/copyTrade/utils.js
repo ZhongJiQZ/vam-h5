@@ -39,10 +39,27 @@ function pickCopyTradeMillis(item, key) {
   return raw;
 }
 
+function formatStrategyExecuteTime(raw, dailyTimeEnabled, fmt = "YYYY-MM-DD HH:mm") {
+  if (raw == null || raw === "") return "--";
+  const s = String(raw);
+  const useDaily =
+    (dailyTimeEnabled === 1 || dailyTimeEnabled === true) &&
+    (s.startsWith("2000-01-01") || s.includes("2000-01-01"));
+  if (useDaily) {
+    const d = dayjs(raw);
+    return d.isValid() ? d.format("HH:mm") : "--";
+  }
+  const formatted = formatLocalTime(raw, fmt);
+  return formatted !== "--" ? formatted : s;
+}
+
 /** 策略开始时间（毫秒时间戳 → 设备本地时间） */
 export function formatCopyTradeStrategyStartTime(item, fmt = "YYYY-MM-DD HH:mm") {
   const ms = pickCopyTradeMillis(item, "strategyStartTimeMillis");
   if (ms != null) return formatLocalTime(ms, fmt);
+  if (item && item.executeStartTime) {
+    return formatStrategyExecuteTime(item.executeStartTime, item.dailyTimeEnabled, fmt);
+  }
   const fallback = item && item.startTime ? item.startTime : item && item.cycleStartTime ? item.cycleStartTime : "";
   if (!fallback) return "--";
   const formatted = formatLocalTime(fallback, fmt);
@@ -53,10 +70,28 @@ export function formatCopyTradeStrategyStartTime(item, fmt = "YYYY-MM-DD HH:mm")
 export function formatCopyTradeStrategyEndTime(item, fmt = "YYYY-MM-DD HH:mm") {
   const ms = pickCopyTradeMillis(item, "strategyEndTimeMillis");
   if (ms != null) return formatLocalTime(ms, fmt);
+  if (item && item.executeEndTime) {
+    return formatStrategyExecuteTime(item.executeEndTime, item.dailyTimeEnabled, fmt);
+  }
   const fallback = item && item.endTime ? item.endTime : "";
   if (!fallback) return "--";
   const formatted = formatLocalTime(fallback, fmt);
   return formatted !== "--" ? formatted : fallback;
+}
+
+/** 策略收益率区间 */
+export function formatStrategyProfitRateRange(item) {
+  if (!item) return "--";
+  const min = item.profitRateMin != null ? item.profitRateMin : item.profitRate;
+  const max = item.profitRateMax != null ? item.profitRateMax : item.profitRate;
+  const minN = Number(min);
+  const maxN = Number(max);
+  const fmt = (n) => (Number.isFinite(n) ? `${n.toFixed(2)}%` : "--");
+  if (!Number.isFinite(minN) && !Number.isFinite(maxN)) return "--";
+  if (!Number.isFinite(minN)) return fmt(maxN);
+  if (!Number.isFinite(maxN)) return fmt(minN);
+  if (minN === maxN) return fmt(minN);
+  return `${minN.toFixed(2)}% ~ ${maxN.toFixed(2)}%`;
 }
 
 /** 加入时间（毫秒时间戳 / ISO → 设备本地时间） */

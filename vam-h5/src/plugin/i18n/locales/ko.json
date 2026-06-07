@@ -1470,5 +1470,6 @@
   "copy_trade_contract_balance_label": "Contract balance",
   "copy_trade_amount_range_tip": "Copy amount {min}USDT--{max}USDT",
   "copy_trade_strategy_start_time": "전략 시작 시간",
-  "copy_trade_strategy_end_time": "전략 종료 시간"
+  "copy_trade_strategy_end_time": "전략 종료 시간",
+  "copy_trade_profit_rate_range": "수익률 구간"
 }

@@ -1473,5 +1473,6 @@
   "copy_trade_contract_balance_label": "合約賬戶餘額",
   "copy_trade_amount_range_tip": "跟單金額{min}USDT--{max}USDT",
   "copy_trade_strategy_start_time": "策略啟動時間",
-  "copy_trade_strategy_end_time": "策略結束時間"
+  "copy_trade_strategy_end_time": "策略結束時間",
+  "copy_trade_profit_rate_range": "收益率區間"
 }

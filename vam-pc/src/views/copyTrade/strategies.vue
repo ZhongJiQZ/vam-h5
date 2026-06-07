@@ -10,11 +10,12 @@
             <div v-else class="avatar avatar-empty" />
             <div>
               <p class="name">{{ item.strategyName }}</p>
-              <p class="symbol">{{ symbolPair(item.symbol) }}</p>
             </div>
             <el-tag size="mini">{{ item.followStatusText || $t("pc_copy_trade_follow_now") }}</el-tag>
           </div>
-          <p>{{ $t("pc_copy_trade_rate") }}: {{ item.profitRate }}% / {{ item.cycleHours }}h</p>
+          <p>{{ $t("pc_copy_trade_strategy_start_time") }}: {{ formatCopyTradeStrategyStartTime(item) }}</p>
+          <p>{{ $t("pc_copy_trade_strategy_end_time") }}: {{ formatCopyTradeStrategyEndTime(item) }}</p>
+          <p>{{ $t("pc_copy_trade_profit_rate_range") }}: {{ formatStrategyProfitRateRange(item) }}</p>
           <p>{{ $t("pc_copy_trade_range") }}: {{ item.minAmount }} ~ {{ item.maxAmount }} USDT</p>
         </div>
       </el-col>
@@ -25,7 +26,12 @@
 
 <script>
 import { getCopyTradeInstitutionStrategyList } from "@/api/copyTrade";
-import { symbolPair, isStrategyFollowing } from "./utils";
+import {
+  formatCopyTradeStrategyStartTime,
+  formatCopyTradeStrategyEndTime,
+  formatStrategyProfitRateRange,
+  isStrategyFollowing
+} from "./utils";
 
 export default {
   name: "CopyTradeStrategies",
@@ -36,7 +42,9 @@ export default {
     this.loadData();
   },
   methods: {
-    symbolPair,
+    formatCopyTradeStrategyStartTime,
+    formatCopyTradeStrategyEndTime,
+    formatStrategyProfitRateRange,
     async loadData() {
       const institutionId = this.$route.query.institutionId;
       if (!institutionId) return;
