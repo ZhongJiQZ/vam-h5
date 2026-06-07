@@ -49,19 +49,23 @@
             <span>{{ _t18('copy_trade_profit_share_amt') }}</span>
             <span class="ff-num">{{ priceFormat(detail.profitShareAmt ?? 0) }} USDT</span>
           </div>
-          <div class="kv kv--no-border">
-            <span>{{ _t18('copy_trade_period_pnl') }}</span>
-            <span>{{ _t18('copy_trade_pnl_rate') }}</span>
+          <template v-if="detail.status === 1">
+            <div class="kv kv--no-border">
+              <span>{{ _t18('copy_trade_period_pnl') }}</span>
+              <span>{{ _t18('copy_trade_pnl_rate') }}</span>
+            </div>
+          </template>
+        </div>
+        <template v-if="detail.status === 1">
+          <div class="pnl-row">
+            <span class="ff-num" :class="pnlClass(displayProfit)">{{ formatPnl(displayProfit) }} USDT</span>
+            <span class="ff-num" :class="pnlClass(displayProfit)">{{ displayPnlRate }}%</span>
           </div>
-        </div>
-        <div class="pnl-row">
-          <span class="ff-num" :class="pnlClass(displayProfit)">{{ formatPnl(displayProfit) }} USDT</span>
-          <span class="ff-num" :class="pnlClass(displayProfit)">{{ displayPnlRate }}%</span>
-        </div>
-        <div class="pnl-actual">
-          <span class="label">{{ _t18('copy_trade_net_profit') }}</span>
-          <span class="ff-num" :class="pnlClass(netProfit)">{{ formatPnl(netProfit) }} USDT</span>
-        </div>
+          <div class="pnl-actual">
+            <span class="label">{{ _t18('copy_trade_net_profit') }}</span>
+            <span class="ff-num" :class="pnlClass(netProfit)">{{ formatPnl(netProfit) }} USDT</span>
+          </div>
+        </template>
       </div>
 
       <div v-if="records.length" class="records-section">
@@ -207,11 +211,8 @@ async function confirmAppend(amount) {
 }
 
 function openStop() {
-  const pnl = copyTradeNetProfit(detail.value)
   stopRows.value = [
     { label: t18('copy_trade_amount'), value: `${priceFormat(detail.value.amount)} USDT`, cls: '' },
-    { label: t18('copy_trade_current_pnl'), value: `${formatPnl(pnl)} USDT`, cls: pnlClass(pnl) },
-    { label: t18('copy_trade_pnl_rate'), value: `${copyTradePnlRate(detail.value)}%`, cls: pnlClass(pnl) },
     {
       label: t18('copy_trade_trade_fee'),
       value: `${priceFormat(detail.value.tradeFee ?? 0)} USDT`,
@@ -221,11 +222,6 @@ function openStop() {
       label: t18('copy_trade_profit_share_amt'),
       value: `${priceFormat(detail.value.profitShareAmt ?? 0)} USDT`,
       cls: ''
-    },
-    {
-      label: t18('copy_trade_net_profit'),
-      value: `${formatPnl(netProfit.value)} USDT`,
-      cls: pnlClass(netProfit.value)
     }
   ]
   stopVisible.value = true

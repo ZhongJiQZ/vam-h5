@@ -95,18 +95,10 @@
                 <span>{{ _t18('copy_trade_current_symbol') }}</span>
                 <span>{{ symbolPair(item.symbol) }}</span>
               </div>
-              <div class="kv">
+              <div class="kv kv--no-border">
                 <span>{{ _t18('copy_trade_today_trades') }}</span>
                 <span class="ff-num">{{ copyTradeTradeCount(item) }}</span>
               </div>
-              <div class="kv kv--no-border">
-                <span>{{ _t18('copy_trade_current_pnl') }}</span>
-                <span>{{ _t18('copy_trade_pnl_rate') }}</span>
-              </div>
-            </div>
-            <div class="pnl-row">
-              <span class="ff-num" :class="pnlClass(currentPnl(item))">{{ formatPnl(currentPnl(item)) }} USDT</span>
-              <span class="ff-num" :class="pnlClass(currentPnl(item))">{{ copyTradePnlRate(item) }}%</span>
             </div>
             <div class="card-actions" @click.stop>
               <button type="button" class="append-btn" @click="openAppend(item)">
@@ -188,7 +180,7 @@ import AppendDialog from './components/AppendDialog.vue'
 import { _t18 } from '@/utils/public'
 import { getCopyTradeList, appendCopyTrade, getCopyTradeMyPerformance } from '@/api/copyTrade'
 import { priceFormat, _add } from '@/utils/decimal'
-import { symbolPair, formatPnl, pnlClass, calcPnlRate, copyTradeNetProfit, copyTradeTradeCount, copyTradePnlRate } from './utils'
+import { symbolPair, formatPnl, pnlClass, calcPnlRate, copyTradeTradeCount } from './utils'
 import dayjs from '@/plugin/dayjs/index'
 import { showToast } from 'vant'
 import { useI18n } from 'vue-i18n'
@@ -212,10 +204,6 @@ const shareItem = ref({})
 const appendVisible = ref(false)
 const appendItem = ref({})
 const appendLoading = ref(false)
-
-function currentPnl(item) {
-  return copyTradeNetProfit(item)
-}
 
 function endedPnl(item) {
   return item?.params?.totalSettledProfit ?? item?.actualProfit ?? item?.params?.netProfit ?? 0

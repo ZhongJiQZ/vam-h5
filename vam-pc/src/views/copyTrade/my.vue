@@ -26,8 +26,8 @@
           <el-col :span="12">{{ $t("pc_copy_trade_join_time") }}：{{ item.startTime || "--" }}</el-col>
           <el-col :span="12">{{ $t("pc_copy_trade_end_time") }}：{{ item.endTime || "--" }}</el-col>
           <el-col :span="12">{{ $t("pc_copy_trade_cycle_progress") }}：{{ cycleProgress(item) }}</el-col>
-          <el-col :span="12">{{ $t("pc_copy_trade_current_pnl") }}：<span :class="pnlClass(currentPnl(item))">{{ signNum(currentPnl(item)) }} USDT</span></el-col>
-          <el-col v-if="activeName === '0'" :span="12">{{ $t("pc_copy_trade_pnl_rate") }}：<span :class="pnlClass(currentPnl(item))">{{ copyTradePnlRate(item) }}%</span></el-col>
+          <el-col v-if="activeName === '1'" :span="12">{{ $t("pc_copy_trade_current_pnl") }}：<span :class="pnlClass(currentPnl(item))">{{ signNum(currentPnl(item)) }} USDT</span></el-col>
+          <el-col v-if="activeName === '1'" :span="12">{{ $t("pc_copy_trade_pnl_rate") }}：<span :class="pnlClass(currentPnl(item))">{{ copyTradePnlRate(item) }}%</span></el-col>
         </el-row>
 
         <div class="card-foot" @click.stop>

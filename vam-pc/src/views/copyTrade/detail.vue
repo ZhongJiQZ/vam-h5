@@ -22,13 +22,13 @@
         <el-col :span="12">{{ $t("pc_copy_trade_cycle_progress") }}：{{ cycleProgress }}</el-col>
         <el-col :span="12">{{ $t("pc_copy_trade_target_profit") }}：{{ num(detail.targetProfit) }} USDT</el-col>
         <el-col :span="12">{{ $t("pc_copy_trade_win_lose") }}：{{ winLose }}</el-col>
-        <el-col :span="12">{{ $t("pc_copy_trade_profit_loss_breakdown") }}：+{{ num(detail.params && detail.params.totalProfitAmt) }}/-{{ num(detail.params && detail.params.totalLossAmt) }}</el-col>
+        <el-col v-if="detail.status === 1" :span="12">{{ $t("pc_copy_trade_profit_loss_breakdown") }}：+{{ num(detail.params && detail.params.totalProfitAmt) }}/-{{ num(detail.params && detail.params.totalLossAmt) }}</el-col>
         <el-col :span="12">{{ $t("pc_copy_trade_profit_share_rate") }}：{{ profitShareRateText(detail.profitShareRate) }}</el-col>
         <el-col :span="12">{{ $t("pc_copy_trade_trade_fee") }}：{{ num(detail.tradeFee) }} USDT</el-col>
         <el-col :span="12">{{ $t("pc_copy_trade_profit_share_amt") }}：{{ num(detail.profitShareAmt) }} USDT</el-col>
       </el-row>
 
-      <div class="pnl-box">
+      <div v-if="detail.status === 1" class="pnl-box">
         <div>{{ $t("pc_copy_trade_current_pnl") }}：<span :class="pnlClass(displayProfit)">{{ signNum(displayProfit) }} USDT</span></div>
         <div>{{ $t("pc_copy_trade_pnl_rate") }}：<span :class="pnlClass(displayProfit)">{{ pnlRate }}%</span></div>
         <div>{{ $t("pc_copy_trade_net_profit") }}：<span :class="pnlClass(netProfit)">{{ signNum(netProfit) }} USDT</span></div>
