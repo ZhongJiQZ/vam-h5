@@ -55,7 +55,7 @@
           </div>
           <div class="kv">
             <span>{{ _t18('copy_trade_trade_fee') }}</span>
-            <span class="ff-num">{{ priceFormat(detail.tradeFee ?? 0) }} USDT</span>
+            <span class="ff-num">{{ priceFormat(detail.tradeFee ?? 0, 2) }} USDT</span>
           </div>
           <div class="kv">
             <span>{{ _t18('copy_trade_profit_share_amt') }}</span>
@@ -227,7 +227,7 @@ function openStop() {
     { label: t18('copy_trade_amount'), value: `${priceFormat(detail.value.amount)} USDT`, cls: '' },
     {
       label: t18('copy_trade_trade_fee'),
-      value: `${priceFormat(detail.value.tradeFee ?? 0)} USDT`,
+      value: `${priceFormat(detail.value.tradeFee ?? 0, 2)} USDT`,
       cls: ''
     },
     {
