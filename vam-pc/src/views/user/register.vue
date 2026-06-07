@@ -44,7 +44,7 @@
               {{ $t("regis.emailRegis") }}
             </li>
 
-            <li class="fit-tc-tertiary hover-text title" :class="{ 'active-text': loginType == 'phone' }"
+            <li v-if="enablePhoneRegister" class="fit-tc-tertiary hover-text title" :class="{ 'active-text': loginType == 'phone' }"
               @click="setFormConfigFun('phone')">
               {{ $t("regis.phoneRegis") }}
             </li>
@@ -69,7 +69,7 @@
 
 
               <!-- email/phone code -->
-              <el-form-item prop="code" v-if="loginType == 'email' || loginType == 'phone'">
+              <el-form-item prop="code" v-if="loginType == 'email' || (enablePhoneRegister && loginType == 'phone')">
                 <el-input class="contains-icon" :placeholder="$t('regisAndLogin.plsInputCode')"
                   prefix-icon="el-icon-lock" v-model.trim="formData.code">
                   <template slot="suffix">
@@ -86,8 +86,8 @@
                 </el-input>
               </el-form-item>
               <!-- phone -->
-              <el-form-item prop="phone">
-                <el-select v-model="value" :placeholder="$t('regisAndLogin.plsSelect')">
+              <el-form-item v-if="enablePhoneRegister && loginType == 'phone'" prop="phone">
+                <el-select v-model="value" :placeholder="$t('regisAndLogin.plsSelect')" @change="changeCode">
                   <el-option-group v-for="item in areaData" :key="item.letter" :label="item.letter">
                     <el-option v-for="dataItem in item.data" :key="dataItem.phoneCode"
                       :label="`+ ${dataItem.phoneCode}`" :value="dataItem.phoneCode" />
@@ -163,6 +163,7 @@ import {
 import config from "@/config/index";
 import { filterAlphanumeric } from "@/utils/public";
 import { validateMobileByAreaCode } from "@/utils/phoneValidate";
+import { resolvePhoneCodeByLanguage } from "@/utils/languageCountry";
 
 export default {
   components: { PhoneAreaCode },
@@ -175,6 +176,7 @@ export default {
       loginStep: 1,
       conifgData: {},
       loginType: "account",
+      enablePhoneRegister: false,
       isPhoneCode: false,
 
       formData: {
@@ -193,7 +195,14 @@ export default {
           { required: true, message: this.$t("regisAndLogin.plsInputUserName"), trigger: ["blur", "change"] },
         ],
         phone: [
-          { required: true, message: this.$t("regisAndLogin.plsInputPhoneNum"), trigger: ["blur", "change"] },
+          {
+            validator: (rule, value, cb) => {
+              if (!this.enablePhoneRegister || this.loginType !== "phone") return cb();
+              if (!value) return cb(new Error(this.$t("regisAndLogin.plsInputPhoneNum")));
+              cb();
+            },
+            trigger: ["blur", "change"],
+          },
         ],
         loginPassword: [
           { min: 6, message: this.$t("regisAndLogin.plsInputPsw"), trigger: ["blur", "change"] },
@@ -236,7 +245,7 @@ export default {
                 if (!value) return cb(new Error(this.$t("regisAndLogin.plsInputCode")));
                 return cb();
               }
-              if (this.loginType === "email" || this.loginType === "phone") {
+              if (this.loginType === "email" || (this.enablePhoneRegister && this.loginType === "phone")) {
                 if (!value) return cb(new Error(this.$t("regisAndLogin.plsInputCode")));
                 return cb();
               }
@@ -268,7 +277,8 @@ export default {
 
       verCodeUrl: "",
       timestamp: "",
-      value: "1",
+      value: resolvePhoneCodeByLanguage(localStorage.getItem("lang") || "en"),
+      isPhoneCodeTouched: false,
       areaData: [],
 
       langConf: [
@@ -299,7 +309,10 @@ export default {
   },
 
   created() {
-    this.getAreaDataFun();
+    this.setDefaultPhoneCode();
+    if (this.enablePhoneRegister) {
+      this.getAreaDataFun();
+    }
   },
 
   methods: {
@@ -319,15 +332,28 @@ export default {
     async getAreaDataFun() {
       const dataRes = await getCountryCode();
       this.areaData = dataRes?.data?.data || [];
+      this.setDefaultPhoneCode();
     },
 
     switchLang(item) {
       this.$i18n.locale = item.dictValue;
       localStorage.setItem("lang", item.dictValue);
       this.SET_LANGUAGE({ language: item.dictValue, languageName: item.remark });
+      this.setDefaultPhoneCode();
+    },
+
+    setDefaultPhoneCode() {
+      if (this.isPhoneCodeTouched) return;
+
+      this.value = resolvePhoneCodeByLanguage(
+        this.$i18n.locale || this.language,
+        this.areaData,
+        this.value
+      );
     },
 
     changeCode(e) {
+      this.isPhoneCodeTouched = true;
       this.value = e;
     },
 
@@ -350,6 +376,7 @@ export default {
     // ✅ 注册发送验证码：email/phone 都必须先验证对应字段
     sendCode(type) {
       if (this.codeTime > 0 || this.codeLoading) return;
+      if (type === "phone" && !this.enablePhoneRegister) return;
       if (type !== "email" && type !== "phone") return;
 
       const field = type === "email" ? "email" : "phone";
@@ -428,6 +455,7 @@ export default {
 
     // ✅ 切换 tab：不要删字段，不然 validateField 会找不到
     setFormConfigFun(type) {
+      if (type === "phone" && !this.enablePhoneRegister) return;
       this.loginType = type;
 
       // 保留完整结构，避免 rules 校验字段丢失
@@ -473,12 +501,16 @@ export default {
         payload.signType =
           this.loginType == "account" ? 3 : this.loginType == "email" ? 1 : 2;
 
-        const mobileCheck = validateMobileByAreaCode(this.value, this.formData.phone);
-        if (!mobileCheck.ok) {
-          this.$message.error(this.$t(mobileCheck.key));
-          return;
+        if (this.enablePhoneRegister && this.loginType === "phone") {
+          const mobileCheck = validateMobileByAreaCode(this.value, this.formData.phone);
+          if (!mobileCheck.ok) {
+            this.$message.error(this.$t(mobileCheck.key));
+            return;
+          }
+          payload.phone = `${this.value}${mobileCheck.digits}`;
+        } else {
+          delete payload.phone;
         }
-        payload.phone = `${this.value}${mobileCheck.digits}`;
 
         this.loading = true;
 
