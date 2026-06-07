@@ -57,10 +57,10 @@ import AreaCode from './../areaCode.vue'
 import {
   digitsOnlyMobile,
   isIndonesiaAreaCode,
-  INDONESIA_AREA_CODE
 } from '@/utils/phoneValidate'
 import { useRoute } from 'vue-router'
 import { computed } from 'vue'
+import { getCurrentLanguagePhoneCode } from '@/utils/languageCountry'
 
 const route = useRoute()
 
@@ -70,11 +70,8 @@ const formData3 = ref({
   password: '',
   password2: '',
   invitCode: route.query.invite_code,
-  areaCode: INDONESIA_AREA_CODE
+  areaCode: getCurrentLanguagePhoneCode()
 })
-if (['bitbyex'].includes(__config._APP_ENV)) {
-  formData3.value.areaCode = '1'
-}
 
 const mobileMaxLength = computed(() =>
   isIndonesiaAreaCode(formData3.value.areaCode) ? 13 : 20

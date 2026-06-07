@@ -13,9 +13,12 @@ import { showToast } from 'vant'
 import { _t18 } from '@/utils/public'
 import { useToast } from '@/hook/useToast'
 import cameraIcon from '@/assets/images/camera.png'
+import { useMainStore } from '@/store/index.js'
+import { getCurrentLanguageCountryKey } from '@/utils/languageCountry'
 
 const { _toast } = useToast()
 const userStore = useUserStore()
+const mainStore = useMainStore()
 userStore.getUserInfo()
 
 // 用户信息
@@ -47,6 +50,7 @@ const onSelect = (item) => {
  * 当前选中
  */
 const nationName = ref('')
+const isNationTouched = ref(false)
 /**
  * 显示国家弹窗
  */
@@ -94,6 +98,7 @@ watch(showNation, (v) => {
  */
 const onSelectNation = (item) => {
   showNation.value = false
+  isNationTouched.value = true
   nationName.value = item.title
 }
 
@@ -209,14 +214,23 @@ const reSubmit = () => {
  * 初始化
  */
 const init = () => {
+  if (isNationTouched.value) return
+
   if (['aams'].includes(__config._APP_ENV)) {
     nationName.value = 'nation_United States of America'
   } else if (['das'].includes(__config._APP_ENV)) {
     nationName.value = 'nation_Singapore'
   } else {
-    nationName.value = 'nation_Japan'
+    nationName.value = getCurrentLanguageCountryKey()
   }
 }
+
+watch(
+  () => mainStore.language,
+  () => {
+    init()
+  }
+)
 
 onMounted(() => {
   init()

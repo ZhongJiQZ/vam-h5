@@ -94,6 +94,7 @@ import AreaCode from './../areaCode.vue'
 import { _t18 } from '@/utils/public'
 import { useMainStore } from '@/store/index.js'
 import { useRoute } from 'vue-router'
+import { getCurrentLanguagePhoneCode } from '@/utils/languageCountry'
 
 const route = useRoute()
 const mainStore = useMainStore()
@@ -141,7 +142,7 @@ const formData1 = ref({
   invitCode: filterAlphanumeric(route.query.invite_code), //邀请码
   code: '', //验证码
   mobile: '', //手机号
-  areaCode: '1' //区号
+  areaCode: getCurrentLanguagePhoneCode() //区号
 })
 /**
  * 图形验证码

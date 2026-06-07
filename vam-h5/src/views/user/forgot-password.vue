@@ -74,7 +74,7 @@ import { useToast } from '@/hook/useToast'
 const { _toast } = useToast()
 import { _t18 } from '@/utils/public'
 import logoPng from '@/assets/images/login/logo.png'
-import langPng from '@/assets/images/login/lang.png'
+import langPng from '@/assets/images/language.png'
 import closePng from '@/assets/images/login/close.png'
 
 const showk = ref(false)

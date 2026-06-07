@@ -82,6 +82,7 @@ import { emailCode } from '@/api/user'
 import { showToast } from 'vant'
 import { useToast } from '@/hook/useToast'
 import AreaCode from './../areaCode.vue'
+import { getCurrentLanguagePhoneCode } from '@/utils/languageCountry'
 const { _toast } = useToast()
 import { useRoute } from 'vue-router'
 const route = useRoute()
@@ -96,7 +97,7 @@ const formData2 = ref({
   invitCode: route.query.invite_code, //邀请码
   code: '', //验证码
   mobile: '', // 手机号
-  areaCode: '1' //区号
+  areaCode: getCurrentLanguagePhoneCode() //区号
 })
 const requirePass = ref(false)
 const inputPass = () => {
