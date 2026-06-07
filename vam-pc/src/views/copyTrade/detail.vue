@@ -188,8 +188,6 @@ export default {
       return String(order.id) === String(this.primaryOrder.id);
     },
     orderStatusText(order) {
-      if (this.meta.statusFilterText) return this.meta.statusFilterText;
-      if (order.viewStatusText) return order.viewStatusText;
       if (order.params && order.params.statusText) return order.params.statusText;
       if (order.status === 0) return this.$t("pc_copy_trade_tab_ongoing");
       return this.$t("pc_copy_trade_tab_ended");

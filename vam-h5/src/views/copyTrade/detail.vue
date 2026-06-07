@@ -191,8 +191,6 @@ const primaryOrder = computed(() => {
 })
 
 function orderStatusText(order) {
-  if (meta.value.statusFilterText) return meta.value.statusFilterText
-  if (order?.viewStatusText) return order.viewStatusText
   if (order?.params?.statusText) return order.params.statusText
   if (order?.status === 0) return t18('copy_trade_tab_ongoing')
   return t18('copy_trade_settled')

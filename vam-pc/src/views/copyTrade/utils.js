@@ -150,15 +150,13 @@ export function normalizeCopyTradeDetailResponse(res) {
         strategy.strategyEndTimeMillis != null
           ? strategy.strategyEndTimeMillis
           : payload.order.strategyEndTimeMillis,
-      viewStatus: payload.status,
-      viewStatusText: payload.statusText,
     };
     return {
       meta: {
         strategyId: strategy.strategyId,
         strategyName: strategy.strategyName,
-        statusFilter: payload.status,
-        statusFilterText: payload.statusText,
+        recordsStatusFilter: payload.status,
+        recordsStatusFilterText: payload.statusText,
         institution,
         strategy,
       },
@@ -287,13 +285,13 @@ export function patchInstitutionSubscribed(list, institutionId, patch = {}) {
   });
 }
 
-/** 策略列表：是否已跟单（跟单中） */
+/** 策略列表：是否已跟单（等待启动 / 跟单中，followStatus 3/4） */
 export function isStrategyFollowing(item) {
   if (!item) return false;
   const status = Number(item.followStatus);
-  if (status === 1) return true;
+  if (status === 3 || status === 4) return true;
   const text = String(item.followStatusText || item.statusText || "");
-  return /已跟单|跟单中/i.test(text);
+  return /跟单中|等待启动|已跟单/i.test(text);
 }
 
 function toCoinArray(maybeList) {
