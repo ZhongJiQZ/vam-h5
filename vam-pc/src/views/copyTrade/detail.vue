@@ -54,11 +54,12 @@
         <div class="panel" v-if="order.records && order.records.length">
           <h4>{{ $t("pc_copy_trade_history_positions") }}</h4>
           <el-table :data="order.records" border>
-            <el-table-column :label="$t('pc_copy_trade_direction')" width="90">
+            <el-table-column :label="$t('pc_copy_trade_direction')" width="120">
               <template slot-scope="scope">
                 <el-tag size="mini" :type="scope.row.type === 0 ? 'success' : 'danger'">
                   {{ scope.row.type === 0 ? $t("pc_copy_trade_long") : $t("pc_copy_trade_short") }}
                 </el-tag>
+                <span v-if="recordLeverageText(scope.row)" class="leverage-tag">{{ recordLeverageText(scope.row) }}</span>
               </template>
             </el-table-column>
             <el-table-column prop="openPrice" :label="$t('pc_copy_trade_open_price')" min-width="110" />
@@ -174,6 +175,8 @@ export default {
       return String(order.id) === String(this.primaryOrder.id);
     },
     orderStatusText(order) {
+      if (this.meta.statusFilterText) return this.meta.statusFilterText;
+      if (order.viewStatusText) return order.viewStatusText;
       if (order.params && order.params.statusText) return order.params.statusText;
       if (order.status === 0) return this.$t("pc_copy_trade_tab_ongoing");
       return this.$t("pc_copy_trade_tab_ended");
@@ -270,6 +273,12 @@ export default {
       const p = n > 0 ? "+" : "";
       return `${p}${n.toFixed(2)}`;
     },
+    recordLeverageText(record) {
+      const n = Number(record && record.leverage);
+      if (!Number.isFinite(n) || n <= 0) return "";
+      const val = Number.isInteger(n) ? n : n.toFixed(2);
+      return `${val}x`;
+    },
   },
 };
 </script>
@@ -335,6 +344,11 @@ h4 {
 }
 .down {
   color: #f04438;
+}
+.leverage-tag {
+  margin-left: 6px;
+  font-size: 12px;
+  color: #667085;
 }
 .stop-btn {
   margin-top: 0;

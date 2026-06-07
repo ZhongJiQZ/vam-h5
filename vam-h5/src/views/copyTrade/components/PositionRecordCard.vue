@@ -14,6 +14,7 @@
         {{ record.type === 0 ? _t18('copy_trade_long') : _t18('copy_trade_short') }}
       </span>
       <span class="tag tag--muted">{{ _t18('copy_trade_cross') }}</span>
+      <span v-if="recordLeverageText(record)" class="tag tag--muted">{{ recordLeverageText(record) }}</span>
     </div>
     <div class="position-card__grid">
       <div class="cell">
@@ -48,6 +49,13 @@
 import { _t18 } from '@/utils/public'
 import { _div, _mul, _sub, priceFormat } from '@/utils/decimal'
 import { symbolPair, formatPnl, pnlClass } from '../utils'
+
+function recordLeverageText(record) {
+  const n = Number(record?.leverage)
+  if (!Number.isFinite(n) || n <= 0) return ''
+  const val = Number.isInteger(n) ? n : priceFormat(n, 2)
+  return `${val}x`
+}
 
 function recordPnlRate(record) {
   const open = Number(record.openPrice)

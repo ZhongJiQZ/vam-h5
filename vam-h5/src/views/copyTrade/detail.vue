@@ -110,7 +110,7 @@
             closed
           />
         </div>
-        <p v-else-if="order.status === 0" class="empty-hint">{{ _t18('copy_trade_no_positions_hint') }}</p>
+        <p v-else-if="activeTab === 0" class="empty-hint">{{ _t18('copy_trade_no_positions_hint') }}</p>
       </div>
 
       <div v-if="activeTab === 0 && primaryOrder.id && primaryOrder.status === 0" class="action-bar">
@@ -191,6 +191,8 @@ const primaryOrder = computed(() => {
 })
 
 function orderStatusText(order) {
+  if (meta.value.statusFilterText) return meta.value.statusFilterText
+  if (order?.viewStatusText) return order.viewStatusText
   if (order?.params?.statusText) return order.params.statusText
   if (order?.status === 0) return t18('copy_trade_tab_ongoing')
   return t18('copy_trade_settled')

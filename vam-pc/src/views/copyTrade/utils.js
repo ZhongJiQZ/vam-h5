@@ -26,7 +26,15 @@ function formatLocalTime(input, fmt = "YYYY-MM-DD HH:mm:ss") {
 function pickCopyTradeMillis(item, key) {
   if (!item) return null;
   const params = item.params || {};
-  const raw = params[key] != null ? params[key] : item[key];
+  const strategy = item.strategy || {};
+  const raw =
+    params[key] != null
+      ? params[key]
+      : item[key] != null
+        ? item[key]
+        : strategy[key] != null
+          ? strategy[key]
+          : null;
   if (raw == null || raw === "") return null;
   return raw;
 }
@@ -76,15 +84,59 @@ export function normalizeCopyTradeDetailResponse(res) {
   if (!payload || typeof payload !== "object") {
     return { meta: {}, orders: [] };
   }
-  if (payload.id != null && !payload.orderList && !payload.order) {
-    return { meta: payload, orders: [payload] };
+
+  if (payload.id != null && !payload.order && !payload.orderList) {
+    return { meta: {}, orders: [{ ...payload, records: payload.records || [] }] };
   }
+
+  if (payload.order) {
+    const strategy = payload.strategy || {};
+    const institution = payload.institution || {};
+    const records = Array.isArray(payload.records)
+      ? payload.records
+      : Array.isArray(payload.order.records)
+        ? payload.order.records
+        : [];
+    const order = {
+      ...payload.order,
+      records,
+      strategy,
+      institution,
+      strategyName: payload.order.strategyName || strategy.strategyName,
+      strategyId: payload.order.strategyId != null ? payload.order.strategyId : strategy.strategyId,
+      icon: payload.order.icon || institution.logo,
+      institutionName: institution.institutionName,
+      institutionId: institution.institutionId,
+      strategyStartTimeMillis:
+        strategy.strategyStartTimeMillis != null
+          ? strategy.strategyStartTimeMillis
+          : payload.order.strategyStartTimeMillis,
+      strategyEndTimeMillis:
+        strategy.strategyEndTimeMillis != null
+          ? strategy.strategyEndTimeMillis
+          : payload.order.strategyEndTimeMillis,
+      viewStatus: payload.status,
+      viewStatusText: payload.statusText,
+    };
+    return {
+      meta: {
+        strategyId: strategy.strategyId,
+        strategyName: strategy.strategyName,
+        statusFilter: payload.status,
+        statusFilterText: payload.statusText,
+        institution,
+        strategy,
+      },
+      orders: [order],
+    };
+  }
+
   const orders = [];
   const seen = new Set();
   const pushOrder = (item) => {
     if (!item || item.id == null || seen.has(item.id)) return;
     seen.add(item.id);
-    orders.push(item);
+    orders.push({ ...item, records: item.records || [] });
   };
   pushOrder(payload.order);
   (payload.orderList || []).forEach(pushOrder);
