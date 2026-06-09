@@ -1,19 +1,11 @@
 <!-- 充值申请 -->
 <template>
   <div class="page-recharge-apply">
-    <DarkHeaderBar
-      :title="currentName"
-      right="rechargeOrder"
-      :border_bottom="true"
-    />
+    <DarkHeaderBar :title="currentName" right="rechargeOrder" :border_bottom="true" />
 
     <div class="page-body">
       <div v-if="!isBankRecharge" class="qr-section">
-        <div
-          class="qr-bg"
-          :style="{ backgroundImage: `url(${rechargeApplyBg})` }"
-          aria-hidden="true"
-        />
+        <div class="qr-bg" :style="{ backgroundImage: `url(${rechargeApplyBg})` }" aria-hidden="true" />
         <div class="qr-frame">
           <QRCode :address="address"></QRCode>
         </div>
@@ -56,14 +48,12 @@
             </Copy>
           </div>
         </div>
-        <template
-          v-if="
-            isBankRecharge ||
-            !['coinsexpto', 'rxce', 'gmtoin', 'aams', 'bitbyex', 'gmmoin'].includes(
-              _getConfig('_APP_ENV')
-            )
-          "
-        >
+        <template v-if="
+          isBankRecharge ||
+          !['coinsexpto', 'rxce', 'gmtoin', 'aams', 'bitbyex', 'gmmoin'].includes(
+            _getConfig('_APP_ENV')
+          )
+        ">
           <div class="info-row">
             <p class="top">
               {{ isBankRecharge ? _t18('recharge_amount_usdt') : _t18('recharge_number', ['bitmake']) }}
@@ -77,12 +67,10 @@
         </template>
       </div>
 
-      <template
-        v-if="
-          !isBankRecharge &&
-          ['coinsexpto', 'rxce', 'bitbyex', 'gmmoin'].includes(_getConfig('_APP_ENV'))
-        "
-      >
+      <template v-if="
+        !isBankRecharge &&
+        ['coinsexpto', 'rxce', 'bitbyex', 'gmmoin'].includes(_getConfig('_APP_ENV'))
+      ">
         <div class="btn-wrap">
           <div class="btn btn--primary" @click="_copy(address)">
             <p>{{ _t18('copy') }}</p>
@@ -104,9 +92,7 @@
           <div class="tip">{{ _t18('account_balance_info') }}</div>
         </div>
       </template>
-      <template
-        v-else-if="!isBankRecharge && ['aams', 'gmmoin'].includes(_getConfig('_APP_ENV'))"
-      ></template>
+      <template v-else-if="!isBankRecharge && ['aams', 'gmmoin'].includes(_getConfig('_APP_ENV'))"></template>
       <template v-else>
         <div class="btn-wrap">
           <div class="btn btn--primary" @click="onIRecharged">
@@ -116,14 +102,8 @@
       </template>
     </div>
 
-    <van-popup
-      v-model:show="showPendingPopup"
-      round
-      closeable
-      :close-on-click-overlay="false"
-      class="status-popup"
-      @close="onPendingClose"
-    >
+    <van-popup v-model:show="showPendingPopup" round closeable :close-on-click-overlay="false" class="status-popup"
+      @close="onPendingClose">
       <div class="status-panel">
         <h3 class="status-title">{{ _t18('recharge_waiting_confirm') }}</h3>
         <div class="progress-wrap">
@@ -139,12 +119,8 @@
       </div>
     </van-popup>
 
-    <van-popup
-      v-model:show="showSuccessPopup"
-      round
-      :close-on-click-overlay="false"
-      class="status-popup status-popup--small"
-    >
+    <van-popup v-model:show="showSuccessPopup" round :close-on-click-overlay="false"
+      class="status-popup status-popup--small">
       <div class="status-panel status-panel--center">
         <div class="success-hero">
           <div class="ok-icon">✓</div>
@@ -167,12 +143,8 @@
       </div>
     </van-popup>
 
-    <van-popup
-      v-model:show="showTimeoutPopup"
-      round
-      :close-on-click-overlay="false"
-      class="status-popup status-popup--small"
-    >
+    <van-popup v-model:show="showTimeoutPopup" round :close-on-click-overlay="false"
+      class="status-popup status-popup--small">
       <div class="status-panel status-panel--center">
         <h3 class="status-title">{{ _t18('recharge_timeout_title') }}</h3>
         <p class="status-sub">{{ _t18('recharge_timeout_desc') }}</p>
@@ -344,6 +316,7 @@ const mainStore = useMainStore()
 const rechargeObj = computed(() =>
   findRechargeListItem(mainStore.getRechargeList, route.query.type)
 )
+
 const isBankRecharge = computed(() =>
   Boolean(rechargeObj.value?.bankCardNo && rechargeObj.value?.bankName)
 )
@@ -366,10 +339,17 @@ watch(showPendingPopup, (visible) => {
 })
 
 const address = computed(() => {
-  if (isBankRecharge.value) return rechargeObj.value?.coinAddress ?? ''
-  const key = rechargeObj.value?.coinName || route.query.type
-  const fromMap = key ? getRechargeAddressFromMap(mainStore.userRechageMap, key) : ''
-  return fromMap || rechargeObj.value?.coinAddress || ''
+  let addr = rechargeObj.value?.coinAddress ?? ''
+  if (!addr) {
+    const key = rechargeObj.value?.coinName || route.query.type
+    addr = key ? getRechargeAddressFromMap(mainStore.userRechageMap, key) : ''
+  }
+  return addr
+  // if (isBankRecharge.value) return rechargeObj.value?.coinAddress ?? ''
+
+  // const key = rechargeObj.value?.coinName || route.query.type
+  // const fromMap = key ? getRechargeAddressFromMap(mainStore.userRechageMap, key) : ''
+  // return fromMap || rechargeObj.value?.coinAddress || ''
 })
 
 const feeRatioNum = computed(() => {
@@ -413,7 +393,7 @@ onUnmounted(() => {
   min-height: calc(100vh - 60px - constant(safe-area-inset-top));
   min-height: calc(100vh - 60px - env(safe-area-inset-top, 0px));
   background: #f0f2f5;
-  
+
   padding-bottom: 28px;
   padding-top: 20px;
   box-sizing: border-box;
@@ -470,7 +450,7 @@ onUnmounted(() => {
     margin-top: 0;
   }
 
-  & > div {
+  &>div {
     margin-bottom: 20px;
 
     &:last-child {
