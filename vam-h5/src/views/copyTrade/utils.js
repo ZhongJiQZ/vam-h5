@@ -372,6 +372,23 @@ export function isCopyTradeRecordClosed(record) {
   return record?.closed === true || Boolean(record?.closeTime || record?.closeTimeMillis)
 }
 
+/** 是否有有效跟单金额（无或 0 视为未跟单） */
+export function copyTradeHasAmount(item) {
+  const amt = Number(item?.amount ?? item?.params?.copyAmount)
+  return Number.isFinite(amt) && amt > 0
+}
+
+/** 子单分组：先持仓中，后历史持仓 */
+export function splitCopyTradeRecords(records) {
+  const holding = []
+  const closed = []
+  ;(Array.isArray(records) ? records : []).forEach((rec) => {
+    if (isCopyTradeRecordClosed(rec)) closed.push(rec)
+    else holding.push(rec)
+  })
+  return { holding, closed }
+}
+
 export function normalizeCopyTradeListRow(row) {
   if (!row || typeof row !== 'object') return row
   const records = (Array.isArray(row.records) ? row.records : [])

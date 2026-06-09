@@ -68,70 +68,80 @@
       >
         <!-- 进行中 -->
         <template v-if="activeTab === 0">
-          <div
-            v-for="item in list"
-            :key="item.id"
-            class="order-card"
-            @click="goDetail(item.id)"
-          >
-            <div class="order-card__head">
-              <img v-if="item.icon" :src="item.icon" class="avatar avatar--img" alt="" />
-              <div v-else class="avatar">{{ (item.strategyName || '?')[0] }}</div>
-              <div class="head-info">
-                <p class="name">{{ item.strategyName }}</p>
-                <span class="badge badge--ongoing">{{ item.params?.statusText || _t18('copy_trade_tab_ongoing') }}</span>
+          <div v-for="item in list" :key="item.id" class="order-group">
+            <div class="order-card" @click="goDetail(item.id)">
+              <div class="order-card__head">
+                <img v-if="item.icon" :src="item.icon" class="avatar avatar--img" alt="" />
+                <div v-else class="avatar">{{ (item.strategyName || '?')[0] }}</div>
+                <div class="head-info">
+                  <p class="name">{{ item.strategyName }}</p>
+                  <span class="badge badge--ongoing">{{ item.params?.statusText || _t18('copy_trade_tab_ongoing') }}</span>
+                </div>
+              </div>
+              <div class="kv-list">
+                <div v-if="copyTradeHasAmount(item)" class="kv">
+                  <span>{{ _t18('copy_trade_amount') }}</span>
+                  <span class="ff-num">{{ priceFormat(item.amount) }} USDT</span>
+                </div>
+                <div class="kv">
+                  <span>{{ _t18('copy_trade_strategy_start_time') }}</span>
+                  <span>{{ formatCopyTradeStrategyStartTime(item) }}</span>
+                </div>
+                <div class="kv">
+                  <span>{{ _t18('copy_trade_strategy_end_time') }}</span>
+                  <span>{{ formatCopyTradeStrategyEndTime(item) }}</span>
+                </div>
+                <div class="kv">
+                  <span>{{ _t18('copy_trade_current_symbol') }}</span>
+                  <span>{{ copyTradePositionSymbol(item) }}</span>
+                </div>
+                <div class="kv kv--no-border">
+                  <span>{{ _t18('copy_trade_today_trades') }}</span>
+                  <span class="ff-num">{{ copyTradeTradeCount(item) }}</span>
+                </div>
+              </div>
+              <div v-if="copyTradeHasAmount(item)" class="card-actions" @click.stop>
+                <button type="button" class="append-btn" @click="openAppend(item)">
+                  {{ _t18('copy_trade_append') }}
+                </button>
+              </div>
+              <p class="detail-link">{{ _t18('copy_trade_view_detail') }} ›</p>
+            </div>
+            <div
+              v-if="getRecordGroups(item).holding.length || getRecordGroups(item).closed.length"
+              class="records-outer"
+              @click.stop
+            >
+              <div v-if="getRecordGroups(item).holding.length" class="records-section">
+                <h4 class="records-title">{{ _t18('copy_trade_position_holding') }}</h4>
+                <PositionRecordCard
+                  v-for="(rec, rIdx) in getRecordGroups(item).holding"
+                  :key="rec.orderNo || `${item.id}-h-${rIdx}`"
+                  :record="rec"
+                  :parent-symbol="copyTradeRunningSymbol(item)"
+                  masked
+                  :closed="false"
+                />
+              </div>
+              <div v-if="getRecordGroups(item).closed.length" class="records-section">
+                <h4 class="records-title">{{ _t18('copy_trade_history_positions') }}</h4>
+                <PositionRecordCard
+                  v-for="(rec, rIdx) in getRecordGroups(item).closed"
+                  :key="rec.orderNo || `${item.id}-c-${rIdx}`"
+                  :record="rec"
+                  :parent-symbol="copyTradeRunningSymbol(item)"
+                  :masked="false"
+                  closed
+                />
               </div>
             </div>
-            <div class="kv-list">
-              <div class="kv">
-                <span>{{ _t18('copy_trade_amount') }}</span>
-                <span class="ff-num">{{ priceFormat(item.amount) }} USDT</span>
-              </div>
-              <div class="kv">
-                <span>{{ _t18('copy_trade_strategy_start_time') }}</span>
-                <span>{{ formatCopyTradeStrategyStartTime(item) }}</span>
-              </div>
-              <div class="kv">
-                <span>{{ _t18('copy_trade_strategy_end_time') }}</span>
-                <span>{{ formatCopyTradeStrategyEndTime(item) }}</span>
-              </div>
-              <div class="kv">
-                <span>{{ _t18('copy_trade_current_symbol') }}</span>
-                <span>{{ copyTradePositionSymbol(item) }}</span>
-              </div>
-              <div class="kv kv--no-border">
-                <span>{{ _t18('copy_trade_today_trades') }}</span>
-                <span class="ff-num">{{ copyTradeTradeCount(item) }}</span>
-              </div>
-            </div>
-            <div v-if="item.records?.length" class="records-block" @click.stop>
-              <h4 class="records-title">{{ _t18('copy_trade_history_positions') }}</h4>
-              <PositionRecordCard
-                v-for="(rec, rIdx) in item.records"
-                :key="rec.orderNo || `${item.id}-${rIdx}`"
-                :record="rec"
-                :parent-symbol="copyTradeRunningSymbol(item)"
-                :masked="!isCopyTradeRecordClosed(rec)"
-                :closed="isCopyTradeRecordClosed(rec)"
-              />
-            </div>
-            <div class="card-actions" @click.stop>
-              <button type="button" class="append-btn" @click="openAppend(item)">
-                {{ _t18('copy_trade_append') }}
-              </button>
-            </div>
-            <p class="detail-link">{{ _t18('copy_trade_view_detail') }} ›</p>
           </div>
         </template>
 
         <!-- 已结束列表 -->
         <template v-else>
-          <div
-            v-for="item in list"
-            :key="item.id"
-            class="ended-card"
-            @click="goDetail(item.id)"
-          >
+          <div v-for="item in list" :key="item.id" class="order-group">
+            <div class="ended-card" @click="goDetail(item.id)">
             <div class="ended-card__head">
               <img v-if="item.icon" :src="item.icon" class="avatar avatar--img" alt="" />
               <div v-else class="avatar">{{ (item.strategyName || '?')[0] }}</div>
@@ -144,7 +154,7 @@
               </button>
             </div>
             <div class="kv-list">
-              <div class="kv">
+              <div v-if="copyTradeHasAmount(item)" class="kv">
                 <span>{{ _t18('copy_trade_amount') }}</span>
                 <span class="ff-num">{{ priceFormat(item.amount) }} USDT</span>
               </div>
@@ -178,6 +188,35 @@
               <span class="ff-num" :class="pnlClass(item.params.netProfit)">{{ formatPnl(item.params.netProfit) }} USDT</span>
             </div>
             <p class="detail-link">{{ _t18('copy_trade_view_detail') }} ›</p>
+            </div>
+            <div
+              v-if="getRecordGroups(item).holding.length || getRecordGroups(item).closed.length"
+              class="records-outer"
+              @click.stop
+            >
+              <div v-if="getRecordGroups(item).holding.length" class="records-section">
+                <h4 class="records-title">{{ _t18('copy_trade_position_holding') }}</h4>
+                <PositionRecordCard
+                  v-for="(rec, rIdx) in getRecordGroups(item).holding"
+                  :key="rec.orderNo || `${item.id}-h-${rIdx}`"
+                  :record="rec"
+                  :parent-symbol="copyTradeRunningSymbol(item)"
+                  masked
+                  :closed="false"
+                />
+              </div>
+              <div v-if="getRecordGroups(item).closed.length" class="records-section">
+                <h4 class="records-title">{{ _t18('copy_trade_history_positions') }}</h4>
+                <PositionRecordCard
+                  v-for="(rec, rIdx) in getRecordGroups(item).closed"
+                  :key="rec.orderNo || `${item.id}-c-${rIdx}`"
+                  :record="rec"
+                  :parent-symbol="copyTradeRunningSymbol(item)"
+                  :masked="false"
+                  closed
+                />
+              </div>
+            </div>
           </div>
         </template>
 
@@ -200,10 +239,23 @@ import { useRouter, useRoute } from 'vue-router'
 import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import ShareDialog from './components/ShareDialog.vue'
 import AppendDialog from './components/AppendDialog.vue'
+import PositionRecordCard from './components/PositionRecordCard.vue'
 import { _t18 } from '@/utils/public'
 import { getCopyTradeList, appendCopyTrade, getCopyTradeMyPerformance } from '@/api/copyTrade'
 import { priceFormat, _add } from '@/utils/decimal'
-import { copyTradePositionSymbol, formatPnl, pnlClass, calcPnlRate, copyTradeTradeCount, formatCopyTradeStrategyStartTime, formatCopyTradeStrategyEndTime } from './utils'
+import {
+  copyTradePositionSymbol,
+  copyTradeRunningSymbol,
+  formatPnl,
+  pnlClass,
+  calcPnlRate,
+  copyTradeTradeCount,
+  formatCopyTradeStrategyStartTime,
+  formatCopyTradeStrategyEndTime,
+  copyTradeHasAmount,
+  splitCopyTradeRecords,
+  normalizeCopyTradeListResponse
+} from './utils'
 import dayjs from '@/plugin/dayjs/index'
 import { showToast } from 'vant'
 import { useI18n } from 'vue-i18n'
@@ -230,6 +282,10 @@ const appendLoading = ref(false)
 
 function endedPnl(item) {
   return item?.params?.totalSettledProfit ?? item?.actualProfit ?? item?.params?.netProfit ?? 0
+}
+
+function getRecordGroups(item) {
+  return splitCopyTradeRecords(item?.records)
 }
 
 function cycleRange(item) {
@@ -332,8 +388,9 @@ async function fetchList() {
   if (route.query.institutionId) params.institutionId = route.query.institutionId
   const res = await getCopyTradeList(params)
   if (res?.code == 200) {
-    total.value = res.total ?? 0
-    return res.rows || []
+    const parsed = normalizeCopyTradeListResponse(res)
+    total.value = parsed.total
+    return parsed.rows
   }
   finished.value = true
   return []
@@ -484,13 +541,22 @@ $green: #17ac74;
   .summary-actual { font-size: 17px; font-weight: 600; color: #4dffa8 !important; }
 }
 
+.order-group {
+  margin-bottom: 12px;
+}
 .order-card,
 .ended-card {
   background: #fff;
   border-radius: 12px;
   padding: 16px;
-  margin-bottom: 12px;
+  margin-bottom: 0;
   cursor: pointer;
+}
+.records-outer {
+  margin-top: 12px;
+}
+.records-section + .records-section {
+  margin-top: 12px;
 }
 .order-card__head,
 .ended-card__head {
@@ -572,12 +638,6 @@ $green: #17ac74;
     &.is-down { color: #e8503a; }
   }
 }
-.records-block {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid #f0f0f0;
-}
-
 .records-title {
   margin: 0 0 10px;
   font-size: 14px;

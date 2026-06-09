@@ -100,16 +100,32 @@
           </template>
         </div>
 
-        <div v-if="order.records?.length" class="records-section">
-          <h3 class="section-title">{{ _t18('copy_trade_history_positions') }}</h3>
-          <PositionRecordCard
-            v-for="(rec, idx) in order.records"
-            :key="rec.orderNo || idx"
-            :record="rec"
-            :parent-symbol="copyTradeRunningSymbol(order)"
-            :masked="!isCopyTradeRecordClosed(rec)"
-            :closed="isCopyTradeRecordClosed(rec)"
-          />
+        <div
+          v-if="getRecordGroups(order).holding.length || getRecordGroups(order).closed.length"
+          class="records-wrap"
+        >
+          <div v-if="getRecordGroups(order).holding.length" class="records-section">
+            <h3 class="section-title">{{ _t18('copy_trade_position_holding') }}</h3>
+            <PositionRecordCard
+              v-for="(rec, idx) in getRecordGroups(order).holding"
+              :key="rec.orderNo || `h-${idx}`"
+              :record="rec"
+              :parent-symbol="copyTradeRunningSymbol(order)"
+              masked
+              :closed="false"
+            />
+          </div>
+          <div v-if="getRecordGroups(order).closed.length" class="records-section">
+            <h3 class="section-title">{{ _t18('copy_trade_history_positions') }}</h3>
+            <PositionRecordCard
+              v-for="(rec, idx) in getRecordGroups(order).closed"
+              :key="rec.orderNo || `c-${idx}`"
+              :record="rec"
+              :parent-symbol="copyTradeRunningSymbol(order)"
+              :masked="false"
+              closed
+            />
+          </div>
         </div>
       </div>
 
@@ -164,7 +180,7 @@ import {
   formatCopyTradeStrategyEndTime,
   formatCopyTradeJoinTime,
   normalizeCopyTradeDetailResponse,
-  isCopyTradeRecordClosed
+  splitCopyTradeRecords
 } from './utils'
 import { showToast } from 'vant'
 
@@ -216,6 +232,10 @@ function orderNetProfit(order) {
 function orderPnlRate(order) {
   if (order?.status === 1) return calcPnlRate(orderProfit(order), order.amount)
   return copyTradePnlRate(order)
+}
+
+function getRecordGroups(order) {
+  return splitCopyTradeRecords(order?.records)
 }
 
 function profitShareRateText(rate) {
@@ -443,8 +463,14 @@ $green: #17ac74;
     &.is-down { color: #e8503a; }
   }
 }
+.records-wrap {
+  margin-top: 4px;
+}
 .records-section {
   padding: 0 15px;
+  & + .records-section {
+    margin-top: 12px;
+  }
 }
 .section-title {
   font-size: 15px;
