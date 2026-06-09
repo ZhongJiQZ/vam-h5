@@ -64,6 +64,7 @@ import {
   formatStrategyProfitRateRange,
   hasActiveSubCountCondition,
   formatActiveSubCountCondition,
+  getStrategyJoinBlockMessage,
   isStrategyFollowing
 } from './utils'
 import { showToast } from 'vant'
@@ -100,7 +101,7 @@ function toSubmit(item) {
     return
   }
   if (item?.canJoin === false) {
-    showToast(item.followStatusText || t18('copy_trade_unjoinable'))
+    showToast(getStrategyJoinBlockMessage(item, t18))
     return
   }
   router.push({

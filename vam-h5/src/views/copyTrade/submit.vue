@@ -14,7 +14,7 @@ import {
   subscribeCopyTradeInstitution
 } from '@/api/copyTrade'
 import { priceFormat } from '@/utils/decimal'
-import { isInstitutionSubscribed, patchInstitutionSubscribed, isInstitutionSecretLocked, isSecretKeyLockMessage, setInstitutionSecretLock, normalizeStrategyDetail, resolveStrategyAmountRange, parseCopyTradeStrategyQuery, formatAmountRangeText } from './utils'
+import { isInstitutionSubscribed, patchInstitutionSubscribed, isInstitutionSecretLocked, isSecretKeyLockMessage, setInstitutionSecretLock, normalizeStrategyDetail, resolveStrategyAmountRange, parseCopyTradeStrategyQuery, formatAmountRangeText, getStrategyJoinBlockMessage } from './utils'
 import { useUserStore } from '@/store/user/index'
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
@@ -233,7 +233,7 @@ onMounted(() => {
 async function submitForm() {
   if (!agreed.value) return
   if (strategy?.canJoin === false) {
-    showToast(strategy.followStatusText || t18('copy_trade_unjoinable'))
+    showToast(getStrategyJoinBlockMessage(strategy, t18))
     return
   }
   const val = Number(amount.value)

@@ -153,6 +153,7 @@ const pcCopyTradeEn = {
   pc_copy_trade_submit_invite_required: "Please enter invite code",
   pc_copy_trade_join_condition: "Condition",
   pc_copy_trade_active_sub_count_gt: "Subordinate copy traders > {n}",
+  pc_copy_trade_strategy_not_started: "Strategy not open yet, please wait",
 };
 
 const pcCopyTradeZh = {
@@ -279,6 +280,7 @@ const pcCopyTradeZh = {
   pc_copy_trade_submit_invite_required: "请输入邀请码",
   pc_copy_trade_join_condition: "条件",
   pc_copy_trade_active_sub_count_gt: "下级跟单人数＞{n}",
+  pc_copy_trade_strategy_not_started: "暂未开启策略，请等待",
 };
 
 const pcCopyTradeTw = {
@@ -405,6 +407,7 @@ const pcCopyTradeTw = {
   pc_copy_trade_submit_invite_required: "請輸入邀請碼",
   pc_copy_trade_join_condition: "條件",
   pc_copy_trade_active_sub_count_gt: "下級跟單人數＞{n}",
+  pc_copy_trade_strategy_not_started: "暫未開啟策略，請等待",
 };
 
 function withGiftCert(pack) {

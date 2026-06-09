@@ -63,6 +63,7 @@ import {
   resolveStrategyAmountRange,
   parseCopyTradeStrategyQuery,
   formatAmountRangeText,
+  getStrategyJoinBlockMessage,
 } from "./utils";
 import { mapGetters, mapActions } from "vuex";
 
@@ -178,7 +179,7 @@ export default {
     },
     async submit() {
       if (this.strategy && this.strategy.canJoin === false) {
-        this.$message.warning(this.strategy.followStatusText || this.$t("pc_copy_trade_unjoinable"));
+        this.$message.warning(getStrategyJoinBlockMessage(this.strategy, (key) => this.$t(key)));
         return;
       }
       const val = Number(this.amount);

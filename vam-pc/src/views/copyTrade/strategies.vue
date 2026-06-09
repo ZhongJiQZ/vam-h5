@@ -35,6 +35,7 @@ import {
   formatStrategyProfitRateRange,
   hasActiveSubCountCondition,
   formatActiveSubCountCondition,
+  getStrategyJoinBlockMessage,
   isStrategyFollowing
 } from "./utils";
 
@@ -52,6 +53,7 @@ export default {
     formatStrategyProfitRateRange,
     hasActiveSubCountCondition,
     formatActiveSubCountCondition,
+    getStrategyJoinBlockMessage,
     async loadData() {
       const institutionId = this.$route.query.institutionId;
       if (!institutionId) return;
@@ -69,7 +71,7 @@ export default {
         return;
       }
       if (item && item.canJoin === false) {
-        this.$message.warning(item.followStatusText || this.$t("pc_copy_trade_unjoinable"));
+        this.$message.warning(getStrategyJoinBlockMessage(item, (key) => this.$t(key)));
         return;
       }
       this.$router.push({

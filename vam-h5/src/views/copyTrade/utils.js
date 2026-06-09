@@ -437,6 +437,41 @@ export function isStrategyFollowing(item) {
   return /跟单中|等待启动|已跟单/i.test(text)
 }
 
+function getStrategyStartMillis(item) {
+  if (!item) return null
+  const ms = pickCopyTradeMillis(item, 'strategyStartTimeMillis')
+  if (ms != null) return ms
+  const raw = item.startTime || item.cycleStartTime || item.executeStartTime
+  if (raw == null || raw === '') return null
+  const ts = Date.parse(String(raw).replace(/-/g, '/'))
+  return Number.isFinite(ts) ? ts : null
+}
+
+/** 策略列表：暂未开始（不可加入且未到策略开始时间） */
+export function isStrategyNotStarted(item) {
+  if (!item) return false
+  const status = Number(item.followStatus)
+  if (status === 0) return true
+  const text = String(item.followStatusText || item.statusText || '')
+  if (/暂未开始|未开启|等待开启|尚未开始|not started|not open/i.test(text)) return true
+  if (item.canJoin !== false) return false
+  const startMs = getStrategyStartMillis(item)
+  return startMs != null && startMs > Date.now()
+}
+
+/** 策略不可加入时的提示文案 */
+export function getStrategyJoinBlockMessage(item, translate) {
+  const t = typeof translate === 'function' ? translate : () => ''
+  if (isStrategyNotStarted(item)) {
+    const msg = t('copy_trade_strategy_not_started')
+    return msg && msg !== 'copy_trade_strategy_not_started' ? msg : '暂未开启策略，请等待'
+  }
+  const fromApi = String(item?.followStatusText || item?.statusText || '').trim()
+  if (fromApi) return fromApi
+  const fallback = t('copy_trade_unjoinable')
+  return fallback && fallback !== 'copy_trade_unjoinable' ? fallback : '当前不可加入'
+}
+
 function calcCopyDaysFromSubscribeTime(timeStr) {
   if (!timeStr) return null
   const ts = Date.parse(String(timeStr).replace(/-/g, '/'))

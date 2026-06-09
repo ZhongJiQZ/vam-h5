@@ -1254,5 +1254,6 @@
   "copy_trade_submit_invite_placeholder": "Enter invite code",
   "copy_trade_submit_invite_required": "Please enter invite code",
   "copy_trade_join_condition": "Condition",
-  "copy_trade_active_sub_count_gt": "Subordinate copy traders > {n}"
+  "copy_trade_active_sub_count_gt": "Subordinate copy traders > {n}",
+  "copy_trade_strategy_not_started": "Strategy not open yet, please wait"
 }
