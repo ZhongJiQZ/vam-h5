@@ -140,7 +140,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
@@ -170,7 +170,14 @@ import { showToast } from 'vant'
 const route = useRoute()
 const i18n = useI18n()
 const t18 = (key, platform = []) => _t18(key, platform, i18n)
-const activeTab = ref(0)
+
+function resolveDetailTab(query = {}) {
+  const raw = query.status ?? query.tab
+  const tab = Number(raw)
+  return tab === 1 ? 1 : 0
+}
+
+const activeTab = ref(resolveDetailTab(route.query))
 const meta = ref({})
 const orders = ref([])
 const pageLoading = ref(true)
@@ -299,7 +306,20 @@ async function confirmStop() {
   }
 }
 
-onMounted(loadDetail)
+onMounted(() => {
+  activeTab.value = resolveDetailTab(route.query)
+  loadDetail()
+})
+
+watch(
+  () => route.query.status,
+  () => {
+    const tab = resolveDetailTab(route.query)
+    if (activeTab.value === tab) return
+    activeTab.value = tab
+    loadDetail()
+  }
+)
 </script>
 
 <style lang="scss" scoped>

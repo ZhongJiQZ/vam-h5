@@ -165,10 +165,24 @@ export default {
     },
   },
   created() {
+    this.activeName = this.resolveDetailTab(this.$route.query);
     this.loadData();
+  },
+  watch: {
+    "$route.query.status"(val) {
+      const tab = this.resolveDetailTab({ status: val });
+      if (this.activeName === tab) return;
+      this.activeName = tab;
+      this.loadData();
+    },
   },
   methods: {
     ...mapActions(["getUserInfo"]),
+    resolveDetailTab(query = {}) {
+      const raw = query.status != null ? query.status : query.tab;
+      const tab = Number(raw);
+      return tab === 1 ? "1" : "0";
+    },
     async loadData() {
       this.loading = true;
       try {

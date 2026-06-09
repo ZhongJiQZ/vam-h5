@@ -1474,5 +1474,10 @@
   "copy_trade_amount_range_tip": "Copy amount {min}USDT--{max}USDT",
   "copy_trade_strategy_start_time": "Strategy Start Time",
   "copy_trade_strategy_end_time": "Strategy End Time",
-  "copy_trade_profit_rate_range": "Return Rate Range"
+  "copy_trade_profit_rate_range": "Return Rate Range",
+  "copy_trade_submit_invite_code": "Invite code",
+  "copy_trade_submit_invite_placeholder": "Enter invite code",
+  "copy_trade_submit_invite_required": "Please enter invite code",
+  "copy_trade_join_condition": "Condition",
+  "copy_trade_active_sub_count_gt": "Subordinate copy traders > {n}"
 }

@@ -55,11 +55,6 @@ const subscribeLoading = ref(false)
 const showDocDrawer = ref(false)
 const activeDoc = ref(null)
 
-const needSecretKey = computed(() => {
-  if (isSubscribed.value) return false
-  return strategy.secretKeyRequired !== false
-})
-
 const isSubscribed = computed(() => isInstitutionSubscribed(institution.value) || isInstitutionSubscribed(strategy))
 
 const displayName = computed(
@@ -251,12 +246,12 @@ async function submitForm() {
     showToast(t18('copy_trade_insufficient_balance'))
     return
   }
-  if (needSecretKey.value && !String(secretKey.value || '').trim()) {
-    showToast(t18('copy_trade_inst_secret_required'))
+  const inviteCode = String(secretKey.value || '').trim()
+  if (!inviteCode) {
+    showToast(t18('copy_trade_submit_invite_required'))
     return
   }
-  const payload = { strategyId: strategy.id, amount: val }
-  if (needSecretKey.value) payload.secretKey = secretKey.value.trim()
+  const payload = { strategyId: strategy.id, amount: val, secretKey: inviteCode }
   const res = await submitCopyTrade(payload)
   if (res.code == 200) {
     showToast(res.msg || t18('copy_trade_submit_success'))
@@ -332,14 +327,14 @@ function submit() {
         <p class="amount-card__hint">{{ amountRangeTip }}</p>
       </section>
 
-      <!-- 密钥（未订阅机构时） -->
-      <section v-if="needSecretKey" class="card secret-card">
-        <p class="secret-card__label">{{ t18('copy_trade_inst_secret_placeholder') }}</p>
+      <!-- 邀请码 -->
+      <section class="card secret-card">
+        <p class="secret-card__label">{{ t18('copy_trade_submit_invite_code') }}</p>
         <input
           v-model="secretKey"
           type="text"
           class="secret-card__input ff-num"
-          :placeholder="t18('copy_trade_inst_secret_placeholder')"
+          :placeholder="t18('copy_trade_submit_invite_placeholder')"
         />
       </section>
 

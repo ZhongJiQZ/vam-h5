@@ -208,6 +208,28 @@ export function formatCopyTradeStrategyEndTime(item, fmt = 'YYYY-MM-DD HH:mm') {
   return formatted !== '--' ? formatted : fallback
 }
 
+/** 策略加入条件：下级跟单人数门槛 */
+export function getActiveSubCount(item) {
+  if (!item) return 0
+  const raw = item.activeSubCount ?? item.params?.activeSubCount
+  const n = Number(raw)
+  return Number.isFinite(n) ? n : 0
+}
+
+export function hasActiveSubCountCondition(item) {
+  return getActiveSubCount(item) > 0
+}
+
+export function formatActiveSubCountCondition(item, translate) {
+  const n = getActiveSubCount(item)
+  if (n <= 0) return ''
+  const text = typeof translate === 'function' ? translate('copy_trade_active_sub_count_gt') : ''
+  if (!text || text === 'copy_trade_active_sub_count_gt') {
+    return `下级跟单人数＞${n}`
+  }
+  return text.replace('{n}', String(n))
+}
+
 /** 策略收益率区间 */
 export function formatStrategyProfitRateRange(item) {
   if (!item) return '--'

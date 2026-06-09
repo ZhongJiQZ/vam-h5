@@ -24,6 +24,7 @@ export const getCopyTradeStrategyDetail = (data) => post("/api/copyTrade/strateg
 
 export const getCopyTradeDocuments = (data) => post("/api/copyTrade/documents", data);
 
+/** 发起跟单（需传 secretKey 邀请码） */
 export const submitCopyTrade = (data) => post("/api/copyTrade/submit", data);
 
 export const exitCopyTrade = (data) => post("/api/copyTrade/exit", data);

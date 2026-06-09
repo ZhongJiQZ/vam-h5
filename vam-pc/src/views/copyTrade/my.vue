@@ -142,7 +142,10 @@ export default {
       this.loadData();
     },
     toDetail(id) {
-      this.$router.push(`/copyTrade/detail/${id}`);
+      this.$router.push({
+        path: `/copyTrade/detail/${id}`,
+        query: { status: this.activeName },
+      });
     },
     openAppend(item) {
       this.appendItem = item || {};

@@ -21,14 +21,15 @@
             </p>
           </div>
         </div>
-        <p v-if="detail.description" class="profile__desc" :class="{ 'profile__desc--fold': !descExpanded }">
+        <p
+          v-if="detail.description"
+          ref="descRef"
+          class="profile__desc profile__desc--fold"
+          :class="{ 'profile__desc--clickable': descOverflow }"
+          @click="openDescDialog"
+        >
           {{ detail.description }}
-          <button
-            v-if="detail.description.length > 60"
-            type="button"
-            class="desc-more"
-            @click="descExpanded = !descExpanded"
-          >
+          <button v-if="descOverflow" type="button" class="desc-more" @click.stop="openDescDialog">
             {{ t18('copy_trade_desc_more') }}
           </button>
         </p>
@@ -172,11 +173,19 @@
       </div>
     </template>
     <Nodata v-else />
+
+    <van-dialog
+      v-model:show="showDescDialog"
+      :title="descDialogTitle"
+      confirm-button-color="#17ac74"
+    >
+      <p class="desc-dialog-text">{{ detail.description }}</p>
+    </van-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
@@ -219,8 +228,31 @@ const perf = ref({})
 const weeklyPerf = ref({})
 const coinPerf = ref({})
 const perfLoading = ref(false)
-const descExpanded = ref(false)
+const descRef = ref(null)
+const descOverflow = ref(false)
+const showDescDialog = ref(false)
 const ranges = ['7d', '15d', '30d', 'all']
+
+const descDialogTitle = computed(() => {
+  const label = t18('copy_trade_inst_intro').replace(/[：:]\s*$/, '')
+  return detail.value.institutionName || label
+})
+
+function checkDescOverflow() {
+  nextTick(() => {
+    const el = descRef.value
+    if (!el) {
+      descOverflow.value = false
+      return
+    }
+    descOverflow.value = el.scrollHeight > el.clientHeight + 1
+  })
+}
+
+function openDescDialog() {
+  if (!descOverflow.value || !detail.value.description) return
+  showDescDialog.value = true
+}
 
 const subscriberCount = computed(() => institutionSubscriberCount(detail.value))
 const isSubscribed = computed(() => detail.value.subscribed === true || detail.value.isSubscribed === true)
@@ -320,6 +352,7 @@ async function loadDetail() {
     }
   } finally {
     pageLoading.value = false
+    checkDescOverflow()
   }
 }
 
@@ -510,6 +543,11 @@ watch(
     await loadPerformance()
   }
 )
+
+watch(
+  () => detail.value.description,
+  () => checkDescOverflow()
+)
 </script>
 
 <style lang="scss" scoped>
@@ -581,7 +619,23 @@ $tab-active: #3d3d3d;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
+
+    &--clickable {
+      cursor: pointer;
+    }
   }
+}
+
+.desc-dialog-text {
+  padding: 8px 16px 16px;
+  margin: 0;
+  font-size: 14px;
+  color: #4b5563;
+  line-height: 1.65;
+  word-break: break-word;
+  white-space: pre-wrap;
+  max-height: 60vh;
+  overflow-y: auto;
 }
 
 .tag {

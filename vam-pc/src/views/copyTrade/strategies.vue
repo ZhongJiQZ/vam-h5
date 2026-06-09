@@ -17,6 +17,9 @@
           <p>{{ $t("pc_copy_trade_strategy_end_time") }}: {{ formatCopyTradeStrategyEndTime(item) }}</p>
           <p>{{ $t("pc_copy_trade_profit_rate_range") }}: {{ formatStrategyProfitRateRange(item) }}</p>
           <p>{{ $t("pc_copy_trade_range") }}: {{ item.minAmount }} ~ {{ item.maxAmount }} USDT</p>
+          <p v-if="hasActiveSubCountCondition(item)">
+            {{ $t("pc_copy_trade_join_condition") }}: {{ formatActiveSubCountCondition(item, (key) => $t(key)) }}
+          </p>
         </div>
       </el-col>
     </el-row>
@@ -30,6 +33,8 @@ import {
   formatCopyTradeStrategyStartTime,
   formatCopyTradeStrategyEndTime,
   formatStrategyProfitRateRange,
+  hasActiveSubCountCondition,
+  formatActiveSubCountCondition,
   isStrategyFollowing
 } from "./utils";
 
@@ -45,6 +50,8 @@ export default {
     formatCopyTradeStrategyStartTime,
     formatCopyTradeStrategyEndTime,
     formatStrategyProfitRateRange,
+    hasActiveSubCountCondition,
+    formatActiveSubCountCondition,
     async loadData() {
       const institutionId = this.$route.query.institutionId;
       if (!institutionId) return;

@@ -40,6 +40,10 @@
             <span>{{ t18('copy_trade_amount_range') }}</span>
             <span>{{ item.minAmount }} ~ {{ item.maxAmount }} USDT</span>
           </div>
+          <div v-if="hasActiveSubCountCondition(item)" class="kv">
+            <span>{{ t18('copy_trade_join_condition') }}</span>
+            <span>{{ formatActiveSubCountCondition(item, t18) }}</span>
+          </div>
         </div>
         <Nodata v-if="!loading && list.length === 0" />
       </div>
@@ -58,6 +62,8 @@ import {
   formatCopyTradeStrategyStartTime,
   formatCopyTradeStrategyEndTime,
   formatStrategyProfitRateRange,
+  hasActiveSubCountCondition,
+  formatActiveSubCountCondition,
   isStrategyFollowing
 } from './utils'
 import { showToast } from 'vant'

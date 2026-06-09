@@ -18,8 +18,8 @@
 
     <div class="panel">
       <el-form label-width="100px">
-        <el-form-item v-if="needSecretKey" :label="$t('pc_copy_trade_inst_secret_ph')">
-          <el-input v-model="secretKey" />
+        <el-form-item :label="$t('pc_copy_trade_submit_invite_code')">
+          <el-input v-model="secretKey" :placeholder="$t('pc_copy_trade_submit_invite_placeholder')" />
         </el-form-item>
         <el-form-item :label="$t('pc_copy_trade_amount')">
           <el-input v-model="amount" type="number" :placeholder="$t('pc_copy_trade_amount_placeholder')">
@@ -84,10 +84,6 @@ export default {
   },
   computed: {
     ...mapGetters(["userInfo"]),
-    needSecretKey() {
-      if (this.strategy.subscribed) return false;
-      return this.strategy.secretKeyRequired !== false;
-    },
     contractBalance() {
       if (this.userInfo && this.userInfo.asset && this.userInfo.asset.length > 0) {
         const cur = this.userInfo.asset.filter((item) => item.type == 3);
@@ -195,14 +191,14 @@ export default {
         this.$message.warning(this.$t("pc_copy_trade_insufficient_balance"));
         return;
       }
-      if (this.needSecretKey && !String(this.secretKey || "").trim()) {
-        this.$message.warning(this.$t("pc_copy_trade_inst_secret_required"));
+      const inviteCode = String(this.secretKey || "").trim();
+      if (!inviteCode) {
+        this.$message.warning(this.$t("pc_copy_trade_submit_invite_required"));
         return;
       }
       this.submitting = true;
       try {
-        const payload = { strategyId: this.strategy.id, amount: val };
-        if (this.needSecretKey) payload.secretKey = this.secretKey.trim();
+        const payload = { strategyId: this.strategy.id, amount: val, secretKey: inviteCode };
         const res = await submitCopyTrade(payload);
         const msg = res && res.data && res.data.msg;
         this.$message.success(msg || this.$t("pc_copy_trade_submit_success"));

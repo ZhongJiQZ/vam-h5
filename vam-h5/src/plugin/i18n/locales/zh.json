@@ -1474,5 +1474,10 @@
   "copy_trade_amount_range_tip": "跟单金额{min}USDT--{max}USDT",
   "copy_trade_strategy_start_time": "策略启动时间",
   "copy_trade_strategy_end_time": "策略结束时间",
-  "copy_trade_profit_rate_range": "收益率区间"
+  "copy_trade_profit_rate_range": "收益率区间",
+  "copy_trade_submit_invite_code": "邀请码",
+  "copy_trade_submit_invite_placeholder": "请输入邀请码",
+  "copy_trade_submit_invite_required": "请输入邀请码",
+  "copy_trade_join_condition": "条件",
+  "copy_trade_active_sub_count_gt": "下级跟单人数＞{n}"
 }

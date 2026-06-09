@@ -148,6 +148,11 @@ const pcCopyTradeEn = {
   pc_copy_trade_range_all_total: "All-time total return",
   pc_copy_trade_inst_sub_modal_hint: "This institution is invite-only. Enter the subscription code issued offline.",
   pc_copy_trade_inst_secret_footer: "Valid permanently after subscription · One key per institution per user",
+  pc_copy_trade_submit_invite_code: "Invite code",
+  pc_copy_trade_submit_invite_placeholder: "Enter invite code",
+  pc_copy_trade_submit_invite_required: "Please enter invite code",
+  pc_copy_trade_join_condition: "Condition",
+  pc_copy_trade_active_sub_count_gt: "Subordinate copy traders > {n}",
 };
 
 const pcCopyTradeZh = {
@@ -269,6 +274,11 @@ const pcCopyTradeZh = {
   pc_copy_trade_range_all_total: "全部总收益率",
   pc_copy_trade_inst_sub_modal_hint: "该机构为私域邀请制，请输入机构线下发放的订阅邀请码",
   pc_copy_trade_inst_secret_footer: "订阅后永久有效 · 一密钥一机构一用户",
+  pc_copy_trade_submit_invite_code: "邀请码",
+  pc_copy_trade_submit_invite_placeholder: "请输入邀请码",
+  pc_copy_trade_submit_invite_required: "请输入邀请码",
+  pc_copy_trade_join_condition: "条件",
+  pc_copy_trade_active_sub_count_gt: "下级跟单人数＞{n}",
 };
 
 const pcCopyTradeTw = {
@@ -390,6 +400,11 @@ const pcCopyTradeTw = {
   pc_copy_trade_range_all_total: "全部總收益率",
   pc_copy_trade_inst_sub_modal_hint: "該機構為私域邀請制，請輸入機構線下發放的訂閱邀請碼",
   pc_copy_trade_inst_secret_footer: "訂閱後永久有效 · 一密鑰一機構一用戶",
+  pc_copy_trade_submit_invite_code: "邀請碼",
+  pc_copy_trade_submit_invite_placeholder: "請輸入邀請碼",
+  pc_copy_trade_submit_invite_required: "請輸入邀請碼",
+  pc_copy_trade_join_condition: "條件",
+  pc_copy_trade_active_sub_count_gt: "下級跟單人數＞{n}",
 };
 
 function withGiftCert(pack) {

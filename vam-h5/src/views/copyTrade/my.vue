@@ -357,7 +357,7 @@ function onRefresh() {
 }
 
 function goDetail(id) {
-  router.push({ path: '/copy-trade/detail', query: { id } })
+  router.push({ path: '/copy-trade/detail', query: { id, status: activeTab.value } })
 }
 
 function openShare(item) {

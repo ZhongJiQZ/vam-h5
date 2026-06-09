@@ -16,7 +16,7 @@ export const getCopyTradeStrategyDetail = (data) => post('/api/copyTrade/strateg
 /** 协议文档 agreement | risk */
 export const getCopyTradeDocuments = (data) => post('/api/copyTrade/documents', data)
 
-/** 发起跟单（已订阅机构可不传 secretKey） */
+/** 发起跟单（需传 secretKey 邀请码） */
 export const submitCopyTrade = (data) => post('/api/copyTrade/submit', data)
 
 /** 退出跟单 */
