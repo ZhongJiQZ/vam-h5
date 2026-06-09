@@ -264,20 +264,25 @@ export function normalizeCopyTradeDetailResponse(res) {
     return { meta: {}, orders: [] }
   }
 
+  const normalizeRecords = (list) =>
+    (Array.isArray(list) ? list : []).map(normalizeCopyTradeRecord).filter(Boolean)
+
   // 旧版：单订单扁平结构
   if (payload.id != null && !payload.order && !payload.orderList) {
-    return { meta: {}, orders: [{ ...payload, records: payload.records || [] }] }
+    return { meta: {}, orders: [{ ...payload, records: normalizeRecords(payload.records) }] }
   }
 
   // 新版：institution + strategy + order + records
   if (payload.order) {
     const strategy = payload.strategy || {}
     const institution = payload.institution || {}
-    const records = Array.isArray(payload.records)
-      ? payload.records
-      : Array.isArray(payload.order.records)
-        ? payload.order.records
-        : []
+    const records = normalizeRecords(
+      Array.isArray(payload.records)
+        ? payload.records
+        : Array.isArray(payload.order.records)
+          ? payload.order.records
+          : []
+    )
     const order = {
       ...payload.order,
       records,
@@ -312,7 +317,7 @@ export function normalizeCopyTradeDetailResponse(res) {
   const pushOrder = (item) => {
     if (!item || item.id == null || seen.has(item.id)) return
     seen.add(item.id)
-    orders.push({ ...item, records: item.records || [] })
+    orders.push({ ...item, records: normalizeRecords(item.records) })
   }
   pushOrder(payload.order)
   ;(payload.orderList || []).forEach(pushOrder)
@@ -326,6 +331,72 @@ export function normalizeCopyTradeDetailResponse(res) {
       total: payload.total
     },
     orders
+  }
+}
+
+/** 子单时间戳（毫秒）→ 展示时间 */
+export function formatCopyTradeRecordMillis(millis) {
+  const n = Number(millis)
+  if (!Number.isFinite(n) || n <= 0) return ''
+  return formatLocalTime(n)
+}
+
+/** 归一化 list/detail 中的子单 records */
+export function normalizeCopyTradeRecord(raw) {
+  if (!raw || typeof raw !== 'object') return null
+  const openTime =
+    raw.openTime ||
+    formatCopyTradeRecordMillis(raw.openTimeMillis) ||
+    ''
+  const closeTime =
+    raw.closeTime ||
+    formatCopyTradeRecordMillis(raw.closeTimeMillis) ||
+    ''
+  return {
+    ...raw,
+    openTime: openTime || raw.openTime,
+    closeTime: closeTime || raw.closeTime,
+    openPrice: raw.openPrice ?? raw.avgOpenPrice ?? raw.openAvgPrice,
+    closePrice: raw.closePrice ?? raw.avgClosePrice ?? raw.closeAvgPrice,
+    earn: raw.earn ?? raw.pnl ?? raw.profit,
+    symbol: raw.symbol || raw.coin || '',
+    leverage: raw.leverage ?? raw.lever
+  }
+}
+
+/** 子单 status：0=持仓中 1=已平仓 */
+export function isCopyTradeRecordClosed(record) {
+  const s = Number(record?.status)
+  if (s === 1) return true
+  if (s === 0) return false
+  return record?.closed === true || Boolean(record?.closeTime || record?.closeTimeMillis)
+}
+
+export function normalizeCopyTradeListRow(row) {
+  if (!row || typeof row !== 'object') return row
+  const records = (Array.isArray(row.records) ? row.records : [])
+    .map(normalizeCopyTradeRecord)
+    .filter(Boolean)
+  return { ...row, records }
+}
+
+/** 解析 list 接口 data（兼容 rows / data.rows） */
+export function normalizeCopyTradeListResponse(res) {
+  const payload = res?.data
+  const rows = Array.isArray(res?.rows)
+    ? res.rows
+    : Array.isArray(payload?.rows)
+      ? payload.rows
+      : Array.isArray(payload)
+        ? payload
+        : []
+  const total =
+    res?.total ??
+    payload?.total ??
+    rows.length
+  return {
+    total: Number(total) || 0,
+    rows: rows.map(normalizeCopyTradeListRow)
   }
 }
 

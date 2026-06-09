@@ -104,6 +104,17 @@
                 <span class="ff-num">{{ copyTradeTradeCount(item) }}</span>
               </div>
             </div>
+            <div v-if="item.records?.length" class="records-block" @click.stop>
+              <h4 class="records-title">{{ _t18('copy_trade_history_positions') }}</h4>
+              <PositionRecordCard
+                v-for="(rec, rIdx) in item.records"
+                :key="rec.orderNo || `${item.id}-${rIdx}`"
+                :record="rec"
+                :parent-symbol="copyTradeRunningSymbol(item)"
+                :masked="!isCopyTradeRecordClosed(rec)"
+                :closed="isCopyTradeRecordClosed(rec)"
+              />
+            </div>
             <div class="card-actions" @click.stop>
               <button type="button" class="append-btn" @click="openAppend(item)">
                 {{ _t18('copy_trade_append') }}
@@ -357,7 +368,10 @@ function onRefresh() {
 }
 
 function goDetail(id) {
-  router.push({ path: '/copy-trade/detail', query: { id, status: activeTab.value } })
+  router.push({
+    path: '/copy-trade/detail',
+    query: { id, status: String(activeTab.value) }
+  })
 }
 
 function openShare(item) {
@@ -558,6 +572,19 @@ $green: #17ac74;
     &.is-down { color: #e8503a; }
   }
 }
+.records-block {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.records-title {
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
 .card-actions {
   margin-top: 12px;
 }

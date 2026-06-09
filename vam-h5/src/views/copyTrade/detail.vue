@@ -107,8 +107,8 @@
             :key="rec.orderNo || idx"
             :record="rec"
             :parent-symbol="copyTradeRunningSymbol(order)"
-            :masked="activeTab === 0"
-            closed
+            :masked="!isCopyTradeRecordClosed(rec)"
+            :closed="isCopyTradeRecordClosed(rec)"
           />
         </div>
       </div>
@@ -163,7 +163,8 @@ import {
   formatCopyTradeStrategyStartTime,
   formatCopyTradeStrategyEndTime,
   formatCopyTradeJoinTime,
-  normalizeCopyTradeDetailResponse
+  normalizeCopyTradeDetailResponse,
+  isCopyTradeRecordClosed
 } from './utils'
 import { showToast } from 'vant'
 
