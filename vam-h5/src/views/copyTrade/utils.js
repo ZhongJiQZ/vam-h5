@@ -147,17 +147,25 @@ export function symbolPair(symbol) {
 export function copyTradeRunningSymbol(item) {
   if (!item) return ''
   const params = item.params || {}
+  const strategy = item.strategy || {}
   const raw =
-    params.runningSymbol ?? params.activeSymbol ?? params.currentCoin ?? item.runningSymbol ?? ''
+    params.runningSymbol ??
+    params.activeSymbol ??
+    params.currentCoin ??
+    params.symbol ??
+    item.runningSymbol ??
+    item.symbol ??
+    strategy.symbol ??
+    ''
   return String(raw || '').trim()
 }
 
-function isWaitBuyPositionStatus(text) {
+export function isWaitBuyPositionStatus(text) {
   const s = String(text || '').trim()
   return /^等待买入$/i.test(s) || /^wait(ing)?\s*(to\s*)?buy$/i.test(s)
 }
 
-function formatWaitBuyPosition(translate) {
+export function formatWaitBuyPositionLabel(translate) {
   if (typeof translate === 'function') {
     const msg = translate('copy_trade_wait_institution_buy')
     if (msg && msg !== 'copy_trade_wait_institution_buy') return msg
@@ -165,9 +173,21 @@ function formatWaitBuyPosition(translate) {
   return '等待机构买入'
 }
 
+function copyTradeHasRecordSymbol(item) {
+  const records = item?.records
+  if (!Array.isArray(records) || !records.length) return false
+  return records.some((rec) => {
+    const sym = rec?.symbol || rec?.coin || rec?.coinSymbol || rec?.symbolName
+    return sym && !isWaitBuyPositionStatus(String(sym).trim())
+  })
+}
+
 /** 进行中且尚无成交时展示等待买入 */
 export function copyTradeShouldShowWaitBuy(item) {
   if (!item || item.status === 1) return false
+  const running = copyTradeRunningSymbol(item)
+  if (running && !isWaitBuyPositionStatus(running)) return false
+  if (copyTradeHasRecordSymbol(item)) return false
   const params = item.params || {}
   if (params.activeSymbolKey === 'copy.trade.symbol.wait_buy') return true
   return copyTradeTradeCount(item) <= 0
@@ -176,13 +196,13 @@ export function copyTradeShouldShowWaitBuy(item) {
 /** 当前持仓展示（等待买入 → 等待机构买入） */
 export function copyTradePositionSymbol(item, translate) {
   if (copyTradeShouldShowWaitBuy(item)) {
-    return formatWaitBuyPosition(translate)
+    return formatWaitBuyPositionLabel(translate)
   }
   const running = copyTradeRunningSymbol(item)
   if (!running) return '--'
   const trimmed = String(running).trim()
   if (isWaitBuyPositionStatus(trimmed)) {
-    return formatWaitBuyPosition(translate)
+    return formatWaitBuyPositionLabel(translate)
   }
   if (/[\u4e00-\u9fff]/.test(trimmed)) return trimmed
   return trimmed.toUpperCase()
@@ -388,9 +408,53 @@ export function normalizeCopyTradeRecord(raw) {
     openPrice: raw.openPrice ?? raw.avgOpenPrice ?? raw.openAvgPrice,
     closePrice: raw.closePrice ?? raw.avgClosePrice ?? raw.closeAvgPrice,
     earn: raw.earn ?? raw.pnl ?? raw.profit,
-    symbol: raw.symbol || raw.coin || '',
+    symbol:
+      raw.symbol ||
+      raw.coin ||
+      raw.coinSymbol ||
+      raw.symbolName ||
+      raw.coinName ||
+      raw.pair ||
+      '',
     leverage: raw.leverage ?? raw.lever
   }
+}
+
+/** 子单归属日期（用于每日战绩分组） */
+export function copyTradeRecordDayKey(record) {
+  if (!record) return ''
+  const ms = record.closeTimeMillis ?? record.openTimeMillis
+  if (ms != null && ms !== '') {
+    const d = dayjs(Number(ms))
+    if (d.isValid()) return d.format('YYYY-MM-DD')
+  }
+  const time = record.closeTime || record.openTime
+  if (time) {
+    const d = dayjs(time)
+    if (d.isValid()) return d.format('YYYY-MM-DD')
+    const part = String(time).split(' ')[0]
+    if (part) return part
+  }
+  return ''
+}
+
+/** 我的跟单列表：按日战绩（不含历史持仓汇总块） */
+export function groupCopyTradeDailyBattleRecords(records) {
+  const holding = []
+  const dayMap = new Map()
+  ;(Array.isArray(records) ? records : []).forEach((rec) => {
+    if (!isCopyTradeRecordClosed(rec)) {
+      holding.push(rec)
+      return
+    }
+    const day = copyTradeRecordDayKey(rec) || 'unknown'
+    if (!dayMap.has(day)) dayMap.set(day, [])
+    dayMap.get(day).push(rec)
+  })
+  const days = Array.from(dayMap.entries())
+    .sort((a, b) => (a[0] < b[0] ? 1 : -1))
+    .map(([date, list]) => ({ date, records: list }))
+  return { holding, days }
 }
 
 /** 子单 status：0=持仓中 1=已平仓 */

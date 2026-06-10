@@ -21,30 +21,48 @@
         <span v-if="recordLeverageText(record)" class="tag tag--muted">{{ recordLeverageText(record) }}</span>
       </template>
     </div>
-    <div class="position-card__grid">
+    <!-- 历史持仓：均价/时间双列网格，盈亏与盈亏率同行 -->
+    <template v-if="closed">
+      <div class="position-card__grid">
+        <div class="cell">
+          <span class="label">{{ _t18('copy_trade_open_price') }}</span>
+          <span class="value ff-num">{{ masked ? MASK : priceFormat(record.openPrice, 4) }}</span>
+        </div>
+        <div class="cell cell--right">
+          <span class="label">{{ _t18('copy_trade_open_time') }}</span>
+          <span class="value value--time">{{ masked ? MASK : (record.openTime || '--') }}</span>
+        </div>
+        <div class="cell">
+          <span class="label">{{ _t18('copy_trade_close_price') }}</span>
+          <span class="value ff-num">{{ masked ? MASK : priceFormat(record.closePrice, 4) }}</span>
+        </div>
+        <div class="cell cell--right">
+          <span class="label">{{ _t18('copy_trade_close_time') }}</span>
+          <span class="value value--time">{{ masked ? MASK : (record.closeTime || '--') }}</span>
+        </div>
+      </div>
+      <div class="position-row position-row--pnl">
+        <span class="position-row__left ff-num" :class="masked ? '' : pnlClass(record.earn)">
+          {{ _t18('copy_trade_pnl_label') }}{{ masked ? MASK : formatPnl(record.earn) }}
+        </span>
+        <span class="position-row__right ff-num" :class="masked ? '' : pnlClass(record.earn)">
+          {{ _t18('copy_trade_pnl_rate') }} {{ masked ? MASK : `${recordPnlRate(record)}%` }}
+        </span>
+      </div>
+    </template>
+    <!-- 当前持仓 -->
+    <div v-else class="position-card__grid">
       <div class="cell">
         <span class="label">{{ _t18('copy_trade_open_price') }}</span>
-        <span class="value ff-num">{{ priceFormat(record.openPrice) }}</span>
+        <span class="value ff-num">{{ priceFormat(record.openPrice, 4) }}</span>
       </div>
       <div class="cell">
         <span class="label">{{ _t18('copy_trade_pnl_usdt') }}</span>
         <span class="value ff-num" :class="masked ? '' : pnlClass(record.earn)">{{ masked ? MASK : formatPnl(record.earn) }}</span>
       </div>
-      <div class="cell">
-        <span class="label">{{ _t18('copy_trade_close_price') }}</span>
-        <span class="value ff-num">{{ masked ? MASK : priceFormat(record.closePrice) }}</span>
-      </div>
-      <div class="cell">
-        <span class="label">{{ _t18('copy_trade_pnl_rate') }}</span>
-        <span class="value ff-num" :class="masked ? '' : pnlClass(record.earn)">{{ masked ? MASK : `${recordPnlRate(record)}%` }}</span>
-      </div>
       <div class="cell cell--full">
         <span class="label">{{ _t18('copy_trade_open_time') }}</span>
         <span class="value">{{ record.openTime || '--' }}</span>
-      </div>
-      <div class="cell cell--full">
-        <span class="label">{{ _t18('copy_trade_close_time') }}</span>
-        <span class="value">{{ masked ? MASK : (record.closeTime || '--') }}</span>
       </div>
     </div>
   </div>
@@ -55,7 +73,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { _t18 } from '@/utils/public'
 import { _div, _mul, _sub, priceFormat } from '@/utils/decimal'
-import { symbolPair, formatPnl, pnlClass, copyTradePositionSymbol } from '../utils'
+import { symbolPair, formatPnl, pnlClass, formatWaitBuyPositionLabel, isWaitBuyPositionStatus } from '../utils'
 
 const MASK = '***'
 
@@ -70,14 +88,16 @@ const i18n = useI18n()
 const t18 = (key, platform = []) => _t18(key, platform, i18n)
 
 const displayPair = computed(() => {
-  const raw = props.record?.symbol || props.parentSymbol
+  const raw =
+    props.record?.symbol ||
+    props.record?.coin ||
+    props.record?.coinSymbol ||
+    props.parentSymbol
   if (!raw) return '--'
-  const normalized = copyTradePositionSymbol(
-    { runningSymbol: raw, params: { runningSymbol: raw } },
-    t18
-  )
-  if (/[\u4e00-\u9fff]/.test(normalized)) return normalized
-  return symbolPair(raw)
+  const trimmed = String(raw).trim()
+  if (isWaitBuyPositionStatus(trimmed)) return formatWaitBuyPositionLabel(t18)
+  if (/[\u4e00-\u9fff]/.test(trimmed)) return trimmed
+  return symbolPair(trimmed)
 })
 
 const displayStatus = computed(() => {
@@ -87,10 +107,9 @@ const displayStatus = computed(() => {
     props.record?.params?.statusText ||
     props.record?.params?.positionStatusText
   if (raw) {
-    return copyTradePositionSymbol(
-      { runningSymbol: String(raw), params: { runningSymbol: String(raw) } },
-      t18
-    )
+    const text = String(raw).trim()
+    if (isWaitBuyPositionStatus(text)) return formatWaitBuyPositionLabel(t18)
+    return text
   }
   if (props.closed) return t18('copy_trade_position_closed')
   return t18('copy_trade_position_holding')
@@ -176,6 +195,40 @@ $muted: #888;
     color: #666;
   }
 }
+.position-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  line-height: 1.4;
+  &--pnl {
+    margin-top: 10px;
+  }
+}
+.position-row__left {
+  flex: 1;
+  min-width: 0;
+  color: #1a1a1a;
+  &.is-up {
+    color: $green;
+  }
+  &.is-down {
+    color: $red;
+  }
+}
+.position-row__right {
+  flex-shrink: 0;
+  text-align: right;
+  color: #1a1a1a;
+  font-size: 13px;
+  &.is-up {
+    color: $green;
+  }
+  &.is-down {
+    color: $red;
+  }
+}
 .position-card__grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -185,8 +238,13 @@ $muted: #888;
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 0;
   &--full {
     grid-column: 1 / -1;
+  }
+  &--right {
+    align-items: flex-end;
+    text-align: right;
   }
   .label {
     font-size: 12px;
@@ -200,6 +258,11 @@ $muted: #888;
     }
     &.is-down {
       color: $red;
+    }
+    &--time {
+      font-size: 12px;
+      line-height: 1.3;
+      white-space: nowrap;
     }
   }
 }

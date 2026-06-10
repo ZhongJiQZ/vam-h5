@@ -108,14 +108,14 @@
               <p class="detail-link">{{ _t18('copy_trade_view_detail') }} ›</p>
             </div>
             <div
-              v-if="getRecordGroups(item).holding.length || getRecordGroups(item).closed.length"
+              v-if="getDailyBattle(item).holding.length || getDailyBattle(item).days.length"
               class="records-outer"
               @click.stop
             >
-              <div v-if="getRecordGroups(item).holding.length" class="records-section">
+              <div v-if="getDailyBattle(item).holding.length" class="records-section">
                 <h4 class="records-title">{{ _t18('copy_trade_position_holding') }}</h4>
                 <PositionRecordCard
-                  v-for="(rec, rIdx) in getRecordGroups(item).holding"
+                  v-for="(rec, rIdx) in getDailyBattle(item).holding"
                   :key="rec.orderNo || `${item.id}-h-${rIdx}`"
                   :record="rec"
                   :parent-symbol="copyTradeRunningSymbol(item)"
@@ -123,11 +123,17 @@
                   :closed="false"
                 />
               </div>
-              <div v-if="getRecordGroups(item).closed.length" class="records-section">
-                <h4 class="records-title">{{ _t18('copy_trade_history_positions') }}</h4>
+              <div
+                v-for="dayGroup in getDailyBattle(item).days"
+                :key="`${item.id}-${dayGroup.date}`"
+                class="records-section"
+              >
+                <h4 class="records-title">
+                  {{ dayGroup.date === 'unknown' ? _t18('copy_trade_daily_record') : `${dayGroup.date} ${_t18('copy_trade_daily_record')}` }}
+                </h4>
                 <PositionRecordCard
-                  v-for="(rec, rIdx) in getRecordGroups(item).closed"
-                  :key="rec.orderNo || `${item.id}-c-${rIdx}`"
+                  v-for="(rec, rIdx) in dayGroup.records"
+                  :key="rec.orderNo || `${item.id}-d-${dayGroup.date}-${rIdx}`"
                   :record="rec"
                   :parent-symbol="copyTradeRunningSymbol(item)"
                   :masked="false"
@@ -190,26 +196,21 @@
             <p class="detail-link">{{ _t18('copy_trade_view_detail') }} ›</p>
             </div>
             <div
-              v-if="getRecordGroups(item).holding.length || getRecordGroups(item).closed.length"
+              v-if="getDailyBattle(item).holding.length || getDailyBattle(item).days.length"
               class="records-outer"
               @click.stop
             >
-              <div v-if="getRecordGroups(item).holding.length" class="records-section">
-                <h4 class="records-title">{{ _t18('copy_trade_position_holding') }}</h4>
+              <div
+                v-for="dayGroup in getDailyBattle(item).days"
+                :key="`${item.id}-ended-${dayGroup.date}`"
+                class="records-section"
+              >
+                <h4 class="records-title">
+                  {{ dayGroup.date === 'unknown' ? _t18('copy_trade_daily_record') : `${dayGroup.date} ${_t18('copy_trade_daily_record')}` }}
+                </h4>
                 <PositionRecordCard
-                  v-for="(rec, rIdx) in getRecordGroups(item).holding"
-                  :key="rec.orderNo || `${item.id}-h-${rIdx}`"
-                  :record="rec"
-                  :parent-symbol="copyTradeRunningSymbol(item)"
-                  masked
-                  :closed="false"
-                />
-              </div>
-              <div v-if="getRecordGroups(item).closed.length" class="records-section">
-                <h4 class="records-title">{{ _t18('copy_trade_history_positions') }}</h4>
-                <PositionRecordCard
-                  v-for="(rec, rIdx) in getRecordGroups(item).closed"
-                  :key="rec.orderNo || `${item.id}-c-${rIdx}`"
+                  v-for="(rec, rIdx) in dayGroup.records"
+                  :key="rec.orderNo || `${item.id}-ed-${dayGroup.date}-${rIdx}`"
                   :record="rec"
                   :parent-symbol="copyTradeRunningSymbol(item)"
                   :masked="false"
@@ -253,7 +254,7 @@ import {
   formatCopyTradeStrategyStartTime,
   formatCopyTradeStrategyEndTime,
   copyTradeHasAmount,
-  splitCopyTradeRecords,
+  groupCopyTradeDailyBattleRecords,
   normalizeCopyTradeListResponse
 } from './utils'
 import dayjs from '@/plugin/dayjs/index'
@@ -284,8 +285,8 @@ function endedPnl(item) {
   return item?.params?.totalSettledProfit ?? item?.actualProfit ?? item?.params?.netProfit ?? 0
 }
 
-function getRecordGroups(item) {
-  return splitCopyTradeRecords(item?.records)
+function getDailyBattle(item) {
+  return groupCopyTradeDailyBattleRecords(item?.records)
 }
 
 function cycleRange(item) {

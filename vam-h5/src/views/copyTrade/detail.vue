@@ -39,7 +39,7 @@
           <div class="kv-list">
             <div class="kv">
               <span>{{ _t18('copy_trade_amount') }}</span>
-              <span class="ff-num">{{ priceFormat(order.amount) }} USDT</span>
+              <span class="ff-num">{{ priceFormat(order.amount, 2) }} USDT</span>
             </div>
             <div class="kv">
               <span>{{ _t18('copy_trade_strategy_start_time') }}</span>
@@ -79,7 +79,7 @@
             </div>
             <div class="kv">
               <span>{{ _t18('copy_trade_profit_share_amt') }}</span>
-              <span class="ff-num">{{ priceFormat(order.profitShareAmt ?? 0) }} USDT</span>
+              <span class="ff-num">{{ priceFormat(order.profitShareAmt ?? 0, 2) }} USDT</span>
             </div>
             <template v-if="order.status === 1">
               <div class="kv kv--no-border">
@@ -294,7 +294,7 @@ async function confirmAppend(amount) {
 function openStop() {
   const order = primaryOrder.value
   stopRows.value = [
-    { label: t18('copy_trade_amount'), value: `${priceFormat(order.amount)} USDT`, cls: '' },
+    { label: t18('copy_trade_amount'), value: `${priceFormat(order.amount, 2)} USDT`, cls: '' },
     {
       label: t18('copy_trade_trade_fee'),
       value: `${priceFormat(order.tradeFee ?? 0, 2)} USDT`,
@@ -302,7 +302,7 @@ function openStop() {
     },
     {
       label: t18('copy_trade_profit_share_amt'),
-      value: `${priceFormat(order.profitShareAmt ?? 0)} USDT`,
+      value: `${priceFormat(order.profitShareAmt ?? 0, 2)} USDT`,
       cls: ''
     }
   ]

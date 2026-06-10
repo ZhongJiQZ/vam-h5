@@ -60,9 +60,6 @@
           <Nodata v-if="!loading && institutionList.length === 0" />
         </div>
 
-        <button type="button" class="my-link" @click="router.push('/copy-trade/my')">
-          {{ _t18('copy_trade_my') }}
-        </button>
       </div>
     </van-pull-refresh>
 
@@ -390,16 +387,6 @@ $green: #17ac74;
     font-weight: 600;
     color: #374151;
   }
-}
-
-.my-link {
-  display: block;
-  margin: 8px auto 0;
-  border: none;
-  background: none;
-  color: $green;
-  font-size: 14px;
-  padding: 8px 16px;
 }
 
 </style>

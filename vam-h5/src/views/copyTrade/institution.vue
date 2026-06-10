@@ -167,7 +167,10 @@
       </div>
 
       <div class="bottom-bar">
-        <button type="button" class="join-btn" @click="goStrategies">
+        <button v-if="perfTab === 'my'" type="button" class="join-btn" @click="goMyCopy">
+          {{ t18('copy_trade_my') }}
+        </button>
+        <button v-else type="button" class="join-btn" @click="goStrategies">
           {{ t18('copy_trade_join_strategy') }}
         </button>
       </div>
@@ -529,6 +532,10 @@ function changeRange(r) {
 
 function goStrategies() {
   router.push({ path: '/copy-trade/strategies', query: { institutionId: institutionId.value } })
+}
+
+function goMyCopy() {
+  router.push({ path: '/copy-trade/my', query: { institutionId: institutionId.value } })
 }
 
 onMounted(async () => {

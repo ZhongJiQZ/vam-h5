@@ -11,9 +11,6 @@
           @click="showIntro = true"
         />
       </div>
-      <el-button size="mini" type="primary" plain @click="$router.push('/copyTrade/my')">
-        {{ $t("pc_copy_trade_my") }}
-      </el-button>
     </div>
 
     <el-row :gutter="16" v-loading="loading">

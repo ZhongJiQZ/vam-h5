@@ -228,10 +228,25 @@ export function copyTradeRunningSymbol(item) {
         ? params.activeSymbol
         : params.currentCoin != null
           ? params.currentCoin
-          : item.runningSymbol != null
-            ? item.runningSymbol
-            : "";
+          : params.symbol != null
+            ? params.symbol
+            : item.runningSymbol != null
+              ? item.runningSymbol
+              : item.symbol != null
+                ? item.symbol
+                : item.strategy && item.strategy.symbol != null
+                  ? item.strategy.symbol
+                  : "";
   return String(raw || "").trim();
+}
+
+function copyTradeHasRecordSymbol(item) {
+  const records = item && item.records;
+  if (!Array.isArray(records) || !records.length) return false;
+  return records.some((rec) => {
+    const sym = (rec && (rec.symbol || rec.coin || rec.coinSymbol || rec.symbolName)) || "";
+    return sym && !isWaitBuyPositionStatus(String(sym).trim());
+  });
 }
 
 function isWaitBuyPositionStatus(text) {
@@ -250,6 +265,9 @@ function formatWaitBuyPosition(translate) {
 /** 进行中且尚无成交时展示等待买入 */
 export function copyTradeShouldShowWaitBuy(item) {
   if (!item || item.status === 1) return false;
+  const running = copyTradeRunningSymbol(item);
+  if (running && !isWaitBuyPositionStatus(running)) return false;
+  if (copyTradeHasRecordSymbol(item)) return false;
   const params = item.params || {};
   if (params.activeSymbolKey === "copy.trade.symbol.wait_buy") return true;
   return copyTradeTradeCount(item) <= 0;

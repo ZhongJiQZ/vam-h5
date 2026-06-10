@@ -1453,6 +1453,7 @@
   "copy_trade_join_time_label": "Join time",
   "copy_trade_trading_days": "Trading days",
   "copy_trade_daily_perf": "Daily performance",
+  "copy_trade_daily_record": "Daily record",
   "copy_trade_weekly_perf": "Weekly performance",
   "copy_trade_desc_more": "More",
   "copy_trade_range_7d_total": "7-day total return",
@@ -1482,5 +1483,6 @@
   "copy_trade_join_condition": "Condition",
   "copy_trade_active_sub_count_gt": "Subordinate copy traders > {n}",
   "copy_trade_strategy_not_started": "Strategy not open yet, please wait",
-  "copy_trade_wait_institution_buy": "Waiting for institution to buy"
+  "copy_trade_wait_institution_buy": "Waiting for institution to buy",
+  "copy_trade_pnl_label": "PnL"
 }

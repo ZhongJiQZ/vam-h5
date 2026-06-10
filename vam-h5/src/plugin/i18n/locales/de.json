@@ -1479,5 +1479,7 @@
   "copy_trade_active_sub_count_gt": "Subordinate copy traders > {n}",
   "copy_trade_strategy_not_started": "Strategy not open yet, please wait",
   "copy_trade_wait_institution_buy": "Waiting for institution to buy",
-  "copy_trade_intro_doc_title": "Copy Trading Guide"
+  "copy_trade_intro_doc_title": "Copy Trading Guide",
+  "copy_trade_daily_record": "Daily record",
+  "copy_trade_pnl_label": "PnL"
 }

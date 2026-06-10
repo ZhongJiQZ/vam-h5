@@ -71,7 +71,8 @@
       </div>
 
       <div class="foot">
-        <el-button type="primary" @click="goStrategies">{{ $t("pc_copy_trade_join_strategy") }}</el-button>
+        <el-button v-if="perfTab === 'my'" type="primary" @click="goMyCopy">{{ $t("pc_copy_trade_my") }}</el-button>
+        <el-button v-else type="primary" @click="goStrategies">{{ $t("pc_copy_trade_join_strategy") }}</el-button>
       </div>
     </div>
   </div>
@@ -186,6 +187,9 @@ export default {
     },
     goStrategies() {
       this.$router.push({ path: "/copyTrade/strategies", query: { institutionId: this.institutionId } });
+    },
+    goMyCopy() {
+      this.$router.push({ path: "/copyTrade/my", query: { institutionId: this.institutionId } });
     },
   },
 };
