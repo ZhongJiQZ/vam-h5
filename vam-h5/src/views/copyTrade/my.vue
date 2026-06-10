@@ -93,7 +93,7 @@
                 </div>
                 <div class="kv">
                   <span>{{ _t18('copy_trade_current_symbol') }}</span>
-                  <span>{{ copyTradePositionSymbol(item) }}</span>
+                  <span>{{ copyTradePositionSymbol(item, t18) }}</span>
                 </div>
                 <div class="kv kv--no-border">
                   <span>{{ _t18('copy_trade_today_trades') }}</span>

@@ -1480,5 +1480,6 @@
   "copy_trade_submit_invite_required": "請輸入邀請碼",
   "copy_trade_join_condition": "條件",
   "copy_trade_active_sub_count_gt": "下級跟單人數＞{n}",
-  "copy_trade_strategy_not_started": "暫未開啟策略，請等待"
+  "copy_trade_strategy_not_started": "暫未開啟策略，請等待",
+  "copy_trade_wait_institution_buy": "等待機構買入"
 }

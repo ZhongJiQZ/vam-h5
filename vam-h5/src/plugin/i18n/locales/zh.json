@@ -1480,5 +1480,6 @@
   "copy_trade_submit_invite_required": "请输入邀请码",
   "copy_trade_join_condition": "条件",
   "copy_trade_active_sub_count_gt": "下级跟单人数＞{n}",
-  "copy_trade_strategy_not_started": "暂未开启策略，请等待"
+  "copy_trade_strategy_not_started": "暂未开启策略，请等待",
+  "copy_trade_wait_institution_buy": "等待机构买入"
 }

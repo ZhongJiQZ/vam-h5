@@ -23,7 +23,7 @@
 
           <el-row :gutter="12" class="meta-grid">
             <el-col :span="12">{{ $t("pc_copy_trade_amount") }}：{{ num(order.amount) }} USDT</el-col>
-            <el-col :span="12">{{ $t("pc_copy_trade_symbol") }}：{{ copyTradePositionSymbol(order) }}</el-col>
+            <el-col :span="12">{{ $t("pc_copy_trade_symbol") }}：{{ positionSymbol(order) }}</el-col>
             <el-col :span="12">{{ $t("pc_copy_trade_strategy_start_time") }}：{{ formatCopyTradeStrategyStartTime(order) }}</el-col>
             <el-col :span="12">{{ $t("pc_copy_trade_strategy_end_time") }}：{{ formatCopyTradeStrategyEndTime(order) }}</el-col>
             <el-col :span="12">{{ $t("pc_copy_trade_join_time") }}：{{ formatCopyTradeJoinTime(order) }}</el-col>
@@ -277,7 +277,9 @@ export default {
     formatCopyTradeStrategyStartTime,
     formatCopyTradeStrategyEndTime,
     formatCopyTradeJoinTime,
-    copyTradePositionSymbol,
+    positionSymbol(order) {
+      return copyTradePositionSymbol(order, (key) => this.$t(key));
+    },
     profitShareRateText(rate) {
       const n = Number(rate);
       if (!Number.isFinite(n) || n === 0) return this.$t("pc_copy_trade_profit_share_rate_none");

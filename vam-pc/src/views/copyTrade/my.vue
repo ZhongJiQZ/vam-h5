@@ -22,7 +22,7 @@
 
         <el-row :gutter="10" class="meta-grid">
           <el-col :span="12">{{ $t("pc_copy_trade_amount") }}：{{ num(item.amount) }} USDT</el-col>
-          <el-col :span="12">{{ $t("pc_copy_trade_symbol") }}：{{ copyTradePositionSymbol(item) }}</el-col>
+          <el-col :span="12">{{ $t("pc_copy_trade_symbol") }}：{{ positionSymbol(item) }}</el-col>
           <el-col :span="12">{{ $t("pc_copy_trade_strategy_start_time") }}：{{ formatCopyTradeStrategyStartTime(item) }}</el-col>
           <el-col :span="12">{{ $t("pc_copy_trade_strategy_end_time") }}：{{ formatCopyTradeStrategyEndTime(item) }}</el-col>
           <el-col :span="12">{{ $t("pc_copy_trade_cycle_progress") }}：{{ cycleProgress(item) }}</el-col>
@@ -185,7 +185,9 @@ export default {
     },
     formatCopyTradeStrategyStartTime,
     formatCopyTradeStrategyEndTime,
-    copyTradePositionSymbol,
+    positionSymbol(item) {
+      return copyTradePositionSymbol(item, (key) => this.$t(key));
+    },
     copyTradePnlRate,
     pnlClass(v) {
       const n = Number(v);

@@ -59,7 +59,7 @@
             </div>
             <div v-if="order.status === 0" class="kv">
               <span>{{ _t18('copy_trade_current_symbol') }}</span>
-              <span>{{ copyTradePositionSymbol(order) }}</span>
+              <span>{{ copyTradePositionSymbol(order, t18) }}</span>
             </div>
             <div class="kv">
               <span>{{ _t18('copy_trade_today_trades') }}</span>

@@ -152,11 +152,25 @@ export function copyTradeRunningSymbol(item) {
   return String(raw || '').trim()
 }
 
-/** 当前持仓展示 */
-export function copyTradePositionSymbol(item) {
+function isWaitBuyPositionStatus(text) {
+  const s = String(text || '').trim()
+  return /^等待买入$/i.test(s) || /^wait(ing)?\s*(to\s*)?buy$/i.test(s)
+}
+
+/** 当前持仓展示（等待买入 → 等待机构买入） */
+export function copyTradePositionSymbol(item, translate) {
   const running = copyTradeRunningSymbol(item)
-  if (running) return running.toUpperCase()
-  return '--'
+  if (!running) return '--'
+  const trimmed = String(running).trim()
+  if (isWaitBuyPositionStatus(trimmed)) {
+    if (typeof translate === 'function') {
+      const msg = translate('copy_trade_wait_institution_buy')
+      if (msg && msg !== 'copy_trade_wait_institution_buy') return msg
+    }
+    return '等待机构买入'
+  }
+  if (/[\u4e00-\u9fff]/.test(trimmed)) return trimmed
+  return trimmed.toUpperCase()
 }
 
 function pickCopyTradeMillis(item, key) {

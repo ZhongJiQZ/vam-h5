@@ -2,11 +2,11 @@
   <div class="position-card">
     <div class="position-card__head">
       <div class="position-card__pair">
-        <span class="pair">{{ masked ? MASK : symbolPair(record.symbol || parentSymbol) }}</span>
+        <span class="pair">{{ displayPair }}</span>
         <span class="tag tag--muted">{{ masked ? MASK : _t18('copy_trade_usdt_contract') }}</span>
       </div>
       <span class="status-tag" :class="closed ? 'status-tag--closed' : 'status-tag--open'">
-        {{ masked ? MASK : (closed ? _t18('copy_trade_position_closed') : _t18('copy_trade_position_holding')) }}
+        {{ displayStatus }}
       </span>
     </div>
     <div class="position-card__tags">
@@ -51,11 +51,50 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { _t18 } from '@/utils/public'
 import { _div, _mul, _sub, priceFormat } from '@/utils/decimal'
-import { symbolPair, formatPnl, pnlClass } from '../utils'
+import { symbolPair, formatPnl, pnlClass, copyTradePositionSymbol } from '../utils'
 
 const MASK = '***'
+
+const props = defineProps({
+  record: { type: Object, default: () => ({}) },
+  parentSymbol: { type: String, default: '' },
+  closed: { type: Boolean, default: true },
+  masked: { type: Boolean, default: false }
+})
+
+const i18n = useI18n()
+const t18 = (key, platform = []) => _t18(key, platform, i18n)
+
+const displayPair = computed(() => {
+  const raw = props.record?.symbol || props.parentSymbol
+  if (!raw) return '--'
+  const normalized = copyTradePositionSymbol(
+    { runningSymbol: raw, params: { runningSymbol: raw } },
+    t18
+  )
+  if (/[\u4e00-\u9fff]/.test(normalized)) return normalized
+  return symbolPair(raw)
+})
+
+const displayStatus = computed(() => {
+  const raw =
+    props.record?.statusText ||
+    props.record?.positionStatusText ||
+    props.record?.params?.statusText ||
+    props.record?.params?.positionStatusText
+  if (raw) {
+    return copyTradePositionSymbol(
+      { runningSymbol: String(raw), params: { runningSymbol: String(raw) } },
+      t18
+    )
+  }
+  if (props.closed) return t18('copy_trade_position_closed')
+  return t18('copy_trade_position_holding')
+})
 
 function recordLeverageText(record) {
   const n = Number(record?.leverage)
@@ -73,12 +112,6 @@ function recordPnlRate(record) {
   return priceFormat(_mul(raw, 100), 2)
 }
 
-defineProps({
-  record: { type: Object, default: () => ({}) },
-  parentSymbol: { type: String, default: '' },
-  closed: { type: Boolean, default: true },
-  masked: { type: Boolean, default: false }
-})
 </script>
 
 <style lang="scss" scoped>
