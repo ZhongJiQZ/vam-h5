@@ -1,5 +1,4 @@
 {
-
   "language_key": "中文简体",
   "language_key_env": "中",
   "nation_United States of America": "美国",
@@ -529,6 +528,7 @@
   "please_pwd": "请填写密码",
   "please_email": "请填写邮箱",
   "please_mobile": "请填写手机号",
+  "mobile_id_length_error": "印尼手机号（不含区号）须为 10–13 位数字",
   "please_code": "请填写验证码",
   "reset_success": "重置成功",
   "areacode": "选择区号",
@@ -1133,20 +1133,20 @@
   "robinhood2_recharge_fast": "快捷充币",
   "math_exchange_bullish": "看涨",
   "math_exchange_bearish": "看跌",
-  "center_myasset":"我的资产",
-  "center_order":"订单中心",
-  "center_asset_flow":"资金记录",
+  "center_myasset": "我的资产",
+  "center_order": "订单中心",
+  "center_asset_flow": "资金记录",
   "order_second": "币币交易",
   "order_spot": "U本位合约",
   "order_contract": "秒合约",
-  "flow_asset":"资金记录",
-  "flow_deposit":"充值记录",
-  "flow_withdraw":"提现记录",
-  "others":{
-    "please_select_a_chain":"请选择公链",
-    "wallet_address_cannot_be_empty":"钱包地址不能为空",
-    "invalid_address":"钱包地址不正确",
-    "userid_null":"用户ID为空"
+  "flow_asset": "资金记录",
+  "flow_deposit": "充值记录",
+  "flow_withdraw": "提现记录",
+  "others": {
+    "please_select_a_chain": "请选择公链",
+    "wallet_address_cannot_be_empty": "钱包地址不能为空",
+    "invalid_address": "钱包地址不正确",
+    "userid_null": "用户ID为空"
   },
-  "paste":"粘帖"
+  "paste": "粘帖"
 }

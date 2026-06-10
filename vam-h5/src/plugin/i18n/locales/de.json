@@ -551,6 +551,7 @@
   "please_pwd": "Bitte Passwort eingeben",
   "please_email": "Bitte E-Mail-Adresse eingeben",
   "please_mobile": "Bitte Handynummer eingeben",
+  "mobile_id_length_error": "Indonesische Handynummer muss 10–13 Ziffern haben (ohne Ländervorwahl)",
   "please_code": "Bitte Verifizierungscode eingeben",
   "reset_success": "Zurücksetzen erfolgreich",
   "areacode": "Ländervorwahl auswählen",

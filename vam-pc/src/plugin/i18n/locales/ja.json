@@ -528,6 +528,7 @@
   "please_pwd": "パスワードを入力してください",
   "please_email": "メールアドレスを入力してください",
   "please_mobile": "携帯電話番号を入力してください",
+  "mobile_id_length_error": "インドネシアの携帯番号（国番号を除く）は10〜13桁である必要があります",
   "please_code": "認証コードを入力してください",
   "reset_success": "リセットが成功しました",
   "areacode": "国番号を選択してください",
@@ -1132,7 +1133,7 @@
   "robinhood2_recharge_fast": "高速入金",
   "math_exchange_bullish": "上昇",
   "math_exchange_bearish": "下落",
-  "center_myasset":"My Assets",
-  "center_order":"Orders",
-  "center_asset_flow":"Asset Details"
+  "center_myasset": "My Assets",
+  "center_order": "Orders",
+  "center_asset_flow": "Asset Details"
 }

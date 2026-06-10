@@ -528,6 +528,7 @@
   "please_pwd": "Vui lòng điền mật khẩu",
   "please_email": "Vui lòng nhập email",
   "please_mobile": "Vui lòng điền số điện thoại của bạn",
+  "mobile_id_length_error": "Số điện thoại Indonesia (không gồm mã quốc gia) phải có 10–13 chữ số",
   "please_code": "Vui lòng điền mã xác minh",
   "reset_success": "thiết lập lại thành công",
   "areacode": "chọn mã vùng",

@@ -45,6 +45,7 @@
 
 <script setup>
 import { _getConfig, _t18 } from '@/utils/public'
+import { validateMobileByAreaCode } from '@/utils/phoneValidate'
 import ButtonBar from '@/components/common/ButtonBar/index.vue'
 import { signUp, signIn, backPwdToEmail } from '@/api/user'
 import { check as checkETH, connect as connectETH } from '@/plugin/chain/eth'
@@ -133,25 +134,31 @@ const toLogin = () => {
       return
     }
   } else if (props.formDataToLogin.type == 3) {
-    // 手机登录
+    // 手机登录：手机号 + 密码，无需短信验证码
+    const mobileCheck = validateMobileByAreaCode(
+      props.formDataToLogin.areaCode,
+      props.formDataToLogin.mobile
+    )
+    if (!mobileCheck.ok) {
+      _toast(mobileCheck.key)
+      return
+    }
     formData.phone =
-      String(props.formDataToLogin.areaCode ?? '') + String(props.formDataToLogin.mobile ?? '').trim() //区号+手机号
+      String(props.formDataToLogin.areaCode ?? '') + mobileCheck.digits
+    formData.loginPassword = String(props.formDataToLogin.password ?? '')
     formData.signType = 2
-    if (props.formDataToLogin.mobile == '') {
-      //手机号
-      _toast('please_mobile')
+    if (formData.loginPassword === '') {
+      _toast('please_pwd')
       return
     }
   }
-  // 验证码
-  if (props.formDataToLogin.type == 2 || props.formDataToLogin.type == 3) {
+  // 验证码（仅邮箱登录需要短信/邮箱验证码）
+  if (props.formDataToLogin.type == 2) {
     if (formData.code == '') {
-      // _toast('请填写验证码')
-      // msg = 'please_code'
       _toast('please_code')
       return
     }
-  } else {
+  } else if (props.formDataToLogin.type == 1) {
     if (formData.code == '' && mainStore.getISCode) {
       // _toast('请填写验证码')
       // msg = 'please_code'
@@ -272,6 +279,14 @@ const toWalletLogin = async () => {
     })
 }
 
+/** 注册时手机号是否必填（手机注册；vam 账号/邮箱注册也需手机号） */
+const isRegisterPhoneRequired = (type) => {
+  if (type == 3) return true
+  return (
+    ['vam'].includes(__config._APP_ENV) && (type == 1 || type == 2)
+  )
+}
+
 /**
  * 注册
  */
@@ -304,13 +319,6 @@ const toResgister = () => {
     }
   } else if (props.formDataToRegister.type == 2) {
     formData.email = props.formDataToRegister.email //邮箱
-    if (['aams'].includes(__config._APP_ENV)) {
-      formData.phone = props.formDataToRegister.areaCode + props.formDataToRegister.mobile //区号+手机号
-      if (props.formDataToRegister.mobile == '') {
-        _toast('please_mobile')
-        return
-      }
-    }
     // 邮箱注册
     formData.signType = 1
     if (formData.email == '') {
@@ -318,14 +326,22 @@ const toResgister = () => {
       return
     }
   } else if (props.formDataToRegister.type == 3) {
-    // 手机注册
-    formData.phone = props.formDataToRegister.areaCode + props.formDataToRegister.mobile //区号+手机号
+    // 手机注册：无需短信验证码
     formData.signType = 2
-    if (props.formDataToRegister.mobile == '') {
-      _toast('please_mobile')
+  }
+
+  if (isRegisterPhoneRequired(props.formDataToRegister.type)) {
+    const mobileCheck = validateMobileByAreaCode(
+      props.formDataToRegister.areaCode,
+      props.formDataToRegister.mobile
+    )
+    if (!mobileCheck.ok) {
+      _toast(mobileCheck.key)
       return
     }
+    formData.phone = String(props.formDataToRegister.areaCode ?? '') + mobileCheck.digits
   }
+
   if (formData.loginPassword == '') {
     // msg = 'please_pwd'
     _toast('please_pwd')
@@ -339,13 +355,13 @@ const toResgister = () => {
     _toast('please_shareCode')
     return
   }
-  // 验证码
-  if (props.formDataToRegister.type == 2 || props.formDataToRegister.type == 3) {
+  // 验证码（仅邮箱注册需要）
+  if (props.formDataToRegister.type == 2) {
     if (formData.code == '') {
       _toast('please_code')
       return
     }
-  } else {
+  } else if (props.formDataToRegister.type == 1) {
     if (formData.code == '' && mainStore.getISCode) {
       // _toast('请填写验证码')
       // msg = 'please_code'

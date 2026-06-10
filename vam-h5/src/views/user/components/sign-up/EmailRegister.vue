@@ -7,17 +7,20 @@
         <input type="text" :placeholder="_t18('login_emailCode')" v-model="formData2.email" />
       </div>
     </div>
-    <div v-if="['aams'].includes(_getConfig('_APP_ENV'))" class="formData">
+    <div v-if="['vam'].includes(_getConfig('_APP_ENV'))" class="formData">
       <!-- 手机号 -->
-      <p>{{ _t18('login_mobileCode') }}</p>
+      <p>
+        {{ _t18('login_mobileCode') }}
+        <i>({{ _t18('required') }})</i>
+      </p>
       <div>
-        <input type="text" :placeholder="_t18('login_mobileCode')" v-model="formData2.mobile" />
         <div class="right" @click="shouAreaCode">
           <i>+</i>
           <p>{{ formData2.areaCode }}</p>
           <svg-load name="jiantou10x5-x" class="jiantou"></svg-load>
         </div>
-      </div>
+        <input type="text" :placeholder="_t18('login_mobileCode')" v-model="formData2.mobile" />
+      </div> 
     </div>
     <div class="formData">
       <!-- 密码 -->
@@ -79,6 +82,7 @@ import { emailCode } from '@/api/user'
 import { showToast } from 'vant'
 import { useToast } from '@/hook/useToast'
 import AreaCode from './../areaCode.vue'
+import { getCurrentLanguagePhoneCode } from '@/utils/languageCountry'
 const { _toast } = useToast()
 import { useRoute } from 'vue-router'
 const route = useRoute()
@@ -93,7 +97,7 @@ const formData2 = ref({
   invitCode: route.query.invite_code, //邀请码
   code: '', //验证码
   mobile: '', // 手机号
-  areaCode: '93' //区号
+  areaCode: getCurrentLanguagePhoneCode() //区号
 })
 const requirePass = ref(false)
 const inputPass = () => {

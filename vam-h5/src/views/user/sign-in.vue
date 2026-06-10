@@ -41,7 +41,7 @@ import EmailLogin from './components/sign-in/EmailLogin.vue'
 import MobileLogin from './components/sign-in/MobileLogin.vue'
 import { useMainStore } from '@/store/index.js'
 import logoPng from '@/assets/images/login/logo-black.png'
-import langPng from '@/assets/images/login/lang.png'
+import langPng from '@/assets/images/language.png'
 
 /**
  * 登录注册方式

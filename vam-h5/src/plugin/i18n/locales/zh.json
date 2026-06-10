@@ -552,6 +552,7 @@
   "please_pwd": "请填写密码",
   "please_email": "请填写邮箱",
   "please_mobile": "请填写手机号",
+  "mobile_id_length_error": "印尼手机号（不含区号）须为 10–13 位数字",
   "please_code": "请填写验证码",
   "reset_success": "重置成功",
   "areacode": "选择区号",

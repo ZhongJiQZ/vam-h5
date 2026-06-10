@@ -197,6 +197,8 @@
 import { userInfoCerApi } from "@/api/user";
 import { nation } from '@/config/nation';
 import { uploadFile } from "@/api/common";
+import { mapGetters } from "vuex";
+import { getDefaultCountryByLanguage } from "@/utils/languageCountry";
 export default {
   props: {
     userInfo: Object,
@@ -210,9 +212,10 @@ export default {
         frontUrl: "",
         backUrl: "",
         handelUrl: "",
-        country: "United States of America",
+        country: "",
         cardType: 1,
       },
+      isCountryTouched: false,
 
       // ✅ 全量国家列表（自动多语言 key：nation_xxx）
       countries: nation.map((n) => ({
@@ -234,12 +237,26 @@ export default {
       headerObj: { "Content-Type": "multipart/form-data" },
     };
   },
+  computed: {
+    ...mapGetters(["language"]),
+  },
+  watch: {
+    language() {
+      this.setDefaultCountry();
+    },
+  },
   created() {
     this.init();
+    this.setDefaultCountry();
   },
   methods: {
-    changeSelect() {},
-    changeSelect2() {},
+    setDefaultCountry() {
+      if (this.isCountryTouched) return;
+
+      const country = getDefaultCountryByLanguage(this.$i18n.locale || this.language);
+      const hasCountry = this.countries.some((item) => item.value === country);
+      this.form.country = hasCountry ? country : "United States of America";
+    },
     submit() {
       userInfoCerApi({
         ...this.form,
@@ -291,6 +308,7 @@ export default {
       return isLt2M;
     },
     changeSelect() {
+      this.isCountryTouched = true;
       //   this.getLoanProductInfo();
     },
     changeSelect2() {

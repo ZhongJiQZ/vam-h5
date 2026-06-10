@@ -528,6 +528,7 @@
   "please_pwd": "Veuillez remplir le mot de passe",
   "please_email": "veuillez entrer votre email",
   "please_mobile": "Veuillez renseigner votre numéro de téléphone",
+  "mobile_id_length_error": "Le numéro mobile indonésien doit comporter 10 à 13 chiffres (hors indicatif)",
   "please_code": "Veuillez remplir le code de vérification",
   "reset_success": "réinitialisation réussie",
   "areacode": "sélectionner l'indicatif régional",

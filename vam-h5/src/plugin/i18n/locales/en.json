@@ -552,6 +552,7 @@
   "please_pwd": "Please enter password",
   "please_email": "Please enter email",
   "please_mobile": "Please enter phone number",
+  "mobile_id_length_error": "Indonesian mobile number must be 10–13 digits (excluding country code)",
   "please_code": "Please enter verification code",
   "reset_success": "Reset successful",
   "areacode": "Select area code",

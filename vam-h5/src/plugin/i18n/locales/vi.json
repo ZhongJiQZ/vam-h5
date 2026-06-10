@@ -551,6 +551,7 @@
   "please_pwd": "Vui lòng nhập mật khẩu",
   "please_email": "Vui lòng nhập địa chỉ email",
   "please_mobile": "Vui lòng nhập số điện thoại",
+  "mobile_id_length_error": "Số điện thoại Indonesia (không gồm mã quốc gia) phải có 10–13 chữ số",
   "please_code": "Vui lòng nhập mã xác nhận",
   "reset_success": "Đặt lại thành công",
   "areacode": "Chọn mã vùng",

@@ -45,7 +45,7 @@ import EmailRegister from './components/sign-up/EmailRegister.vue'
 import MobileRegister from './components/sign-up/MobileRegister.vue'
 import { useMainStore } from '@/store/index.js'
 import logoPng from '@/assets/images/login/logo-black.png'
-import langPng from '@/assets/images/login/lang.png'
+import langPng from '@/assets/images/language.png'
 import closePng from '@/assets/images/login/close.png'
 
 /**

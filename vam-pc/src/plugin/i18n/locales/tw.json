@@ -528,6 +528,7 @@
   "please_pwd": "請填寫密碼",
   "please_email": "請填寫郵箱",
   "please_mobile": "請填寫手機號",
+  "mobile_id_length_error": "印尼手機號（不含區號）須為 10–13 位數字",
   "please_code": "請填寫驗證碼",
   "reset_success": "重置成功",
   "areacode": "選擇區號",
@@ -1132,18 +1133,18 @@
   "robinhood2_recharge_fast": "快捷充幣",
   "math_exchange_bullish": "看漲",
   "math_exchange_bearish": "看跌",
-  "center_myasset":"我的资产",
-  "center_order":"订单中心",
-  "center_asset_flow":"资金记录",
+  "center_myasset": "我的资产",
+  "center_order": "订单中心",
+  "center_asset_flow": "资金记录",
   "order_second": "币币交易",
   "order_spot": "U本位合约",
   "order_contract": "秒合约",
-  "others":{
-    "please_select_a_chain":"请选择公链",
-    "wallet_address_cannot_be_empty":"钱包地址不能为空",
-    "invalid_address":"钱包地址不正确",
-    "withdrawal_Please_enter_address":"请输入钱包地址",
-    "userid_null":"用户ID为空"
+  "others": {
+    "please_select_a_chain": "请选择公链",
+    "wallet_address_cannot_be_empty": "钱包地址不能为空",
+    "invalid_address": "钱包地址不正确",
+    "withdrawal_Please_enter_address": "请输入钱包地址",
+    "userid_null": "用户ID为空"
   },
-  "paste":"粘帖"
+  "paste": "粘帖"
 }

@@ -528,6 +528,7 @@
   "please_pwd": "Lütfen şifreyi girin",
   "please_email": "Lütfen E-postanızı girin",
   "please_mobile": "Lütfen telefon numaranızı giriniz",
+  "mobile_id_length_error": "Indonesian mobile number must be 10–13 digits (excluding country code)",
   "please_code": "Lütfen doğrulama kodunu doldurun",
   "reset_success": "Başarılı sıfırlama",
   "areacode": "Alan kodunu seçin",

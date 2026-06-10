@@ -528,6 +528,7 @@
   "please_pwd": "Si prega di inserire la password",
   "please_email": "per favore inserisci la tua email",
   "please_mobile": "Inserisci il tuo numero di telefono",
+  "mobile_id_length_error": "Il numero mobile indonesiano deve avere 10–13 cifre (escluso il prefisso)",
   "please_code": "Inserisci il codice di verifica",
   "reset_success": "ripristino riuscito",
   "areacode": "selezionare il prefisso",

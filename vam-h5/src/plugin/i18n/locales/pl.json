@@ -549,6 +549,7 @@
   "please_pwd": "Please fill in the password",
   "please_email": "Please fill in the email address",
   "please_mobile": "Please fill in your phone number",
+  "mobile_id_length_error": "Indonesian mobile number must be 10–13 digits (excluding country code)",
   "please_code": "Please fill in the verification code",
   "reset_success": "Reset successful",
   "areacode": "Select area code",
