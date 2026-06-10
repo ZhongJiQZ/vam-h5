@@ -239,17 +239,32 @@ function isWaitBuyPositionStatus(text) {
   return /^等待买入$/i.test(s) || /^wait(ing)?\s*(to\s*)?buy$/i.test(s);
 }
 
+function formatWaitBuyPosition(translate) {
+  if (typeof translate === "function") {
+    const msg = translate("pc_copy_trade_wait_institution_buy");
+    if (msg && msg !== "pc_copy_trade_wait_institution_buy") return msg;
+  }
+  return "等待机构买入";
+}
+
+/** 进行中且尚无成交时展示等待买入 */
+export function copyTradeShouldShowWaitBuy(item) {
+  if (!item || item.status === 1) return false;
+  const params = item.params || {};
+  if (params.activeSymbolKey === "copy.trade.symbol.wait_buy") return true;
+  return copyTradeTradeCount(item) <= 0;
+}
+
 /** 当前持仓展示（等待买入 → 等待机构买入） */
 export function copyTradePositionSymbol(item, translate) {
+  if (copyTradeShouldShowWaitBuy(item)) {
+    return formatWaitBuyPosition(translate);
+  }
   const running = copyTradeRunningSymbol(item);
   if (!running) return "--";
   const trimmed = String(running).trim();
   if (isWaitBuyPositionStatus(trimmed)) {
-    if (typeof translate === "function") {
-      const msg = translate("pc_copy_trade_wait_institution_buy");
-      if (msg && msg !== "pc_copy_trade_wait_institution_buy") return msg;
-    }
-    return "等待机构买入";
+    return formatWaitBuyPosition(translate);
   }
   if (/[\u4e00-\u9fff]/.test(trimmed)) return trimmed;
   return trimmed.toUpperCase();
