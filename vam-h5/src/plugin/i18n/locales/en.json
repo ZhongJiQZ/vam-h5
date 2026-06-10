@@ -1339,6 +1339,7 @@
   "copy_trade_my": "My Copy Trades",
   "copy_trade_tab_ongoing": "Ongoing",
   "copy_trade_tab_ended": "Ended",
+  "copy_trade_status_exited": "Copy ended",
   "copy_trade_amount_range": "Amount",
   "copy_trade_follow_now": "Follow",
   "copy_trade_disabled": "Copy trading is not available",

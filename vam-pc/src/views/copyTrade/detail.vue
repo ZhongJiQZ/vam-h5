@@ -16,8 +16,8 @@
               <div v-else class="avatar avatar-empty"></div>
               <h3>{{ order.strategyName || meta.strategyName || "--" }}</h3>
             </div>
-            <el-tag size="mini" :type="order.status === 0 ? 'success' : 'info'">
-              {{ orderStatusText(order) }}
+            <el-tag size="mini" :type="copyTradeOrderTagType(order)">
+              {{ copyTradeOrderStatusText(order, (key) => $t(key)) }}
             </el-tag>
           </div>
 
@@ -43,9 +43,18 @@
             <div>{{ $t("pc_copy_trade_net_profit") }}：<span :class="pnlClass(orderNetProfit(order))">{{ signNum(orderNetProfit(order)) }} USDT</span></div>
           </div>
 
-          <div v-if="activeName === '0' && isPrimaryOrder(order) && order.status === 0" class="action-btns">
-            <el-button type="primary" plain @click="openAppend">{{ $t("pc_copy_trade_append") }}</el-button>
-            <el-button class="stop-btn" type="danger" :loading="stopping" @click="confirmExit">
+          <div
+            v-if="activeName === '0' && isPrimaryOrder(order) && order.status === 0 && (!isCopyTradeStrategyEnded(order) || canManualExitCopyTrade(order))"
+            class="action-btns"
+          >
+            <el-button v-if="!isCopyTradeStrategyEnded(order)" type="primary" plain @click="openAppend">{{ $t("pc_copy_trade_append") }}</el-button>
+            <el-button
+              v-if="canManualExitCopyTrade(order)"
+              class="stop-btn"
+              type="danger"
+              :loading="stopping"
+              @click="confirmExit"
+            >
               {{ $t("pc_copy_trade_stop") }}
             </el-button>
           </div>
@@ -130,6 +139,10 @@ import {
   formatCopyTradeStrategyEndTime,
   formatCopyTradeJoinTime,
   normalizeCopyTradeDetailResponse,
+  copyTradeOrderTagType,
+  copyTradeOrderStatusText,
+  isCopyTradeStrategyEnded,
+  canManualExitCopyTrade,
 } from "./utils";
 
 export default {
@@ -178,6 +191,10 @@ export default {
   },
   methods: {
     ...mapActions(["getUserInfo"]),
+    copyTradeOrderTagType,
+    copyTradeOrderStatusText,
+    isCopyTradeStrategyEnded,
+    canManualExitCopyTrade,
     resolveDetailTab(query = {}) {
       const raw = query.status != null ? query.status : query.tab;
       const tab = Number(raw);
@@ -200,11 +217,6 @@ export default {
     },
     isPrimaryOrder(order) {
       return String(order.id) === String(this.primaryOrder.id);
-    },
-    orderStatusText(order) {
-      if (order.params && order.params.statusText) return order.params.statusText;
-      if (order.status === 0) return this.$t("pc_copy_trade_tab_ongoing");
-      return this.$t("pc_copy_trade_tab_ended");
     },
     orderProfit(order) {
       if (Number(order.status) === 1) return Number(order.actualProfit || 0);

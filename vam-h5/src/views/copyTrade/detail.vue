@@ -31,8 +31,8 @@
             <div v-else class="avatar">{{ (order.strategyName || meta.strategyName || '?')[0] }}</div>
             <div>
               <p class="name">{{ order.strategyName || meta.strategyName }}</p>
-              <span class="badge" :class="order.status === 0 ? 'badge--ongoing' : 'badge--settled'">
-                {{ orderStatusText(order) }}
+              <span class="badge" :class="copyTradeOrderBadgeClass(order)">
+                {{ copyTradeOrderStatusText(order, t18) }}
               </span>
             </div>
           </div>
@@ -129,11 +129,19 @@
         </div>
       </div>
 
-      <div v-if="activeTab === 0 && primaryOrder.id && primaryOrder.status === 0" class="action-bar">
-        <button type="button" class="append-btn" @click="openAppend">
+      <div
+        v-if="activeTab === 0 && primaryOrder.id && primaryOrder.status === 0 && (!isCopyTradeStrategyEnded(primaryOrder) || canManualExitCopyTrade(primaryOrder))"
+        class="action-bar"
+      >
+        <button v-if="!isCopyTradeStrategyEnded(primaryOrder)" type="button" class="append-btn" @click="openAppend">
           {{ _t18('copy_trade_append') }}
         </button>
-        <button type="button" class="stop-btn" @click="openStop">
+        <button
+          v-if="canManualExitCopyTrade(primaryOrder)"
+          type="button"
+          class="stop-btn"
+          @click="openStop"
+        >
           {{ _t18('copy_trade_stop') }}
         </button>
       </div>
@@ -180,7 +188,11 @@ import {
   formatCopyTradeStrategyEndTime,
   formatCopyTradeJoinTime,
   normalizeCopyTradeDetailResponse,
-  splitCopyTradeRecords
+  splitCopyTradeRecords,
+  copyTradeOrderBadgeClass,
+  copyTradeOrderStatusText,
+  isCopyTradeStrategyEnded,
+  canManualExitCopyTrade
 } from './utils'
 import { showToast } from 'vant'
 
@@ -213,12 +225,6 @@ const primaryOrder = computed(() => {
   }
   return orders.value[0] || {}
 })
-
-function orderStatusText(order) {
-  if (order?.params?.statusText) return order.params.statusText
-  if (order?.status === 0) return t18('copy_trade_tab_ongoing')
-  return t18('copy_trade_settled')
-}
 
 function orderProfit(order) {
   if (order?.status === 1) return order.actualProfit

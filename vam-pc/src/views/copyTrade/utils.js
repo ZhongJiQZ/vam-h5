@@ -262,6 +262,33 @@ function formatWaitBuyPosition(translate) {
   return "等待机构买入";
 }
 
+export function isCopyTradeStrategyEnded(item) {
+  if (!item || item.status === 1) return true;
+  const params = item.params || {};
+  if (params.displayStatus === 1) return true;
+  if (params.strategySessionEnded != null) return Boolean(params.strategySessionEnded);
+  return params.statusTextKey === "copy.trade.order.status.exited";
+}
+
+export function canManualExitCopyTrade(item) {
+  if (!item || item.status === 1) return false;
+  return Boolean(item.params && item.params.canManualExit);
+}
+
+export function copyTradeOrderTagType(item) {
+  return isCopyTradeStrategyEnded(item) ? "info" : "success";
+}
+
+export function copyTradeOrderStatusText(item, translate) {
+  if (item && item.params && item.params.statusText) return item.params.statusText;
+  if (typeof translate === "function") {
+    return isCopyTradeStrategyEnded(item)
+      ? translate("pc_copy_trade_tab_ended")
+      : translate("pc_copy_trade_tab_ongoing");
+  }
+  return isCopyTradeStrategyEnded(item) ? "跟单结束" : "跟单中";
+}
+
 /** 进行中且尚无成交时展示等待买入 */
 export function copyTradeShouldShowWaitBuy(item) {
   if (!item || item.status === 1) return false;

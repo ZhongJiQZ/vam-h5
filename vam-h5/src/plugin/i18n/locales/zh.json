@@ -1339,6 +1339,7 @@
   "copy_trade_my": "我的跟单",
   "copy_trade_tab_ongoing": "进行中",
   "copy_trade_tab_ended": "已结束",
+  "copy_trade_status_exited": "跟单结束",
   "copy_trade_amount_range": "跟单金额",
   "copy_trade_follow_now": "立即跟单",
   "copy_trade_disabled": "跟单功能暂未开放",
