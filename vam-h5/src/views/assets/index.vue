@@ -53,7 +53,7 @@ import { useUserStore } from '@/store/user/index'
 import { useMainStore } from '@/store'
 import { storeToRefs } from 'pinia'
 import { storageDict } from '@/config/dict'
-import { showLoadingToast } from 'vant'
+import { showLoadingToast, closeToast } from 'vant'
 import { getFreezeList } from '@/api/user'
 import { DIFF_FREEZE_ASSETS } from '@/config/index'
 
@@ -114,10 +114,14 @@ const handleYanjin = () => {
   localStorage.setItem(storageDict.EYES, String(showNum.value))
 }
 
-const handleShuaxin = () => {
+const handleShuaxin = async () => {
   showLoadingToast({ forbidClick: true, duration: 0 })
-  userStore.getUserInfo()
-  getAccountFreezeList()
+  try {
+    await userStore.getUserInfo()
+    await getAccountFreezeList()
+  } finally {
+    closeToast()
+  }
 }
 
 const { asset } = storeToRefs(userStore)
