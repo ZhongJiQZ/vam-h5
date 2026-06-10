@@ -1317,6 +1317,7 @@
   "copy_trade_my": "我的跟單",
   "copy_trade_tab_ongoing": "進行中",
   "copy_trade_tab_ended": "已結束",
+  "copy_trade_status_exited": "跟單結束",
   "copy_trade_amount_range": "跟單金額",
   "copy_trade_follow_now": "立即跟單",
   "copy_trade_disabled": "跟單功能暫未開放",

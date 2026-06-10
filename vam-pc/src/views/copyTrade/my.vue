@@ -15,8 +15,8 @@
             <div v-else class="avatar avatar-empty"></div>
             <div class="title">{{ item.strategyName }}</div>
           </div>
-          <el-tag size="mini" :type="activeName === '0' ? 'success' : 'info'">
-            {{ item.params && item.params.statusText ? item.params.statusText : (activeName === "0" ? $t("pc_copy_trade_tab_ongoing") : $t("pc_copy_trade_tab_ended")) }}
+          <el-tag size="mini" :type="copyTradeOrderTagType(item)">
+            {{ copyTradeOrderStatusText(item, (key) => $t(key)) }}
           </el-tag>
         </div>
 
@@ -32,7 +32,7 @@
 
         <div class="card-foot" @click.stop>
           <el-button
-            v-if="activeName === '0'"
+            v-if="activeName === '0' && !isCopyTradeStrategyEnded(item)"
             size="mini"
             type="primary"
             plain
@@ -88,7 +88,17 @@
 <script>
 import { getCopyTradeList, appendCopyTrade } from "@/api/copyTrade";
 import { mapGetters, mapActions } from "vuex";
-import { copyTradeNetProfit, copyTradeTradeCount, copyTradePnlRate, copyTradePositionSymbol, formatCopyTradeStrategyStartTime, formatCopyTradeStrategyEndTime } from "./utils";
+import {
+  copyTradeNetProfit,
+  copyTradeTradeCount,
+  copyTradePnlRate,
+  copyTradePositionSymbol,
+  formatCopyTradeStrategyStartTime,
+  formatCopyTradeStrategyEndTime,
+  copyTradeOrderTagType,
+  copyTradeOrderStatusText,
+  isCopyTradeStrategyEnded,
+} from "./utils";
 
 export default {
   name: "CopyTradeMy",
@@ -121,6 +131,9 @@ export default {
   },
   methods: {
     ...mapActions(["getUserInfo"]),
+    copyTradeOrderTagType,
+    copyTradeOrderStatusText,
+    isCopyTradeStrategyEnded,
     async loadData() {
       this.loading = true;
       try {

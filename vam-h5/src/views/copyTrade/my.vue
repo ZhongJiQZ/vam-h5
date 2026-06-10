@@ -75,7 +75,9 @@
                 <div v-else class="avatar">{{ (item.strategyName || '?')[0] }}</div>
                 <div class="head-info">
                   <p class="name">{{ item.strategyName }}</p>
-                  <span class="badge badge--ongoing">{{ item.params?.statusText || _t18('copy_trade_tab_ongoing') }}</span>
+                  <span class="badge" :class="copyTradeOrderBadgeClass(item)">
+                    {{ copyTradeOrderStatusText(item, t18) }}
+                  </span>
                 </div>
               </div>
               <div class="kv-list">
@@ -100,7 +102,7 @@
                   <span class="ff-num">{{ copyTradeTradeCount(item) }}</span>
                 </div>
               </div>
-              <div v-if="copyTradeHasAmount(item)" class="card-actions" @click.stop>
+              <div v-if="copyTradeHasAmount(item) && !isCopyTradeStrategyEnded(item)" class="card-actions" @click.stop>
                 <button type="button" class="append-btn" @click="openAppend(item)">
                   {{ _t18('copy_trade_append') }}
                 </button>
@@ -255,7 +257,10 @@ import {
   formatCopyTradeStrategyEndTime,
   copyTradeHasAmount,
   groupCopyTradeDailyBattleRecords,
-  normalizeCopyTradeListResponse
+  normalizeCopyTradeListResponse,
+  copyTradeOrderBadgeClass,
+  copyTradeOrderStatusText,
+  isCopyTradeStrategyEnded
 } from './utils'
 import dayjs from '@/plugin/dayjs/index'
 import { showToast } from 'vant'

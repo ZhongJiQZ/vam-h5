@@ -173,6 +173,35 @@ export function formatWaitBuyPositionLabel(translate) {
   return '等待机构买入'
 }
 
+/** 策略执行已结束（展示为已结束，待手动退出或强平） */
+export function isCopyTradeStrategyEnded(item) {
+  if (!item || item.status === 1) return true
+  const params = item.params || {}
+  if (params.displayStatus === 1) return true
+  if (params.strategySessionEnded != null) return Boolean(params.strategySessionEnded)
+  return params.statusTextKey === 'copy.trade.order.status.exited'
+}
+
+/** 策略结束后、强平前可手动退出 */
+export function canManualExitCopyTrade(item) {
+  if (!item || item.status === 1) return false
+  return Boolean(item.params?.canManualExit)
+}
+
+export function copyTradeOrderBadgeClass(item) {
+  return isCopyTradeStrategyEnded(item) ? 'badge--settled' : 'badge--ongoing'
+}
+
+export function copyTradeOrderStatusText(item, translate) {
+  if (item?.params?.statusText) return item.params.statusText
+  if (typeof translate === 'function') {
+    return isCopyTradeStrategyEnded(item)
+      ? translate('copy_trade_status_exited')
+      : translate('copy_trade_tab_ongoing')
+  }
+  return isCopyTradeStrategyEnded(item) ? '跟单结束' : '跟单中'
+}
+
 function copyTradeHasRecordSymbol(item) {
   const records = item?.records
   if (!Array.isArray(records) || !records.length) return false
