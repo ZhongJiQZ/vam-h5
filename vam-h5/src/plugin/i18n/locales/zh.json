@@ -1325,6 +1325,7 @@
   "copy_trade_inst_subscribe": "订阅",
   "copy_trade_inst_subscribed": "已订阅",
   "copy_trade_inst_info_title": "说明",
+  "copy_trade_intro_doc_title": "跟单说明",
   "copy_trade_inst_info_default": "订阅机构后可接收该机构的跟单策略推送。",
   "copy_trade_inst_sub_ok": "订阅成功",
   "copy_trade_inst_sub_modal_hint": "该机构为私域邀请制，请输入机构线下发放的订阅邀请码",

@@ -14,6 +14,7 @@ import tw from "./langs/tw";
 import id from "./langs/id";
 import pk from "./langs/pk";
 import giftCertMessages from "./langs/giftCertMessages";
+import { getCopyTradeDocMessages } from "./copyTradeDocs";
 // import hk from './zh-hk.json'
 // import vi from './vi-vn.json'
 // import de from './de-DE.json'
@@ -95,6 +96,7 @@ const pcCopyTradeEn = {
   pc_copy_trade_contract_balance: "Contract balance",
   pc_copy_trade_insufficient_balance: "Insufficient balance",
   pc_copy_trade_inst_title: "Institutions",
+  pc_copy_trade_intro_doc_title: "Copy Trading Guide",
   pc_copy_trade_inst_empty: "No institutions",
   pc_copy_trade_inst_subscribers: "{n} subscribers",
   pc_copy_trade_inst_subscribe: "Subscribe",
@@ -223,6 +225,7 @@ const pcCopyTradeZh = {
   pc_copy_trade_contract_balance: "合约账户余额",
   pc_copy_trade_insufficient_balance: "余额不足",
   pc_copy_trade_inst_title: "机构信息",
+  pc_copy_trade_intro_doc_title: "跟单说明",
   pc_copy_trade_inst_empty: "暂无机构",
   pc_copy_trade_inst_subscribers: "{n} 人已订阅",
   pc_copy_trade_inst_subscribe: "订阅",
@@ -351,6 +354,7 @@ const pcCopyTradeTw = {
   pc_copy_trade_contract_balance: "合約賬戶餘額",
   pc_copy_trade_insufficient_balance: "餘額不足",
   pc_copy_trade_inst_title: "機構信息",
+  pc_copy_trade_intro_doc_title: "跟單說明",
   pc_copy_trade_inst_empty: "暫無機構",
   pc_copy_trade_inst_subscribers: "{n} 人已訂閱",
   pc_copy_trade_inst_subscribe: "訂閱",
@@ -432,6 +436,7 @@ function withPcCopyTrade(pack, locale) {
     ...pcCopyTradeEn,
     ...pack,
     ...localePack,
+    ...getCopyTradeDocMessages(locale),
   };
 }
 

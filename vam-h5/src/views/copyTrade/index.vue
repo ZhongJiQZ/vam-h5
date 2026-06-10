@@ -73,13 +73,7 @@
       @confirm="onSubscribeConfirm"
     />
 
-    <van-dialog
-      v-model:show="showInfo"
-      :title="_t18('copy_trade_inst_info_title')"
-      confirm-button-color="#17ac74"
-    >
-      <p class="info-dialog-text">{{ infoText }}</p>
-    </van-dialog>
+    <CopyTradeDocumentDrawer v-model:show="showInfo" :doc="introDoc" />
   </div>
 </template>
 
@@ -89,6 +83,8 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import InstitutionSubscribeDialog from './components/InstitutionSubscribeDialog.vue'
+import CopyTradeDocumentDrawer from './components/CopyTradeDocumentDrawer.vue'
+import { getCopyTradeIntroDoc } from './documents'
 import { _t18, _numberWithCommas } from '@/utils/public'
 import {
   getCopyTradeConfig,
@@ -116,7 +112,6 @@ const t18 = (key, platform = []) => _t18(key, platform, i18n)
 
 const institutionList = ref([])
 const bannerUrl = ref('')
-const configNote = ref('')
 const loading = ref(true)
 const refreshing = ref(false)
 const showInfo = ref(false)
@@ -124,7 +119,7 @@ const showSubscribe = ref(false)
 const subscribeTarget = ref({})
 const subscribeLoading = ref(false)
 
-const infoText = computed(() => configNote.value || t18('copy_trade_inst_info_default'))
+const introDoc = computed(() => getCopyTradeIntroDoc(t18))
 
 function formatProfitRate(val) {
   const n = Number(val)
@@ -157,7 +152,6 @@ async function loadData() {
       getCopyTradeInstitutionList({})
     ])
     if (cfgRes?.code == 200 && cfgRes.data) {
-      configNote.value = cfgRes.data.note || cfgRes.data.institutionNote || ''
       if (cfgRes.data.banner || cfgRes.data.bannerUrl) {
         bannerUrl.value = cfgRes.data.banner || cfgRes.data.bannerUrl
       }
@@ -408,11 +402,4 @@ $green: #17ac74;
   padding: 8px 16px;
 }
 
-.info-dialog-text {
-  padding: 8px 16px 16px;
-  font-size: 14px;
-  color: #4b5563;
-  line-height: 1.55;
-  margin: 0;
-}
 </style>

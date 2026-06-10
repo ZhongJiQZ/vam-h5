@@ -65,6 +65,7 @@ import {
   formatAmountRangeText,
   getStrategyJoinBlockMessage,
 } from "./utils";
+import { getCopyTradeAgreementDoc, getCopyTradeRiskDoc, resolveCopyTradeDoc } from "./documents";
 import { mapGetters, mapActions } from "vuex";
 
 export default {
@@ -107,6 +108,8 @@ export default {
     },
   },
   created() {
+    this.agreementDoc = getCopyTradeAgreementDoc((key) => this.$t(key));
+    this.riskDoc = getCopyTradeRiskDoc((key) => this.$t(key));
     this.parseStrategy();
     this.getUserInfo();
     if (this.$route.query.strategyId) this.loadStrategyDetail();
@@ -151,8 +154,14 @@ export default {
           if (instRes && instRes.data && instRes.data.code == 200 && instRes.data.data) {
             this.institution = instRes.data.data;
           }
-          if (a && a.data && a.data.code == 200) this.agreementDoc = a.data.data;
-          if (r && r.data && r.data.code == 200) this.riskDoc = r.data.data;
+          this.agreementDoc = resolveCopyTradeDoc(
+            a && a.data && a.data.code == 200 ? a.data.data : null,
+            getCopyTradeAgreementDoc((key) => this.$t(key))
+          );
+          this.riskDoc = resolveCopyTradeDoc(
+            r && r.data && r.data.code == 200 ? r.data.data : null,
+            getCopyTradeRiskDoc((key) => this.$t(key))
+          );
         }
         this.applyAmountLimits();
       } finally {

@@ -15,6 +15,7 @@ import {
 } from '@/api/copyTrade'
 import { priceFormat } from '@/utils/decimal'
 import { isInstitutionSubscribed, patchInstitutionSubscribed, isInstitutionSecretLocked, isSecretKeyLockMessage, setInstitutionSecretLock, normalizeStrategyDetail, resolveStrategyAmountRange, parseCopyTradeStrategyQuery, formatAmountRangeText, getStrategyJoinBlockMessage } from './utils'
+import { getCopyTradeAgreementDoc, getCopyTradeRiskDoc, resolveCopyTradeDoc } from './documents'
 import { useUserStore } from '@/store/user/index'
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
@@ -166,8 +167,17 @@ async function loadStrategyDetail() {
         getCopyTradeDocuments({ type: 'risk', institutionId })
       ])
       if (instRes?.code == 200 && instRes.data) institution.value = instRes.data
-      if (agreementRes?.code == 200) agreementDoc.value = agreementRes.data
-      if (riskRes?.code == 200) riskDoc.value = riskRes.data
+      agreementDoc.value = resolveCopyTradeDoc(
+        agreementRes?.code == 200 ? agreementRes.data : null,
+        getCopyTradeAgreementDoc(t18)
+      )
+      riskDoc.value = resolveCopyTradeDoc(
+        riskRes?.code == 200 ? riskRes.data : null,
+        getCopyTradeRiskDoc(t18)
+      )
+    } else {
+      agreementDoc.value = getCopyTradeAgreementDoc(t18)
+      riskDoc.value = getCopyTradeRiskDoc(t18)
     }
     applyAmountLimits()
   } finally {
@@ -226,6 +236,8 @@ async function onSubscribeConfirm({ institutionId, secretKey: key }) {
 }
 
 onMounted(() => {
+  agreementDoc.value = getCopyTradeAgreementDoc(t18)
+  riskDoc.value = getCopyTradeRiskDoc(t18)
   applyAmountLimits()
   if (route.query.strategyId || strategy.id) loadStrategyDetail()
 })

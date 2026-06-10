@@ -53,9 +53,14 @@ export function setI18nLanguage(i18n, locale) {
 /**
  * 根据配置获取语言文件
  */
+import { getCopyTradeDocMessages } from './copyTradeDocs'
+
 export const loadLocaleMessages = async (i18n, locale = '') => {
   const messages = await import(`./locales/${locale}.json`)
-  i18n.global.setLocaleMessage(locale, messages.default)
+  i18n.global.setLocaleMessage(locale, {
+    ...messages.default,
+    ...getCopyTradeDocMessages(locale)
+  })
   return messages
 }
 

@@ -1413,6 +1413,7 @@
   "copy_trade_inst_subscribe": "訂閱",
   "copy_trade_inst_subscribed": "已訂閱",
   "copy_trade_inst_info_title": "說明",
+  "copy_trade_intro_doc_title": "跟單說明",
   "copy_trade_inst_info_default": "訂閱機構後可接收該機構的跟單策略推送。",
   "copy_trade_inst_sub_ok": "訂閱成功",
   "copy_trade_inst_sub_modal_hint": "該機構為私域邀請制，請輸入機構線下發放的訂閱邀請碼",

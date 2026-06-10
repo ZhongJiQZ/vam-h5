@@ -1325,6 +1325,7 @@
   "copy_trade_inst_subscribe": "Subscribe",
   "copy_trade_inst_subscribed": "Subscribed",
   "copy_trade_inst_info_title": "Info",
+  "copy_trade_intro_doc_title": "Copy Trading Guide",
   "copy_trade_inst_info_default": "Subscribe to an institution to receive copy trading strategies.",
   "copy_trade_inst_sub_ok": "Subscribed",
   "copy_trade_inst_sub_modal_hint": "This institution is invite-only. Enter the subscription code issued offline by the institution.",

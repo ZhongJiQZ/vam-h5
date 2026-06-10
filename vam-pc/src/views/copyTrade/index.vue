@@ -1,7 +1,16 @@
 <template>
   <div class="copy-page">
     <div class="page-top">
-      <h2 class="page-title">{{ $t("pc_copy_trade_inst_title") }}</h2>
+      <div class="page-title-wrap">
+        <h2 class="page-title">{{ $t("pc_copy_trade_inst_title") }}</h2>
+        <el-button
+          class="info-btn"
+          type="text"
+          icon="el-icon-info"
+          :title="$t('pc_copy_trade_intro_doc_title')"
+          @click="showIntro = true"
+        />
+      </div>
       <el-button size="mini" type="primary" plain @click="$router.push('/copyTrade/my')">
         {{ $t("pc_copy_trade_my") }}
       </el-button>
@@ -61,6 +70,21 @@
         </el-button>
       </span>
     </el-dialog>
+
+    <el-drawer
+      :title="introDoc.title"
+      :visible.sync="showIntro"
+      direction="btt"
+      size="75%"
+      :wrapper-closable="true"
+      custom-class="copy-doc-drawer"
+    >
+      <div v-if="introDoc.content" class="doc-content" v-html="introDoc.content"></div>
+      <el-empty v-else :description="$t('pc_copy_trade_no_data')" />
+      <div class="doc-drawer-foot">
+        <el-button type="primary" @click="showIntro = false">{{ $t("utils.confirm") }}</el-button>
+      </div>
+    </el-drawer>
   </div>
 </template>
 
@@ -80,6 +104,7 @@ import {
   setInstitutionSecretLock,
   patchInstitutionSubscribed,
 } from "./utils";
+import { getCopyTradeIntroDoc } from "./documents";
 
 export default {
   name: "CopyTradeIndex",
@@ -88,12 +113,16 @@ export default {
       loading: false,
       institutionList: [],
       showSubscribe: false,
+      showIntro: false,
       subscribeTarget: {},
       secretKey: "",
       subscribeLoading: false,
     };
   },
   computed: {
+    introDoc() {
+      return getCopyTradeIntroDoc((key) => this.$t(key));
+    },
     subscribeLocked() {
       const id = institutionRowId(this.subscribeTarget);
       return isInstitutionSecretLocked(id);
@@ -208,8 +237,37 @@ export default {
   align-items: center;
   margin-bottom: 12px;
 }
+.page-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
 .page-title {
   margin: 0;
+}
+.info-btn {
+  padding: 4px;
+  font-size: 18px;
+  color: #17ac74;
+}
+.doc-content {
+  padding: 0 4px 16px;
+  font-size: 14px;
+  color: #374151;
+  line-height: 1.7;
+  word-break: break-word;
+}
+.doc-content :deep(p) {
+  margin: 0 0 12px;
+}
+.doc-content :deep(h3) {
+  margin: 16px 0 8px;
+  font-size: 15px;
+  color: #111;
+}
+.doc-drawer-foot {
+  padding: 12px 0 calc(12px + env(safe-area-inset-bottom, 0px));
+  text-align: center;
 }
 .card {
   background: #fff;
