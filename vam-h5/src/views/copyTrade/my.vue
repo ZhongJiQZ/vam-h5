@@ -4,20 +4,10 @@
     <DarkHeaderBar :title="_t18('copy_trade_my')" :border_bottom="false" />
 
     <div class="tabs">
-      <button
-        type="button"
-        class="tab"
-        :class="{ active: activeTab === 0 }"
-        @click="switchTab(0)"
-      >
+      <button type="button" class="tab" :class="{ active: activeTab === 0 }" @click="switchTab(0)">
         {{ _t18('copy_trade_tab_ongoing') }}
       </button>
-      <button
-        type="button"
-        class="tab"
-        :class="{ active: activeTab === 1 }"
-        @click="switchTab(1)"
-      >
+      <button type="button" class="tab" :class="{ active: activeTab === 1 }" @click="switchTab(1)">
         {{ _t18('copy_trade_tab_ended') }}
       </button>
     </div>
@@ -59,13 +49,8 @@
         </div>
       </div>
 
-      <van-list
-        v-model:loading="loading"
-        :finished="finished"
-        :finished-text="list.length ? _t18('no_more_data') : ''"
-        :loading-text="_t18('loading')"
-        @load="onLoad"
-      >
+      <van-list v-model:loading="loading" :finished="finished" :finished-text="list.length ? _t18('no_more_data') : ''"
+        :loading-text="_t18('loading')" @load="onLoad">
         <!-- 进行中 -->
         <template v-if="activeTab === 0">
           <div v-for="item in list" :key="item.id" class="order-group">
@@ -101,7 +86,17 @@
                   <span>{{ _t18('copy_trade_today_trades') }}</span>
                   <span class="ff-num">{{ copyTradeTradeCount(item) }}</span>
                 </div>
-               
+                <div class="position-row position-row--pnl">
+                  <div class="position-row-item position-row__left ff-num" :class="pnlClass(endedPnl(item))">
+                    <div>{{ _t18('copy_trade_pnl_label') }}</div>
+                    <div>{{ formatPnl(endedPnl(item)) }} USDT</div>
+                  </div>
+                  <span class="position-row-item position-row__right ff-num" :class="pnlClass(endedPnl(item))">
+                    <div>{{ _t18('copy_trade_pnl_rate') }}</div>
+                    <div> {{ calcPnlRate(endedPnl(item), item.amount)
+                    }}%</div>
+                  </span>
+                </div>
               </div>
               <div v-if="copyTradeHasAmount(item) && !isCopyTradeStrategyEnded(item)" class="card-actions" @click.stop>
                 <button type="button" class="append-btn" @click="openAppend(item)">
@@ -110,38 +105,23 @@
               </div>
               <p class="detail-link">{{ _t18('copy_trade_view_detail') }} ›</p>
             </div>
-            <div
-              v-if="getDailyBattle(item).holding.length || getDailyBattle(item).days.length"
-              class="records-outer"
-              @click.stop
-            >
+            <div v-if="getDailyBattle(item).holding.length || getDailyBattle(item).days.length" class="records-outer"
+              @click.stop>
               <div v-if="getDailyBattle(item).holding.length" class="records-section">
                 <h4 class="records-title">{{ _t18('copy_trade_position_holding') }}</h4>
-                <PositionRecordCard
-                  v-for="(rec, rIdx) in getDailyBattle(item).holding"
-                  :key="rec.orderNo || `${item.id}-h-${rIdx}`"
-                  :record="rec"
-                  :parent-symbol="copyTradeRunningSymbol(item)"
-                  masked
-                  :closed="false"
-                />
+                <PositionRecordCard v-for="(rec, rIdx) in getDailyBattle(item).holding"
+                  :key="rec.orderNo || `${item.id}-h-${rIdx}`" :record="rec"
+                  :parent-symbol="copyTradeRunningSymbol(item)" masked :closed="false" />
               </div>
-              <div
-                v-for="dayGroup in getDailyBattle(item).days"
-                :key="`${item.id}-${dayGroup.date}`"
-                class="records-section"
-              >
+              <div v-for="dayGroup in getDailyBattle(item).days" :key="`${item.id}-${dayGroup.date}`"
+                class="records-section">
                 <h4 class="records-title">
-                  {{ dayGroup.date === 'unknown' ? _t18('copy_trade_daily_record') : `${dayGroup.date} ${_t18('copy_trade_daily_record')}` }}
+                  {{ dayGroup.date === 'unknown' ? _t18('copy_trade_daily_record') : `${dayGroup.date}
+                  ${_t18('copy_trade_daily_record')}` }}
                 </h4>
-                <PositionRecordCard
-                  v-for="(rec, rIdx) in dayGroup.records"
-                  :key="rec.orderNo || `${item.id}-d-${dayGroup.date}-${rIdx}`"
-                  :record="rec"
-                  :parent-symbol="copyTradeRunningSymbol(item)"
-                  :masked="false"
-                  closed
-                />
+                <PositionRecordCard v-for="(rec, rIdx) in dayGroup.records"
+                  :key="rec.orderNo || `${item.id}-d-${dayGroup.date}-${rIdx}`" :record="rec"
+                  :parent-symbol="copyTradeRunningSymbol(item)" :masked="false" closed />
               </div>
             </div>
           </div>
@@ -151,74 +131,70 @@
         <template v-else>
           <div v-for="item in list" :key="item.id" class="order-group">
             <div class="ended-card" @click="goDetail(item.id)">
-            <div class="ended-card__head">
-              <img v-if="item.icon" :src="item.icon" class="avatar avatar--img" alt="" />
-              <div v-else class="avatar">{{ (item.strategyName || '?')[0] }}</div>
-              <p class="name">{{ item.strategyName }}</p>
-              <button class="share-btn" @click.stop="openShare(item)">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
-                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-                </svg>
-              </button>
+              <div class="ended-card__head">
+                <img v-if="item.icon" :src="item.icon" class="avatar avatar--img" alt="" />
+                <div v-else class="avatar">{{ (item.strategyName || '?')[0] }}</div>
+                <p class="name">{{ item.strategyName }}</p>
+                <button class="share-btn" @click.stop="openShare(item)">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="18" cy="5" r="3" />
+                    <circle cx="6" cy="12" r="3" />
+                    <circle cx="18" cy="19" r="3" />
+                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                  </svg>
+                </button>
+              </div>
+              <div class="kv-list">
+                <div v-if="copyTradeHasAmount(item)" class="kv">
+                  <span>{{ _t18('copy_trade_amount') }}</span>
+                  <span class="ff-num">{{ priceFormat(item.amount) }} USDT</span>
+                </div>
+                <div class="kv">
+                  <span>{{ _t18('copy_trade_strategy_start_time') }}</span>
+                  <span>{{ formatCopyTradeStrategyStartTime(item) }}</span>
+                </div>
+                <div class="kv">
+                  <span>{{ _t18('copy_trade_strategy_end_time') }}</span>
+                  <span>{{ formatCopyTradeStrategyEndTime(item) }}</span>
+                </div>
+                <div class="kv">
+                  <span>{{ _t18('copy_trade_join_time') }}</span>
+                  <span>{{ item.startTime || '--' }}</span>
+                </div>
+                <div class="kv">
+                  <span>{{ _t18('copy_trade_exit_time') }}</span>
+                  <span>{{ item.endTime || '--' }}</span>
+                </div>
+                <div class="kv kv--no-border">
+                  <span>{{ _t18('copy_trade_period_pnl') }}</span>
+                  <span>{{ _t18('copy_trade_pnl_rate') }}</span>
+                </div>
+              </div>
+              <div class="pnl-row">
+                <span class="ff-num" :class="pnlClass(endedPnl(item))">{{ formatPnl(endedPnl(item)) }} USDT</span>
+                <span class="ff-num" :class="pnlClass(endedPnl(item))">{{ calcPnlRate(endedPnl(item), item.amount)
+                }}%</span>
+              </div>
+              <div v-if="item.params?.netProfit != null" class="net-row">
+                <span>{{ _t18('copy_trade_net_profit') }}</span>
+                <span class="ff-num" :class="pnlClass(item.params.netProfit)">{{ formatPnl(item.params.netProfit) }}
+                  USDT</span>
+              </div>
+              <p class="detail-link">{{ _t18('copy_trade_view_detail') }} ›</p>
             </div>
-            <div class="kv-list">
-              <div v-if="copyTradeHasAmount(item)" class="kv">
-                <span>{{ _t18('copy_trade_amount') }}</span>
-                <span class="ff-num">{{ priceFormat(item.amount) }} USDT</span>
-              </div>
-              <div class="kv">
-                <span>{{ _t18('copy_trade_strategy_start_time') }}</span>
-                <span>{{ formatCopyTradeStrategyStartTime(item) }}</span>
-              </div>
-              <div class="kv">
-                <span>{{ _t18('copy_trade_strategy_end_time') }}</span>
-                <span>{{ formatCopyTradeStrategyEndTime(item) }}</span>
-              </div>
-              <div class="kv">
-                <span>{{ _t18('copy_trade_join_time') }}</span>
-                <span>{{ item.startTime || '--' }}</span>
-              </div>
-              <div class="kv">
-                <span>{{ _t18('copy_trade_exit_time') }}</span>
-                <span>{{ item.endTime || '--' }}</span>
-              </div>
-              <div class="kv kv--no-border">
-                <span>{{ _t18('copy_trade_period_pnl') }}</span>
-                <span>{{ _t18('copy_trade_pnl_rate') }}</span>
-              </div>
-            </div>
-            <div class="pnl-row">
-              <span class="ff-num" :class="pnlClass(endedPnl(item))">{{ formatPnl(endedPnl(item)) }} USDT</span>
-              <span class="ff-num" :class="pnlClass(endedPnl(item))">{{ calcPnlRate(endedPnl(item), item.amount) }}%</span>
-            </div>
-            <div v-if="item.params?.netProfit != null" class="net-row">
-              <span>{{ _t18('copy_trade_net_profit') }}</span>
-              <span class="ff-num" :class="pnlClass(item.params.netProfit)">{{ formatPnl(item.params.netProfit) }} USDT</span>
-            </div>
-            <p class="detail-link">{{ _t18('copy_trade_view_detail') }} ›</p>
-            </div>
-            <div
-              v-if="getDailyBattle(item).holding.length || getDailyBattle(item).days.length"
-              class="records-outer"
-              @click.stop
-            >
-              <div
-                v-for="dayGroup in getDailyBattle(item).days"
-                :key="`${item.id}-ended-${dayGroup.date}`"
-                class="records-section"
-              >
+            <div v-if="getDailyBattle(item).holding.length || getDailyBattle(item).days.length" class="records-outer"
+              @click.stop>
+              <div v-for="dayGroup in getDailyBattle(item).days" :key="`${item.id}-ended-${dayGroup.date}`"
+                class="records-section">
                 <h4 class="records-title">
-                  {{ dayGroup.date === 'unknown' ? _t18('copy_trade_daily_record') : `${dayGroup.date} ${_t18('copy_trade_daily_record')}` }}
+                  {{ dayGroup.date === 'unknown' ? _t18('copy_trade_daily_record') : `${dayGroup.date}
+                  ${_t18('copy_trade_daily_record')}` }}
                 </h4>
-                <PositionRecordCard
-                  v-for="(rec, rIdx) in dayGroup.records"
-                  :key="rec.orderNo || `${item.id}-ed-${dayGroup.date}-${rIdx}`"
-                  :record="rec"
-                  :parent-symbol="copyTradeRunningSymbol(item)"
-                  :masked="false"
-                  closed
-                />
+                <PositionRecordCard v-for="(rec, rIdx) in dayGroup.records"
+                  :key="rec.orderNo || `${item.id}-ed-${dayGroup.date}-${rIdx}`" :record="rec"
+                  :parent-symbol="copyTradeRunningSymbol(item)" :masked="false" closed />
               </div>
             </div>
           </div>
@@ -227,13 +203,8 @@
         <Nodata v-if="!loading && list.length === 0 && loadedOnce" />
       </van-list>
     </van-pull-refresh>
-  <ShareDialog v-model:show="shareVisible" :item="shareItem" />
-  <AppendDialog
-    v-model:show="appendVisible"
-    :item="appendItem"
-    :loading="appendLoading"
-    @confirm="confirmAppend"
-  />
+    <ShareDialog v-model:show="shareVisible" :item="shareItem" />
+    <AppendDialog v-model:show="appendVisible" :item="appendItem" :loading="appendLoading" @confirm="confirmAppend" />
   </div>
 </template>
 
@@ -482,18 +453,22 @@ watch(
 
 <style lang="scss" scoped>
 $green: #17ac74;
+$red: #e8503a;
+$muted: #888;
 
 .my-copy-page {
   min-height: 100vh;
   background: #f6f7fa;
   padding-bottom: env(safe-area-inset-bottom, 16px);
 }
+
 .tabs {
   display: flex;
   margin: 12px 15px;
   background: #fff;
   border-radius: 8px;
   padding: 4px;
+
   .tab {
     flex: 1;
     height: 36px;
@@ -502,6 +477,7 @@ $green: #17ac74;
     background: transparent;
     font-size: 14px;
     color: #666;
+
     &.active {
       background: #2c2c2c;
       color: #fff;
@@ -509,6 +485,7 @@ $green: #17ac74;
     }
   }
 }
+
 .ended-summary {
   margin: 0 15px 12px;
   background: linear-gradient(135deg, #061a0f 0%, #0d5535 55%, #17ac74 100%);
@@ -516,41 +493,66 @@ $green: #17ac74;
   padding: 4px 16px;
   position: relative;
   overflow: hidden;
+
   &::before {
     content: '';
     position: absolute;
-    top: -30px; right: -30px;
-    width: 140px; height: 140px;
-    border: 22px solid rgba(255,255,255,0.05);
+    top: -30px;
+    right: -30px;
+    width: 140px;
+    height: 140px;
+    border: 22px solid rgba(255, 255, 255, 0.05);
     border-radius: 50%;
     pointer-events: none;
   }
+
   &::after {
     content: '';
     position: absolute;
-    top: 20px; right: 30px;
-    width: 70px; height: 70px;
-    border: 12px solid rgba(255,255,255,0.04);
+    top: 20px;
+    right: 30px;
+    width: 70px;
+    height: 70px;
+    border: 12px solid rgba(255, 255, 255, 0.04);
     border-radius: 50%;
     pointer-events: none;
   }
+
   .kv {
     display: flex;
     justify-content: space-between;
     padding: 10px 0;
     font-size: 14px;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-    span:first-child { color: rgba(255,255,255,0.6); }
-    span:last-child { color: rgba(255,255,255,0.9); }
-    &.kv--no-border { border-bottom: none; }
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+    span:first-child {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    span:last-child {
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    &.kv--no-border {
+      border-bottom: none;
+    }
   }
-  .is-up { color: #4dffa8 !important; }
-  .summary-actual { font-size: 17px; font-weight: 600; color: #4dffa8 !important; }
+
+  .is-up {
+    color: #4dffa8 !important;
+  }
+
+  .summary-actual {
+    font-size: 17px;
+    font-weight: 600;
+    color: #4dffa8 !important;
+  }
 }
 
 .order-group {
   margin-bottom: 12px;
 }
+
 .order-card,
 .ended-card {
   background: #fff;
@@ -559,12 +561,15 @@ $green: #17ac74;
   margin-bottom: 0;
   cursor: pointer;
 }
+
 .records-outer {
   margin-top: 12px;
 }
-.records-section + .records-section {
+
+.records-section+.records-section {
   margin-top: 12px;
 }
+
 .order-card__head,
 .ended-card__head {
   display: flex;
@@ -572,6 +577,7 @@ $green: #17ac74;
   gap: 12px;
   margin-bottom: 14px;
 }
+
 .avatar {
   width: 40px;
   height: 40px;
@@ -583,12 +589,14 @@ $green: #17ac74;
   font-size: 16px;
   color: #666;
   flex-shrink: 0;
+
   &--img {
     display: block;
     object-fit: cover;
     background: #f2f4f7;
   }
 }
+
 .head-info {
   .name {
     font-size: 16px;
@@ -596,15 +604,18 @@ $green: #17ac74;
     margin: 0 0 6px;
   }
 }
+
 .badge {
   font-size: 11px;
   padding: 2px 8px;
   border-radius: 4px;
+
   &--ongoing {
     background: rgba($green, 0.12);
     color: $green;
   }
 }
+
 .kv-list .kv {
   display: flex;
   justify-content: space-between;
@@ -612,19 +623,24 @@ $green: #17ac74;
   font-size: 14px;
   color: #333;
   border-bottom: 1px solid #f8f8f8;
+
   span:first-child {
     color: #888;
   }
+
   .is-up {
     color: $green;
   }
+
   .is-down {
     color: #e8503a;
   }
 }
+
 .kv--no-border {
   border-bottom: none !important;
 }
+
 .net-row {
   display: flex;
   justify-content: space-between;
@@ -637,14 +653,22 @@ $green: #17ac74;
   display: flex;
   justify-content: space-between;
   padding: 6px 0 4px;
+
   .ff-num {
     font-size: 18px;
     font-weight: 600;
     color: #1a1a1a;
-    &.is-up { color: $green; }
-    &.is-down { color: #e8503a; }
+
+    &.is-up {
+      color: $green;
+    }
+
+    &.is-down {
+      color: #e8503a;
+    }
   }
 }
+
 .records-title {
   margin: 0 0 10px;
   font-size: 14px;
@@ -655,6 +679,7 @@ $green: #17ac74;
 .card-actions {
   margin-top: 12px;
 }
+
 .append-btn {
   width: 100%;
   height: 36px;
@@ -665,6 +690,7 @@ $green: #17ac74;
   font-size: 14px;
   font-weight: 500;
 }
+
 .order-card,
 .ended-card {
   .detail-link {
@@ -674,6 +700,7 @@ $green: #17ac74;
     margin: 8px 0 0;
   }
 }
+
 .ended-card {
   .name {
     font-size: 16px;
@@ -682,6 +709,7 @@ $green: #17ac74;
     flex: 1;
   }
 }
+
 .share-btn {
   background: none;
   border: none;
@@ -691,7 +719,40 @@ $green: #17ac74;
   align-items: center;
   flex-shrink: 0;
 }
+
 :deep(.van-list) {
   padding: 0 15px;
+}
+
+.position-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 15px;
+  line-height: 1.6;
+  font-weight: bold;
+
+  &--pnl {
+    margin-top: 10px;
+  }
+}
+
+.position-row-item {
+  flex: 1;
+  min-width: 0;
+  color: #1a1a1a;
+
+  &.is-up {
+    color: $green;
+  }
+
+  &.is-down {
+    color: $red;
+  }
+}
+
+.position-row__right {
+  text-align: right;
 }
 </style>

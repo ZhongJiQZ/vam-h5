@@ -78,7 +78,7 @@
         </div>
         <div class="cell">
           <span class="label">{{ _t18('option_now_price') }}</span>
-          <span class="value ff-num">{{ tradeStore.allCoinPriceInfo[displayPair]?.close }}</span>
+          <span class="value ff-num">{{ tradeStore.allCoinPriceInfo[coin]?.close }}</span>
         </div>
         <div class="cell cell--right cell--grid-col-2">
           <span class="label">{{ _t18('copy_trade_pnl_usdt') }}</span>
@@ -99,6 +99,7 @@ import { _div, _mul, _sub, priceFormat } from '@/utils/decimal'
 import { symbolPair, formatPnl, pnlClass, formatWaitBuyPositionLabel, isWaitBuyPositionStatus } from '../utils'
 import { useTradeStore } from '@/store/trade/index'
 const tradeStore = useTradeStore()
+
 const MASK = '***'
 
 const props = defineProps({
@@ -122,6 +123,14 @@ const displayPair = computed(() => {
   if (isWaitBuyPositionStatus(trimmed)) return formatWaitBuyPositionLabel(t18)
   if (/[\u4e00-\u9fff]/.test(trimmed)) return trimmed
   return symbolPair(trimmed)
+})
+
+const coin = computed(() => {
+  let coin = props.record?.symbol
+  if (coin.includes('USDT')) {
+    coin = coin.replace('/USDT', '')
+  }
+  return coin.toLowerCase()
 })
 
 const displayStatus = computed(() => {
