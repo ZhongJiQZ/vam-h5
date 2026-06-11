@@ -66,10 +66,15 @@ export function copyTradeNetProfit(item) {
   return Number.isFinite(n) ? n : 0
 }
 
-/** 跟单交易次数：winCount + loseCount */
+/** 今日交易次数：优先 tradeCount */
 export function copyTradeTradeCount(item) {
   if (!item) return 0
   const params = item.params || {}
+  const fromTradeCount = params.tradeCount ?? item.tradeCount
+  if (fromTradeCount != null && fromTradeCount !== '') {
+    const n = Number(fromTradeCount)
+    return Number.isFinite(n) ? n : 0
+  }
   const hasWinLose =
     params.winCount != null ||
     params.loseCount != null ||
@@ -80,8 +85,7 @@ export function copyTradeTradeCount(item) {
     const lose = Number(params.loseCount ?? item.loseCount ?? 0)
     return (Number.isFinite(win) ? win : 0) + (Number.isFinite(lose) ? lose : 0)
   }
-  const fallback = params.tradeCount ?? item.tradeCount
-  return fallback != null && fallback !== '' ? Number(fallback) || 0 : 0
+  return 0
 }
 
 /** 跟单盈亏率 %：netProfit / amount * 100 */
