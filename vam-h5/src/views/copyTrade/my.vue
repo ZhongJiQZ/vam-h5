@@ -87,13 +87,15 @@
                   <span class="ff-num">{{ copyTradeTradeCount(item) }}</span>
                 </div>
                 <div class="position-row position-row--pnl">
-                  <div class="position-row-item position-row__left ff-num" :class="pnlClass(endedPnl(item))">
+                  <div class="position-row-item position-row__left ff-num">
                     <div>{{ _t18('copy_trade_pnl_label') }}</div>
-                    <div>{{ formatPnl(endedPnl(item)) }} USDT</div>
+                    <div :class="[pnlClass(endedPnl(item)), 'position-row-value']">{{ formatPnl(endedPnl(item)) }} USDT
+                    </div>
                   </div>
-                  <span class="position-row-item position-row__right ff-num" :class="pnlClass(endedPnl(item))">
+                  <span class="position-row-item position-row__right ff-num">
                     <div>{{ _t18('copy_trade_pnl_rate') }}</div>
-                    <div> {{ calcPnlRate(endedPnl(item), item.amount)
+                    <div :class="[pnlClass(endedPnl(item)), 'position-row-value']"> {{ calcPnlRate(endedPnl(item),
+                      item.amount)
                     }}%</div>
                   </span>
                 </div>
@@ -729,27 +731,30 @@ $muted: #888;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  font-size: 15px;
-  line-height: 1.6;
-  font-weight: bold;
+  font-size: 14px;
 
   &--pnl {
-    margin-top: 10px;
+    margin-top: 5px;
   }
 }
 
 .position-row-item {
   flex: 1;
   min-width: 0;
-  color: #1a1a1a;
+  color: #888;
 
-  &.is-up {
-    color: $green;
+  .position-row-value {
+    font-weight: bold;
+    margin-top: 4px;
+    &.is-up {
+      color: $green;
+    }
+
+    &.is-down {
+      color: $red;
+    }
   }
 
-  &.is-down {
-    color: $red;
-  }
 }
 
 .position-row__right {
