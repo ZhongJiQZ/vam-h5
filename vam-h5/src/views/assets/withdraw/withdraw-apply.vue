@@ -92,7 +92,10 @@
             </div>
           </div>
           <div class="tip-line">
-            <div class="tip-text">{{ route.query.icon == 'card' ? _t18('withdraw_tip_card') : _t18('withdraw_tip_coin') }}</div>
+            <div class="tip-text">
+              {{ route.query.icon == 'card' ? _t18('withdraw_tip_card') : _t18('withdraw_tip_coin') }}
+              <van-icon @click="showTipDialog()" name="question-o" color="var(--ex-primary-color)" />
+            </div>
             <!-- <div class="tip-service-row">
               <span class="tip-service" @click="dispatchCustomEvent('event_serviceChange')">{{ _t18('custorm_service') }}</span>
               <van-icon @click="showTipDialog()" name="question-o" color="var(--ex-primary-color)" />
