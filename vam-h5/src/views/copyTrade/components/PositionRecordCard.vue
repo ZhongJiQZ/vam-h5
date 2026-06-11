@@ -45,7 +45,7 @@
           <span class="value ff-num">{{ record.openNum }}</span>
         </div>
         <div class="cell cell--right">
-          <span class="label">{{ _t18('cash_deposit') }}</span>
+          <span class="label">{{ _t18('copy_trade_margin') }}</span>
           <span class="value value--time">{{ record.margin }}</span>
         </div>
       </div>
@@ -69,7 +69,7 @@
           <span class="value ff-num">{{ priceFormat(record.openPrice, 4) }}</span>
         </div>
         <div class="cell">
-          <span class="label">{{ _t18('cash_deposit') }}</span>
+          <span class="label">{{ _t18('copy_trade_margin') }}</span>
           <span class="value ff-num">{{ record.margin }}</span>
         </div>
         <div class="cell cell--right cell--grid-col-2">
@@ -96,7 +96,7 @@ import { useI18n } from 'vue-i18n'
 import { _t18 } from '@/utils/public'
 import { _div, _mul, _sub, priceFormat } from '@/utils/decimal'
 
-import { symbolPair, formatPnl, pnlClass, formatWaitBuyPositionLabel, isWaitBuyPositionStatus } from '../utils'
+import { symbolPair, formatPnl, pnlClass, formatSignedRate, formatWaitBuyPositionLabel, isWaitBuyPositionStatus } from '../utils'
 import { useTradeStore } from '@/store/trade/index'
 const tradeStore = useTradeStore()
 
@@ -161,7 +161,7 @@ function recordPnlRate(record) {
   if (!open || !Number.isFinite(close)) return '--'
   const raw =
     record.type === 1 ? _div(_sub(open, close), open) : _div(_sub(close, open), open)
-  return priceFormat(_mul(raw, 100), 2)
+  return formatSignedRate(_mul(raw, 100), 2)
 }
 
 </script>

@@ -2,12 +2,58 @@ import { _mul, _div, priceFormat } from '@/utils/decimal'
 import { formatLocalTime } from '@/utils/time'
 import dayjs from 'dayjs'
 
+/** 带正负号的比率展示（正数带 +，如 +3.49） */
+export function formatSignedRate(val, digits = 2) {
+  const n = Number(val)
+  if (!Number.isFinite(n)) return '0.00'
+  const formatted = priceFormat(n, digits)
+  const prefix = n > 0 ? '+' : ''
+  return `${prefix}${formatted}`
+}
+
 /** 盈亏率 % */
 export function calcPnlRate(profit, amount) {
   const a = Number(amount)
   const p = Number(profit)
   if (!a || !Number.isFinite(a) || !Number.isFinite(p)) return '0.00'
-  return priceFormat(_mul(_div(p, a), 100), 2)
+  return formatSignedRate(_mul(_div(p, a), 100), 2)
+}
+
+/** 跟单日期展示（兼容中文「年月日」、时间戳、ISO 字符串） */
+export function formatCopyTradeDisplayDate(raw, fmt = 'YYYY-MM-DD') {
+  if (raw === null || raw === undefined || raw === '') return '--'
+  const s = String(raw).trim()
+  const cn = s.match(/(\d{4})\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日/)
+  if (cn) {
+    const d = dayjs(`${cn[1]}-${cn[2]}-${cn[3]}`)
+    return d.isValid() ? d.format(fmt) : s
+  }
+  const ms = Number(s)
+  if (/^\d+$/.test(s) && Number.isFinite(ms) && ms > 0) {
+    const formatted = formatLocalTime(ms < 1e12 ? ms * 1000 : ms, fmt)
+    if (formatted !== '--') return formatted
+  }
+  const d = dayjs(s)
+  if (d.isValid()) return d.format(fmt)
+  const datePart = s.split(/[ T]/)[0]
+  const d2 = dayjs(datePart)
+  return d2.isValid() ? d2.format(fmt) : datePart || s
+}
+
+/** 跟单日期时间展示 */
+export function formatCopyTradeDisplayDateTime(raw, fmt = 'YYYY-MM-DD HH:mm') {
+  if (raw === null || raw === undefined || raw === '') return '--'
+  const s = String(raw).trim()
+  const cn = s.match(/(\d{4})\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日(?:\s*(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?/)
+  if (cn) {
+    const hh = cn[4] ?? '00'
+    const mm = cn[5] ?? '00'
+    const ss = cn[6] ?? '00'
+    const d = dayjs(`${cn[1]}-${cn[2]}-${cn[3]} ${hh}:${mm}:${ss}`)
+    return d.isValid() ? d.format(fmt) : formatCopyTradeDisplayDate(raw, fmt.split(' ')[0])
+  }
+  const formatted = formatLocalTime(raw, fmt)
+  return formatted !== '--' ? formatted : formatCopyTradeDisplayDate(raw, fmt.split(' ')[0])
 }
 
 /** 进行中跟单盈亏：netProfit */
@@ -916,7 +962,8 @@ export function normalizeCoinPreference(raw) {
         row.rate ?? row.ratio ?? row.percent ?? row.percentage ?? row.proportion ?? 0
       )
       const count = Number(row.count ?? row.tradeCount ?? row.num ?? 0)
-      const symbol = row.symbol || row.coin || row.coinName || row.name || ''
+      let symbol = row.symbol || row.coin || row.coinName || row.name || ''
+      if (/^(其他|其它|other)$/i.test(String(symbol).trim())) symbol = 'Other'
       if (!symbol && !rate && !count) return null
       return {
         ...row,

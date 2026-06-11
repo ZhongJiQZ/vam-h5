@@ -105,7 +105,7 @@
                   {{ _t18('copy_trade_append') }}
                 </button>
               </div>
-              <p class="detail-link">{{ _t18('copy_trade_view_detail') }} ›</p>
+              <p class="detail-link">{{ _t18('copy_trade_view_detail') }}</p>
             </div>
             <div v-if="getDailyBattle(item).holding.length || getDailyBattle(item).days.length" class="records-outer"
               @click.stop>
@@ -184,7 +184,7 @@
                 <span class="ff-num" :class="pnlClass(item.params.netProfit)">{{ formatPnl(item.params.netProfit) }}
                   USDT</span>
               </div>
-              <p class="detail-link">{{ _t18('copy_trade_view_detail') }} ›</p>
+              <p class="detail-link">{{ _t18('copy_trade_view_detail') }}</p>
             </div>
             <div v-if="getDailyBattle(item).holding.length || getDailyBattle(item).days.length" class="records-outer"
               @click.stop>
@@ -234,7 +234,8 @@ import {
   normalizeCopyTradeListResponse,
   copyTradeOrderBadgeClass,
   copyTradeOrderStatusText,
-  isCopyTradeStrategyEnded
+  isCopyTradeStrategyEnded,
+  formatCopyTradeDisplayDate
 } from './utils'
 import dayjs from '@/plugin/dayjs/index'
 import { showToast } from 'vant'
@@ -286,7 +287,7 @@ const endedSummary = computed(() => {
   if (myPerf.value) {
     const p = myPerf.value
     return {
-      firstTime: p.subscribeTime || '--',
+      firstTime: formatCopyTradeDisplayDate(p.subscribeTime),
       days: p.copyDays ?? 0,
       count: total.value || list.value.length,
       totalProfit: formatPnl(p.totalProfit),
@@ -310,7 +311,7 @@ const endedSummary = computed(() => {
     totalFee = _add(totalFee, Number(item.params?.tradeFee ?? item.tradeFee) || 0)
     totalShare = _add(totalShare, Number(item.params?.profitShareAmt ?? item.profitShareAmt) || 0)
     totalNet = _add(totalNet, Number(item.params?.netProfit ?? item.netProfit) || 0)
-    if (!firstTime && item.startTime) firstTime = item.startTime.split(' ')[0]
+    if (!firstTime && item.startTime) firstTime = formatCopyTradeDisplayDate(item.startTime)
   })
   const totalRate = totalAmount ? calcPnlRate(totalProfit, totalAmount) : '0.00'
   const days =

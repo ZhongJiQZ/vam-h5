@@ -19,11 +19,11 @@
             </span>
           </div>
           <div class="kv">
-            <span>{{ t18('copy_trade_strategy_start_time') }}</span>
+            <span>{{ t18('copy_trade_strategy_list_start') }}</span>
             <span>{{ formatCopyTradeStrategyStartTime(item) }}</span>
           </div>
           <div class="kv">
-            <span>{{ t18('copy_trade_strategy_end_time') }}</span>
+            <span>{{ t18('copy_trade_strategy_list_end') }}</span>
             <span>{{ formatCopyTradeStrategyEndTime(item) }}</span>
           </div>
           <div class="kv">

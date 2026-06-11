@@ -96,7 +96,8 @@ import {
   isInstitutionSecretLocked,
   isSecretKeyLockMessage,
   setInstitutionSecretLock,
-  patchInstitutionSubscribed
+  patchInstitutionSubscribed,
+  formatSignedRate
 } from './utils'
 import { showToast } from 'vant'
 import { getResponseErrorMsg } from '@/utils/request'
@@ -119,9 +120,7 @@ const subscribeLoading = ref(false)
 const introDoc = computed(() => getCopyTradeIntroDoc(t18))
 
 function formatProfitRate(val) {
-  const n = Number(val)
-  if (!Number.isFinite(n)) return '0.00'
-  return priceFormat(n, 2)
+  return formatSignedRate(val, 2)
 }
 
 function subscriberText(item) {

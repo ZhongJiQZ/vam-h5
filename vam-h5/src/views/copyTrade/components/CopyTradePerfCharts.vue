@@ -80,7 +80,7 @@
       <ul class="donut-legend">
         <li v-for="(c, i) in coinSlices" :key="'c' + i">
           <i class="dot" :style="{ background: c.color }" />
-          <span class="sym">{{ c.symbol }}</span>
+          <span class="sym">{{ c.symbol === 'Other' ? coinOtherLabel : c.symbol }}</span>
           <span class="pct ff-num">{{ formatRate(c.rate) }}%</span>
         </li>
       </ul>
@@ -91,6 +91,11 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { _t18 } from '@/utils/public'
+const i18n = useI18n()
+const t18 = (key, platform = []) => _t18(key, platform, i18n)
+const coinOtherLabel = computed(() => t18('copy_trade_coin_other'))
 
 const props = defineProps({
   dailySeries: { type: Array, default: () => [] },
@@ -135,7 +140,7 @@ const areaPath = computed(() => buildAreaPathFromPlot(plotPoints.value, width, h
 
 const weeklyBars = computed(() => {
   const list = (props.weeklySeries || []).map((row, idx) => ({
-    label: row.week || row.label || `${idx + 1}周`,
+    label: row.week || row.label || t18('copy_trade_week_label').replace('{n}', String(idx + 1)),
     value: Number(row.chartValue ?? row.weeklyRate ?? row.cumulativeRate ?? row.rate ?? row.value) || 0
   }))
   if (!list.length) return []

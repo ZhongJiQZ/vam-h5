@@ -14,7 +14,7 @@ import {
   subscribeCopyTradeInstitution
 } from '@/api/copyTrade'
 import { priceFormat } from '@/utils/decimal'
-import { isInstitutionSubscribed, patchInstitutionSubscribed, isInstitutionSecretLocked, isSecretKeyLockMessage, setInstitutionSecretLock, normalizeStrategyDetail, resolveStrategyAmountRange, parseCopyTradeStrategyQuery, formatAmountRangeText, getStrategyJoinBlockMessage } from './utils'
+import { isInstitutionSubscribed, patchInstitutionSubscribed, isInstitutionSecretLocked, isSecretKeyLockMessage, setInstitutionSecretLock, normalizeStrategyDetail, resolveStrategyAmountRange, parseCopyTradeStrategyQuery, formatAmountRangeText, getStrategyJoinBlockMessage, formatCopyTradeDisplayDate } from './utils'
 import { getCopyTradeAgreementDoc, getCopyTradeRiskDoc, resolveCopyTradeDoc } from './documents'
 import { useUserStore } from '@/store/user/index'
 import { storeToRefs } from 'pinia'
@@ -306,7 +306,7 @@ function submit() {
               </button>
             </div>
             <p class="profile-card__join">
-              {{ t18('copy_trade_join_date_label') }}：{{ joinDateText }}
+              {{ t18('copy_trade_join_date_label') }} {{ formatCopyTradeDisplayDate(joinDateText) }}
             </p>
           </div>
         </div>

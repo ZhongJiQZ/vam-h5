@@ -17,7 +17,7 @@
               <span class="tag" :class="isSubscribed ? 'tag--on' : 'tag--off'">{{ subscribeTag }}</span>
             </div>
             <p class="profile__join">
-              {{ t18('copy_trade_join_date_label') }}：{{ detail.joinDate || detail.joinTime || '--' }}
+              {{ t18('copy_trade_join_date_label') }} {{ formatCopyTradeDisplayDate(detail.joinDate || detail.joinTime) }}
             </p>
           </div>
         </div>
@@ -92,7 +92,7 @@
         <div class="summary-row">
           <div class="summary-item">
             <span class="summary-label">{{ t18('copy_trade_join_time_label') }}</span>
-            <span class="summary-val">{{ summaryJoinTime }}</span>
+            <span class="summary-val">{{ formatCopyTradeDisplayDateTime(summaryJoinTime) }}</span>
           </div>
           <div class="summary-item">
             <span class="summary-label">{{ tradingDaysLabel }}</span>
@@ -100,7 +100,7 @@
           </div>
           <div class="summary-item summary-item--rate">
             <span class="summary-label">{{ t18('copy_trade_total_profit_rate') }}</span>
-            <span class="summary-val ff-num is-up">+{{ formatRate(summaryTotalRate) }}%</span>
+            <span class="summary-val ff-num is-up">{{ formatSignedRate(summaryTotalRate) }}%</span>
           </div>
         </div>
 
@@ -108,7 +108,7 @@
         <section class="chart-section">
           <h4 class="chart-section__title">{{ t18('copy_trade_daily_perf') }}</h4>
           <p class="chart-section__sub">
-            {{ rangeRateLabel }}：<span class="ff-num is-up">+{{ formatRate(perf.rangeTotalProfitRate) }}%</span>
+            {{ rangeRateLabel }} <span class="ff-num is-up">{{ formatSignedRate(perf.rangeTotalProfitRate) }}%</span>
           </p>
           <CopyTradePerfCharts
             :daily-series="dailySeries"
@@ -137,7 +137,7 @@
         <section class="chart-section">
           <h4 class="chart-section__title">{{ t18('copy_trade_weekly_perf') }}</h4>
           <p class="chart-section__sub">
-            {{ t18('copy_trade_total_profit_rate') }}：<span class="ff-num is-up">+{{ formatRate(weeklyPerf.weeklyTotalProfitRate ?? weeklyPerf.totalProfitRate) }}%</span>
+            {{ t18('copy_trade_total_profit_rate') }} <span class="ff-num is-up">{{ formatSignedRate(weeklyPerf.weeklyTotalProfitRate ?? weeklyPerf.totalProfitRate) }}%</span>
           </p>
           <CopyTradePerfCharts
             :daily-series="[]"
@@ -212,7 +212,10 @@ import {
   normalizePerfData,
   normalizePerfSummary,
   normalizeCoinPreference,
-  buildInstitutionChartPayload
+  buildInstitutionChartPayload,
+  formatSignedRate,
+  formatCopyTradeDisplayDate,
+  formatCopyTradeDisplayDateTime
 } from './utils'
 import { priceFormat } from '@/utils/decimal'
 import { showToast } from 'vant'
@@ -320,9 +323,7 @@ const rangeRateLabel = computed(() => {
 })
 
 function formatRate(val) {
-  const n = Number(val)
-  if (!Number.isFinite(n)) return '0.00'
-  return priceFormat(Math.abs(n), 2)
+  return formatSignedRate(val, 2)
 }
 
 function rangeLabel(r) {
