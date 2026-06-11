@@ -3,7 +3,7 @@
     <div class="position-card__head">
       <div class="position-card__pair">
         <span class="pair">{{ displayPair }}</span>
-        <span class="tag tag--muted">{{ masked ? MASK : _t18('copy_trade_usdt_contract') }}</span>
+        <span class="tag tag--muted">{{ _t18('copy_trade_usdt_contract') }}</span>
       </div>
       <span class="status-tag" :class="closed ? 'status-tag--closed' : 'status-tag--open'">
         {{ displayStatus }}
@@ -51,20 +51,22 @@
       </div>
     </template>
     <!-- 当前持仓 -->
-    <div v-else class="position-card__grid">
-      <div class="cell">
-        <span class="label">{{ _t18('copy_trade_open_price') }}</span>
-        <span class="value ff-num">{{ priceFormat(record.openPrice, 4) }}</span>
+    <template v-else>
+      <div class="position-card__grid">
+        <div class="cell">
+          <span class="label">{{ _t18('copy_trade_open_price') }}</span>
+          <span class="value ff-num">{{ priceFormat(record.openPrice, 4) }}</span>
+        </div>
+        <div class="cell cell--right cell--grid-col-2">
+          <span class="label">{{ _t18('copy_trade_open_time') }}</span>
+          <span class="value">{{ record.openTime || '--' }}</span>
+        </div>
+        <div class="cell">
+          <span class="label">{{ _t18('copy_trade_pnl_usdt') }}</span>
+          <span class="value ff-num" :class="masked ? '' : pnlClass(record.earn)">{{ masked ? MASK : formatPnl(record.earn) }}</span>
+        </div>
       </div>
-      <div class="cell">
-        <span class="label">{{ _t18('copy_trade_pnl_usdt') }}</span>
-        <span class="value ff-num" :class="masked ? '' : pnlClass(record.earn)">{{ masked ? MASK : formatPnl(record.earn) }}</span>
-      </div>
-      <div class="cell cell--full">
-        <span class="label">{{ _t18('copy_trade_open_time') }}</span>
-        <span class="value">{{ record.openTime || '--' }}</span>
-      </div>
-    </div>
+    </template>
   </div>
 </template>
 
@@ -232,15 +234,19 @@ $muted: #888;
 .position-card__grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px 12px;
+  gap: 16px 12px;
+
+  &:only-child {
+    padding-bottom: 23px;
+  }
 }
 .cell {
   display: flex;
   flex-direction: column;
   gap: 4px;
   min-width: 0;
-  &--full {
-    grid-column: 1 / -1;
+  &--grid-col-2 {
+    grid-column: 2;
   }
   &--right {
     align-items: flex-end;

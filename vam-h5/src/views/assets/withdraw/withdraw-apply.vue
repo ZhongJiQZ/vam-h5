@@ -91,13 +91,21 @@
               <span class="tips-value tips-value--warn ff-num">{{ withdrawFeeDisplay }}</span>
             </div>
           </div>
-          <div class="tip-line" @click="dispatchCustomEvent('event_serviceChange')">
-            {{ _t18('withdraw_tip') }}
-            <span class="tip-service">{{ _t18('custorm_service') }}</span>
+          <div class="tip-line">
+            <div class="tip-text">{{ route.query.icon == 'card' ? _t18('withdraw_tip_card') : _t18('withdraw_tip_coin') }}</div>
+            <div class="tip-service-row">
+              <span class="tip-service" @click="dispatchCustomEvent('event_serviceChange')">{{ _t18('custorm_service') }}</span>
+              <van-icon @click="showTipDialog()" name="question-o" color="var(--ex-primary-color)" />
+            </div>
           </div>
         </div>
       </div>
-
+      <!-- <van-dialog v-model:show="showTip" title="温馨提示" confirm-button-text="确定" cancel-button-text="取消">
+        <div class="tip-content">
+          <div class="tip-title">{{ _t18('withdraw_tip') }}</div>
+          <div class="tip-text">{{ _t18('withdraw_tip_content') }}</div>
+        </div>
+      </van-dialog> -->
       <div class="btn-wrap" @click="submit">
         <ButtonBar :btnValue="_t18('withdraw_require')" />
       </div>
@@ -120,7 +128,7 @@ import {
 import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import ButtonBar from '@/components/common/ButtonBar/index.vue'
 import { priceFormat } from '@/utils/decimal.js'
-import { showToast } from 'vant'
+import { showToast, showDialog } from 'vant'
 import { useUserStore } from '@/store/user/index'
 import { useMainStore } from '@/store'
 import { storeToRefs } from 'pinia'
@@ -130,6 +138,7 @@ import { filterCoin2 } from '@/utils/public'
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+const showTip = ref(false)
 const { t } = useI18n()
 const { _toast } = useToast()
 const mainStore = useMainStore()
@@ -162,6 +171,16 @@ const showSheet = ref(false)
 const selectSheet = (item) => {
   showSheet.value = false
   curBank.value = item
+}
+
+
+const showTipDialog = () => {
+  showDialog({
+  title: t('kind_tips'),
+  message: route.query.icon == 'card' ? t('withdraw_tip_content_card') : t('withdraw_tip_content_coin'),
+}).then(() => {
+  // on close
+});
 }
 
 const balanceCoinLabel = computed(() => {
@@ -733,6 +752,15 @@ onMounted(() => {
     color: #969799;
     line-height: 1.55;
     margin-bottom: 10px;
+    text-align: center;
+  }
+
+  .tip-service-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    margin-top: 6px;
   }
 
   .tip-service {
