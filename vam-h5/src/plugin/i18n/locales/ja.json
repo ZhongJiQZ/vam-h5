@@ -1366,6 +1366,7 @@
   "copy_trade_cross": "クロス",
   "copy_trade_open_price": "建値",
   "copy_trade_close_price": "決済値",
+  "copy_trade_open_count": "建玉数",
   "copy_trade_pnl_usdt": "損益(USDT)",
   "copy_trade_open_time": "建玉時間",
   "copy_trade_close_time": "決済時間",

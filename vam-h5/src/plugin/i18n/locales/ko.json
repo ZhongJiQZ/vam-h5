@@ -1366,6 +1366,7 @@
   "copy_trade_cross": "크로스",
   "copy_trade_open_price": "진입가",
   "copy_trade_close_price": "청산가",
+  "copy_trade_open_count": "창고 개설 수량",
   "copy_trade_pnl_usdt": "손익(USDT)",
   "copy_trade_open_time": "진입 시간",
   "copy_trade_close_time": "청산 시간",

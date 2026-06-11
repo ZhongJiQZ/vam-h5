@@ -1366,6 +1366,7 @@
   "copy_trade_cross": "Cross",
   "copy_trade_open_price": "Ingresso",
   "copy_trade_close_price": "Uscita",
+  "copy_trade_open_count": "Numero aperti",
   "copy_trade_pnl_usdt": "P/L (USDT)",
   "copy_trade_open_time": "Ora apertura",
   "copy_trade_close_time": "Ora chiusura",

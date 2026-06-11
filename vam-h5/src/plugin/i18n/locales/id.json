@@ -1383,6 +1383,7 @@
   "copy_trade_cross": "Cross",
   "copy_trade_open_price": "Masuk",
   "copy_trade_close_price": "Keluar",
+  "copy_trade_open_count": "Jumlah buka",
   "copy_trade_pnl_usdt": "P/L (USDT)",
   "copy_trade_open_time": "Waktu buka",
   "copy_trade_close_time": "Waktu tutup",
