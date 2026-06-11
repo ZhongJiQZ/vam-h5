@@ -1366,6 +1366,7 @@
   "copy_trade_cross": "Cross",
   "copy_trade_open_price": "ราคาเข้า",
   "copy_trade_close_price": "ราคาออก",
+  "copy_trade_open_count": "จำนวนเปิด",
   "copy_trade_pnl_usdt": "G/L (USDT)",
   "copy_trade_open_time": "เวลาเปิด",
   "copy_trade_close_time": "เวลาปิด",

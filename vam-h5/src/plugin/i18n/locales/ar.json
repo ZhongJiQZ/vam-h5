@@ -1364,6 +1364,7 @@
   "copy_trade_cross": "متقاطع",
   "copy_trade_open_price": "سعر الدخول",
   "copy_trade_close_price": "سعر الخروج",
+  "copy_trade_open_count": "عدد الفتح",
   "copy_trade_pnl_usdt": "ربح/خسارة (USDT)",
   "copy_trade_open_time": "وقت الفتح",
   "copy_trade_close_time": "وقت الإغلاق",

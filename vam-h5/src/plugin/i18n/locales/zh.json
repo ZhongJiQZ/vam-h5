@@ -1392,6 +1392,7 @@
   "copy_trade_cross": "全仓",
   "copy_trade_open_price": "开仓均价",
   "copy_trade_close_price": "平仓均价",
+  "copy_trade_open_count": "开仓数量",
   "copy_trade_pnl_usdt": "盈亏(USDT)",
   "copy_trade_pnl_label": "盈亏",
   "copy_trade_open_time": "开仓时间",

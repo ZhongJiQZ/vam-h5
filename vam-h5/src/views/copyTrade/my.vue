@@ -101,6 +101,7 @@
                   <span>{{ _t18('copy_trade_today_trades') }}</span>
                   <span class="ff-num">{{ copyTradeTradeCount(item) }}</span>
                 </div>
+               
               </div>
               <div v-if="copyTradeHasAmount(item) && !isCopyTradeStrategyEnded(item)" class="card-actions" @click.stop>
                 <button type="button" class="append-btn" @click="openAppend(item)">

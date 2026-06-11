@@ -1366,6 +1366,7 @@
   "copy_trade_cross": "Cross",
   "copy_trade_open_price": "Einstieg",
   "copy_trade_close_price": "Ausstieg",
+  "copy_trade_open_count": "Open Count",
   "copy_trade_pnl_usdt": "G/V (USDT)",
   "copy_trade_open_time": "Eröffnungszeit",
   "copy_trade_close_time": "Schließzeit",

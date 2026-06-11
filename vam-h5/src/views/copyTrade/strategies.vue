@@ -5,23 +5,17 @@
 
     <van-pull-refresh v-model="refreshing" @refresh="loadData">
       <div class="list">
-        <div
-          v-for="item in list"
-          :key="item.id"
-          class="card"
-          @click="toSubmit(item)"
-        >
+        <div v-for="item in list" :key="item.id" class="card" @click="toSubmit(item)">
           <div class="card__head">
             <img v-if="item.icon" :src="item.icon" class="avatar" alt="" />
             <div v-else class="avatar avatar--ph" />
             <div class="meta">
               <p class="name">{{ item.strategyName }}</p>
             </div>
-            <span
-              class="badge"
-              :class="isStrategyFollowing(item) ? 'badge--following' : item.canJoin === false ? 'badge--off' : 'badge--on'"
-            >
-              {{ item.followStatusText || (item.canJoin === false ? t18('copy_trade_unjoinable') : t18('copy_trade_follow_now')) }}
+            <span class="badge"
+              :class="isStrategyFollowing(item) ? 'badge--following' : item.canJoin === false ? 'badge--off' : 'badge--on'">
+              {{ item.followStatusText || (item.canJoin === false ? t18('copy_trade_unjoinable') :
+                t18('copy_trade_follow_now')) }}
             </span>
           </div>
           <div class="kv">

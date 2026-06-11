@@ -40,6 +40,14 @@
           <span class="label">{{ _t18('copy_trade_close_time') }}</span>
           <span class="value value--time">{{ masked ? MASK : (record.closeTime || '--') }}</span>
         </div>
+        <div class="cell">
+          <span class="label">{{ _t18('copy_trade_open_count') }}</span>
+          <span class="value ff-num">{{ record.openNum }}</span>
+        </div>
+        <div class="cell cell--right">
+          <span class="label">{{ _t18('cash_deposit') }}</span>
+          <span class="value value--time">{{ record.margin }}</span>
+        </div>
       </div>
       <div class="position-row position-row--pnl">
         <span class="position-row__left ff-num" :class="masked ? '' : pnlClass(record.earn)">
@@ -50,20 +58,32 @@
         </span>
       </div>
     </template>
-    <!-- 当前持仓 -->
     <template v-else>
       <div class="position-card__grid">
         <div class="cell">
+          <span class="label">{{ _t18('copy_trade_open_count') }}</span>
+          <span class="value ff-num">{{ record.openNum }}</span>
+        </div>
+        <div class="cell cell--right cell--grid-col-2">
           <span class="label">{{ _t18('copy_trade_open_price') }}</span>
           <span class="value ff-num">{{ priceFormat(record.openPrice, 4) }}</span>
+        </div>
+        <div class="cell">
+          <span class="label">{{ _t18('cash_deposit') }}</span>
+          <span class="value ff-num">{{ record.margin }}</span>
         </div>
         <div class="cell cell--right cell--grid-col-2">
           <span class="label">{{ _t18('copy_trade_open_time') }}</span>
           <span class="value">{{ record.openTime || '--' }}</span>
         </div>
         <div class="cell">
+          <span class="label">{{ _t18('option_now_price') }}</span>
+          <span class="value ff-num">{{ tradeStore.allCoinPriceInfo[displayPair]?.close }}</span>
+        </div>
+        <div class="cell cell--right cell--grid-col-2">
           <span class="label">{{ _t18('copy_trade_pnl_usdt') }}</span>
-          <span class="value ff-num" :class="masked ? '' : pnlClass(record.earn)">{{ masked ? MASK : formatPnl(record.earn) }}</span>
+          <span class="value ff-num" :class="masked ? '' : pnlClass(record.earn)">{{ masked ? MASK :
+            formatPnl(record.earn) }}</span>
         </div>
       </div>
     </template>
@@ -75,8 +95,10 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { _t18 } from '@/utils/public'
 import { _div, _mul, _sub, priceFormat } from '@/utils/decimal'
-import { symbolPair, formatPnl, pnlClass, formatWaitBuyPositionLabel, isWaitBuyPositionStatus } from '../utils'
 
+import { symbolPair, formatPnl, pnlClass, formatWaitBuyPositionLabel, isWaitBuyPositionStatus } from '../utils'
+import { useTradeStore } from '@/store/trade/index'
+const tradeStore = useTradeStore()
 const MASK = '***'
 
 const props = defineProps({
@@ -147,12 +169,14 @@ $muted: #888;
   margin-bottom: 12px;
   border: 1px solid #f0f0f0;
 }
+
 .position-card__head {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 10px;
 }
+
 .position-card__pair {
   .pair {
     font-size: 15px;
@@ -161,42 +185,51 @@ $muted: #888;
     margin-right: 6px;
   }
 }
+
 .status-tag {
   font-size: 11px;
   padding: 2px 8px;
   border-radius: 4px;
+
   &--open {
     background: rgba($green, 0.12);
     color: $green;
   }
+
   &--closed {
     background: #f2f2f2;
     color: $muted;
   }
 }
+
 .position-card__tags {
   display: flex;
   gap: 6px;
   margin-bottom: 12px;
   flex-wrap: wrap;
 }
+
 .tag {
   font-size: 11px;
   padding: 2px 6px;
   border-radius: 4px;
+
   &--long {
     background: rgba($green, 0.12);
     color: $green;
   }
+
   &--short {
     background: rgba($red, 0.12);
     color: $red;
   }
+
   &--muted {
     background: #f5f5f5;
     color: #666;
   }
 }
+
 .position-row {
   display: flex;
   align-items: center;
@@ -204,33 +237,41 @@ $muted: #888;
   gap: 12px;
   font-size: 13px;
   line-height: 1.4;
+
   &--pnl {
     margin-top: 10px;
   }
 }
+
 .position-row__left {
   flex: 1;
   min-width: 0;
   color: #1a1a1a;
+
   &.is-up {
     color: $green;
   }
+
   &.is-down {
     color: $red;
   }
 }
+
 .position-row__right {
   flex-shrink: 0;
   text-align: right;
   color: #1a1a1a;
   font-size: 13px;
+
   &.is-up {
     color: $green;
   }
+
   &.is-down {
     color: $red;
   }
 }
+
 .position-card__grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -240,31 +281,39 @@ $muted: #888;
     padding-bottom: 23px;
   }
 }
+
 .cell {
   display: flex;
   flex-direction: column;
   gap: 4px;
   min-width: 0;
+
   &--grid-col-2 {
     grid-column: 2;
   }
+
   &--right {
     align-items: flex-end;
     text-align: right;
   }
+
   .label {
     font-size: 12px;
     color: $muted;
   }
+
   .value {
     font-size: 14px;
     color: #1a1a1a;
+
     &.is-up {
       color: $green;
     }
+
     &.is-down {
       color: $red;
     }
+
     &--time {
       font-size: 12px;
       line-height: 1.3;

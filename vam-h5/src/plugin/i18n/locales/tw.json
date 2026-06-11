@@ -1370,6 +1370,7 @@
   "copy_trade_cross": "全倉",
   "copy_trade_open_price": "開倉均價",
   "copy_trade_close_price": "平倉均價",
+  "copy_trade_open_count": "開倉數量",
   "copy_trade_pnl_usdt": "盈虧(USDT)",
   "copy_trade_pnl_label": "盈虧",
   "copy_trade_open_time": "開倉時間",

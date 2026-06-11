@@ -42,7 +42,6 @@ declare module 'vue' {
     VanCircle: typeof import('vant/es')['Circle']
     VanCountDown: typeof import('vant/es')['CountDown']
     VanDialog: typeof import('vant/es')['Dialog']
-    VanIcon: typeof import('vant/es')['Icon']
     VanList: typeof import('vant/es')['List']
     VanLoading: typeof import('vant/es')['Loading']
     VanOverlay: typeof import('vant/es')['Overlay']
