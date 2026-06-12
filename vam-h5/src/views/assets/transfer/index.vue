@@ -61,8 +61,12 @@
             >
           </div>
 
-          <div class="transfer-submit" @click="submit">
-            {{ _t18('transfer_require') }}
+          <div
+            class="transfer-submit"
+            :class="{ 'transfer-submit--disabled': submitting }"
+            @click="submit"
+          >
+            {{ submitting ? _t18('loading') : _t18('transfer_require') }}
           </div>
           </div>
         </div>
@@ -96,6 +100,7 @@ const params = ref({
   amount: ''
 })
 
+const submitting = ref(false)
 const availableList = ref([])
 const getBalance = async () => {
   let res = await getUserBalance()
@@ -155,6 +160,7 @@ const transferInAccountList = computed(() =>
 )
 
 const submit = () => {
+  if (submitting.value) return
   if (DIFF_ISFREEZE.includes(__config._APP_ENV)) {
     if (_isFreeze(DIFF_ISFREEZE)) {
       submitForm()
@@ -165,17 +171,23 @@ const submit = () => {
 }
 
 const submitForm = () => {
+  if (submitting.value) return
   if (params.value.amount == '' || params.value.amount <= 0) {
     return _toast('transfer_please_amount')
   }
-  getTransferList(params.value).then((res) => {
-    if (res.code == '200') {
-      _toast('transfer_success')
-      getBalance()
-    } else {
-      showToast(res.msg || '')
-    }
-  })
+  submitting.value = true
+  getTransferList(params.value)
+    .then((res) => {
+      if (res.code == '200') {
+        _toast('transfer_success')
+        getBalance()
+      } else {
+        showToast(res.msg || '')
+      }
+    })
+    .finally(() => {
+      submitting.value = false
+    })
 }
 
 const amountAll = () => {
@@ -408,6 +420,12 @@ $tp-btn: #050e17;
   background: $tp-btn;
   border-radius: 999px;
   cursor: pointer;
+
+  &--disabled {
+    opacity: 0.65;
+    pointer-events: none;
+    cursor: not-allowed;
+  }
 }
 
 :deep(.van-dropdown-menu) {
