@@ -14,7 +14,7 @@
         <div v-if="bannerUrl" class="inst-banner">
           <image-load :filePath="bannerUrl" class="inst-banner__img" loading="eager" fetchpriority="high" />
         </div>
-        <div v-else class="inst-banner inst-banner--placeholder" aria-hidden="true" />
+        <!-- <div v-else class="inst-banner inst-banner--placeholder" aria-hidden="true" /> -->
 
         <div class="inst-list">
           <div
