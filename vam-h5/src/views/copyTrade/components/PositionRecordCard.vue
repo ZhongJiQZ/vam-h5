@@ -156,12 +156,19 @@ function recordLeverageText(record) {
 }
 
 function recordPnlRate(record) {
+  const earn = Number(record.earn)
+  const margin = Number(record.margin)
+  if (Number.isFinite(earn) && Number.isFinite(margin) && margin > 0) {
+    return formatSignedRate(_mul(_div(earn, margin), 100), 2)
+  }
   const open = Number(record.openPrice)
   const close = Number(record.closePrice)
+  const leverage = Number(record.leverage)
   if (!open || !Number.isFinite(close)) return '--'
-  const raw =
+  const pricePct =
     record.type === 1 ? _div(_sub(open, close), open) : _div(_sub(close, open), open)
-  return formatSignedRate(_mul(raw, 100), 2)
+  const rate = Number.isFinite(leverage) && leverage > 0 ? _mul(pricePct, leverage) : pricePct
+  return formatSignedRate(_mul(rate, 100), 2)
 }
 
 </script>
