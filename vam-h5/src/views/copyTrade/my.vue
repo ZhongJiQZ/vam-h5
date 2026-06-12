@@ -107,16 +107,33 @@
               </div>
               <p class="detail-link">{{ _t18('copy_trade_view_detail') }}</p>
             </div>
-            <div v-if="getDailyBattle(item).holding.length || getDailyBattle(item).days.length" class="records-outer"
-              @click.stop>
-              <div v-if="getDailyBattle(item).holding.length" class="records-section">
-                <h4 class="records-title">{{ _t18('copy_trade_position_holding') }}</h4>
-                <PositionRecordCard v-for="(rec, rIdx) in getDailyBattle(item).holding"
-                  :key="rec.orderNo || `${item.id}-h-${rIdx}`" :record="rec"
-                  :parent-symbol="copyTradeRunningSymbol(item)" masked :closed="false" />
+            <div class="records-outer" @click.stop>
+              <div class="records-section">
+                <div class="records-title-row">
+                  <h4 class="records-title">{{ _t18('copy_trade_position_holding') }}</h4>
+                  <button
+                    type="button"
+                    class="records-refresh-btn"
+                    :disabled="sectionRefreshing"
+                    @click="refreshCopyTradeData"
+                  >
+                    <svg-load name="refresh" class="records-refresh-icon" :class="{ 'is-spinning': sectionRefreshing }" />
+                  </button>
+                </div>
+                <PositionRecordCard
+                  v-for="(rec, rIdx) in getDailyBattle(item).holding"
+                  :key="rec.orderNo || `${item.id}-h-${rIdx}`"
+                  :record="rec"
+                  :parent-symbol="copyTradeRunningSymbol(item)"
+                  masked
+                  :closed="false"
+                />
               </div>
-              <div v-for="dayGroup in getDailyBattle(item).days" :key="`${item.id}-${dayGroup.date}`"
-                class="records-section">
+              <div
+                v-for="dayGroup in getDailyBattle(item).days"
+                :key="`${item.id}-${dayGroup.date}`"
+                class="records-section"
+              >
                 <h4 class="records-title">
                   {{ dayGroup.date === 'unknown' ? _t18('copy_trade_daily_record') : `${dayGroup.date}
                   ${_t18('copy_trade_daily_record')}` }}
@@ -260,6 +277,7 @@ const shareItem = ref({})
 const appendVisible = ref(false)
 const appendItem = ref({})
 const appendLoading = ref(false)
+const sectionRefreshing = ref(false)
 
 function endedPnl(item) {
   return item?.params?.totalSettledProfit ?? item?.actualProfit ?? item?.params?.netProfit ?? 0
@@ -403,6 +421,34 @@ function onRefresh() {
   pageNum.value = 1
   finished.value = false
   onLoad()
+}
+
+async function refreshCopyTradeData() {
+  if (sectionRefreshing.value || loading.value) return
+  sectionRefreshing.value = true
+  try {
+    list.value = []
+    pageNum.value = 1
+    finished.value = false
+    loadedOnce.value = false
+    loading.value = true
+    const rows = await fetchList()
+    list.value = rows
+    loadedOnce.value = true
+    if (list.value.length >= total.value || rows.length < pageSize.value) {
+      finished.value = true
+    } else {
+      pageNum.value = 2
+    }
+    if (activeTab.value === 1) await loadMyPerformance()
+  } catch (e) {
+    finished.value = true
+    void e
+  } finally {
+    loading.value = false
+    sectionRefreshing.value = false
+    refreshing.value = false
+  }
 }
 
 function goDetail(id) {
@@ -669,6 +715,50 @@ $muted: #888;
     &.is-down {
       color: #e8503a;
     }
+  }
+}
+
+.records-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.records-title-row .records-title {
+  margin: 0;
+}
+
+.records-refresh-btn {
+  border: none;
+  background: none;
+  padding: 4px;
+  line-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:disabled {
+    opacity: 0.6;
+  }
+}
+
+.records-refresh-icon {
+  font-size: 16px;
+  color: #888;
+
+  &.is-spinning {
+    animation: copy-trade-refresh-spin 0.8s linear infinite;
+  }
+}
+
+@keyframes copy-trade-refresh-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
   }
 }
 
