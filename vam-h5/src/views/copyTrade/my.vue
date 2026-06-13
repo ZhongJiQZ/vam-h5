@@ -110,15 +110,24 @@
             <div class="records-outer" @click.stop>
               <div class="records-section">
                 <div class="records-title-row">
-                  <h4 class="records-title">{{ _t18('copy_trade_position_holding') }}</h4>
-                  <img src="@/assets/images/Frame 10711.png" alt="" class="records-refresh-icon" @click="showExplain = true">
-                  <button                                                                                                                                                                                    button
+                  <div class="records-title-left">
+                    <h4 class="records-title">{{ _t18('copy_trade_position_holding') }}</h4>
+                    <button type="button" class="records-info-btn" @click="showExplain = true">
+                      <img src="@/assets/images/Frame 10711.png" alt="" class="records-info-icon" />
+                    </button>
+                  </div>
+                  <button
                     type="button"
                     class="records-refresh-btn"
                     :disabled="sectionRefreshing"
                     @click="refreshCopyTradeData"
                   >
-                    <svg-load name="refresh" class="records-refresh-icon" :class="{ 'is-spinning': sectionRefreshing }" />
+                    <img
+                      src="@/assets/images/copy-trade-refresh.png"
+                      alt=""
+                      class="records-refresh-icon"
+                      :class="{ 'is-spinning': sectionRefreshing }"
+                    />
                   </button>
                 </div>
                 <PositionRecordCard
@@ -759,14 +768,31 @@ $muted: #888;
 .records-title-row {
   display: flex;
   align-items: center;
-  // justify-content: space-between;
+  justify-content: space-between;
   margin-bottom: 10px;
+}
 
-  img{
-    width: 24px;
-    height: 24px;
-    margin-right: auto;
-  }
+.records-title-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.records-info-btn {
+  border: none;
+  background: none;
+  padding: 0;
+  line-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.records-info-icon {
+  width: 18px;
+  height: 18px;
+  display: block;
 }
 
 .records-title-row .records-title {
@@ -776,11 +802,12 @@ $muted: #888;
 .records-refresh-btn {
   border: none;
   background: none;
-  padding: 4px;
+  padding: 0;
   line-height: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 
   &:disabled {
     opacity: 0.6;
@@ -788,8 +815,9 @@ $muted: #888;
 }
 
 .records-refresh-icon {
-  font-size: 16px;
-  color: #888;
+  width: 24px;
+  height: 24px;
+  display: block;
 
   &.is-spinning {
     animation: copy-trade-refresh-spin 0.8s linear infinite;
