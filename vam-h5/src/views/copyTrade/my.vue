@@ -112,14 +112,14 @@
                 <div class="records-title-row">
                   <h4 class="records-title">{{ _t18('copy_trade_position_holding') }}</h4>
                   <img src="@/assets/images/Frame 10711.png" alt="" class="records-refresh-icon" @click="showExplain = true">
-                  <!-- <                                                                                                                                                                                    button
+                  <button                                                                                                                                                                                    button
                     type="button"
                     class="records-refresh-btn"
                     :disabled="sectionRefreshing"
                     @click="refreshCopyTradeData"
                   >
                     <svg-load name="refresh" class="records-refresh-icon" :class="{ 'is-spinning': sectionRefreshing }" />
-                  </> -->
+                  </button>
                 </div>
                 <PositionRecordCard
                   v-for="(rec, rIdx) in getDailyBattle(item).holding"
