@@ -1483,5 +1483,16 @@
   "copy_trade_intro_doc_title": "Copy Trading Guide",
   "copy_trade_daily_record": "Daily record",
   "copy_trade_pnl_label": "PnL",
-  "copy_trade_status_exited": "Copy zakończone"
+  "copy_trade_status_exited": "Copy trading zakończony",
+  "copy_trade_mask_explain_title": " 【Kluczowe ogłoszenie: Wyjaśnienie desensytyzacji otwartych pozycji i proaktywnego mechanizmu obrony przed ryzykiem】",
+  "copy_trade_mask_explain_intro": "Na wysoce zmiennym i lewarowanym rynku kryptowalut szczegóły otwartych pozycji udostępniane w czasie rzeczywistym są bardzo podatne na adversarialne wykorzystanie on-chain. Nasza instytucja wdraża ścisły protokół fazowej desensytyzacji danych pozycji bazowy na następujących mandatach ilościowej kontroli ryzyka i ochrony inwestorów",
+  "copy_trade_mask_explain_s1_title": "Zapobieganie drapieżnictwu i handlowi przeciwstawnemu (Anti-Sniper & Hunting Protection):",
+  "copy_trade_mask_explain_s1_content": "Publicznie widoczne pozycje o dużym wolumenie i ceny wejścia mogą być łatwo śledzone przez wysokoczęstotliwościowe whales lub przeciwnych traderów za pomocą danych on-chain. Adversarialni uczestnicy rynku mogą wykorzystywać przewagę kapitałową do organizowania sztucznych pump lub dump, celowo uruchamiając progi stop-loss lub likwidacji naszej strategii, co prowadzi do 'drapieżniczych likwidacji' lub złośliwych long/short squeeze dla użytkowników copy trading.",
+  "copy_trade_mask_explain_s2_title": "Łagodzenie manipulacji rynkowej i ucieczki płynności (Anti-Market Manipulation):",
+  "copy_trade_mask_explain_s2_content": "Ze względu na ograniczoną głębokość rynku niektórych aktywów krypto, ujawnianie szczegółów pozycji w czasie rzeczywistym nieuchronnie przyciąga zewnętrzny kapitał copycat lub boty algorytmiczne (MEV Bots) do wykonywania transakcji front-running. Powoduje to poważny poślizg rynkowy i wyczerpanie płynności podczas fazy wykonania/zamknięcia, bezpośrednio rozcieńczając Net Asset Value (NAV) obserwujących i prowadząc do scenariusza 'zyskowna strategia, przegrywający użytkownicy.'",
+  "copy_trade_mask_explain_s3_title": "Ochrona strategicznej płynności i pojemności strategii Alpha:",
+  "copy_trade_mask_explain_s3_content": "Strategie Alpha o wysokiej rentowności posiadają ograniczoną pojemność wykonawczą. Desensytyzacja danych skutecznie przechwytuje nielegalne zewnętrzne zachowania 'free-riding/copycatting', zapobiegając zatykaniu się ograniczonych kanałów dopasowywania zleceń przez niepowiązany kapitał, zapewniając preferencyjne prawa wykonania i optymalne punkty wejścia dla kluczowych członków premium.",
+  "copy_trade_mask_explain_conclusion_title": "Podsumowanie zarządzania ryzykiem:",
+  "copy_trade_mask_explain_conclusion_content": "Desensytyzacja danych jest niezbędnym narzędziem obronnym wymaganym do filtrowania szumu intraday, neutralizacji złośliwej manipulacji i ochrony końcowych zysków netto naszych obserwujących. Wszystkie dane transakcyjne zostaną szczegółowo i w pełni ujawnione natychmiast po likwidacji pozycji, aby zagwarantować autentyczność, zgodność i absolutną audytowalność.",
+  "copy_trade_explain_got_it": "Rozumiem"
 }

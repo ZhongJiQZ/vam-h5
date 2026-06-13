@@ -1265,5 +1265,16 @@
   "copy_trade_intro_doc_title": "Copy Trading Guide",
   "copy_trade_daily_record": "Daily record",
   "copy_trade_pnl_label": "PnL",
-  "copy_trade_status_exited": "Copy ended"
+  "copy_trade_status_exited": "کاپی ٹریڈنگ ختم",
+  "copy_trade_mask_explain_title": " 【اہم نوٹس: اوپن پوزیشن ڈیٹا ڈی سینسیٹائزیشن اور فعال خطرے سے دفاع کے میکانزم کی وضاحت】",
+  "copy_trade_mask_explain_intro": "انتہائی اتار چڑھاؤ اور لیوریج والے کرپٹو کرنسی مارکیٹ میں، ریئل ٹائم اور مکمل شفاف اوپن پوزیشن کی تفصیلات on-chain adversarial استحصال کا آسان ہدف بن جاتی ہیں۔ یہ ادارہ درج ذیل مقداری رسک کنٹرول اور سرمایہ کار تحفظ کے احکامات کی بنیاد پر بنیادی پوزیشن ڈیٹا پر سخت مرحلہ وار ڈی سینسیٹائزیشن پروٹوکول نافذ کرتا ہے",
+  "copy_trade_mask_explain_s1_title": "شکار اور کاؤنٹر ٹریڈنگ کی روک تھام (Anti-Sniper & Hunting Protection):",
+  "copy_trade_mask_explain_s1_content": "عوامی طور پر نظر آنے والی بڑی مقدار کی پوزیشنز اور انٹری قیمتیں on-chain ڈیٹا کے ذریعے high-frequency whales یا مخالف counter-traders سے آسانی سے ٹریک کی جا سکتی ہیں۔ مخالف مارکیٹ اداکار سرمایہ کے فائدے استعمال کر کے مصنوعی pump یا dump منظم کر سکتے ہیں، جان بوجھ کر ہماری حکمت عملی کے stop-loss یا liquidation thresholds کو trigger کرتے ہیں، جس سے copy trading صارفین کے لیے 'شکار liquidation' یا بدنیتی پر مبنی long/short squeeze ہوتا ہے۔",
+  "copy_trade_mask_explain_s2_title": "مارکیٹ manipulation اور لیکویڈیٹی drain میں کمی (Anti-Market Manipulation):",
+  "copy_trade_mask_explain_s2_content": "کچھ کرپٹو اثاثوں کی محدود مارکیٹ depth کی وجہ سے، پوزیشن کی تفصیلات کا ریئل ٹائم exposure ناگزیر طور پر بیرونی copycat سرمایہ یا algorithmic bots (MEV Bots) کو front-running trades کرنے کے لیے راغب کرتا ہے۔ اس سے execution/closeout مرحلے میں شدید market slippage اور لیکویڈیٹی exhaustion پیدا ہوتی ہے، followers کے Net Asset Value (NAV) کو براہ راست پتلا کرتی ہے اور 'منافع بخش حکمت عملی، نقصان اٹھانے والے صارفین' scenario کی طرف لے جاتی ہے۔",
+  "copy_trade_mask_explain_s3_title": "Alpha حکمت عملیوں کے لیے اسٹریٹجک لیکویڈیٹی اور capacity کی حفاظت:",
+  "copy_trade_mask_explain_s3_content": "اعلیٰ منافع Alpha حکمت عملیوں کی محدود execution capacity ہوتی ہے۔ ڈیٹا ڈی سینسیٹائزیشن غیر قانونی بیرونی 'free-riding/copycatting' رویوں کو مؤثر طریقے سے روکتی ہے، محدود order-matching channels کو unrelated سرمایہ سے congest ہونے سے روکتی ہے، اور core premium اراکین کے لیے preferential execution rights اور optimal entry price points کو یقینی بناتی ہے۔",
+  "copy_trade_mask_explain_conclusion_title": "رسک مینجمنٹ خلاصہ:",
+  "copy_trade_mask_explain_conclusion_content": "ڈیٹا ڈی سینسیٹائزیشن intra-day noise کو filter کرنے، بدنیتی manipulation کو neutralize کرنے اور followers کی حتمی net returns کو preserve کرنے کے لیے ایک لازمی defensive tool ہے۔ تمام transaction ڈیٹا position liquidation کے فوراً بعد granular, full-spectrum disclosure سے گزرے گا تاکہ authenticity، compliance اور absolute auditability یقینی بنے۔",
+  "copy_trade_explain_got_it": "سمجھ گیا"
 }

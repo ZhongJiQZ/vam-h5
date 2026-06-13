@@ -1495,5 +1495,16 @@
   "copy_trade_margin": "Margin",
   "copy_trade_week_label": "Week {n}",
   "copy_trade_strategy_list_start": "Start Time",
-  "copy_trade_strategy_list_end": "End Time"
+  "copy_trade_strategy_list_end": "End Time",
+  "copy_trade_mask_explain_title": "【Key Notice: Explanation of Open Position Desensitization and Proactive Risk Defense Mechanism】",
+  "copy_trade_mask_explain_intro": "In the highly volatile and leveraged cryptocurrency market, real-time and fully transparent open position details are highly vulnerable to adversarial on-chain exploits. This institution implements a strict phase-based desensitization protocol on core position data based on the following quantitative risk control and investor protection mandates",
+  "copy_trade_mask_explain_s1_title": "Prevention of Predatory Hunting and Counter-Trading (Anti-Sniper & Hunting Protection):",
+  "copy_trade_mask_explain_s1_content": "Publicly visible high-volume positions and entry prices can be easily tracked by high-frequency whales or adversarial counter-traders via on-chain data. Adverse market actors can utilize capital advantages to orchestrate artificial pumps or dumps, intentionally triggering our strategy's stop-loss or liquidation thresholds, resulting in 'predatory liquidations' or malicious long/short squeezes for copy-trading users.",
+  "copy_trade_mask_explain_s2_title": "Mitigation of Market Manipulation and Liquidity Run (Anti-Market Manipulation):",
+  "copy_trade_mask_explain_s2_content": "Due to the limited market depth of certain crypto assets, real-time exposure of position details inevitably attracts external copycat capital or algorithmic bots (MEV Bots) to execute front-running trades. This causes severe market slippage and liquidity exhaustion during the execution/closeout stage, directly diluting the Net Asset Value (NAV) of followers and leading to a suboptimal scenario of 'profitable strategy, losing users.'",
+  "copy_trade_mask_explain_s3_title": "Safeguarding Strategic Liquidity and Capacity for Alpha Strategies:",
+  "copy_trade_mask_explain_s3_content": "High-yield alpha strategies possess finite execution capacity. Data desensitization effectively intercepts illicit external 'free-riding/copycatting' behaviors, preventing limited order-matching channels from being congested by unrelated capital, thereby securing preferential execution rights and optimal entry price points for core premium members.",
+  "copy_trade_mask_explain_conclusion_title": "Risk Management Summary:",
+  "copy_trade_mask_explain_conclusion_content": "Data desensitization is a non-negotiable defensive tool required to filter out intra-day noise, neutralize malicious manipulation, and preserve the final net returns for our followers. All transaction data will undergo granular, full-spectrum disclosure immediately upon position liquidation to guarantee authenticity, compliance, and absolute auditability.",
+  "copy_trade_explain_got_it": "Got it"
 }

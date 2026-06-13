@@ -1487,5 +1487,16 @@
   "copy_trade_intro_doc_title": "Copy Trading Guide",
   "copy_trade_daily_record": "Daily record",
   "copy_trade_pnl_label": "PnL",
-  "copy_trade_status_exited": "Copy beëindig"
+  "copy_trade_status_exited": "Kopieerhandel beëindig",
+  "copy_trade_mask_explain_title": "Belangrike kennisgewing: Verduideliking van oop posisie-desensibilisering en proaktiewe risikoverdedigingsmeganisme",
+  "copy_trade_mask_explain_intro": "In die hoogs wisselvallige en hefboom-kriptogeldmark is intydse, volledig deursigtige oop-posisiebesonderhede hoogs kwesbaar vir aanvallende on-chain-uitbuitings. Hierdie instelling implementeer 'n streng fasegebaseerde desensibiliseringprotokol op kernposisiedata gebaseer op die volgende kwantitatiewe risikobeheer- en beleggerbeskermingsmandaat",
+  "copy_trade_mask_explain_s1_title": "Voorkoming van roofjag en teenhandel (Anti-Sniper & Hunting-beskerming):",
+  "copy_trade_mask_explain_s1_content": "Publiek sigbare hoëvolume-posisies en instappryse kan maklik deur hoëfrekwensie-whales of teenstander-handelaars via on-chain-data gevolg word. Skadelike markakteurs kan kapitaalvoordelinge gebruik om kunsmatige pomp- of dumpaksies te orkestreer, wat doelbewus ons strategie se stop-loss of likwidasiedrempels aktiveer, wat lei tot 'rooflikwidasies' of kwaadwillige long/short-druk vir kopieerhandel-gebruikers.",
+  "copy_trade_mask_explain_s2_title": "Versagting van markmanipulasie en likiditeitsonttrekking (Anti-Markmanipulasie):",
+  "copy_trade_mask_explain_s2_content": "As gevolg van die beperkte markdiepte van sekere kripto-bates, trek intydse openbaarmaking van posisiebesonderhede onvermydelik eksterne copycat-kapitaal of algoritmiese bots (MEV Bots) aan om front-running-transaksies uit te voer. Dit veroorsaak ernstige markglyding en likiditeitsuitputting tydens die uitvoer-/sluitingsfase, wat die Netto Batewaarde (NAV) van volgelinge direk verdun en lei tot 'winsgewende strategie, verlierende gebruikers.'",
+  "copy_trade_mask_explain_s3_title": "Beskerming van strategiese likiditeit en kapasiteit vir Alpha-strategieë:",
+  "copy_trade_mask_explain_s3_content": "Hoë-opbrengs Alpha-strategieë het 'n eindige uitvoeringskapasiteit. Data-desensibilisering onderskep effektief onwettige eksterne 'free-riding/copycatting'-gedrag, voorkom dat beperkte orderbypassingskanale deur onverwante kapitaal oorlaai word, en verseker preferensiële uitvoeringsregte en optimale instappryspunte vir kern premium-lede.",
+  "copy_trade_mask_explain_conclusion_title": "Risikobestuur Opsomming:",
+  "copy_trade_mask_explain_conclusion_content": "Data-desensibilisering is 'n ononderhandelbare verdedigingsinstrument wat nodig is om intradag-ruis te filter, kwaadwillige manipulasie te neutraliseer, en die finale netto-opbrengste vir ons volgelinge te beskerm. Alle transaksiedata sal onmiddellik na posisielikwidasie gedetailleerde, volledige openbaarmaking ondergaan om egtheid, nakoming en absolute ouditeerbaarheid te waarborg.",
+  "copy_trade_explain_got_it": "Verstaan"
 }

@@ -1495,5 +1495,16 @@
   "copy_trade_margin": "Margin",
   "copy_trade_week_label": "Minggu {n}",
   "copy_trade_strategy_list_start": "Waktu Mulai",
-  "copy_trade_strategy_list_end": "Waktu Selesai"
+  "copy_trade_strategy_list_end": "Waktu Selesai",
+  "copy_trade_mask_explain_title": "【Pengumuman Penting: Penjelasan Mengenai Desensitisasi Data Posisi Terbuka dan Mekanisme Pertahanan Risiko Proaktif】",
+  "copy_trade_mask_explain_intro": "Di dalam pasar kripto yang memiliki volatilitas dan leverage tinggi, rincian posisi terbuka yang transparan secara real-time sangat rentan menjadi target serangan eksploitasi di dalam jaringan (on-chain). Institusi kami menerapkan protokol desensitisasi bertahap pada data inti posisi aktif berdasarkan pertimbangan manajemen risiko kuantitatif dan perlindungan investor berikut",
+  "copy_trade_mask_explain_s1_title": "Pencegahan Terhadap 'Sniper' dan Likuidasi yang Disengaja (Perlindungan Anti-Sniper & Hunting):",
+  "copy_trade_mask_explain_s1_content": "Posisi bervolume besar dan harga entri yang terlihat publik dapat dengan mudah dilacak oleh para Whale' (cukong frekuensi tinggi) atau trader lawan melalui data on-chain. Pihak manipulatif dapat menggunakan keunggulan modal mereka untuk memompa (pump) atau membanting (dump) harga secara sengaja guna memicu stop-loss atau garis likuidasi strategi kami, yang dapat mengakibatkan 'likuidasi terarah' atau kerugian fatal bagi pengguna copy-trade akibat manipulasi pasar dua arah.",
+  "copy_trade_mask_explain_s2_title": "Menghindari Manipulasi Pasar dan Perebutan Likuiditas (Anti-Manipulasi Pasar):",
+  "copy_trade_mask_explain_s2_content": "Beberapa aset kripto memiliki kedalaman pasar (market depth) yang terbatas. Jika rincian posisi dibuka secara real-time, hal ini akan memancing modal luar atau robot kuantitatif (MEV Bot) untuk melakukan perdagangan terdahulu (Front-Running). Hal ini menyebabkan slippage pasar (selisih harga) yang besar dan kelangkaan likuiditas saat tahap penutupan posisi, yang secara langsung mengikis keuntungan bersih (NAV) para pengikut, sehingga menyebabkan situasi 'strategi menghasilkan untung, tetapi pengguna merugi.'",
+  "copy_trade_mask_explain_s3_title": "Melindungi Kapasitas Likuiditas Eksklusif untuk Strategi Alpha:",
+  "copy_trade_mask_explain_s3_content": "Strategi dengan imbal hasil tinggi memiliki kapasitas kuota yang terbatas. Desensitisasi data berfungsi efektif untuk memblokir tindakan 'penyalinan sinyal gratis' oleh pihak luar yang tidak sah, memastikan bahwa saluran pencocokan order yang terbatas tidak dipadati oleh modal yang tidak relevan, demi mengamankan hak eksekusi prioritas dan titik harga entri terbaik bagi anggota inti.",
+  "copy_trade_mask_explain_conclusion_title": "Kesimpulan Manajemen Risiko:",
+  "copy_trade_mask_explain_conclusion_content": "Desensitisasi data bukanlah operasi yang tidak transparan, melainkan metode pertahanan wajib untuk meredam gangguan pasar (noise), menangkal manipulasi sistematis, dan mengamankan profitabilitas bersih pengguna akhir. Semua data transaksi akan dibuka secara penuh dan transparan segera setelah posisi ditutup (likuidasi) untuk menjamin keaslian, kepatuhan, dan akuntabilitas yang dapat dilacak.",
+  "copy_trade_explain_got_it": "Mengerti"
 }

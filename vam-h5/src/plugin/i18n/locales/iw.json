@@ -1482,5 +1482,16 @@
   "copy_trade_intro_doc_title": "Copy Trading Guide",
   "copy_trade_daily_record": "Daily record",
   "copy_trade_pnl_label": "PnL",
-  "copy_trade_status_exited": "העתקה הסתיימה"
+  "copy_trade_status_exited": "העתקת מסחר הסתיימה",
+  "copy_trade_mask_explain_title": " 【הודעה מרכזית: הסבר על השחרת רגישות נתוני פוזיציות פתוחות ומנגנון הגנה פרואקטיבי מפני סיכונים】",
+  "copy_trade_mask_explain_intro": "בשוק המטבעות הקריפטוגרפיים התנודתי והממונף, פרטי פוזיציות פתוחות שקופים בזמן אמת פגיעים מאוד לניצול adversarial ב-on-chain. המוסד שלנו מיישם פרוטוקול השחרת רגישות מדורג וקפדני על נתוני הפוזיציות המרכזיים, בהתבסס על מנדטי ניהול הסיכונים הכמותי והגנת המשקיעים הבאים",
+  "copy_trade_mask_explain_s1_title": "מניעת ציד טורפני ומסחר נגדי (Anti-Sniper & Hunting Protection):",
+  "copy_trade_mask_explain_s1_content": "פוזיציות בנפח גבוה ומחירי כניסה גלויים לציבור ניתנים לעקיבה בקלות דרך נתוני on-chain על ידי whales בתדירות גבוהה או סוחרים יריבים. שחקני שוק adversarial יכולים לנצל יתרונות הון כדי לתזמר pump או dump מלאכותיים, ולהפעיל בכוונה את ספי stop-loss או liquidation של האסטרטגיה שלנו, מה שמוביל ל-'liquidations טורפניות' או long/short squeezes זדוניים למשתמשי copy trading.",
+  "copy_trade_mask_explain_s2_title": "הפחתת מניפולציית שוק ובריחת נזילות (Anti-Market Manipulation):",
+  "copy_trade_mask_explain_s2_content": "בשל עומק השוק המוגבל של נכסי קריפטו מסוימים, חשיפה בזמן אמת של פרטי פוזיציה מושכת בלתי נמנעת הון copycat חיצוני או בוטים אלגוריתמיים (MEV Bots) לביצוע עסקאות front-running. זה גורם ל-slippage חמור ולמיצוי נזילות בשלב הביצוע/סגירה, מדלל ישירות את שווי הנכסים הנקי (NAV) של העוקבים ומוביל לתרחיש של 'אסטרטגיה רווחית, משתמשים מפסידים.'",
+  "copy_trade_mask_explain_s3_title": "הגנה על נזילות אסטרטגית וקיבולת לאסטרטגיות Alpha:",
+  "copy_trade_mask_explain_s3_content": "לאסטרטגיות Alpha בתשואה גבוהה יש קיבולת ביצוע מוגבלת. השחרת רגישות נתונים חוסמת ביעילות התנהגויות illicit חיצוניות של 'free-riding/copycatting', מונעת עומס יתר על ערוצי matching מוגבלים על ידי הון לא קשור, ומבטיחה זכויות ביצוע מועדפות ונקודות כניסה אופטימליות לחברי premium מרכזיים.",
+  "copy_trade_mask_explain_conclusion_title": "סיכום ניהול סיכונים:",
+  "copy_trade_mask_explain_conclusion_content": "השחרת רגישות נתונים היא כלי הגנה שאין לו תחליף, הנדרש לסנן רעש intraday, לנטרל מניפולציה זדונית ולשמר את התשואות הנקיות הסופיות של העוקבים שלנו. כל נתוני העסקאות יעברו גילוי מלא ומפורט מיד עם liquidation של הפוזיציה, כדי להבטיח אותנטיות, ציות ויכולת ביקורת מוחלטת.",
+  "copy_trade_explain_got_it": "הבנתי"
 }

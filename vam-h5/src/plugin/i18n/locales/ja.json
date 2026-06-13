@@ -1487,5 +1487,16 @@
   "copy_trade_intro_doc_title": "Copy Trading Guide",
   "copy_trade_daily_record": "Daily record",
   "copy_trade_pnl_label": "PnL",
-  "copy_trade_status_exited": "コピー終了"
+  "copy_trade_status_exited": "コピートレード終了",
+  "copy_trade_mask_explain_title": " 【重要なお知らせ：オープンポジションデータの脱敏化と先制的リスク防御メカニズムについて】",
+  "copy_trade_mask_explain_intro": "高ボラティリティかつ高レバレッジの暗号資産市場では、リアルタイムかつ完全に透明なオープンポジションの詳細は、オンチェーン上の敵対的な悪用の標的となりやすいです。当機関は、以下の定量的リスク管理および投資家保護の要件に基づき、コアポジションデータに対して厳格な段階的脱敏化プロトコルを実施しています",
+  "copy_trade_mask_explain_s1_title": "捕食的行為および逆張り取引の防止（Anti-Sniper & Hunting Protection）：",
+  "copy_trade_mask_explain_s1_content": "公開されている大口ポジションやエントリー価格は、オンチェーンデータを通じて高頻度のWhaleや敵対的なカウンタートレーダーに容易に追跡されます。敵対的な市場参加者は資本優位性を利用して意図的なpumpやdumpを仕組み、当社戦略のストップロスまたは清算ラインを故意に発動させ、コピートレードユーザーに'捕食的清算'や悪意のあるロング/ショートスクイーズをもたらす可能性があります。",
+  "copy_trade_mask_explain_s2_title": "市場操作および流動性流出の緩和（Anti-Market Manipulation）：",
+  "copy_trade_mask_explain_s2_content": "特定の暗号資産は市場深度が限られているため、ポジション詳細のリアルタイム公開は、外部の模倣資本やアルゴリズムボット（MEV Bot）によるフロントランニング取引を必然的に誘引します。これにより執行/決済段階で深刻なスリッページと流動性枯渇が発生し、フォロワーの純資産価値（NAV）が直接希薄化され、'戦略は利益、ユーザーは損失'という状況に陥ります。",
+  "copy_trade_mask_explain_s3_title": "Alpha戦略の戦略的流動性とキャパシティの保護：",
+  "copy_trade_mask_explain_s3_content": "高収益Alpha戦略には限られた執行キャパシティがあります。データ脱敏化は違法な外部の'フリーライド/模倣'行為を効果的に遮断し、限られた注文マッチングチャネルが無関係な資本で混雑するのを防ぎ、コアプレミアム会員の優先執行権と最適なエントリー価格を確保します。",
+  "copy_trade_mask_explain_conclusion_title": "リスク管理のまとめ：",
+  "copy_trade_mask_explain_conclusion_content": "データ脱敏化は、日中ノイズを除外し、悪意のある操作を中和し、フォロワーの最終純利益を保護するために不可欠な防御手段です。すべての取引データは、ポジション清算（Liquidation）後直ちに詳細かつ全面的に開示され、真正性、コンプライアンス、および完全な監査可能性を保証します。",
+  "copy_trade_explain_got_it": "了解しました"
 }

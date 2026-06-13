@@ -1487,5 +1487,16 @@
   "copy_trade_intro_doc_title": "Copy Trading Guide",
   "copy_trade_daily_record": "Daily record",
   "copy_trade_pnl_label": "PnL",
-  "copy_trade_status_exited": "Đã kết thúc sao chép"
+  "copy_trade_status_exited": "Sao chép giao dịch đã kết thúc",
+  "copy_trade_mask_explain_title": "【Thông báo quan trọng: Giải thích về khử nhạy dữ liệu vị thế mở và cơ chế phòng thủ rủi ro chủ động】",
+  "copy_trade_mask_explain_intro": "Trong thị trường tiền mã hóa biến động cao và đòn bẩy lớn, chi tiết vị thế mở minh bạch theo thời gian thực rất dễ bị khai thác adversarial trên on-chain. Tổ chức của chúng tôi triển khai giao thức khử nhạy theo giai đoạn nghiêm ngặt đối với dữ liệu vị thế cốt lõi dựa trên các yêu cầu kiểm soát rủi ro định lượng và bảo vệ nhà đầu tư sau đây",
+  "copy_trade_mask_explain_s1_title": "Ngăn chặn săn mồi và giao dịch đối ứng (Anti-Sniper & Hunting Protection):",
+  "copy_trade_mask_explain_s1_content": "Các vị thế khối lượng lớn và giá vào lệnh hiển thị công khai có thể dễ dàng bị theo dõi qua dữ liệu on-chain bởi whale tần suất cao hoặc các bên đối ứng. Các tác nhân thị trường adversarial có thể lợi dụng ưu thế vốn để điều phối pump hoặc dump nhân tạo, cố ý kích hoạt ngưỡng stop-loss hoặc thanh lý của chiến lược, dẫn đến 'thanh lý săn mồi' hoặc long/short squeeze độc hại cho người dùng copy trading.",
+  "copy_trade_mask_explain_s2_title": "Giảm thiểu thao túng thị trường và rút thanh khoản (Anti-Market Manipulation):",
+  "copy_trade_mask_explain_s2_content": "Do độ sâu thị trường hạn chế của một số tài sản crypto, việc công khai chi tiết vị thế theo thời gian thực không tránh khỏi thu hút vốn copycat bên ngoài hoặc bot thuật toán (MEV Bot) thực hiện front-running. Điều này gây slippage nghiêm trọng và cạn kiệt thanh khoản trong giai đoạn thực thi/đóng, trực tiếp pha loãng Giá trị Tài sản Ròng (NAV) của người theo dõi và dẫn đến kịch bản 'chiến lược có lãi, người dùng thua lỗ.'",
+  "copy_trade_mask_explain_s3_title": "Bảo vệ thanh khoản chiến lược và dung lượng cho chiến lược Alpha:",
+  "copy_trade_mask_explain_s3_content": "Các chiến lược Alpha lợi nhuận cao có dung lượng thực thi hữu hạn. Khử nhạy dữ liệu hiệu quả chặn các hành vi 'free-riding/copycatting' bên ngoài bất hợp pháp, ngăn các kênh khớp lệnh hạn chế bị tắc nghẽn bởi vốn không liên quan, từ đó đảm bảo quyền thực thi ưu tiên và điểm vào lệnh tối ưu cho thành viên premium cốt lõi.",
+  "copy_trade_mask_explain_conclusion_title": "Tóm tắt quản lý rủi ro:",
+  "copy_trade_mask_explain_conclusion_content": "Khử nhạy dữ liệu là công cụ phòng thủ không thể thiếu để lọc nhiễu trong ngày, vô hiệu hóa thao túng độc hại và bảo toàn lợi nhuận ròng cuối cùng cho người theo dõi. Tất cả dữ liệu giao dịch sẽ được công bố chi tiết và toàn diện ngay sau khi thanh lý vị thế để đảm bảo tính xác thực, tuân thủ và khả năng kiểm toán tuyệt đối.",
+  "copy_trade_explain_got_it": "Đã hiểu"
 }

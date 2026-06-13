@@ -1484,5 +1484,16 @@
   "copy_trade_intro_doc_title": "Copy Trading Guide",
   "copy_trade_daily_record": "Daily record",
   "copy_trade_pnl_label": "PnL",
-  "copy_trade_status_exited": "Copy beëindigd"
+  "copy_trade_status_exited": "Copy trading beëindigd",
+  "copy_trade_mask_explain_title": " 【Belangrijke mededeling: Uitleg over desensibilisering van open posities en proactief risicoverdedigingsmechanisme】",
+  "copy_trade_mask_explain_intro": "Op de zeer volatiele en gehevelde cryptomarkt zijn realtime en volledig transparante details van open posities zeer kwetsbaar voor adversariale on-chain-exploitaties. Deze instelling implementeert een strikt gefaseerd desensibilisatieprotocol op kernpositiedata op basis van de volgende kwantitatieve risicobeheers- en beleggersbeschermingsmandaten",
+  "copy_trade_mask_explain_s1_title": "Preventie van roofjacht en tegenhandel (Anti-Sniper & Hunting-bescherming):",
+  "copy_trade_mask_explain_s1_content": "Publiek zichtbare posities met groot volume en instapprijzen kunnen eenvoudig via on-chain-data worden gevolgd door high-frequency whales of tegenstanderhandelaren. Schadelijke marktdeelnemers kunnen kapitaalvoordelen gebruiken om kunstmatige pump- of dump-bewegingen te orkestreren en bewust onze stop-loss- of liquidatiedrempels te activeren, wat leidt tot 'roofliquidaties' of kwaadwillige long/short-squeezes voor copy trading-gebruikers.",
+  "copy_trade_mask_explain_s2_title": "Beperking van marktmanipulatie en liquiditeitsvlucht (Anti-Market Manipulation):",
+  "copy_trade_mask_explain_s2_content": "Door de beperkte marktdiepte van bepaalde crypto-activa trekt realtime blootstelling van positiedetails onvermijdelijk extern copycat-kapitaal of algoritmische bots (MEV Bots) aan om front-running-transacties uit te voeren. Dit veroorzaakt ernstige marktslippage en liquiditeitsuitputting tijdens de uitvoerings-/sluitingsfase, verdunt direct de Net Asset Value (NAV) van volgers en leidt tot het scenario 'winstgevende strategie, verliezende gebruikers.'",
+  "copy_trade_mask_explain_s3_title": "Bescherming van strategische liquiditeit en capaciteit voor Alpha-strategieën:",
+  "copy_trade_mask_explain_s3_content": "Hoogrenderende Alpha-strategieën hebben een eindige uitvoeringscapaciteit. Datadesensibilisering onderschept effectief illegaal extern 'free-riding/copycatting'-gedrag, voorkomt dat beperkte ordermatchingkanalen verstopt raken door niet-gerelateerd kapitaal en waarborgt preferentiële uitvoeringsrechten en optimale instappunten voor kern premium-leden.",
+  "copy_trade_mask_explain_conclusion_title": "Samenvatting risicobeheer:",
+  "copy_trade_mask_explain_conclusion_content": "Datadesensibilisering is een ononderhandelbaar verdedigingsinstrument dat nodig is om intraday-ruis te filteren, kwaadwillige manipulatie te neutraliseren en de uiteindelijke netto-opbrengsten voor onze volgers te beschermen. Alle transactiedata worden onmiddellijk na positieliquidatie gedetailleerd en volledig openbaar gemaakt om authenticiteit, naleving en absolute auditability te garanderen.",
+  "copy_trade_explain_got_it": "Begrepen"
 }

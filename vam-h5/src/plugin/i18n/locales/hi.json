@@ -1485,5 +1485,16 @@
   "copy_trade_intro_doc_title": "Copy Trading Guide",
   "copy_trade_daily_record": "Daily record",
   "copy_trade_pnl_label": "PnL",
-  "copy_trade_status_exited": "कॉपी समाप्त"
+  "copy_trade_status_exited": "कॉपी ट्रेडिंग समाप्त",
+  "copy_trade_mask_explain_title": "【मुख्य सूचना: खुली पोजीशन डेटा डी-सेंसिटाइजेशन और सक्रिय जोखिम रक्षा तंत्र की व्याख्या】",
+  "copy_trade_mask_explain_intro": "अत्यधिक अस्थिर और लीवरेज वाले क्रिप्टोकरेंसी बाजार में, रियल-टाइम और पूर्णतः पारदर्शी खुली पोजीशन विवरण on-chain प्रतिकूल शोषण के लिए अत्यंत संवेदनशील होते हैं। यह संस्थान निम्नलिखित मात्रात्मक जोखिम नियंत्रण और निवेशक सुरक्षा निर्देशों के आधार पर मुख्य पोजीशन डेटा पर सख्त चरणबद्ध डी-सेंसिटाइजेशन प्रोटोकॉल लागू करती है",
+  "copy_trade_mask_explain_s1_title": "शिकारी शिकार और काउंटर-ट्रेडिंग की रोकथाम (Anti-Sniper & Hunting Protection):",
+  "copy_trade_mask_explain_s1_content": "सार्वजनिक रूप से दिखाई देने वाली बड़ी मात्रा की पोजीशन और एंट्री प्राइस on-chain डेटा के माध्यम से उच्च-आवृत्ति whales या प्रतिकूल काउंटर-ट्रेडर्स द्वारा आसानी से ट्रैक की जा सकती हैं। प्रतिकूल बाजार अभिनेता पूंजी लाभ का उपयोग करके कृत्रिम pump या dump का संचालन कर सकते हैं, जानबूझकर हमारी रणनीति के stop-loss या liquidation सीमाओं को ट्रिगर करते हैं, जिससे copy trading उपयोगकर्ताओं के लिए 'शिकारी liquidation' या दुर्भावनापूर्ण long/short squeeze होता है।",
+  "copy_trade_mask_explain_s2_title": "बाजार manipulation और तरलता drain की कमी (Anti-Market Manipulation):",
+  "copy_trade_mask_explain_s2_content": "कुछ क्रिप्टो संपत्तियों की सीमित बाजार गहराई के कारण, पोजीशन विवरण का रियल-टाइम exposure अनिवार्य रूप से बाहरी copycat पूंजी या algorithmic bots (MEV Bots) को front-running ट्रेड करने के लिए आकर्षित करता है। यह execution/closeout चरण के दौरान गंभीर market slippage और तरलता exhaustion का कारण बनता है, followers के Net Asset Value (NAV) को सीधे पतला करता है और 'लाभदायक रणनीति, हारने वाले उपयोगकर्ता' scenario की ओर ले जाता है।",
+  "copy_trade_mask_explain_s3_title": "Alpha रणनीतियों के लिए रणनीतिक तरलता और क्षमता की सुरक्षा:",
+  "copy_trade_mask_explain_s3_content": "उच्च-उपज Alpha रणनीतियों की सीमित execution क्षमता होती है। डेटा डी-सेंसिटाइजेशन अवैध बाहरी 'free-riding/copycatting' व्यवहारों को प्रभावी रूप से रोकता है, सीमित order-matching चैनलों को unrelated पूंजी से congest होने से रोकता है, और core premium सदस्यों के लिए preferential execution अधिकार और optimal entry price points सुनिश्चित करता है।",
+  "copy_trade_mask_explain_conclusion_title": "जोखिम प्रबंधन सारांश:",
+  "copy_trade_mask_explain_conclusion_content": "डेटा डी-सेंसिटाइजेशन intra-day noise को filter करने, दुर्भावनापूर्ण manipulation को neutralize करने और followers की अंतिम net returns को preserve करने के लिए एक अनिवार्य defensive tool है। सभी transaction डेटा position liquidation के तुरंत बाद granular, full-spectrum disclosure से गुजरेगा ताकि authenticity, compliance और absolute auditability सुनिश्चित हो।",
+  "copy_trade_explain_got_it": "समझ गया"
 }

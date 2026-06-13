@@ -1483,5 +1483,16 @@
   "copy_trade_intro_doc_title": "Copy Trading Guide",
   "copy_trade_daily_record": "Daily record",
   "copy_trade_pnl_label": "PnL",
-  "copy_trade_status_exited": "Copy encerrado"
+  "copy_trade_status_exited": "Copy trading encerrado",
+  "copy_trade_mask_explain_title": " 【Aviso importante: Explicação sobre desensibilização de posições abertas e mecanismo proativo de defesa de riscos】",
+  "copy_trade_mask_explain_intro": "No mercado de criptomoedas altamente volátil e alavancado, detalhes de posições abertas transparentes em tempo real são muito vulneráveis a explorações adversárias on-chain. Esta instituição implementa um protocolo rigoroso de desensibilização por fases nos dados centrais de posições com base nos seguintes mandatos de controle quantitativo de riscos e proteção ao investidor",
+  "copy_trade_mask_explain_s1_title": "Prevenção de caça predatória e contratrading (Proteção Anti-Sniper & Hunting):",
+  "copy_trade_mask_explain_s1_content": "Posições de grande volume e preços de entrada visíveis publicamente podem ser facilmente rastreados via dados on-chain por whales de alta frequência ou contrapartes adversárias. Atores de mercado adversos podem utilizar vantagens de capital para orquestrar pumps ou dumps artificiais, acionando intencionalmente os limites de stop-loss ou liquidação da nossa estratégia, resultando em 'liquidações predatórias' ou squeezes long/short maliciosos para usuários de copy trading.",
+  "copy_trade_mask_explain_s2_title": "Mitigação de manipulação de mercado e fuga de liquidez (Anti-Market Manipulation):",
+  "copy_trade_mask_explain_s2_content": "Devido à profundidade de mercado limitada de certos ativos cripto, a exposição em tempo real dos detalhes da posição atrai inevitavelmente capital externo imitador ou bots algorítmicos (MEV Bots) para executar trades de front-running. Isso causa slippage severo e esgotamento de liquidez durante a fase de execução/encerramento, diluindo diretamente o Valor Líquido de Ativos (NAV) dos seguidores e levando ao cenário de 'estratégia lucrativa, usuários perdedores.'",
+  "copy_trade_mask_explain_s3_title": "Proteção da liquidez estratégica e capacidade de estratégias Alpha:",
+  "copy_trade_mask_explain_s3_content": "Estratégias Alpha de alto rendimento possuem capacidade de execução finita. A desensibilização de dados intercepta eficazmente comportamentos ilícitos externos de 'free-riding/copycatting', evitando que canais limitados de matching de ordens sejam congestionados por capital não relacionado, garantindo direitos de execução preferenciais e pontos ótimos de entrada para membros premium centrais.",
+  "copy_trade_mask_explain_conclusion_title": "Resumo de gestão de riscos:",
+  "copy_trade_mask_explain_conclusion_content": "A desensibilização de dados é uma ferramenta defensiva inegociável necessária para filtrar ruído intradiário, neutralizar manipulação maliciosa e preservar os retornos líquidos finais dos nossos seguidores. Todos os dados de transações serão divulgados de forma granular e completa imediatamente após a liquidação da posição para garantir autenticidade, conformidade e auditabilidade absoluta.",
+  "copy_trade_explain_got_it": "Entendi"
 }

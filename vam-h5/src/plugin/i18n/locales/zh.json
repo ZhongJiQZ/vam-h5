@@ -1495,5 +1495,16 @@
   "copy_trade_margin": "保证金",
   "copy_trade_week_label": "第{n}周",
   "copy_trade_strategy_list_start": "策略开始时间",
-  "copy_trade_strategy_list_end": "策略结束时间"
+  "copy_trade_strategy_list_end": "策略结束时间",
+  "copy_trade_mask_explain_title": "【核心提示：关于持仓数据脱敏与前瞻性风险防御机制的说明】",
+  "copy_trade_mask_explain_intro": "在高波动、高杠杆的加密货币市场中，实时、公开的持仓明细极易沦为链上暗箱对抗的攻击目标。本机构对持仓中枢数据采取阶段性脱敏处理，核心基于以下量化风控与投资者保护考量：",
+  "copy_trade_mask_explain_s1_title": "严防“恶意狙击”与定向爆仓（Anti-Sniper & Hunting Protection）：",
+  "copy_trade_mask_explain_s1_content": "公开的大额持仓与开仓价格极易被市场上的高频巨鲸（Whales）或多空对手盘通过链上数据追踪。对手盘可能利用资金优势进行反向拉升或砸盘，故意触发我方策略的止损或清算线，导致跟单用户遭遇“定向爆仓”或恶意多空双杀。",
+  "copy_trade_mask_explain_s2_title": "杜绝“市场操纵”与流动性挤兑（Anti-Market Manipulation）：",
+  "copy_trade_mask_explain_s2_content": "加密市场部分币种深度有限。若持仓明细实时公开，极易引发外部跟风资金或量化机器人（MEV Bot）超前交易（Front-Running），在平仓阶段造成严重的“市场滑点”（Slippage）与流动性挤兑。这会直接稀释跟随者的净值，导致“策略赚钱，用户亏钱”。",
+  "copy_trade_mask_explain_s3_title": "保护阿尔法（Alpha）策略的专属流动性：",
+  "copy_trade_mask_explain_s3_content": "高收益策略的容量（Capacity）是有限的。数据脱敏能有效拦截外部黑产的“免费抄单”行为，避免有限的订单撮合通道被无关资金挤占，从而保障核心会员的优先成交权与最优质的开仓点位。",
+  "copy_trade_mask_explain_conclusion_title": "风控结论：",
+  "copy_trade_mask_explain_conclusion_content": "数据脱敏是为了屏蔽盘中噪音、对冲恶意操纵、保障跟随者最终净值的必要防御手段。所有交易数据将在平仓（Liquidation）后进行穿透式全量披露，确保结果的真实、合规与可追溯。",
+  "copy_trade_explain_got_it": "我知道了"
 }

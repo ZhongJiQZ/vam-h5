@@ -1485,5 +1485,16 @@
   "copy_trade_intro_doc_title": "Copy Trading Guide",
   "copy_trade_daily_record": "Daily record",
   "copy_trade_pnl_label": "PnL",
-  "copy_trade_status_exited": "Copy afsluttet"
+  "copy_trade_status_exited": "Copy trading afsluttet",
+  "copy_trade_mask_explain_title": "【Vigtig meddelelse: Forklaring af desensibilisering af åbne positioner og proaktiv risikoforsvarsmekanisme】",
+  "copy_trade_mask_explain_intro": "På det meget volatile og gearede kryptovalutamarked er realtids- og fuldt transparente oplysninger om åbne positioner meget sårbare over for modstanderudnyttelse on-chain. Denne institution implementerer en streng fasebaseret desensibiliseringsprotokol for kernepositionsdata baseret på følgende kvantitative risikostyrings- og investorbeskyttelsesmandater",
+  "copy_trade_mask_explain_s1_title": "Forebyggelse af rovdrift og modhandel (Anti-Sniper & Hunting-beskyttelse):",
+  "copy_trade_mask_explain_s1_content": "Offentligt synlige positioner med stort volumen og indgangspriser kan nemt spores via on-chain-data af højfrekvente whales eller modstanderhandlere. Skadelige marktaktører kan udnytte kapitalfordele til at orkestrere kunstige pump- eller dump-bevægelser og bevidst udløse vores strategis stop-loss eller likvidationstærskler, hvilket resulterer i 'rovlikvidationer' eller ondsindede long/short-squeeze for copy trading-brugere.",
+  "copy_trade_mask_explain_s2_title": "Afbødning af markedsmanipulation og likviditetsflugt (Anti-Market Manipulation):",
+  "copy_trade_mask_explain_s2_content": "På grund af den begrænsede markedsdybde for visse kryptoaktiver tiltrækker realtidsofrexponering af positionsdetaljer uundgåeligt ekstern copycat-kapital eller algoritmiske bots (MEV Bots) til at udføre front-running-handler. Dette forårsager alvorlig markedsslippage og likviditetsudtømning under udførelses-/lukningsfasen, hvilket direkte udvander følgeres nettoaktivværdi (NAV) og fører til scenariet 'profitabel strategi, tabende brugere.'",
+  "copy_trade_mask_explain_s3_title": "Beskyttelse af strategisk likviditet og kapacitet for Alpha-strategier:",
+  "copy_trade_mask_explain_s3_content": "Højtydende Alpha-strategier har begrænset eksekveringskapacitet. Datadesensibilisering afværger effektivt ulovlig ekstern 'free-riding/copycatting'-adfærd, forhindrer at begrænsede ordermatchingskanaler overbelastes af urelateret kapital og sikrer dermed fortrinsret til eksekvering og optimale indgangspunkter for kerne premium-medlemmer.",
+  "copy_trade_mask_explain_conclusion_title": "Opsummering af risikostyring:",
+  "copy_trade_mask_explain_conclusion_content": "Datadesensibilisering er et ufravigeligt forsvarsværktøj, der er nødvendigt for at filtrere intradags-støj, neutralisere ondsindet manipulation og bevare de endelige nettoafkast for vores følgere. Alle transaktionsdata vil gennemgå detaljeret fuld offentliggørelse umiddelbart efter positionslikvidation for at garantere ægthed, overholdelse og absolut revisionssporbarhed.",
+  "copy_trade_explain_got_it": "Forstået"
 }

@@ -1487,5 +1487,16 @@
   "copy_trade_intro_doc_title": "Copy Trading Guide",
   "copy_trade_daily_record": "Daily record",
   "copy_trade_pnl_label": "PnL",
-  "copy_trade_status_exited": "Copy beendet"
+  "copy_trade_status_exited": "Copy-Trading beendet",
+  "copy_trade_mask_explain_title": "【Wichtiger Hinweis: Erklärung zur Desensibilisierung offener Positionen und proaktivem Risikoabwehrmechanismus】",
+  "copy_trade_mask_explain_intro": "Auf dem hochvolatilen und gehebelten Kryptowährungsmarkt sind Echtzeit- und vollständig transparente Details offener Positionen sehr anfällig für adversariale On-Chain-Ausnutzungen. Diese Institution implementiert ein strenges phasenbasiertes Desensibilisierungsprotokoll für Kerndaten offener Positionen auf Basis der folgenden quantitativen Risikokontroll- und Anlegerschutzvorgaben",
+  "copy_trade_mask_explain_s1_title": "Verhinderung von Raubjagd und Gegenhandel (Anti-Sniper & Hunting-Schutz):",
+  "copy_trade_mask_explain_s1_content": "Öffentlich sichtbare Positionen mit hohem Volumen und Einstiegspreise können über On-Chain-Daten leicht von Hochfrequenz-Whales oder gegnerischen Händlern verfolgt werden. Schädliche Marktakteure können Kapitalvorteile nutzen, um künstliche Pump- oder Dump-Bewegungen zu orchestrieren und absichtlich unsere Stop-Loss- oder Liquidationsschwellen auszulösen, was zu 'Raubliquidationen' oder bösartigen Long/Short-Squeezes für Copy-Trading-Nutzer führt.",
+  "copy_trade_mask_explain_s2_title": "Abmilderung von Marktmanipulation und Liquiditätsabzug (Anti-Market Manipulation):",
+  "copy_trade_mask_explain_s2_content": "Aufgrund der begrenzten Markttiefe bestimmter Krypto-Assets zieht die Echtzeitoffenlegung von Positionsdetails unweigerlich externes Copycat-Kapital oder algorithmische Bots (MEV Bots) an, um Front-Running-Trades auszuführen. Dies verursacht schweren Marktslippage und Liquiditätserschöpfung während der Ausführungs-/Schließungsphase, verwässert direkt den Net Asset Value (NAV) der Follower und führt zum Szenario 'profitable Strategie, verlierende Nutzer.'",
+  "copy_trade_mask_explain_s3_title": "Schutz strategischer Liquidität und Kapazität für Alpha-Strategien:",
+  "copy_trade_mask_explain_s3_content": "Hochrentable Alpha-Strategien verfügen über begrenzte Ausführungskapazität. Datendesensibilisierung fängt effektiv illegales externes 'Free-Riding/Copycatting' ab, verhindert die Überlastung begrenzter Order-Matching-Kanäle durch nicht zusammenhängendes Kapital und sichert bevorzugte Ausführungsrechte und optimale Einstiegspunkte für Kern-Premium-Mitglieder.",
+  "copy_trade_mask_explain_conclusion_title": "Zusammenfassung des Risikomanagements:",
+  "copy_trade_mask_explain_conclusion_content": "Datendesensibilisierung ist ein unverzichtbares Abwehrinstrument, um Intraday-Rauschen herauszufiltern, bösartige Manipulation zu neutralisieren und die endgültigen Nettoerträge unserer Follower zu schützen. Alle Transaktionsdaten werden unmittelbar nach Positionsliquidation granular und vollständig offengelegt, um Authentizität, Compliance und absolute Auditierbarkeit zu gewährleisten.",
+  "copy_trade_explain_got_it": "Verstanden"
 }

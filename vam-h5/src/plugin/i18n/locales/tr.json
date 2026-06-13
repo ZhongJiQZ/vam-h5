@@ -1483,5 +1483,16 @@
   "copy_trade_intro_doc_title": "Copy Trading Guide",
   "copy_trade_daily_record": "Daily record",
   "copy_trade_pnl_label": "PnL",
-  "copy_trade_status_exited": "Kopya sona erdi"
+  "copy_trade_status_exited": "Kopya işlem sona erdi",
+  "copy_trade_mask_explain_title": " 【Önemli duyuru: Açık pozisyon verilerinin duyarsızlaştırılması ve proaktif risk savunma mekanizmasının açıklaması】",
+  "copy_trade_mask_explain_intro": "Yüksek volatiliteli ve kaldıraçlı kripto para piyasasında, gerçek zamanlı ve tamamen şeffaf açık pozisyon detayları on-chain adversarial istismara karşı son derece savunmasızdır. Kurumumuz, aşağıdaki nicel risk kontrolü ve yatırımcı koruma gerekliliklerine dayanarak temel pozisyon verilerine katı aşamalı duyarsızlaştırma protokolü uygular",
+  "copy_trade_mask_explain_s1_title": "Yırtıcı av ve karşı işlem önleme (Anti-Sniper & Hunting Protection):",
+  "copy_trade_mask_explain_s1_content": "Halka açık büyük hacimli pozisyonlar ve giriş fiyatları, on-chain veriler aracılığıyla yüksek frekanslı whale'ler veya karşı taraf trader'lar tarafından kolayca takip edilebilir. Olumsuz piyasa aktörleri, sermaye avantajlarını kullanarak yapay pump veya dump düzenleyebilir, stratejimizin stop-loss veya likidasyon eşiklerini kasıtlı olarak tetikleyerek copy trading kullanıcıları için 'yırtıcı likidasyonlar' veya kötü niyetli long/short squeeze'lere yol açabilir.",
+  "copy_trade_mask_explain_s2_title": "Piyasa manipülasyonu ve likidite kaçışının azaltılması (Anti-Market Manipulation):",
+  "copy_trade_mask_explain_s2_content": "Belirli kripto varlıkların sınırlı piyasa derinliği nedeniyle, pozisyon detaylarının gerçek zamanlı açıklanması kaçınılmaz olarak harici copycat sermayeyi veya algoritmik botları (MEV Bot) front-running işlemleri yapmaya çeker. Bu, yürütme/kapanış aşamasında ciddi slippage ve likidite tükenmesine neden olur, takipçilerin Net Varlık Değerini (NAV) doğrudan seyreltir ve 'karlı strateji, kaybeden kullanıcılar' senaryosuna yol açar.",
+  "copy_trade_mask_explain_s3_title": "Alpha stratejileri için stratejik likidite ve kapasitenin korunması:",
+  "copy_trade_mask_explain_s3_content": "Yüksek getirili Alpha stratejileri sınırlı yürütme kapasitesine sahiptir. Veri duyarsızlaştırma, yasadışı harici 'free-riding/copycatting' davranışlarını etkili biçimde engeller, sınırlı emir eşleştirme kanallarının ilgisiz sermaye ile tıkanmasını önler ve çekirdek premium üyeler için tercihli yürütme hakları ile optimal giriş noktalarını güvence altına alır.",
+  "copy_trade_mask_explain_conclusion_title": "Risk yönetimi özeti:",
+  "copy_trade_mask_explain_conclusion_content": "Veri duyarsızlaştırma, gün içi gürültüyü filtrelemek, kötü niyetli manipülasyonu nötralize etmek ve takipçilerimizin nihai net getirilerini korumak için vazgeçilmez bir savunma aracıdır. Tüm işlem verileri, pozisyon likidasyonundan hemen sonra ayrıntılı ve tam kapsamlı olarak açıklanacak; böylece özgünlük, uyumluluk ve mutlak denetlenebilirlik garanti edilecektir.",
+  "copy_trade_explain_got_it": "Anladım"
 }

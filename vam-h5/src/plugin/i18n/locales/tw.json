@@ -1490,5 +1490,16 @@
   "copy_trade_join_condition": "條件",
   "copy_trade_active_sub_count_gt": "下級跟單人數＞{n}",
   "copy_trade_strategy_not_started": "暫未開啟策略，請等待",
-  "copy_trade_wait_institution_buy": "等待機構買入"
+  "copy_trade_wait_institution_buy": "等待機構買入",
+  "copy_trade_mask_explain_title": "【核心提示：關於持倉數據脫敏與前瞻性風險防禦機制的說明】",
+  "copy_trade_mask_explain_intro": "在高波動、高槓桿的加密貨幣市場中，實時、公開的持倉明細極易淪為鏈上暗箱對抗的攻擊目標。本機構對持倉中樞數據採取階段性脫敏處理，核心基於以下量化風控與投資者保護考量：",
+  "copy_trade_mask_explain_s1_title": "嚴防「惡意狙擊」與定向爆倉（Anti-Sniper & Hunting Protection）：",
+  "copy_trade_mask_explain_s1_content": "公開的大額持倉與開倉價格極易被市場上的高頻巨鯨（Whales）或多空對手盤通過鏈上數據追蹤。對手盤可能利用資金優勢進行反向拉升或砸盤，故意觸發我方策略的止損或清算線，導致跟單用戶遭遇「定向爆倉」或惡意多空雙殺。",
+  "copy_trade_mask_explain_s2_title": "杜絕「市場操縱」與流動性擠兌（Anti-Market Manipulation）：",
+  "copy_trade_mask_explain_s2_content": "加密市場部分幣種深度有限。若持倉明細實時公開，極易引發外部跟風資金或量化機器人（MEV Bot）超前交易（Front-Running），在平倉階段造成嚴重的「市場滑點」（Slippage）與流動性擠兌。這會直接稀釋跟隨者的淨值，導致「策略賺錢，用戶虧錢」。",
+  "copy_trade_mask_explain_s3_title": "保護阿爾法（Alpha）策略的專屬流動性：",
+  "copy_trade_mask_explain_s3_content": "高收益策略的容量（Capacity）是有限的。數據脫敏能有效攔截外部黑產的「免費抄單」行為，避免有限的訂單撮合通道被無關資金擠占，從而保障核心會員的優先成交權與最優質的開倉點位。",
+  "copy_trade_mask_explain_conclusion_title": "風控結論：",
+  "copy_trade_mask_explain_conclusion_content": "數據脫敏是為了屏蔽盤中噪音、對沖惡意操縱、保障跟隨者最終淨值的必要防禦手段。所有交易數據將在平倉（Liquidation）後進行穿透式全量披露，確保結果的真實、合規與可追溯。",
+  "copy_trade_explain_got_it": "我知道了"
 }
