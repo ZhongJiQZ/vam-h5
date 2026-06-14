@@ -78,7 +78,7 @@
         </div>
         <div class="cell">
           <span class="label">{{ _t18('option_now_price') }}</span>
-          <span class="value ff-num">{{ tradeStore.allCoinPriceInfo[coin]?.close }}</span>
+          <span class="value ff-num">{{ liveCloseText }}</span>
         </div>
         <div class="cell cell--right cell--grid-col-2">
           <span class="label">{{ _t18('copy_trade_pnl_usdt') }}</span>
@@ -126,11 +126,20 @@ const displayPair = computed(() => {
 })
 
 const coin = computed(() => {
-  let coin = props.record?.symbol
-  if (coin.includes('USDT')) {
-    coin = coin.replace('/USDT', '')
-  }
-  return coin.toLowerCase()
+  const raw = props.record?.symbol || props.record?.coin || props.record?.coinSymbol || props.parentSymbol || ''
+  let key = String(raw).trim()
+  if (!key) return ''
+  if (key.includes('/')) key = key.split('/')[0]
+  if (key.includes('USDT')) key = key.replace('/USDT', '').replace('USDT', '')
+  return key.toLowerCase()
+})
+
+const liveCloseText = computed(() => {
+  if (props.masked) return MASK
+  if (props.closed) return '--'
+  const key = coin.value
+  if (!key) return '--'
+  return tradeStore.allCoinPriceInfo[key]?.close ?? '--'
 })
 
 const displayStatus = computed(() => {

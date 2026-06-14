@@ -397,7 +397,10 @@ export function normalizeCopyTradeDetailResponse(res) {
 
   // 旧版：单订单扁平结构
   if (payload.id != null && !payload.order && !payload.orderList) {
-    return { meta: {}, orders: [{ ...payload, records: normalizeRecords(payload.records) }] }
+    return {
+      meta: {},
+      orders: [attachCopyTradeOrderViewModel({ ...payload, records: normalizeRecords(payload.records) })]
+    }
   }
 
   // 新版：institution + strategy + order + records
@@ -411,7 +414,7 @@ export function normalizeCopyTradeDetailResponse(res) {
           ? payload.order.records
           : []
     )
-    const order = {
+    const order = attachCopyTradeOrderViewModel({
       ...payload.order,
       records,
       strategy,
@@ -425,7 +428,7 @@ export function normalizeCopyTradeDetailResponse(res) {
         strategy.strategyStartTimeMillis ?? payload.order.strategyStartTimeMillis,
       strategyEndTimeMillis:
         strategy.strategyEndTimeMillis ?? payload.order.strategyEndTimeMillis
-    }
+    })
     return {
       meta: {
         strategyId: strategy.strategyId,
@@ -445,7 +448,7 @@ export function normalizeCopyTradeDetailResponse(res) {
   const pushOrder = (item) => {
     if (!item || item.id == null || seen.has(item.id)) return
     seen.add(item.id)
-    orders.push({ ...item, records: normalizeRecords(item.records) })
+    orders.push(attachCopyTradeOrderViewModel({ ...item, records: normalizeRecords(item.records) }))
   }
   pushOrder(payload.order)
   ;(payload.orderList || []).forEach(pushOrder)
@@ -561,12 +564,23 @@ export function splitCopyTradeRecords(records) {
   return { holding, closed }
 }
 
+/** 列表/详情行视图模型：预计算子单分组，避免模板重复遍历 */
+export function attachCopyTradeOrderViewModel(order) {
+  if (!order || typeof order !== 'object') return order
+  const records = Array.isArray(order.records) ? order.records : []
+  return {
+    ...order,
+    _recordGroups: splitCopyTradeRecords(records),
+    _battle: groupCopyTradeDailyBattleRecords(records)
+  }
+}
+
 export function normalizeCopyTradeListRow(row) {
   if (!row || typeof row !== 'object') return row
   const records = (Array.isArray(row.records) ? row.records : [])
     .map(normalizeCopyTradeRecord)
     .filter(Boolean)
-  return { ...row, records }
+  return attachCopyTradeOrderViewModel({ ...row, records })
 }
 
 /** 解析 list 接口 data（兼容 rows / data.rows） */

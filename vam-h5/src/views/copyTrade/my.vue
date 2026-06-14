@@ -107,6 +107,7 @@
               </div>
               <p class="detail-link">{{ _t18('copy_trade_view_detail') }}</p>
             </div>
+            <!-- 底部子单详情（持仓/平仓）暂不展示
             <div class="records-outer" @click.stop>
               <div class="records-section">
                 <div class="records-title-row">
@@ -131,7 +132,7 @@
                   </button>
                 </div>
                 <PositionRecordCard
-                  v-for="(rec, rIdx) in getDailyBattle(item).holding"
+                  v-for="(rec, rIdx) in (item._battle?.holding || [])"
                   :key="rec.orderNo || `${item.id}-h-${rIdx}`"
                   :record="rec"
                   :parent-symbol="copyTradeRunningSymbol(item)"
@@ -140,7 +141,7 @@
                 />
               </div>
               <div
-                v-for="dayGroup in getDailyBattle(item).days"
+                v-for="dayGroup in (item._battle?.days || [])"
                 :key="`${item.id}-${dayGroup.date}`"
                 class="records-section"
               >
@@ -153,6 +154,7 @@
                   :parent-symbol="copyTradeRunningSymbol(item)" :masked="false" closed />
               </div>
             </div>
+            -->
           </div>
         </template>
 
@@ -213,10 +215,17 @@
               </div>
               <p class="detail-link">{{ _t18('copy_trade_view_detail') }}</p>
             </div>
-            <div v-if="getDailyBattle(item).holding.length || getDailyBattle(item).days.length" class="records-outer"
-              @click.stop>
-              <div v-for="dayGroup in getDailyBattle(item).days" :key="`${item.id}-ended-${dayGroup.date}`"
-                class="records-section">
+            <!-- 底部子单详情（历史平仓）暂不展示
+            <div
+              v-if="(item._battle?.holding?.length || item._battle?.days?.length)"
+              class="records-outer"
+              @click.stop
+            >
+              <div
+                v-for="dayGroup in (item._battle?.days || [])"
+                :key="`${item.id}-ended-${dayGroup.date}`"
+                class="records-section"
+              >
                 <h4 class="records-title">
                   {{ dayGroup.date === 'unknown' ? _t18('copy_trade_daily_record') : `${dayGroup.date}
                   ${_t18('copy_trade_daily_record')}` }}
@@ -226,66 +235,67 @@
                   :parent-symbol="copyTradeRunningSymbol(item)" :masked="false" closed />
               </div>
             </div>
+            -->
           </div>
         </template>
 
-
-        <van-popup v-model:show="showExplain" round position="bottom">
-          <div class="popup-explain">
-            <div class="popup-explain__header">
-              <span>{{ _t18('copy_trade_intro_doc_title') }}</span>
-              <van-icon name="close" size="24" @click="showExplain = false" />
-            </div>
-            <h3 class="popup-explain__title">{{ _t18('copy_trade_mask_explain_title') }}</h3>
-            <p class="popup-explain__intro">
-              {{ _t18('copy_trade_mask_explain_intro') }}
-            </p>
-            <div class="popup-explain__section">
-              <h4 class="popup-explain__subtitle">{{ _t18('copy_trade_mask_explain_s1_title') }}</h4>
-              <p>{{ _t18('copy_trade_mask_explain_s1_content') }}</p>
-            </div>
-            <div class="popup-explain__section">
-              <h4 class="popup-explain__subtitle">{{ _t18('copy_trade_mask_explain_s2_title') }}</h4>
-              <p>{{ _t18('copy_trade_mask_explain_s2_content') }}</p>
-            </div>
-            <div class="popup-explain__section">
-              <h4 class="popup-explain__subtitle">{{ _t18('copy_trade_mask_explain_s3_title') }}</h4>
-              <p>{{ _t18('copy_trade_mask_explain_s3_content') }}</p>
-            </div>
-            <div class="popup-explain__section popup-explain__section--conclusion">
-              <h4 class="popup-explain__subtitle">{{ _t18('copy_trade_mask_explain_conclusion_title') }}</h4>
-              <p>{{ _t18('copy_trade_mask_explain_conclusion_content') }}</p>
-            </div>
-            <button type="button" class="popup-explain__btn" @click="showExplain = false">
-              {{ _t18('copy_trade_explain_got_it') }}
-            </button>
-          </div>
-        </van-popup>
 
         <Nodata v-if="!loading && list.length === 0 && loadedOnce" />
       </van-list>
     </van-pull-refresh>
 
-    
+    <!-- 持仓说明弹窗（随底部子单详情一并关闭）
+    <van-popup v-model:show="showExplain" round position="bottom">
+      <div class="popup-explain">
+        <div class="popup-explain__header">
+          <span>{{ _t18('copy_trade_intro_doc_title') }}</span>
+          <van-icon name="close" size="24" @click="showExplain = false" />
+        </div>
+        <h3 class="popup-explain__title">{{ _t18('copy_trade_mask_explain_title') }}</h3>
+        <p class="popup-explain__intro">
+          {{ _t18('copy_trade_mask_explain_intro') }}
+        </p>
+        <div class="popup-explain__section">
+          <h4 class="popup-explain__subtitle">{{ _t18('copy_trade_mask_explain_s1_title') }}</h4>
+          <p>{{ _t18('copy_trade_mask_explain_s1_content') }}</p>
+        </div>
+        <div class="popup-explain__section">
+          <h4 class="popup-explain__subtitle">{{ _t18('copy_trade_mask_explain_s2_title') }}</h4>
+          <p>{{ _t18('copy_trade_mask_explain_s2_content') }}</p>
+        </div>
+        <div class="popup-explain__section">
+          <h4 class="popup-explain__subtitle">{{ _t18('copy_trade_mask_explain_s3_title') }}</h4>
+          <p>{{ _t18('copy_trade_mask_explain_s3_content') }}</p>
+        </div>
+        <div class="popup-explain__section popup-explain__section--conclusion">
+          <h4 class="popup-explain__subtitle">{{ _t18('copy_trade_mask_explain_conclusion_title') }}</h4>
+          <p>{{ _t18('copy_trade_mask_explain_conclusion_content') }}</p>
+        </div>
+        <button type="button" class="popup-explain__btn" @click="showExplain = false">
+          {{ _t18('copy_trade_explain_got_it') }}
+        </button>
+      </div>
+    </van-popup>
+    -->
 
-    <ShareDialog v-model:show="shareVisible" :item="shareItem" />
+    <ShareDialog v-if="shareVisible" v-model:show="shareVisible" :item="shareItem" />
     <AppendDialog v-model:show="appendVisible" :item="appendItem" :loading="appendLoading" @confirm="confirmAppend" />
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, defineAsyncComponent } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
-import ShareDialog from './components/ShareDialog.vue'
 import AppendDialog from './components/AppendDialog.vue'
-import PositionRecordCard from './components/PositionRecordCard.vue'
+// import PositionRecordCard from './components/PositionRecordCard.vue'
+const ShareDialog = defineAsyncComponent(() => import('./components/ShareDialog.vue'))
 import { _t18 } from '@/utils/public'
 import { getCopyTradeList, appendCopyTrade, getCopyTradeMyPerformance } from '@/api/copyTrade'
 import { priceFormat, _add } from '@/utils/decimal'
 import {
   copyTradePositionSymbol,
-  copyTradeRunningSymbol,
+  // copyTradeRunningSymbol,
   formatPnl,
   pnlClass,
   calcPnlRate,
@@ -293,7 +303,6 @@ import {
   formatCopyTradeStrategyStartTime,
   formatCopyTradeStrategyEndTime,
   copyTradeHasAmount,
-  groupCopyTradeDailyBattleRecords,
   normalizeCopyTradeListResponse,
   copyTradeOrderBadgeClass,
   copyTradeOrderStatusText,
@@ -323,15 +332,11 @@ const shareItem = ref({})
 const appendVisible = ref(false)
 const appendItem = ref({})
 const appendLoading = ref(false)
-const sectionRefreshing = ref(false)
-const showExplain = ref(false)
+// const sectionRefreshing = ref(false)
+// const showExplain = ref(false)
 
 function endedPnl(item) {
   return item?.params?.totalSettledProfit ?? item?.actualProfit ?? item?.params?.netProfit ?? 0
-}
-
-function getDailyBattle(item) {
-  return groupCopyTradeDailyBattleRecords(item?.records)
 }
 
 function cycleRange(item) {
@@ -436,7 +441,8 @@ async function fetchList() {
   if (res?.code == 200) {
     const parsed = normalizeCopyTradeListResponse(res)
     total.value = parsed.total
-    return parsed.rows
+    // 列表页暂不展示子单，丢弃 records 避免多余计算
+    return parsed.rows.map(({ records, _battle, _recordGroups, ...rest }) => rest)
   }
   finished.value = true
   return []
@@ -470,6 +476,7 @@ function onRefresh() {
   onLoad()
 }
 
+/*
 async function refreshCopyTradeData() {
   if (sectionRefreshing.value || loading.value) return
   sectionRefreshing.value = true
@@ -497,6 +504,7 @@ async function refreshCopyTradeData() {
     refreshing.value = false
   }
 }
+*/
 
 function goDetail(id) {
   router.push({
@@ -658,6 +666,7 @@ $muted: #888;
   cursor: pointer;
 }
 
+/*
 .records-outer {
   margin-top: 12px;
 }
@@ -665,6 +674,7 @@ $muted: #888;
 .records-section+.records-section {
   margin-top: 12px;
 }
+*/
 
 .order-card__head,
 .ended-card__head {
@@ -765,6 +775,7 @@ $muted: #888;
   }
 }
 
+/*
 .records-title-row {
   display: flex;
   align-items: center;
@@ -840,6 +851,7 @@ $muted: #888;
   font-weight: 600;
   color: #374151;
 }
+*/
 
 .card-actions {
   margin-top: 12px;
@@ -924,6 +936,7 @@ $muted: #888;
   text-align: right;
 }
 
+/*
 .popup-explain {
   max-height: 70vh;
   padding: 48px 16px 24px;
@@ -991,4 +1004,5 @@ $muted: #888;
     color: #111827;
   }
 }
+*/
 </style>

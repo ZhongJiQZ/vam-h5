@@ -7,7 +7,7 @@
       <div class="list">
         <div v-for="item in list" :key="item.id" class="card" @click="toSubmit(item)">
           <div class="card__head">
-            <img v-if="item.icon" :src="item.icon" class="avatar" alt="" />
+            <img v-if="item.icon" :src="item.icon" class="avatar" alt="" loading="lazy" decoding="async" />
             <div v-else class="avatar avatar--ph" />
             <div class="meta">
               <p class="name">{{ item.strategyName }}</p>
@@ -102,8 +102,7 @@ function toSubmit(item) {
     path: '/copy-trade/submit',
     query: {
       strategyId: item.id,
-      institutionId: route.query.institutionId || item.institutionId || '',
-      data: encodeURIComponent(JSON.stringify(item))
+      institutionId: route.query.institutionId || item.institutionId || ''
     }
   })
 }

@@ -18,17 +18,9 @@
           v-if="linePath"
           :points="linePath"
           fill="none"
-          stroke="#17ac74"
+          stroke="#16A34A"
           stroke-width="2"
           vector-effect="non-scaling-stroke"
-        />
-        <circle
-          v-for="(p, i) in plotPoints"
-          :key="'dot-' + i"
-          :cx="p.x"
-          :cy="p.y"
-          r="3"
-          fill="#17ac74"
         />
       </svg>
       <div class="chart-labels">

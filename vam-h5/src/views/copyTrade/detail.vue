@@ -101,13 +101,13 @@
         </div>
 
         <div
-          v-if="getRecordGroups(order).holding.length || getRecordGroups(order).closed.length"
+          v-if="order._recordGroups?.holding?.length || order._recordGroups?.closed?.length"
           class="records-wrap"
         >
-          <div v-if="getRecordGroups(order).holding.length" class="records-section">
+          <div v-if="order._recordGroups?.holding?.length" class="records-section">
             <h3 class="section-title">{{ _t18('copy_trade_position_holding') }}</h3>
             <PositionRecordCard
-              v-for="(rec, idx) in getRecordGroups(order).holding"
+              v-for="(rec, idx) in order._recordGroups.holding"
               :key="rec.orderNo || `h-${idx}`"
               :record="rec"
               :parent-symbol="copyTradeRunningSymbol(order)"
@@ -115,10 +115,10 @@
               :closed="false"
             />
           </div>
-          <div v-if="getRecordGroups(order).closed.length" class="records-section">
+          <div v-if="order._recordGroups?.closed?.length" class="records-section">
             <h3 class="section-title">{{ _t18('copy_trade_history_positions') }}</h3>
             <PositionRecordCard
-              v-for="(rec, idx) in getRecordGroups(order).closed"
+              v-for="(rec, idx) in order._recordGroups.closed"
               :key="rec.orderNo || `c-${idx}`"
               :record="rec"
               :parent-symbol="copyTradeRunningSymbol(order)"
@@ -188,7 +188,6 @@ import {
   formatCopyTradeStrategyEndTime,
   formatCopyTradeJoinTime,
   normalizeCopyTradeDetailResponse,
-  splitCopyTradeRecords,
   copyTradeOrderBadgeClass,
   copyTradeOrderStatusText,
   isCopyTradeStrategyEnded,
@@ -238,10 +237,6 @@ function orderNetProfit(order) {
 function orderPnlRate(order) {
   if (order?.status === 1) return calcPnlRate(orderProfit(order), order.amount)
   return copyTradePnlRate(order)
-}
-
-function getRecordGroups(order) {
-  return splitCopyTradeRecords(order?.records)
 }
 
 function profitShareRateText(rate) {

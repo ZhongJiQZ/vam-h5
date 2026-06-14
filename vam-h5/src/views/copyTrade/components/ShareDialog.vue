@@ -3,7 +3,7 @@
     :show="show"
     position="bottom"
     round
-    :overlay-style="{ background: 'rgba(0,0,0,0.72)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)' }"
+    :overlay-style="{ background: 'rgba(0,0,0,0.6)' }"
     @update:show="$emit('update:show', $event)"
   >
     <div class="share-sheet">
@@ -110,7 +110,6 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import html2canvas from 'html2canvas'
 import { showToast } from 'vant'
 import { _t18 } from '@/utils/public'
 import { priceFormat } from '@/utils/decimal'
@@ -137,6 +136,7 @@ const rateStr = computed(() => calcPnlRate(props.item.actualProfit, props.item.a
 const rateClass = computed(() => pnlClass(props.item.actualProfit))
 
 async function buildCanvas() {
+  const { default: html2canvas } = await import('html2canvas')
   return html2canvas(cardRef.value, {
     scale: 2,
     useCORS: true,

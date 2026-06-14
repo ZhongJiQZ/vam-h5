@@ -111,6 +111,7 @@
             {{ rangeRateLabel }} <span class="ff-num is-up">{{ formatSignedRate(perf.rangeTotalProfitRate) }}%</span>
           </p>
           <CopyTradePerfCharts
+            v-if="chartsReady"
             :daily-series="dailySeries"
             :weekly-series="[]"
             :coin-preference="[]"
@@ -140,6 +141,7 @@
             {{ t18('copy_trade_total_profit_rate') }} <span class="ff-num is-up">{{ formatSignedRate(weeklyPerf.weeklyTotalProfitRate ?? weeklyPerf.totalProfitRate) }}%</span>
           </p>
           <CopyTradePerfCharts
+            v-if="chartsReady"
             :daily-series="[]"
             :weekly-series="weeklySeries"
             :coin-preference="[]"
@@ -154,6 +156,7 @@
         <section class="chart-section chart-section--last">
           <h4 class="chart-section__title">{{ t18('copy_trade_coin_preference') }}</h4>
           <CopyTradePerfCharts
+            v-if="chartsReady"
             :daily-series="[]"
             :weekly-series="[]"
             :coin-preference="coinPreference"
@@ -188,11 +191,11 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch, nextTick } from 'vue'
+import { ref, computed, onMounted, watch, nextTick, defineAsyncComponent } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
-import CopyTradePerfCharts from './components/CopyTradePerfCharts.vue'
+const CopyTradePerfCharts = defineAsyncComponent(() => import('./components/CopyTradePerfCharts.vue'))
 import { _t18, _numberWithCommas } from '@/utils/public'
 import {
   getCopyTradeInstitutionDetail,
@@ -234,6 +237,7 @@ const perf = ref({})
 const weeklyPerf = ref({})
 const coinPerf = ref({})
 const perfLoading = ref(false)
+const chartsReady = ref(false)
 const descRef = ref(null)
 const descOverflow = ref(false)
 const showDescDialog = ref(false)
@@ -377,6 +381,36 @@ function mergePerfData(...sources) {
   return merged
 }
 
+let perfSnapshotKey = ''
+let perfSnapshotPromise = null
+
+function resetPerfSnapshot() {
+  perfSnapshotKey = ''
+  perfSnapshotPromise = null
+}
+
+async function fetchPerfSnapshot(payload, isMy) {
+  const key = `${isMy ? 'my' : 'inst'}:${payload.institutionId}:${payload.range || '7d'}`
+  if (perfSnapshotKey === key && perfSnapshotPromise) {
+    return perfSnapshotPromise
+  }
+  perfSnapshotKey = key
+  perfSnapshotPromise = (async () => {
+    const perfRes = isMy
+      ? await getCopyTradeMyPerformance(payload)
+      : await getCopyTradeInstitutionPerformance(payload)
+    return perfRes?.code == 200 && perfRes.data ? normalizePerfData(perfRes.data) : null
+  })()
+  return perfSnapshotPromise
+}
+
+function scheduleChartsReady() {
+  chartsReady.value = false
+  requestAnimationFrame(() => {
+    chartsReady.value = true
+  })
+}
+
 async function loadDailyChart() {
   if (!institutionId.value) return
   const payload = buildInstitutionChartPayload(institutionId.value, range.value)
@@ -388,11 +422,9 @@ async function loadDailyChart() {
 
   const chartNorm = normalizePerfData(data)
   if (!chartNorm.dailySeries?.length) {
-    const perfRes = isMy
-      ? await getCopyTradeMyPerformance(payload)
-      : await getCopyTradeInstitutionPerformance(payload)
-    if (perfRes?.code == 200 && perfRes.data) {
-      data = mergePerfData(perfRes.data, data)
+    const snapshot = await fetchPerfSnapshot(payload, isMy)
+    if (snapshot) {
+      data = mergePerfData(snapshot, data)
     }
   } else {
     data = normalizePerfData(data)
@@ -414,11 +446,9 @@ async function loadWeeklyChart() {
 
   const chartNorm = normalizePerfData(data)
   if (!chartNorm.weeklySeries?.length) {
-    const perfRes = isMy
-      ? await getCopyTradeMyPerformance(payload)
-      : await getCopyTradeInstitutionPerformance(payload)
-    if (perfRes?.code == 200 && perfRes.data) {
-      data = mergePerfData(perfRes.data, data)
+    const snapshot = await fetchPerfSnapshot(payload, isMy)
+    if (snapshot) {
+      data = mergePerfData(snapshot, data)
     }
   } else {
     data = normalizePerfData(data)
@@ -461,11 +491,9 @@ async function loadPerfSummary() {
   if (!institutionId.value) return
   const payload = buildInstitutionChartPayload(institutionId.value, range.value)
   const isMy = perfTab.value === 'my'
-  const perfRes = isMy
-    ? await getCopyTradeMyPerformance(payload)
-    : await getCopyTradeInstitutionPerformance(payload)
-  if (perfRes?.code == 200 && perfRes.data) {
-    perf.value = mergePerfData(perfRes.data, perf.value)
+  const snapshot = await fetchPerfSnapshot(payload, isMy)
+  if (snapshot) {
+    perf.value = mergePerfData(snapshot, perf.value)
     if (isMy) {
       const summary = normalizePerfSummary(perf.value)
       if (!summary.subscribeTime || summary.copyDays == null) {
@@ -488,12 +516,10 @@ async function loadCoinPreference() {
   let coins = normalizeCoinPreference(data)
 
   if (!coins.length) {
-    const perfRes = isMy
-      ? await getCopyTradeMyPerformance(payload)
-      : await getCopyTradeInstitutionPerformance(payload)
-    if (perfRes?.code == 200 && perfRes.data) {
-      data = perfRes.data
-      coins = normalizeCoinPreference(perfRes.data)
+    const snapshot = await fetchPerfSnapshot(payload, isMy)
+    if (snapshot) {
+      data = snapshot
+      coins = normalizeCoinPreference(snapshot)
     }
   }
 
@@ -508,11 +534,13 @@ async function loadCoinPreference() {
 async function loadPerformance() {
   if (!institutionId.value) return
   perfLoading.value = true
+  chartsReady.value = false
   try {
     await Promise.all([loadDailyChart(), loadWeeklyChart(), loadCoinPreference()])
     await loadPerfSummary()
   } finally {
     perfLoading.value = false
+    scheduleChartsReady()
   }
 }
 
@@ -522,13 +550,16 @@ function switchPerfTab(tab) {
   perf.value = {}
   weeklyPerf.value = {}
   coinPerf.value = {}
+  resetPerfSnapshot()
   loadPerformance()
 }
 
 function changeRange(r) {
   if (range.value === r) return
   range.value = r
-  Promise.all([loadDailyChart(), loadCoinPreference()])
+  resetPerfSnapshot()
+  chartsReady.value = false
+  Promise.all([loadDailyChart(), loadCoinPreference()]).finally(scheduleChartsReady)
 }
 
 function goStrategies() {
