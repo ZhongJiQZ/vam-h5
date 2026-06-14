@@ -642,6 +642,7 @@
   "plug_recharge": "Dépôt",
   "plug_mining": "Minage",
   "plug_ustandard": "USDT",
+  "agent.rebate.type.copy_trade": "Commission copy trading",
   "plug_records": "Historique des commissions",
   "plug_rule": "Règles",
   "plug_one": "Niveau 1",

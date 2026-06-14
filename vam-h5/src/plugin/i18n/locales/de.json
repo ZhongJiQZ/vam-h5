@@ -644,6 +644,7 @@
   "plug_recharge": "Aufladen",
   "plug_mining": "Mining",
   "plug_ustandard": "U-Standard",
+  "agent.rebate.type.copy_trade": "Copy-Trade-Provision",
   "plug_records": "Provisionsaufzeichnungen",
   "plug_rule": "Regel",
   "plug_one": "Generation 1",

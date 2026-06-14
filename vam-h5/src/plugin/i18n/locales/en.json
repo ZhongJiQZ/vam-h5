@@ -648,6 +648,7 @@
   "plug_recharge": "Deposit",
   "plug_mining": "Mining",
   "plug_ustandard": "UStandard",
+  "agent.rebate.type.copy_trade": "Copy Trade Rebate",
   "plug_records": "Rebates Records",
   "plug_rule": "Rule",
   "plug_one": "1st Invites",
