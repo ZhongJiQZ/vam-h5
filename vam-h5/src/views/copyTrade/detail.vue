@@ -67,7 +67,7 @@
             </div>
             <div v-if="order.status === 1" class="kv">
               <span>{{ _t18('copy_trade_exit_method') }}</span>
-              <span>{{ _t18('copy_trade_exit_normal') }}</span>
+              <span>{{ order.exitTypeText }}</span>
             </div>
             <div class="kv">
               <span>{{ _t18('copy_trade_profit_share_rate') }}</span>

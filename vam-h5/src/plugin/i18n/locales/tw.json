@@ -1491,6 +1491,11 @@
   "copy_trade_active_sub_count_gt": "下級跟單人數＞{n}",
   "copy_trade_strategy_not_started": "暫未開啟策略，請等待",
   "copy_trade_wait_institution_buy": "等待機構買入",
+  "copy_trade_coin_other": "其他",
+  "copy_trade_margin": "保證金",
+  "copy_trade_week_label": "第{n}週",
+  "copy_trade_strategy_list_start": "策略啟動時間",
+  "copy_trade_strategy_list_end": "策略結束時間",
   "copy_trade_mask_explain_title": "【核心提示：關於持倉數據脫敏與前瞻性風險防禦機制的說明】",
   "copy_trade_mask_explain_intro": "在高波動、高槓桿的加密貨幣市場中，實時、公開的持倉明細極易淪為鏈上暗箱對抗的攻擊目標。本機構對持倉中樞數據採取階段性脫敏處理，核心基於以下量化風控與投資者保護考量：",
   "copy_trade_mask_explain_s1_title": "嚴防「惡意狙擊」與定向爆倉（Anti-Sniper & Hunting Protection）：",
@@ -1503,3 +1508,4 @@
   "copy_trade_mask_explain_conclusion_content": "數據脫敏是為了屏蔽盤中噪音、對沖惡意操縱、保障跟隨者最終淨值的必要防禦手段。所有交易數據將在平倉（Liquidation）後進行穿透式全量披露，確保結果的真實、合規與可追溯。",
   "copy_trade_explain_got_it": "我知道了"
 }
+ 
