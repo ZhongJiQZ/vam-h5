@@ -354,19 +354,6 @@ function cycleProgress(item) {
 
 const endedSummary = computed(() => {
   if (activeTab.value !== 1) return null
-  if (myPerf.value) {
-    const p = myPerf.value
-    return {
-      firstTime: formatCopyTradeDisplayDate(p.subscribeTime),
-      days: p.copyDays ?? 0,
-      count: total.value || list.value.length,
-      totalProfit: formatPnl(p.totalProfit),
-      totalRate: p.totalProfitRate ?? '0.00',
-      tradeFee: '--',
-      profitShareAmt: '--',
-      netProfit: formatPnl(p.totalProfit)
-    }
-  }
   if (!list.value.length) return null
   let totalProfit = 0
   let totalAmount = 0
@@ -397,6 +384,20 @@ const endedSummary = computed(() => {
     tradeFee: `${formatPnl(totalFee)} USDT`,
     profitShareAmt: `${formatPnl(totalShare)} USDT`,
     netProfit: `${formatPnl(totalNet)} USDT`
+  }
+
+  if (myPerf.value) {
+    const p = myPerf.value
+    return {
+      firstTime: formatCopyTradeDisplayDate(p.subscribeTime),
+      days: p.copyDays ?? 0,
+      count: total.value || list.value.length,
+      totalProfit: formatPnl(p.totalProfit),
+      totalRate: p.totalProfitRate ?? '0.00',
+      tradeFee: '--',
+      profitShareAmt: '--',
+      netProfit: formatPnl(p.totalProfit)
+    }
   }
 })
 
