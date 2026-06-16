@@ -269,8 +269,8 @@ export default {
     plsSurePhotoClear:
       "Bitte stellen Sie sicher, dass das Foto des Ausweises klar sichtbar ist",
     plsUploadTip: "Bitte laden Sie ein Ausweisfoto hoch",
-    uploadFront: "Vorderseite hochladen",
-    uploadBack: "Rückseite hochladen",
+    uploadFront: "Vorderseite des Ausweises hochladen",
+    uploadBack: "Rückseite des Ausweises hochladen",
     uploadHandle: "Foto mit Ausweis in der Hand hochladen",
     confirmUpload: "Upload bestätigen",
     repayTime: "Rückzahlungszeit",
@@ -495,8 +495,8 @@ export default {
     plsSurePhotoClear:
       "Stellen Sie sicher, dass das Ausweisfoto deutlich sichtbar ist",
     plsUploadTip: "Bitte laden Sie ein Ausweisfoto hoch",
-    uploadFront: "Vorderseite hochladen",
-    uploadBack: "Rückseite hochladen",
+    uploadFront: "Vorderseite des Ausweises hochladen",
+    uploadBack: "Rückseite des Ausweises hochladen",
     uploadHandle: "Foto mit Ausweis in der Hand hochladen",
     advancedCerSuccess: "Identitätsprüfung erfolgreich",
     china: "China",

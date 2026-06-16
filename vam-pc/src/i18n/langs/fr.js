@@ -266,8 +266,8 @@ export default {
       plsSurePhotoClear:
         "Assurez-vous que la photo de votre pièce d'identité est clairement visible",
       plsUploadTip: "Veuillez télécharger une photo de votre pièce d'identité",
-      uploadFront: "Télécharger l'avant",
-      uploadBack: "Télécharger l'arrière",
+      uploadFront: "Télécharger le recto de la carte d'identité",
+      uploadBack: "Télécharger le verso de la carte d'identité",
       uploadHandle: "Télécharger une photo avec pièce d'identité en main",
       confirmUpload: "Confirmer le téléchargement",
       repayTime: "Temps de remboursement",
@@ -493,8 +493,8 @@ export default {
       plsSurePhotoClear:
         "Veuillez vous assurer que la photo du document est claire et lisible",
       plsUploadTip: "Veuillez télécharger la photo du document",
-      uploadFront: "Télécharger l'avant",
-      uploadBack: "Télécharger l'arrière",
+      uploadFront: "Télécharger le recto de la carte d'identité",
+      uploadBack: "Télécharger le verso de la carte d'identité",
       uploadHandle: "Télécharger la photo avec pièce d'identité",
       advancedCerSuccess: "Certification avancée réussie",
       china: "Chine",
