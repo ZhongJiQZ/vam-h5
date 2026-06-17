@@ -105,7 +105,14 @@
           class="records-wrap"
         >
           <div v-if="order._recordGroups?.holding?.length" class="records-section">
-            <h3 class="section-title">{{ _t18('copy_trade_position_holding') }}</h3>
+            <div class="section-title-row">
+              <div class="section-title-left">
+                <h3 class="section-title">{{ _t18('copy_trade_position_holding') }}</h3>
+                <button type="button" class="section-info-btn" @click.stop="showExplain = true">
+                  <img src="@/assets/images/Frame 10711.png" alt="" class="section-info-icon" />
+                </button>
+              </div>
+            </div>
             <PositionRecordCard
               v-for="(rec, idx) in order._recordGroups.holding"
               :key="rec.orderNo || `h-${idx}`"
@@ -160,6 +167,7 @@
       :loading="appendLoading"
       @confirm="confirmAppend"
     />
+    <CopyTradeMaskExplainPopup v-model:show="showExplain" />
   </div>
 </template>
 
@@ -171,6 +179,7 @@ import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import PositionRecordCard from './components/PositionRecordCard.vue'
 import StopConfirmDialog from './components/StopConfirmDialog.vue'
 import AppendDialog from './components/AppendDialog.vue'
+import CopyTradeMaskExplainPopup from './components/CopyTradeMaskExplainPopup.vue'
 import { _t18 } from '@/utils/public'
 import { getCopyTradeDetail, exitCopyTrade, appendCopyTrade } from '@/api/copyTrade'
 import { priceFormat } from '@/utils/decimal'
@@ -215,6 +224,7 @@ const stopLoading = ref(false)
 const stopRows = ref([])
 const appendVisible = ref(false)
 const appendLoading = ref(false)
+const showExplain = ref(false)
 
 const primaryOrder = computed(() => {
   const anchorId = route.query.id
@@ -437,6 +447,36 @@ $green: #17ac74;
   span:first-child { color: #888; }
   &.kv--no-border { border-bottom: none; }
 }
+
+.section-title-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.section-title-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.section-info-btn {
+  border: none;
+  background: none;
+  padding: 0;
+  line-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.section-info-icon {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
 .pnl-row {
   display: flex;
   justify-content: space-between;
@@ -476,7 +516,7 @@ $green: #17ac74;
 .section-title {
   font-size: 15px;
   font-weight: 600;
-  margin: 0 0 12px;
+  margin: 0;
 }
 .action-bar {
   position: fixed;

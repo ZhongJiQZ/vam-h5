@@ -244,40 +244,6 @@
       </van-list>
     </van-pull-refresh>
 
-    <!-- 持仓说明弹窗（随底部子单详情一并关闭）
-    <van-popup v-model:show="showExplain" round position="bottom">
-      <div class="popup-explain">
-        <div class="popup-explain__header">
-          <span>{{ _t18('copy_trade_intro_doc_title') }}</span>
-          <van-icon name="close" size="24" @click="showExplain = false" />
-        </div>
-        <h3 class="popup-explain__title">{{ _t18('copy_trade_mask_explain_title') }}</h3>
-        <p class="popup-explain__intro">
-          {{ _t18('copy_trade_mask_explain_intro') }}
-        </p>
-        <div class="popup-explain__section">
-          <h4 class="popup-explain__subtitle">{{ _t18('copy_trade_mask_explain_s1_title') }}</h4>
-          <p>{{ _t18('copy_trade_mask_explain_s1_content') }}</p>
-        </div>
-        <div class="popup-explain__section">
-          <h4 class="popup-explain__subtitle">{{ _t18('copy_trade_mask_explain_s2_title') }}</h4>
-          <p>{{ _t18('copy_trade_mask_explain_s2_content') }}</p>
-        </div>
-        <div class="popup-explain__section">
-          <h4 class="popup-explain__subtitle">{{ _t18('copy_trade_mask_explain_s3_title') }}</h4>
-          <p>{{ _t18('copy_trade_mask_explain_s3_content') }}</p>
-        </div>
-        <div class="popup-explain__section popup-explain__section--conclusion">
-          <h4 class="popup-explain__subtitle">{{ _t18('copy_trade_mask_explain_conclusion_title') }}</h4>
-          <p>{{ _t18('copy_trade_mask_explain_conclusion_content') }}</p>
-        </div>
-        <button type="button" class="popup-explain__btn" @click="showExplain = false">
-          {{ _t18('copy_trade_explain_got_it') }}
-        </button>
-      </div>
-    </van-popup>
-    -->
-
     <ShareDialog v-if="shareVisible" v-model:show="shareVisible" :item="shareItem" />
     <AppendDialog v-model:show="appendVisible" :item="appendItem" :loading="appendLoading" @confirm="confirmAppend" />
   </div>
@@ -332,9 +298,6 @@ const shareItem = ref({})
 const appendVisible = ref(false)
 const appendItem = ref({})
 const appendLoading = ref(false)
-// const sectionRefreshing = ref(false)
-// const showExplain = ref(false)
-
 function endedPnl(item) {
   return item?.params?.totalSettledProfit ?? item?.actualProfit ?? item?.params?.netProfit ?? 0
 }
