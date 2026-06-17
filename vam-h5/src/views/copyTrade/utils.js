@@ -174,6 +174,65 @@ export function formatAmountRangeText(minAmount, maxAmount, fallback = '--') {
   return `${minText} ~ ${maxText} USDT`
 }
 
+export function interpolateCopyTradeText(template, params = {}) {
+  if (!template || typeof template !== 'string') return template
+  return Object.entries(params).reduce(
+    (text, [key, value]) => text.replace(new RegExp(`\\{${key}\\}`, 'g'), String(value ?? '')),
+    template
+  )
+}
+
+/** 跟单金额区间提示（多语言 {min} / {max}） */
+export function formatCopyTradeAmountRangeTip(minAmount, maxAmount, translate) {
+  const t = typeof translate === 'function' ? translate : () => ''
+  const min = minAmount != null && minAmount !== '' ? priceFormat(minAmount) : '--'
+  const max = maxAmount != null && maxAmount !== '' ? priceFormat(maxAmount) : '--'
+  const key = 'copy_trade_amount_range_tip'
+  const template = t(key)
+  if (template && template !== key) {
+    return interpolateCopyTradeText(template, { min, max })
+  }
+  return `${t('copy_trade_amount_range')} ${formatAmountRangeText(minAmount, maxAmount)}`
+}
+
+/** 提交跟单金额校验 */
+export function validateCopyTradeSubmitAmount(val, limits = {}) {
+  const amount = Number(val)
+  const minAmount =
+    limits.minAmount != null && limits.minAmount !== '' ? Number(limits.minAmount) : null
+  const maxAmount =
+    limits.maxAmount != null && limits.maxAmount !== '' ? Number(limits.maxAmount) : null
+
+  if (val === '' || val == null || !Number.isFinite(amount) || amount <= 0) {
+    return { ok: false, key: 'copy_trade_amount_required' }
+  }
+  if (minAmount == null || maxAmount == null || !Number.isFinite(minAmount) || !Number.isFinite(maxAmount)) {
+    return { ok: false, key: 'copy_trade_amount_error' }
+  }
+  if (amount < minAmount) {
+    return {
+      ok: false,
+      key: 'copy_trade_amount_below_min',
+      params: { min: priceFormat(minAmount) }
+    }
+  }
+  if (amount > maxAmount) {
+    return {
+      ok: false,
+      key: 'copy_trade_amount_above_max',
+      params: { max: priceFormat(maxAmount) }
+    }
+  }
+  return { ok: true }
+}
+
+export function getCopyTradeAmountValidationMessage(result, translate) {
+  const t = typeof translate === 'function' ? translate : (k) => k
+  if (!result || result.ok) return ''
+  const template = t(result.key || 'copy_trade_amount_error')
+  return interpolateCopyTradeText(template, result.params)
+}
+
 export function formatPnl(val, digits = 2) {
   const n = Number(val)
   if (!Number.isFinite(n)) return '0.00'

@@ -14,13 +14,12 @@ import {
   subscribeCopyTradeInstitution
 } from '@/api/copyTrade'
 import { priceFormat } from '@/utils/decimal'
-import { isInstitutionSubscribed, patchInstitutionSubscribed, isInstitutionSecretLocked, isSecretKeyLockMessage, setInstitutionSecretLock, normalizeStrategyDetail, resolveStrategyAmountRange, parseCopyTradeStrategyQuery, formatAmountRangeText, getStrategyJoinBlockMessage, formatCopyTradeDisplayDate } from './utils'
+import { isInstitutionSubscribed, patchInstitutionSubscribed, isInstitutionSecretLocked, isSecretKeyLockMessage, setInstitutionSecretLock, normalizeStrategyDetail, resolveStrategyAmountRange, parseCopyTradeStrategyQuery, getStrategyJoinBlockMessage, formatCopyTradeDisplayDate, formatCopyTradeAmountRangeTip, validateCopyTradeSubmitAmount, getCopyTradeAmountValidationMessage } from './utils'
 import { getCopyTradeAgreementDoc, getCopyTradeRiskDoc, resolveCopyTradeDoc } from './documents'
 import { useUserStore } from '@/store/user/index'
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
 import { showToast } from 'vant'
-import { useToast } from '@/hook/useToast'
 import { computed, reactive, ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { getResponseErrorMsg } from '@/utils/request'
@@ -29,7 +28,6 @@ const i18n = useI18n()
 const t18 = (key, platform = []) => _t18(key, platform, i18n)
 
 const { _isFreeze } = useFreeze()
-const { _toast } = useToast()
 const route = useRoute()
 const router = useRouter()
 function initStrategyFromRoute() {
@@ -126,18 +124,17 @@ const feeRows = computed(() => {
 
 const amountLimits = computed(() => resolveStrategyAmountRange(strategy, institution.value))
 
-const amountRangeTip = computed(() => {
-  const { minAmount, maxAmount } = amountLimits.value
-  const rangeText = formatAmountRangeText(minAmount, maxAmount)
-  const text = t18('copy_trade_amount_range_tip')
-  if (text && text !== 'copy_trade_amount_range_tip' && (text.includes('{min}') || text.includes('{max}'))) {
-    const [minText, maxText] = rangeText.replace(' USDT', '').split(' ~ ')
-    return text.replace('{min}', minText || '--').replace('{max}', maxText || '--')
-  }
-  return `${t18('copy_trade_amount_range')} ${rangeText}`
+const amountRangeTip = computed(() =>
+  formatCopyTradeAmountRangeTip(amountLimits.value.minAmount, amountLimits.value.maxAmount, t18)
+)
+
+const amountFieldError = computed(() => {
+  if (!amount.value) return ''
+  const check = validateCopyTradeSubmitAmount(amount.value, amountLimits.value)
+  return check.ok ? '' : getCopyTradeAmountValidationMessage(check, t18)
 })
 
-const canSubmit = computed(() => agreed.value && !pageLoading.value)
+const canSubmit = computed(() => agreed.value && !pageLoading.value && !amountFieldError.value)
 
 function applyAmountLimits(extra = {}) {
   const limits = resolveStrategyAmountRange({ ...strategy, ...extra }, institution.value)
@@ -249,9 +246,9 @@ async function submitForm() {
     return
   }
   const val = Number(amount.value)
-  const { minAmount, maxAmount } = amountLimits.value
-  if (!val || minAmount == null || maxAmount == null || val < minAmount || val > maxAmount) {
-    _toast('copy_trade_amount_error')
+  const amountCheck = validateCopyTradeSubmitAmount(amount.value, amountLimits.value)
+  if (!amountCheck.ok) {
+    showToast(getCopyTradeAmountValidationMessage(amountCheck, t18))
     return
   }
   if (val > Number(displayBalance.value)) {
@@ -329,14 +326,20 @@ function submit() {
             v-model="amount"
             type="number"
             class="amount-card__input ff-num"
-            placeholder="0.00"
+            :placeholder="amountRangeTip"
+            :min="amountLimits.minAmount ?? undefined"
+            :max="amountLimits.maxAmount ?? undefined"
+            step="any"
+            inputmode="decimal"
           />
           <span class="amount-card__unit">USDT</span>
           <button type="button" class="amount-card__all" @click="setMax">
             {{ t18('copy_trade_amount_all') }}
           </button>
         </div>
-        <p class="amount-card__hint">{{ amountRangeTip }}</p>
+        <p class="amount-card__hint" :class="{ 'amount-card__hint--error': amountFieldError }">
+          {{ amountFieldError || amountRangeTip }}
+        </p>
       </section>
 
       <!-- 邀请码 -->
@@ -573,6 +576,10 @@ $green: #17ac74;
     margin: 10px 0 0;
     font-size: 12px;
     color: #9ca3af;
+
+    &--error {
+      color: #e8503a;
+    }
   }
 }
 

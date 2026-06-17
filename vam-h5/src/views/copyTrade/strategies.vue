@@ -32,7 +32,7 @@
           </div>
           <div class="kv">
             <span>{{ t18('copy_trade_amount_range') }}</span>
-            <span>{{ item.minAmount }} ~ {{ item.maxAmount }} USDT</span>
+            <span class="ff-num">{{ formatAmountRangeText(item.minAmount, item.maxAmount) }}</span>
           </div>
           <div v-if="hasActiveSubCountCondition(item)" class="kv">
             <span>{{ t18('copy_trade_join_condition') }}</span>
@@ -59,7 +59,9 @@ import {
   hasActiveSubCountCondition,
   formatActiveSubCountCondition,
   getStrategyJoinBlockMessage,
-  isStrategyFollowing
+  isStrategyFollowing,
+  normalizeStrategyDetail,
+  formatAmountRangeText
 } from './utils'
 import { showToast } from 'vant'
 
@@ -82,7 +84,10 @@ async function loadData() {
   loading.value = true
   try {
     const res = await getCopyTradeInstitutionStrategyList({ institutionId })
-    list.value = res?.code == 200 && Array.isArray(res.data) ? res.data : []
+    list.value =
+      res?.code == 200 && Array.isArray(res.data)
+        ? res.data.map((row) => normalizeStrategyDetail(row))
+        : []
   } finally {
     loading.value = false
     refreshing.value = false
