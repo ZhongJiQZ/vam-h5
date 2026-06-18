@@ -153,10 +153,12 @@ export const useTradeStore = defineStore('trade', {
       }
 
       this.detailSubToken = PubSub.subscribe(socketDict.DETAIL, (key, data) => {
-        const symbol = (data.symbol === 'XAU') ? 'xau' : data.symbol
+        const rawSymbol = data.symbol === 'XAU' ? 'xau' : data.symbol
+        const symbol =
+          typeof rawSymbol === 'string' ? rawSymbol.toLocaleLowerCase() : rawSymbol
         const tempData = data?.data?.tick || data?.data || {}
 
-        if (!this.allCoinPriceInfo[symbol]) return
+        if (!symbol || !this.allCoinPriceInfo[symbol]) return
 
         // ✅ 统一构造
         const tempObj = {

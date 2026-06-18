@@ -645,8 +645,11 @@ const props = defineProps({
 // 选择框通用
 const margin = ref(false)
 const tradeStore = useTradeStore()
+const positionSymbol = computed(() =>
+  String(props.recordListItem?.symbol || '').toLocaleLowerCase()
+)
 const coinPriceInfo = computed(() => {
-  return tradeStore.allCoinPriceInfo[props.recordListItem.symbol] || {}
+  return tradeStore.allCoinPriceInfo[positionSymbol.value] || {}
 })
 // 极速平仓 调整保证金 止盈 止损
 const bottomList = computed(() => {

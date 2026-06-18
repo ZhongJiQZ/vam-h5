@@ -62,6 +62,7 @@ import {
   contractLossList,
   orderList
 } from '@/api/trade/index'
+import { useTradeStore } from '@/store/trade'
 const props = defineProps({
   coinInfo: {
     type: Object,
@@ -117,6 +118,7 @@ const updateList = (val) => {
 }
 import { useUserStore } from '@/store/user/index'
 const userStore = useUserStore()
+const tradeStore = useTradeStore()
 /** 更新user */
 const updateUser = () => {
   userStore.getUserInfo()
@@ -320,22 +322,26 @@ const init = () => {
   getTab2()
   getTab3()
 }
-// 刷新按钮：保留当前列表展示，请求返回后再整页替换（避免先清空闪烁）
-const handelRefresh = () => {
+// 刷新：同步最新行情（盈亏依赖 allCoinPriceInfo.close）+ 重拉当前 tab 列表
+const handelRefresh = async () => {
   const next = [...pageNumByTab.value]
   next[curActive.value] = 1
   pageNumByTab.value = next
+  finished.value = false
+  try {
+    await tradeStore.getCoinList()
+  } catch (e) {}
   if (curActive.value == 0) {
-    getTab0()
+    await getTab0()
   }
   if (curActive.value == 1) {
-    getTab1()
+    await getTab1()
   }
   if (curActive.value == 2) {
-    getTab2()
+    await getTab2()
   }
   if (curActive.value == 3) {
-    getTab3()
+    await getTab3()
   }
   filterDataList(curActive.value)
 }

@@ -56,6 +56,7 @@ import { storeToRefs } from 'pinia'
 import { _t18 } from '@/utils/public'
 import { formatCurrentcurrency } from '@/utils/filters'
 import { useUserStore } from '@/store/user/index'
+import { useTradeStore } from '@/store/trade'
 
 // 复用 trade 的 item 渲染
 import OrderItem from '@/views/trade/components/ustandard/content/EntrustOrderItem.vue'
@@ -65,6 +66,7 @@ import { contractHistoryList, contractLossList, orderList } from '@/api/trade/in
 
 const route = useRoute()
 const userStore = useUserStore()
+const tradeStore = useTradeStore()
 const { asset } = storeToRefs(userStore)
 
 /** 订单中心没有传 availableBalance：沿用你 trade 的 type===3 逻辑 */
@@ -192,9 +194,12 @@ const loadMore = () => {
   fetchActiveTab({ reset: false })
 }
 
-/** 刷新当前 tab */
-const refreshActiveTab = () => {
-  fetchActiveTab({ reset: true })
+/** 刷新当前 tab：先同步行情价，再重拉持仓/委托列表 */
+const refreshActiveTab = async () => {
+  try {
+    await tradeStore.getCoinList()
+  } catch (e) {}
+  await fetchActiveTab({ reset: true })
 }
 
 /** 切换眼睛 */
