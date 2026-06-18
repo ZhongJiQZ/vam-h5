@@ -1478,6 +1478,7 @@
   "copy_trade_amount_all": "All",
   "copy_trade_contract_balance_label": "Contract balance",
   "copy_trade_amount_range_tip": "Le montant doit être entre {min} et {max} USDT",
+  "copy_trade_amount_placeholder": "{min} ~ {max} USDT",
   "copy_trade_strategy_start_time": "Heure de début de stratégie",
   "copy_trade_strategy_end_time": "Heure de fin de stratégie",
   "copy_trade_profit_rate_range": "Fourchette de rendement",

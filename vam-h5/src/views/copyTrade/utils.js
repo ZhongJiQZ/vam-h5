@@ -126,15 +126,35 @@ function pickAmountField(src, keys) {
   return null
 }
 
+/** 解析接口 amountRangeText，如 20USDT--50000USDT */
+export function parseAmountRangeText(text) {
+  if (!text || typeof text !== 'string') return {}
+  const normalized = text.replace(/\s+/g, '')
+  const match =
+    normalized.match(/^([\d.,]+)USDT[-–—~]+([\d.,]+)USDT$/i) ||
+    normalized.match(/([\d.,]+)\s*[-–—~]+\s*([\d.,]+)/)
+  if (!match) return {}
+  const minAmount = Number(String(match[1]).replace(/,/g, ''))
+  const maxAmount = Number(String(match[2]).replace(/,/g, ''))
+  return {
+    minAmount: Number.isFinite(minAmount) ? minAmount : null,
+    maxAmount: Number.isFinite(maxAmount) ? maxAmount : null
+  }
+}
+
 /** 解析策略/机构跟单金额上下限 */
 export function normalizeStrategyAmountRange(raw) {
   if (!raw || typeof raw !== 'object') return { minAmount: null, maxAmount: null }
   const nested = raw.strategy || raw.detail || raw.limit || raw.amountLimit || raw.rule || {}
   const src = { ...nested, ...raw }
-  return {
-    minAmount: pickAmountField(src, MIN_AMOUNT_KEYS),
-    maxAmount: pickAmountField(src, MAX_AMOUNT_KEYS)
+  let minAmount = pickAmountField(src, MIN_AMOUNT_KEYS)
+  let maxAmount = pickAmountField(src, MAX_AMOUNT_KEYS)
+  if ((minAmount == null || maxAmount == null) && src.amountRangeText) {
+    const parsed = parseAmountRangeText(src.amountRangeText)
+    if (minAmount == null) minAmount = parsed.minAmount ?? null
+    if (maxAmount == null) maxAmount = parsed.maxAmount ?? null
   }
+  return { minAmount, maxAmount }
 }
 
 /** 策略详情归一化（含金额范围） */
@@ -144,9 +164,10 @@ export function normalizeStrategyDetail(raw) {
   return { ...raw, ...limits }
 }
 
-/** 策略优先，机构详情兜底金额范围 */
-export function resolveStrategyAmountRange(strategy = {}, institution = {}) {
+/** 策略优先，机构详情兜底金额范围；strategyOnly=true 时仅取策略自身配置 */
+export function resolveStrategyAmountRange(strategy = {}, institution = {}, options = {}) {
   const fromStrategy = normalizeStrategyAmountRange(strategy)
+  if (options.strategyOnly) return fromStrategy
   const fromInstitution = normalizeStrategyAmountRange(institution)
   return {
     minAmount: fromStrategy.minAmount ?? fromInstitution.minAmount ?? null,
@@ -195,8 +216,21 @@ export function formatCopyTradeAmountRangeTip(minAmount, maxAmount, translate) {
   return `${t('copy_trade_amount_range')} ${formatAmountRangeText(minAmount, maxAmount)}`
 }
 
-/** 提交跟单金额校验 */
-export function validateCopyTradeSubmitAmount(val, limits = {}) {
+/** 跟单金额输入框占位（多语言 {min} / {max}） */
+export function formatCopyTradeAmountPlaceholder(minAmount, maxAmount, translate) {
+  const t = typeof translate === 'function' ? translate : () => ''
+  const min = minAmount != null && minAmount !== '' ? priceFormat(minAmount) : '--'
+  const max = maxAmount != null && maxAmount !== '' ? priceFormat(maxAmount) : '--'
+  const key = 'copy_trade_amount_placeholder'
+  const template = t(key)
+  if (template && template !== key) {
+    return interpolateCopyTradeText(template, { min, max })
+  }
+  return formatAmountRangeText(minAmount, maxAmount)
+}
+
+/** 提交跟单金额校验（可选 balance 校验合约余额） */
+export function validateCopyTradeSubmitAmount(val, limits = {}, balance = null) {
   const amount = Number(val)
   const minAmount =
     limits.minAmount != null && limits.minAmount !== '' ? Number(limits.minAmount) : null
@@ -222,6 +256,9 @@ export function validateCopyTradeSubmitAmount(val, limits = {}) {
       key: 'copy_trade_amount_above_max',
       params: { max: priceFormat(maxAmount) }
     }
+  }
+  if (balance != null && balance !== '' && Number.isFinite(Number(balance)) && amount > Number(balance)) {
+    return { ok: false, key: 'copy_trade_insufficient_balance' }
   }
   return { ok: true }
 }

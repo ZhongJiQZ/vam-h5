@@ -1473,6 +1473,7 @@
   "copy_trade_amount_all": "All",
   "copy_trade_contract_balance_label": "Contract balance",
   "copy_trade_amount_range_tip": "Amount must be between {min} and {max} USDT",
+  "copy_trade_amount_placeholder": "{min} ~ {max} USDT",
   "copy_trade_strategy_start_time": "זמן תחילת אסטרטגיה",
   "copy_trade_strategy_end_time": "זמן סיום אסטרטגיה",
   "copy_trade_profit_rate_range": "טווח שיעור תשואה",

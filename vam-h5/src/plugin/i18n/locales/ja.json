@@ -1478,6 +1478,7 @@
   "copy_trade_amount_all": "All",
   "copy_trade_contract_balance_label": "Contract balance",
   "copy_trade_amount_range_tip": "コピー金額は {min} ~ {max} USDT の範囲で入力してください",
+  "copy_trade_amount_placeholder": "{min} ~ {max} USDT",
   "copy_trade_strategy_start_time": "戦略開始時間",
   "copy_trade_strategy_end_time": "戦略終了時間",
   "copy_trade_profit_rate_range": "収益率範囲",

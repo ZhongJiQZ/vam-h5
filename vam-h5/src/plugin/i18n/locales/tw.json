@@ -1485,6 +1485,7 @@
   "copy_trade_amount_all": "全部",
   "copy_trade_contract_balance_label": "合約賬戶餘額",
   "copy_trade_amount_range_tip": "跟單金額需在 {min} ~ {max} USDT 之間",
+  "copy_trade_amount_placeholder": "跟單金額 {min} ~ {max} USDT",
   "copy_trade_strategy_start_time": "策略啟動時間",
   "copy_trade_strategy_end_time": "策略結束時間",
   "copy_trade_profit_rate_range": "收益率區間",
@@ -1512,4 +1513,3 @@
   "copy_trade_mask_explain_conclusion_content": "數據脫敏是為了屏蔽盤中噪音、對沖惡意操縱、保障跟隨者最終淨值的必要防禦手段。所有交易數據將在平倉（Liquidation）後進行穿透式全量披露，確保結果的真實、合規與可追溯。",
   "copy_trade_explain_got_it": "我知道了"
 }
- 

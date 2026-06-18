@@ -1475,6 +1475,7 @@
   "copy_trade_amount_all": "All",
   "copy_trade_contract_balance_label": "Contract balance",
   "copy_trade_amount_range_tip": "Bedrag moet tussen {min} en {max} USDT liggen",
+  "copy_trade_amount_placeholder": "{min} ~ {max} USDT",
   "copy_trade_strategy_start_time": "Strategiestarttijd",
   "copy_trade_strategy_end_time": "Strategie-eindtijd",
   "copy_trade_profit_rate_range": "Rendementsbereik",

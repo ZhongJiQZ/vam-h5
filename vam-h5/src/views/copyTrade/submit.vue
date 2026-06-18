@@ -14,7 +14,7 @@ import {
   subscribeCopyTradeInstitution
 } from '@/api/copyTrade'
 import { priceFormat } from '@/utils/decimal'
-import { isInstitutionSubscribed, patchInstitutionSubscribed, isInstitutionSecretLocked, isSecretKeyLockMessage, setInstitutionSecretLock, normalizeStrategyDetail, resolveStrategyAmountRange, parseCopyTradeStrategyQuery, getStrategyJoinBlockMessage, formatCopyTradeDisplayDate, formatCopyTradeAmountRangeTip, validateCopyTradeSubmitAmount, getCopyTradeAmountValidationMessage } from './utils'
+import { isInstitutionSubscribed, patchInstitutionSubscribed, isInstitutionSecretLocked, isSecretKeyLockMessage, setInstitutionSecretLock, normalizeStrategyDetail, resolveStrategyAmountRange, parseCopyTradeStrategyQuery, getStrategyJoinBlockMessage, formatCopyTradeDisplayDate, formatCopyTradeAmountRangeTip, formatCopyTradeAmountPlaceholder, validateCopyTradeSubmitAmount, getCopyTradeAmountValidationMessage } from './utils'
 import { getCopyTradeAgreementDoc, getCopyTradeRiskDoc, resolveCopyTradeDoc } from './documents'
 import { useUserStore } from '@/store/user/index'
 import { storeToRefs } from 'pinia'
@@ -122,22 +122,32 @@ const feeRows = computed(() => {
   ]
 })
 
-const amountLimits = computed(() => resolveStrategyAmountRange(strategy, institution.value))
+const amountLimits = computed(() =>
+  resolveStrategyAmountRange(strategy, institution.value, { strategyOnly: true })
+)
 
 const amountRangeTip = computed(() =>
   formatCopyTradeAmountRangeTip(amountLimits.value.minAmount, amountLimits.value.maxAmount, t18)
 )
 
+const amountPlaceholder = computed(() =>
+  formatCopyTradeAmountPlaceholder(amountLimits.value.minAmount, amountLimits.value.maxAmount, t18)
+)
+
 const amountFieldError = computed(() => {
   if (!amount.value) return ''
-  const check = validateCopyTradeSubmitAmount(amount.value, amountLimits.value)
+  const check = validateCopyTradeSubmitAmount(
+    amount.value,
+    amountLimits.value,
+    displayBalance.value
+  )
   return check.ok ? '' : getCopyTradeAmountValidationMessage(check, t18)
 })
 
 const canSubmit = computed(() => agreed.value && !pageLoading.value && !amountFieldError.value)
 
 function applyAmountLimits(extra = {}) {
-  const limits = resolveStrategyAmountRange({ ...strategy, ...extra }, institution.value)
+  const limits = resolveStrategyAmountRange({ ...strategy, ...extra }, {}, { strategyOnly: true })
   if (limits.minAmount != null) strategy.minAmount = limits.minAmount
   if (limits.maxAmount != null) strategy.maxAmount = limits.maxAmount
 }
@@ -235,6 +245,7 @@ async function onSubscribeConfirm({ institutionId, secretKey: key }) {
 onMounted(() => {
   agreementDoc.value = getCopyTradeAgreementDoc(t18)
   riskDoc.value = getCopyTradeRiskDoc(t18)
+  userStore.getUserInfo()
   applyAmountLimits()
   if (route.query.strategyId || strategy.id) loadStrategyDetail()
 })
@@ -245,16 +256,16 @@ async function submitForm() {
     showToast(getStrategyJoinBlockMessage(strategy, t18))
     return
   }
-  const val = Number(amount.value)
-  const amountCheck = validateCopyTradeSubmitAmount(amount.value, amountLimits.value)
+  const amountCheck = validateCopyTradeSubmitAmount(
+    amount.value,
+    amountLimits.value,
+    displayBalance.value
+  )
   if (!amountCheck.ok) {
     showToast(getCopyTradeAmountValidationMessage(amountCheck, t18))
     return
   }
-  if (val > Number(displayBalance.value)) {
-    showToast(t18('copy_trade_insufficient_balance'))
-    return
-  }
+  const val = Number(amount.value)
   const inviteCode = String(secretKey.value || '').trim()
   if (!inviteCode) {
     showToast(t18('copy_trade_submit_invite_required'))
@@ -321,12 +332,12 @@ function submit() {
       <!-- 跟单金额 -->
       <section class="card amount-card">
         <p class="amount-card__label">{{ t18('copy_trade_amount') }}</p>
-        <div class="amount-card__input-row">
+        <div class="amount-card__input-row" :class="{ 'amount-card__input-row--error': amountFieldError }">
           <input
             v-model="amount"
             type="number"
             class="amount-card__input ff-num"
-            :placeholder="amountRangeTip"
+            :placeholder="amountPlaceholder"
             :min="amountLimits.minAmount ?? undefined"
             :max="amountLimits.maxAmount ?? undefined"
             step="any"
@@ -542,6 +553,11 @@ $green: #17ac74;
     border-radius: 8px;
     padding: 10px 12px;
     background: #fafafa;
+
+    &--error {
+      border-color: #ef4444;
+      background: #fef2f2;
+    }
   }
 
   &__input {
