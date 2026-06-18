@@ -192,11 +192,11 @@
                 </div>
                 <div class="kv">
                   <span>{{ _t18('copy_trade_join_time') }}</span>
-                  <span>{{ item.startTime || '--' }}</span>
+                  <span>{{ formatCopyTradeJoinTime(item) }}</span>
                 </div>
                 <div class="kv">
                   <span>{{ _t18('copy_trade_exit_time') }}</span>
-                  <span>{{ item.endTime || '--' }}</span>
+                  <span>{{ formatCopyTradeExitTime(item) }}</span>
                 </div>
                 <div class="kv kv--no-border">
                   <span>{{ _t18('copy_trade_period_pnl') }}</span>
@@ -268,6 +268,8 @@ import {
   copyTradeTradeCount,
   formatCopyTradeStrategyStartTime,
   formatCopyTradeStrategyEndTime,
+  formatCopyTradeJoinTime,
+  formatCopyTradeExitTime,
   copyTradeHasAmount,
   normalizeCopyTradeListResponse,
   copyTradeOrderBadgeClass,
@@ -331,12 +333,12 @@ const endedSummary = computed(() => {
     totalFee = _add(totalFee, Number(item.params?.tradeFee ?? item.tradeFee) || 0)
     totalShare = _add(totalShare, Number(item.params?.profitShareAmt ?? item.profitShareAmt) || 0)
     totalNet = _add(totalNet, Number(item.params?.netProfit ?? item.netProfit) || 0)
-    if (!firstTime && item.startTime) firstTime = formatCopyTradeDisplayDate(item.startTime)
+    if (!firstTime && item.joinTime) firstTime = formatCopyTradeDisplayDate(item.joinTime)
   })
   const totalRate = totalAmount ? calcPnlRate(totalProfit, totalAmount) : '0.00'
   const days =
-    list.value.length && list.value[0].startTime
-      ? Math.max(1, dayjs().diff(dayjs(list.value[list.value.length - 1].startTime), 'day') + 1)
+    list.value.length && list.value[0].joinTime
+      ? Math.max(1, dayjs().diff(dayjs(list.value[list.value.length - 1].joinTime), 'day') + 1)
       : 0
   return {
     firstTime,

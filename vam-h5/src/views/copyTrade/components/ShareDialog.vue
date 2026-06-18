@@ -58,14 +58,14 @@
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
               </span>
               <span class="kv-label">{{ _t18('copy_trade_join_time') }}</span>
-              <span class="kv-val">{{ item.startTime || '--' }}</span>
+              <span class="kv-val">{{ formatCopyTradeJoinTime(item) }}</span>
             </div>
             <div class="card-kv">
               <span class="kv-dot" style="background:#f0783c">
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
               </span>
               <span class="kv-label">{{ _t18('copy_trade_exit_time') }}</span>
-              <span class="kv-val">{{ item.endTime || '--' }}</span>
+              <span class="kv-val">{{ formatCopyTradeExitTime(item) }}</span>
             </div>
             <div class="card-kv">
               <span class="kv-dot" style="background:#17ac74">
@@ -113,7 +113,7 @@ import { ref, computed } from 'vue'
 import { showToast } from 'vant'
 import { _t18 } from '@/utils/public'
 import { priceFormat } from '@/utils/decimal'
-import { formatPnl, pnlClass, calcPnlRate } from '../utils'
+import { formatPnl, pnlClass, calcPnlRate, formatCopyTradeJoinTime, formatCopyTradeExitTime } from '../utils'
 
 const props = defineProps({
   show: { type: Boolean, default: false },
@@ -126,8 +126,8 @@ const downloading = ref(false)
 const sharing = ref(false)
 
 const dateArr = computed(() => {
-  const t = props.item.endTime || props.item.startTime || ''
-  if (!t) return ['--', '']
+  const t = formatCopyTradeExitTime(props.item, 'YYYY-MM-DD HH:mm:ss')
+  if (!t || t === '--') return ['--', '']
   const parts = t.replace(/-/g, '/').split(' ')
   return [parts[0] || '--', parts[1]?.slice(0, 5) || '']
 })

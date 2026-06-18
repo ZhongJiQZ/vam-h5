@@ -401,6 +401,21 @@ function pickCopyTradeMillis(item, key) {
   return raw
 }
 
+function pickCopyTradeTimeField(item, key) {
+  if (!item) return null
+  const params = item.params || {}
+  const strategy = item.strategy || {}
+  const raw = item[key] ?? params[key] ?? strategy[key]
+  if (raw == null || raw === '') return null
+  return raw
+}
+
+function formatCopyTradeTimeValue(raw, dailyTimeEnabled, fmt = 'YYYY-MM-DD HH:mm') {
+  if (raw == null || raw === '') return '--'
+  const formatted = formatStrategyExecuteTime(raw, dailyTimeEnabled, fmt)
+  return formatted !== '--' ? formatted : String(raw)
+}
+
 function formatStrategyExecuteTime(raw, dailyTimeEnabled, fmt = 'YYYY-MM-DD HH:mm') {
   if (raw == null || raw === '') return '--'
   const s = String(raw)
@@ -415,30 +430,39 @@ function formatStrategyExecuteTime(raw, dailyTimeEnabled, fmt = 'YYYY-MM-DD HH:m
   return formatted !== '--' ? formatted : s
 }
 
-/** 策略开始时间（毫秒时间戳 → 设备本地时间） */
+/** 策略开始时间：strategyStartTime / strategyStartTimeMillis / executeStartTime */
 export function formatCopyTradeStrategyStartTime(item, fmt = 'YYYY-MM-DD HH:mm') {
   const ms = pickCopyTradeMillis(item, 'strategyStartTimeMillis')
   if (ms != null) return formatLocalTime(ms, fmt)
-  if (item?.executeStartTime) {
-    return formatStrategyExecuteTime(item.executeStartTime, item.dailyTimeEnabled, fmt)
+
+  const strategyTime = pickCopyTradeTimeField(item, 'strategyStartTime')
+  if (strategyTime != null) {
+    return formatCopyTradeTimeValue(strategyTime, item?.dailyTimeEnabled, fmt)
   }
-  const fallback = item?.startTime || item?.cycleStartTime
-  if (!fallback) return '--'
-  const formatted = formatLocalTime(fallback, fmt)
-  return formatted !== '--' ? formatted : fallback
+
+  const execute =
+    item?.executeStartTime ?? item?.strategy?.executeStartTime
+  if (execute != null) {
+    return formatStrategyExecuteTime(execute, item?.dailyTimeEnabled, fmt)
+  }
+  return '--'
 }
 
-/** 策略结束时间（毫秒时间戳 → 设备本地时间） */
+/** 策略结束时间：strategyEndTime / strategyEndTimeMillis / executeEndTime（不用 endTime） */
 export function formatCopyTradeStrategyEndTime(item, fmt = 'YYYY-MM-DD HH:mm') {
   const ms = pickCopyTradeMillis(item, 'strategyEndTimeMillis')
   if (ms != null) return formatLocalTime(ms, fmt)
-  if (item?.executeEndTime) {
-    return formatStrategyExecuteTime(item.executeEndTime, item.dailyTimeEnabled, fmt)
+
+  const strategyTime = pickCopyTradeTimeField(item, 'strategyEndTime')
+  if (strategyTime != null) {
+    return formatCopyTradeTimeValue(strategyTime, item?.dailyTimeEnabled, fmt)
   }
-  const fallback = item?.endTime
-  if (!fallback) return '--'
-  const formatted = formatLocalTime(fallback, fmt)
-  return formatted !== '--' ? formatted : fallback
+
+  const execute = item?.executeEndTime ?? item?.strategy?.executeEndTime
+  if (execute != null) {
+    return formatStrategyExecuteTime(execute, item?.dailyTimeEnabled, fmt)
+  }
+  return '--'
 }
 
 /** 策略加入条件：下级跟单人数门槛 */
@@ -478,16 +502,42 @@ export function formatStrategyProfitRateRange(item) {
   return `${priceFormat(minN, 2)}% ~ ${priceFormat(maxN, 2)}%`
 }
 
-/** 加入时间（毫秒时间戳 / ISO → 设备本地时间） */
+/** 加入时间：order.joinTime */
 export function formatCopyTradeJoinTime(item, fmt = 'YYYY-MM-DD HH:mm') {
   if (!item) return '--'
   const params = item.params || {}
   const ms = params.joinTimeMillis ?? item.joinTimeMillis
   if (ms != null) return formatLocalTime(ms, fmt)
-  const fallback = item.joinTime ?? params.joinTime ?? item.startTime
+  const fallback = item.joinTime ?? params.joinTime
   if (!fallback) return '--'
   const formatted = formatLocalTime(fallback, fmt)
   return formatted !== '--' ? formatted : fallback
+}
+
+/** 退出时间：exitTime / settleTime；endTime 兼容旧版（已退出订单的实际退出时间） */
+export function formatCopyTradeExitTime(item, fmt = 'YYYY-MM-DD HH:mm') {
+  if (!item) return '--'
+  const params = item.params || {}
+  const ms = params.exitTimeMillis ?? item.exitTimeMillis
+  if (ms != null) {
+    const formatted = formatLocalTime(ms, fmt)
+    if (formatted !== '--') return formatted
+  }
+  const candidates = [
+    item.exitTime,
+    params.exitTime,
+    item.settleTime,
+    params.settleTime,
+    item.endTime,
+    params.endTime
+  ]
+  for (const raw of candidates) {
+    if (raw == null || raw === '') continue
+    const formatted = formatLocalTime(raw, fmt)
+    if (formatted !== '--') return formatted
+    return String(raw)
+  }
+  return '--'
 }
 
 /** 跟单详情接口响应归一化 */
@@ -529,10 +579,20 @@ export function normalizeCopyTradeDetailResponse(res) {
       icon: payload.order.icon || institution.logo,
       institutionName: institution.institutionName,
       institutionId: institution.institutionId,
+      strategyStartTime:
+        payload.order.strategyStartTime ??
+        payload.order.params?.strategyStartTime ??
+        strategy.strategyStartTime,
+      strategyEndTime:
+        payload.order.strategyEndTime ??
+        payload.order.params?.strategyEndTime ??
+        strategy.strategyEndTime,
       strategyStartTimeMillis:
         strategy.strategyStartTimeMillis ?? payload.order.strategyStartTimeMillis,
       strategyEndTimeMillis:
-        strategy.strategyEndTimeMillis ?? payload.order.strategyEndTimeMillis
+        strategy.strategyEndTimeMillis ?? payload.order.strategyEndTimeMillis,
+      executeStartTime: payload.order.executeStartTime ?? strategy.executeStartTime,
+      executeEndTime: payload.order.executeEndTime ?? strategy.executeEndTime
     })
     return {
       meta: {
@@ -820,7 +880,10 @@ function getStrategyStartMillis(item) {
   if (!item) return null
   const ms = pickCopyTradeMillis(item, 'strategyStartTimeMillis')
   if (ms != null) return ms
-  const raw = item.startTime || item.cycleStartTime || item.executeStartTime
+  const raw =
+    pickCopyTradeTimeField(item, 'strategyStartTime') ??
+    item.executeStartTime ??
+    item.strategy?.executeStartTime
   if (raw == null || raw === '') return null
   const ts = Date.parse(String(raw).replace(/-/g, '/'))
   return Number.isFinite(ts) ? ts : null

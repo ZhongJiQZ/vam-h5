@@ -55,7 +55,7 @@
             </div>
             <div v-if="order.status === 1" class="kv">
               <span>{{ _t18('copy_trade_exit_time') }}</span>
-              <span>{{ order.endTime || '--' }}</span>
+              <span>{{ formatCopyTradeExitTime(order) }}</span>
             </div>
             <div v-if="order.status === 0" class="kv">
               <span>{{ _t18('copy_trade_current_symbol') }}</span>
@@ -196,6 +196,7 @@ import {
   formatCopyTradeStrategyStartTime,
   formatCopyTradeStrategyEndTime,
   formatCopyTradeJoinTime,
+  formatCopyTradeExitTime,
   normalizeCopyTradeDetailResponse,
   copyTradeOrderBadgeClass,
   copyTradeOrderStatusText,
