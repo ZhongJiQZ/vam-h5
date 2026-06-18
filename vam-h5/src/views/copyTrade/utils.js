@@ -203,29 +203,39 @@ export function interpolateCopyTradeText(template, params = {}) {
   )
 }
 
-/** 跟单金额区间提示（多语言 {min} / {max}） */
-export function formatCopyTradeAmountRangeTip(minAmount, maxAmount, translate) {
-  const t = typeof translate === 'function' ? translate : () => ''
-  const min = minAmount != null && minAmount !== '' ? priceFormat(minAmount) : '--'
-  const max = maxAmount != null && maxAmount !== '' ? priceFormat(maxAmount) : '--'
-  const key = 'copy_trade_amount_range_tip'
-  const template = t(key)
-  if (template && template !== key) {
-    return interpolateCopyTradeText(template, { min, max })
+/** vue-i18n 会先消费 {min}/{max}，必须带 params 调用 t() */
+function resolveCopyTradeI18nText(i18n, translate, key, params = {}) {
+  if (i18n?.t) {
+    const text = i18n.t(key, params)
+    if (text && text !== key) return text
   }
+  const template = typeof translate === 'function' ? translate(key) : key
+  if (template && template !== key) {
+    return interpolateCopyTradeText(template, params)
+  }
+  return key
+}
+
+function formatCopyTradeAmountLimitValue(value) {
+  return value != null && value !== '' ? priceFormat(value) : '--'
+}
+
+/** 跟单金额区间提示（多语言 {min} / {max}） */
+export function formatCopyTradeAmountRangeTip(minAmount, maxAmount, translate, i18n = null) {
+  const t = typeof translate === 'function' ? translate : () => ''
+  const min = formatCopyTradeAmountLimitValue(minAmount)
+  const max = formatCopyTradeAmountLimitValue(maxAmount)
+  const text = resolveCopyTradeI18nText(i18n, translate, 'copy_trade_amount_range_tip', { min, max })
+  if (text && text !== 'copy_trade_amount_range_tip') return text
   return `${t('copy_trade_amount_range')} ${formatAmountRangeText(minAmount, maxAmount)}`
 }
 
 /** 跟单金额输入框占位（多语言 {min} / {max}） */
-export function formatCopyTradeAmountPlaceholder(minAmount, maxAmount, translate) {
-  const t = typeof translate === 'function' ? translate : () => ''
-  const min = minAmount != null && minAmount !== '' ? priceFormat(minAmount) : '--'
-  const max = maxAmount != null && maxAmount !== '' ? priceFormat(maxAmount) : '--'
-  const key = 'copy_trade_amount_placeholder'
-  const template = t(key)
-  if (template && template !== key) {
-    return interpolateCopyTradeText(template, { min, max })
-  }
+export function formatCopyTradeAmountPlaceholder(minAmount, maxAmount, translate, i18n = null) {
+  const min = formatCopyTradeAmountLimitValue(minAmount)
+  const max = formatCopyTradeAmountLimitValue(maxAmount)
+  const text = resolveCopyTradeI18nText(i18n, translate, 'copy_trade_amount_placeholder', { min, max })
+  if (text && text !== 'copy_trade_amount_placeholder') return text
   return formatAmountRangeText(minAmount, maxAmount)
 }
 
@@ -263,11 +273,10 @@ export function validateCopyTradeSubmitAmount(val, limits = {}, balance = null) 
   return { ok: true }
 }
 
-export function getCopyTradeAmountValidationMessage(result, translate) {
-  const t = typeof translate === 'function' ? translate : (k) => k
+export function getCopyTradeAmountValidationMessage(result, translate, i18n = null) {
   if (!result || result.ok) return ''
-  const template = t(result.key || 'copy_trade_amount_error')
-  return interpolateCopyTradeText(template, result.params)
+  const key = result.key || 'copy_trade_amount_error'
+  return resolveCopyTradeI18nText(i18n, translate, key, result.params || {})
 }
 
 export function formatPnl(val, digits = 2) {

@@ -14,7 +14,7 @@ import {
   subscribeCopyTradeInstitution
 } from '@/api/copyTrade'
 import { priceFormat } from '@/utils/decimal'
-import { isInstitutionSubscribed, patchInstitutionSubscribed, isInstitutionSecretLocked, isSecretKeyLockMessage, setInstitutionSecretLock, normalizeStrategyDetail, resolveStrategyAmountRange, parseCopyTradeStrategyQuery, getStrategyJoinBlockMessage, formatCopyTradeDisplayDate, formatCopyTradeAmountRangeTip, formatCopyTradeAmountPlaceholder, validateCopyTradeSubmitAmount, getCopyTradeAmountValidationMessage } from './utils'
+import { isInstitutionSubscribed, patchInstitutionSubscribed, isInstitutionSecretLocked, isSecretKeyLockMessage, setInstitutionSecretLock, normalizeStrategyDetail, resolveStrategyAmountRange, parseAmountRangeText, parseCopyTradeStrategyQuery, getStrategyJoinBlockMessage, formatCopyTradeDisplayDate, formatCopyTradeAmountRangeTip, formatCopyTradeAmountPlaceholder, validateCopyTradeSubmitAmount, getCopyTradeAmountValidationMessage } from './utils'
 import { getCopyTradeAgreementDoc, getCopyTradeRiskDoc, resolveCopyTradeDoc } from './documents'
 import { useUserStore } from '@/store/user/index'
 import { storeToRefs } from 'pinia'
@@ -122,16 +122,22 @@ const feeRows = computed(() => {
   ]
 })
 
-const amountLimits = computed(() =>
-  resolveStrategyAmountRange(strategy, institution.value, { strategyOnly: true })
-)
+const amountLimits = computed(() => {
+  const limits = resolveStrategyAmountRange(strategy, institution.value, { strategyOnly: true })
+  if (limits.minAmount != null && limits.maxAmount != null) return limits
+  const parsed = parseAmountRangeText(strategy.amountRangeText)
+  return {
+    minAmount: limits.minAmount ?? parsed.minAmount ?? null,
+    maxAmount: limits.maxAmount ?? parsed.maxAmount ?? null
+  }
+})
 
 const amountRangeTip = computed(() =>
-  formatCopyTradeAmountRangeTip(amountLimits.value.minAmount, amountLimits.value.maxAmount, t18)
+  formatCopyTradeAmountRangeTip(amountLimits.value.minAmount, amountLimits.value.maxAmount, t18, i18n)
 )
 
 const amountPlaceholder = computed(() =>
-  formatCopyTradeAmountPlaceholder(amountLimits.value.minAmount, amountLimits.value.maxAmount, t18)
+  formatCopyTradeAmountPlaceholder(amountLimits.value.minAmount, amountLimits.value.maxAmount, t18, i18n)
 )
 
 const amountFieldError = computed(() => {
@@ -141,7 +147,7 @@ const amountFieldError = computed(() => {
     amountLimits.value,
     displayBalance.value
   )
-  return check.ok ? '' : getCopyTradeAmountValidationMessage(check, t18)
+  return check.ok ? '' : getCopyTradeAmountValidationMessage(check, t18, i18n)
 })
 
 const canSubmit = computed(() => agreed.value && !pageLoading.value && !amountFieldError.value)
@@ -262,7 +268,7 @@ async function submitForm() {
     displayBalance.value
   )
   if (!amountCheck.ok) {
-    showToast(getCopyTradeAmountValidationMessage(amountCheck, t18))
+    showToast(getCopyTradeAmountValidationMessage(amountCheck, t18, i18n))
     return
   }
   const val = Number(amount.value)
