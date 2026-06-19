@@ -6,7 +6,7 @@ name: Build and Deploy
 
 on:
   push:
-    branches: main
+    branches: gxpex
     paths:
       - "vam-pc/**"
   workflow_dispatch:
@@ -24,10 +24,10 @@ jobs:
     environment: production
     env:
       DEPLOY_SSH_KEY: ${{ secrets.MAIN_KEY }}
-      DEPLOY_HOST: 45.141.58.54
+      DEPLOY_HOST: 154.44.29.22
       DEPLOY_USER: root
-      DEPLOY_PORT: "22"
-      DEPLOY_PATH: /www/wwwroot/pc.zonweb.vip/dist/
+      DEPLOY_PORT: "35652"
+      DEPLOY_PATH: /www/wwwroot/pc.gxpex.bond/dist/
     steps:
       - name: Checkout
         uses: actions/checkout@v4
