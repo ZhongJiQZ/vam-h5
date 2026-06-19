@@ -17,7 +17,7 @@
               <span class="tag" :class="isSubscribed ? 'tag--on' : 'tag--off'">{{ subscribeTag }}</span>
             </div>
             <p class="profile__join">
-              {{ t18('copy_trade_join_date_label') }} {{ formatCopyTradeDisplayDate(detail.joinDate || detail.joinTime) }}
+              {{ t18('copy_trade_join_date_label') }} {{ formatCopyTradeDisplayDate(detail.joinDate || detail.joinTime, 'YYYY-MM-DD') }}
             </p>
           </div>
         </div>
@@ -92,7 +92,7 @@
         <div class="summary-row">
           <div class="summary-item">
             <span class="summary-label">{{ t18('copy_trade_join_time_label') }}</span>
-            <span class="summary-val">{{ formatCopyTradeDisplayDateTime(summaryJoinTime) }}</span>
+            <span class="summary-val">{{ summaryJoinTime }}</span>
           </div>
           <div class="summary-item">
             <span class="summary-label">{{ tradingDaysLabel }}</span>
@@ -214,11 +214,11 @@ import {
   isInstitutionSubscribed,
   normalizePerfData,
   normalizePerfSummary,
+  mergePerfSummaryFields,
   normalizeCoinPreference,
   buildInstitutionChartPayload,
   formatSignedRate,
-  formatCopyTradeDisplayDate,
-  formatCopyTradeDisplayDateTime
+  formatCopyTradeDisplayDate
 } from './utils'
 import { priceFormat } from '@/utils/decimal'
 import { showToast } from 'vant'
@@ -234,6 +234,7 @@ const pageLoading = ref(true)
 const perfTab = ref('institution')
 const range = ref('7d')
 const perf = ref({})
+const perfSummary = ref({})
 const weeklyPerf = ref({})
 const coinPerf = ref({})
 const perfLoading = ref(false)
@@ -286,32 +287,38 @@ const hasDailyChart = computed(() => dailySeries.value.length > 0)
 const hasWeeklyChart = computed(() => weeklySeries.value.length > 0)
 const hasCoinPreference = computed(() => coinPreference.value.length > 0)
 
+const activePerfSummary = computed(() =>
+  mergePerfSummaryFields(perfSummary.value, normalizePerfSummary(perf.value))
+)
+
 const summaryJoinTime = computed(() => {
-  const summary = normalizePerfSummary(perf.value)
-  if (perfTab.value === 'my') {
-    return (
-      summary.subscribeTime ||
-      detail.value.subscribeTime ||
-      detail.value.userSubscribeTime ||
-      '--'
-    )
-  }
-  return (
-    summary.joinTime ||
-    perf.value.joinTime ||
-    detail.value.joinTime ||
-    detail.value.joinDate ||
-    '--'
-  )
+  const summary = activePerfSummary.value
+  const raw =
+    perfTab.value === 'my'
+      ? summary.subscribeTime || summary.joinTime || '--'
+      : summary.joinTime ||
+        perf.value.joinTime ||
+        detail.value.joinTime ||
+        detail.value.joinDate ||
+        '--'
+  return formatCopyTradeDisplayDate(raw, 'YYYY-MM-DD')
 })
 const summaryTradingDays = computed(() => {
-  const summary = normalizePerfSummary(perf.value)
+  const summary = activePerfSummary.value
   if (perfTab.value === 'my') {
-    return summary.copyDays != null && summary.copyDays !== '' ? summary.copyDays : '--'
+    const days = summary.copyDays ?? summary.tradingDays
+    return days != null && days !== '' ? days : '--'
   }
   return summary.tradingDays ?? perf.value.tradingDays ?? detail.value.tradingDays ?? '--'
 })
-const summaryTotalRate = computed(() => perf.value.totalProfitRate ?? detail.value.totalProfitRate ?? 0)
+const summaryTotalRate = computed(() => {
+  const summary = activePerfSummary.value
+  if (perfTab.value === 'my') {
+    const rate = summary.totalProfitRate ?? perf.value.totalProfitRate
+    return rate != null && rate !== '' ? rate : 0
+  }
+  return summary.totalProfitRate ?? perf.value.totalProfitRate ?? detail.value.totalProfitRate ?? 0
+})
 const tradingDaysLabel = computed(() =>
   perfTab.value === 'my' ? t18('copy_trade_copy_days') : t18('copy_trade_trading_days')
 )
@@ -366,13 +373,16 @@ async function loadDetail() {
 
 function mergePerfData(...sources) {
   let merged = { dailySeries: [], weeklySeries: [], coinPreference: [] }
+  let summary = {}
   sources.forEach((src) => {
     if (!src) return
     const norm = normalizePerfData(src)
+    summary = mergePerfSummaryFields(summary, norm)
     merged = {
       ...merged,
       ...src,
       ...norm,
+      ...summary,
       dailySeries: norm.dailySeries?.length ? norm.dailySeries : merged.dailySeries || [],
       weeklySeries: norm.weeklySeries?.length ? norm.weeklySeries : merged.weeklySeries || [],
       coinPreference: norm.coinPreference?.length ? norm.coinPreference : merged.coinPreference || []
@@ -493,15 +503,20 @@ async function loadPerfSummary() {
   const isMy = perfTab.value === 'my'
   const snapshot = await fetchPerfSnapshot(payload, isMy)
   if (snapshot) {
+    perfSummary.value = normalizePerfSummary(snapshot)
     perf.value = mergePerfData(snapshot, perf.value)
     if (isMy) {
-      const summary = normalizePerfSummary(perf.value)
-      if (!summary.subscribeTime || summary.copyDays == null) {
+      const summary = activePerfSummary.value
+      if ((!summary.subscribeTime && !summary.joinTime) || summary.copyDays == null) {
         await loadMyRecordFallback()
+        perfSummary.value = mergePerfSummaryFields(perfSummary.value, normalizePerfSummary(perf.value))
       }
     }
   } else if (isMy) {
     await loadMyRecordFallback()
+    perfSummary.value = normalizePerfSummary(perf.value)
+  } else {
+    perfSummary.value = {}
   }
 }
 
@@ -548,6 +563,7 @@ function switchPerfTab(tab) {
   if (perfTab.value === tab) return
   perfTab.value = tab
   perf.value = {}
+  perfSummary.value = {}
   weeklyPerf.value = {}
   coinPerf.value = {}
   resetPerfSnapshot()

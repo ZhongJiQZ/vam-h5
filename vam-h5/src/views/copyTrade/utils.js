@@ -966,12 +966,37 @@ export function normalizePerfSummary(raw) {
       src.settleTime ||
       src.institutionJoinTime ||
       src.instJoinTime ||
+      subscribeTime ||
       '',
     tradingDays,
     totalProfitRate: src.totalProfitRate ?? src.totalRate ?? src.profitRate,
     totalProfit: src.totalProfit ?? src.totalProfitAmt,
     rangeTotalProfitRate: src.rangeTotalProfitRate ?? src.rangeProfitRate
   }
+}
+
+const PERF_SUMMARY_KEYS = [
+  'subscribeTime',
+  'joinTime',
+  'copyDays',
+  'tradingDays',
+  'totalProfitRate',
+  'totalProfit',
+  'rangeTotalProfitRate',
+  'weeklyTotalProfitRate'
+]
+
+/** 合并表现汇总字段：仅用非空值覆盖，避免图表接口冲掉 myPerformance 汇总 */
+export function mergePerfSummaryFields(target = {}, source = {}) {
+  const next = { ...target }
+  const summary = normalizePerfSummary(source)
+  PERF_SUMMARY_KEYS.forEach((key) => {
+    const val = summary[key] ?? source[key]
+    if (val != null && val !== '') {
+      next[key] = val
+    }
+  })
+  return next
 }
 
 /** 将接口多种字段格式统一为图表可用结构 */
