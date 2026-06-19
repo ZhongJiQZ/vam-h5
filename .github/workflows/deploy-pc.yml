@@ -23,7 +23,7 @@ jobs:
     if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.deploy == 'true')
     environment: production
     env:
-      DEPLOY_SSH_KEY: ${{ secrets.MAIN_KEY }}
+      DEPLOY_SSH_KEY: ${{ secrets.GXPEX_KEY }}
       DEPLOY_HOST: 154.44.29.22
       DEPLOY_USER: root
       DEPLOY_PORT: "35652"
