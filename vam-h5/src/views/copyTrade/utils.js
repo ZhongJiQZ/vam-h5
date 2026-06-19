@@ -502,16 +502,41 @@ export function formatStrategyProfitRateRange(item) {
   return `${priceFormat(minN, 2)}% ~ ${priceFormat(maxN, 2)}%`
 }
 
+/** 加入时间原始值（毫秒或时间字符串） */
+export function resolveCopyTradeJoinRaw(item) {
+  if (!item) return ''
+  const params = item.params || {}
+  if (params.joinTimeMillis != null && params.joinTimeMillis !== '') return params.joinTimeMillis
+  if (item.joinTimeMillis != null && item.joinTimeMillis !== '') return item.joinTimeMillis
+  return item.joinTime ?? params.joinTime ?? item.startTime ?? item.createTime ?? ''
+}
+
+/** 退出时间原始值（毫秒或时间字符串） */
+export function resolveCopyTradeExitRaw(item) {
+  if (!item) return ''
+  const params = item.params || {}
+  if (params.exitTimeMillis != null && params.exitTimeMillis !== '') return params.exitTimeMillis
+  if (item.exitTimeMillis != null && item.exitTimeMillis !== '') return item.exitTimeMillis
+  return item.exitTime ?? params.exitTime ?? item.settleTime ?? params.settleTime ?? item.endTime ?? params.endTime ?? ''
+}
+
+/** 跟单运行天数（加入日至结束日，含首尾，至少 1 天） */
+export function calcCopyTradeRunningDays(joinRaw, endRaw) {
+  if (joinRaw == null || joinRaw === '') return null
+  const start = dayjs(joinRaw)
+  if (!start.isValid()) return null
+  const end = endRaw != null && endRaw !== '' ? dayjs(endRaw) : dayjs()
+  if (!end.isValid()) return Math.max(1, dayjs().diff(start, 'day') + 1)
+  return Math.max(1, end.diff(start, 'day') + 1)
+}
+
 /** 加入时间：order.joinTime */
 export function formatCopyTradeJoinTime(item, fmt = 'YYYY-MM-DD HH:mm') {
   if (!item) return '--'
-  const params = item.params || {}
-  const ms = params.joinTimeMillis ?? item.joinTimeMillis
-  if (ms != null) return formatLocalTime(ms, fmt)
-  const fallback = item.joinTime ?? params.joinTime
-  if (!fallback) return '--'
-  const formatted = formatLocalTime(fallback, fmt)
-  return formatted !== '--' ? formatted : fallback
+  const raw = resolveCopyTradeJoinRaw(item)
+  if (!raw) return '--'
+  const formatted = formatLocalTime(raw, fmt)
+  return formatted !== '--' ? formatted : String(raw)
 }
 
 /** 退出时间：exitTime / settleTime；endTime 兼容旧版（已退出订单的实际退出时间） */

@@ -275,7 +275,11 @@ import {
   copyTradeOrderBadgeClass,
   copyTradeOrderStatusText,
   isCopyTradeStrategyEnded,
-  formatCopyTradeDisplayDate
+  formatCopyTradeDisplayDate,
+  resolveCopyTradeJoinRaw,
+  resolveCopyTradeExitRaw,
+  calcCopyTradeRunningDays,
+  normalizePerfSummary
 } from './utils'
 import dayjs from '@/plugin/dayjs/index'
 import { showToast } from 'vant'
@@ -318,14 +322,16 @@ function cycleProgress(item) {
 }
 
 const endedSummary = computed(() => {
-  if (activeTab.value !== 1) return null
-  if (!list.value.length) return null
+  if (activeTab.value !== 1 || !list.value.length) return null
+
   let totalProfit = 0
   let totalAmount = 0
   let totalFee = 0
   let totalShare = 0
   let totalNet = 0
-  let firstTime = ''
+  let earliestJoin = ''
+  let latestExit = ''
+
   list.value.forEach((item) => {
     const p = Number(item.params?.totalSettledProfit ?? item.actualProfit) || 0
     totalProfit = _add(totalProfit, p)
@@ -333,13 +339,36 @@ const endedSummary = computed(() => {
     totalFee = _add(totalFee, Number(item.params?.tradeFee ?? item.tradeFee) || 0)
     totalShare = _add(totalShare, Number(item.params?.profitShareAmt ?? item.profitShareAmt) || 0)
     totalNet = _add(totalNet, Number(item.params?.netProfit ?? item.netProfit) || 0)
-    if (!firstTime && item.joinTime) firstTime = formatCopyTradeDisplayDate(item.joinTime)
+
+    const joinRaw = resolveCopyTradeJoinRaw(item)
+    const exitRaw = resolveCopyTradeExitRaw(item)
+    if (joinRaw && (!earliestJoin || dayjs(joinRaw).isBefore(dayjs(earliestJoin)))) {
+      earliestJoin = joinRaw
+    }
+    if (exitRaw && (!latestExit || dayjs(exitRaw).isAfter(dayjs(latestExit)))) {
+      latestExit = exitRaw
+    }
   })
+
+  const perfSummary = normalizePerfSummary(myPerf.value || {})
+  let firstTime = earliestJoin
+    ? formatCopyTradeDisplayDate(earliestJoin, 'YYYY-MM-DD')
+    : ''
+  let days = calcCopyTradeRunningDays(earliestJoin, latestExit) ?? 0
+
+  if (route.query.institutionId && myPerf.value) {
+    const perfJoin = perfSummary.subscribeTime || perfSummary.joinTime
+    if (perfJoin) {
+      firstTime = formatCopyTradeDisplayDate(perfJoin, 'YYYY-MM-DD')
+    }
+    const perfDays = perfSummary.copyDays ?? perfSummary.tradingDays
+    if (perfDays != null && perfDays !== '') {
+      days = perfDays
+    }
+  }
+
   const totalRate = totalAmount ? calcPnlRate(totalProfit, totalAmount) : '0.00'
-  const days =
-    list.value.length && list.value[0].joinTime
-      ? Math.max(1, dayjs().diff(dayjs(list.value[list.value.length - 1].joinTime), 'day') + 1)
-      : 0
+
   return {
     firstTime,
     days,
@@ -350,20 +379,6 @@ const endedSummary = computed(() => {
     profitShareAmt: `${formatPnl(totalShare)} USDT`,
     netProfit: `${formatPnl(totalNet)} USDT`
   }
-
-  if (myPerf.value) {
-    const p = myPerf.value
-    return {
-      firstTime: formatCopyTradeDisplayDate(p.subscribeTime),
-      days: p.copyDays ?? 0,
-      count: total.value || list.value.length,
-      totalProfit: formatPnl(p.totalProfit),
-      totalRate: p.totalProfitRate ?? '0.00',
-      tradeFee: '--',
-      profitShareAmt: '--',
-      netProfit: formatPnl(p.totalProfit)
-    }
-  }
 })
 
 function switchTab(tab) {
@@ -372,6 +387,14 @@ function switchTab(tab) {
   myPerf.value = null
   resetList()
   if (tab === 1) loadMyPerformance()
+}
+
+function onRefresh() {
+  list.value = []
+  pageNum.value = 1
+  finished.value = false
+  if (activeTab.value === 1) loadMyPerformance()
+  onLoad()
 }
 
 function resetList() {
@@ -433,13 +456,6 @@ async function onLoad() {
     loading.value = false
     refreshing.value = false
   }
-}
-
-function onRefresh() {
-  list.value = []
-  pageNum.value = 1
-  finished.value = false
-  onLoad()
 }
 
 /*
