@@ -112,6 +112,19 @@
                   <img src="@/assets/images/Frame 10711.png" alt="" class="section-info-icon" />
                 </button>
               </div>
+              <button
+                type="button"
+                class="section-refresh-btn"
+                :disabled="sectionRefreshing"
+                @click="refreshOrderFromList"
+              >
+                <img
+                  src="@/assets/images/copy-trade-refresh.png"
+                  alt=""
+                  class="section-refresh-icon"
+                  :class="{ 'is-spinning': sectionRefreshing }"
+                />
+              </button>
             </div>
             <PositionRecordCard
               v-for="(rec, idx) in order._recordGroups.holding"
@@ -181,7 +194,7 @@ import StopConfirmDialog from './components/StopConfirmDialog.vue'
 import AppendDialog from './components/AppendDialog.vue'
 import CopyTradeMaskExplainPopup from './components/CopyTradeMaskExplainPopup.vue'
 import { _t18 } from '@/utils/public'
-import { getCopyTradeDetail, exitCopyTrade, appendCopyTrade } from '@/api/copyTrade'
+import { getCopyTradeDetail, getCopyTradeList, exitCopyTrade, appendCopyTrade } from '@/api/copyTrade'
 import { priceFormat } from '@/utils/decimal'
 import {
   formatPnl,
@@ -198,6 +211,7 @@ import {
   formatCopyTradeJoinTime,
   formatCopyTradeExitTime,
   normalizeCopyTradeDetailResponse,
+  normalizeCopyTradeListResponse,
   copyTradeOrderBadgeClass,
   copyTradeOrderStatusText,
   isCopyTradeStrategyEnded,
@@ -219,6 +233,7 @@ const activeTab = ref(resolveDetailTab(route.query))
 const meta = ref({})
 const orders = ref([])
 const pageLoading = ref(true)
+const sectionRefreshing = ref(false)
 
 const stopVisible = ref(false)
 const stopLoading = ref(false)
@@ -278,6 +293,45 @@ async function loadDetail() {
     void e
   } finally {
     pageLoading.value = false
+  }
+}
+
+async function refreshOrderFromList() {
+  if (sectionRefreshing.value || pageLoading.value) return
+
+  sectionRefreshing.value = true
+  try {
+    const params = {
+      pageNum: 1,
+      pageSize: 100,
+      status: activeTab.value
+    }
+    const institutionId = primaryOrder.value.institutionId || route.query.institutionId
+    if (institutionId) params.institutionId = institutionId
+
+    const res = await getCopyTradeList(params)
+    if (res?.code != 200) return
+
+    const parsed = normalizeCopyTradeListResponse(res)
+    const refreshedOrder = parsed.rows.find(
+      (item) => String(item.id) === String(route.query.id)
+    )
+    if (!refreshedOrder) return
+
+    orders.value = orders.value.map((order) =>
+      String(order.id) === String(refreshedOrder.id)
+        ? {
+            ...order,
+            ...refreshedOrder,
+            strategy: refreshedOrder.strategy || order.strategy,
+            institution: refreshedOrder.institution || order.institution
+          }
+        : order
+    )
+  } catch (e) {
+    void e
+  } finally {
+    sectionRefreshing.value = false
   }
 }
 
@@ -451,6 +505,7 @@ $green: #17ac74;
 
 .section-title-row {
   display: flex;
+  justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
 }
@@ -477,6 +532,32 @@ $green: #17ac74;
   width: 18px;
   height: 18px;
   display: block;
+}
+.section-refresh-btn {
+  width: 32px;
+  height: 32px;
+  padding: 6px;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  &:disabled {
+    opacity: 0.55;
+  }
+}
+.section-refresh-icon {
+  width: 20px;
+  height: 20px;
+  display: block;
+  &.is-spinning {
+    animation: copy-trade-refresh-spin 0.8s linear infinite;
+  }
+}
+@keyframes copy-trade-refresh-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 .pnl-row {
   display: flex;
