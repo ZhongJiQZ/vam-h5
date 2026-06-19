@@ -32,7 +32,7 @@
           </div>
           <div class="kv">
             <span>{{ t18('copy_trade_amount_range') }}</span>
-            <span class="ff-num">{{ formatAmountRangeText(item.minAmount, item.maxAmount) }}</span>
+            <span class="ff-num">{{ item.minAmount }} - {{ item.maxAmount }} USDT</span>
           </div>
           <div v-if="hasActiveSubCountCondition(item)" class="kv">
             <span>{{ t18('copy_trade_join_condition') }}</span>
