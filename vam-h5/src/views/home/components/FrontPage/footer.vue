@@ -1,11 +1,16 @@
 <template>
   <div class="footer">
-    <!-- 热门币种 -->
-    <!-- <h1 class="title" @click="handelShowTab(0)">{{ _t18('coinbase_h_l_hot') }}</h1> -->
-    <!-- <div class="tab_title">
-      <h1 :class="showTab===0?'active title':'title'" @click="handelShowTab(0)">{{ _t18('coinbase_h_l_hot') }}<i></i></h1>
-      <h1 :class="showTab===1?'active title':'title'" @click="handelShowTab(1)">外汇币种<i></i></h1>
-    </div> -->
+    <!-- Deposit & Earn 活动卡 -->
+    <div class="promo" @click="onPromo">
+      <img :src="promoBg" class="promo__bg" alt="" />
+      <div class="promo__content">
+        <img :src="promoTitle" class="promo__title" alt="Deposit & Earn" />
+        <div class="promo__btn">
+          <span>Limited Offer</span>
+        </div>
+      </div>
+    </div>
+
     <div class="headerChoose" style="display: none;">
       <van-tabs
         v-model:active="showTab"
@@ -24,36 +29,14 @@
         </van-tab>
       </van-tabs>
     </div>
-    <div class="new-header">
+    <div class="new-header" style="display: none">
       {{ headerList[0].name }}
     </div>
     <div class="main">
-      <!-- 名称 最新价 涨跌幅 -->
-      <div class="header-list">
-        <div class="item" @click="toDealSort">
-          <div>{{ _t18(`home_currencyName`, ['latcoin']) }}</div>
-          <div class="arrows" v-if="['latcoin'].includes(_getConfig('_APP_ENV'))">
-            <svg-load v-if="arrowList.firstIcon === 0" name="moren" class="itemImg"></svg-load>
-            <svg-load v-if="arrowList.firstIcon === 1" name="gao" class="itemImg"></svg-load>
-            <svg-load v-if="arrowList.firstIcon === 2" name="di" class="itemImg"></svg-load>
-          </div>
-        </div>
-        <div class="item" @click="toUpSort">
-          <div>{{ _t18(`home_newPrice`, ['latcoin']) }}</div>
-          <div class="arrows" v-if="['latcoin'].includes(_getConfig('_APP_ENV'))">
-            <svg-load v-if="arrowList.secondIcon === 0" name="moren" class="itemImg"></svg-load>
-            <svg-load v-if="arrowList.secondIcon === 1" name="gao" class="itemImg"></svg-load>
-            <svg-load v-if="arrowList.secondIcon === 2" name="di" class="itemImg"></svg-load>
-          </div>
-        </div>
-        <div class="item" @click="toRafSort">
-          <div>{{ _t18(`home_upDown`, ['latcoin', 'aams']) }}</div>
-          <div class="arrows" v-if="['latcoin'].includes(_getConfig('_APP_ENV'))">
-            <svg-load v-if="arrowList.thirdIcon === 0" name="moren" class="itemImg"></svg-load>
-            <svg-load v-if="arrowList.thirdIcon === 1" name="gao" class="itemImg"></svg-load>
-            <svg-load v-if="arrowList.thirdIcon === 2" name="di" class="itemImg"></svg-load>
-          </div>
-        </div>
+      <!-- Figma 风格 2 列表头 -->
+      <div class="market-header">
+        <div class="market-header__name">Name</div>
+        <div class="market-header__price">Price / Change</div>
       </div>
 
       <!-- <div v-if="tradeStore.secondContractCoinList.length">
@@ -115,9 +98,12 @@ import { useTradeStore } from '@/store/trade/index'
 import { useMainStore } from '@/store/index.js'
 import { useRouter } from 'vue-router'
 import { _t18 } from '@/utils/public'
+import promoBg from '@/assets/images/gxpex/home/promo-bg.png'
+import promoTitle from '@/assets/images/gxpex/home/promo-title.png'
 const tradeStore = useTradeStore()
 const mainStroe = useMainStore()
 const $router = useRouter()
+const onPromo = () => $router.push('/recharge')
 const linkTo = (item) => {
   if (!['latcoin'].includes(__config._APP_ENV)) {
     mainStroe.setTradeStatus(Number(0))
@@ -429,6 +415,210 @@ const handelShowTab = (item) => {
   :deep(.van-tab--active) {
     font-weight: normal;
     color: var(--ex-home-list-ftcolor3) !important;
+  }
+}
+
+/* 市场列表 - Figma 暗紫卡片 */
+.market-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 22px 14px;
+
+  &__name,
+  &__price {
+    font-family: 'PingFang SC', -apple-system, sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.65);
+    line-height: 1;
+  }
+}
+
+.footer .main {
+  background: transparent;
+  padding: 0 12px;
+
+  .coin-list {
+    background: transparent;
+    border-radius: 0;
+    border: 0;
+    margin: 0;
+    overflow: visible;
+  }
+}
+
+/* 每一行卡片 (覆盖 CurrencyItem) */
+:deep(.currencyItem) {
+  margin-bottom: 12px;
+  padding: 14px 16px;
+  background: #221c31;
+  border-radius: 12px;
+  border-bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    .leftImg {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: contain;
+      background: rgba(255,255,255,0.08);
+    }
+    .topText .textTop {
+      color: #fff;
+      font-family: 'Roboto', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.1;
+    }
+  }
+
+  .right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    .rightLeft {
+      color: #fff;
+      font-family: 'Roboto', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      min-width: 0;
+      text-align: right;
+      .fw-num { display: inline-block; }
+    }
+    .rightBox {
+      height: auto;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      .rightRight {
+        background: transparent !important;
+        min-width: 0;
+        max-width: 90px;
+        margin-left: 0;
+        padding: 3px 8px;
+        border-radius: 6px;
+        font-family: 'PingFang SC', -apple-system, sans-serif;
+        font-size: 12px;
+        font-weight: 400;
+        height: auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        line-height: 1;
+
+        &::before {
+          content: '';
+          width: 8px;
+          height: 10px;
+          background-repeat: no-repeat;
+          background-position: center;
+          background-size: contain;
+          display: inline-block;
+        }
+        &.rise {
+          background: rgba(46, 189, 133, 0.15) !important;
+          color: #2ebd85 !important;
+          &::before { background-image: url('@/assets/images/gxpex/home/arrow-up.png'); }
+        }
+        &.fall {
+          background: rgba(246, 70, 93, 0.15) !important;
+          color: #f6465d !important;
+          &::before { background-image: url('@/assets/images/gxpex/home/arrow-down.png'); }
+        }
+        &.draw {
+          background: rgba(125, 145, 157, 0.15) !important;
+          color: #7d919d !important;
+          &::before { display: none; }
+        }
+      }
+    }
+  }
+}
+
+/* Deposit & Earn 活动卡 */
+.promo {
+  position: relative;
+  margin: 0 12px 16px;
+  height: 78px;
+  border-radius: 40px;
+  overflow: hidden;
+  cursor: pointer;
+  background: #1a1530;
+
+  /* 渐变紫描边 (Figma: linear 左→右 #ae4eb4 → #6431df, 1px inside) */
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(90deg, #ae4eb4 0%, #6431df 100%);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  &__bg {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translate(0, -50%);
+    width: 105%;
+    height: auto;
+    object-fit: cover;
+    object-position: right center;
+    pointer-events: none;
+  }
+
+  &__content {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    padding: 0 22px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 8px;
+    pointer-events: none;
+  }
+
+  &__title {
+    height: 24px;
+    width: auto;
+    flex-shrink: 0;
+    display: block;
+    object-fit: contain;
+    pointer-events: auto;
+  }
+
+  &__btn {
+    align-self: flex-start;
+    pointer-events: auto;
+    padding: 5px 14px;
+    border-radius: 999px;
+    border: 1px solid #9f40ec;
+    background: transparent;
+    color: #9e40eb;
+    font-family: 'Roboto', sans-serif;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1;
   }
 }
 </style>

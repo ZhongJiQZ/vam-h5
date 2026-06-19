@@ -235,62 +235,67 @@ const toRecharge = () => {
 }
 </script>
 <style lang="scss" scoped>
+/* 金刚区 - GXPEX 5 列 + 暗紫卡片背景 */
 .main {
   position: relative;
-  top: -14px;
-  background: #fff;
-  border-radius: 14px 14px 0 0;
-  padding: 14px 0 4px;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  top: 0;
+  margin: 90px 12px 16px;
+  padding: 18px 8px 14px;
+  background: #221c31;
+  border: 0;
+  border-radius: 12px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px 4px;
 
   .item {
-    width: 25%;
+    width: auto;
     display: flex;
     flex-direction: column;
     align-items: center;
-    // margin-bottom: 20px;
+    padding: 6px 2px 4px;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.15s ease;
+    &:active { transform: scale(0.95); }
 
     .item-icon-wrap {
       position: relative;
-      width: 48px;
-      height: 48px;
+      width: 36px;
+      height: 36px;
       flex-shrink: 0;
     }
-
     .item-icon-skeleton {
       position: absolute;
       inset: 0;
-      border-radius: 12px;
-      background: linear-gradient(90deg, #f0f2f5 25%, #e8eaed 50%, #f0f2f5 75%);
+      border-radius: 10px;
+      background: linear-gradient(90deg, #2a2540 25%, #1f1a36 50%, #2a2540 75%);
       background-size: 200% 100%;
       animation: menu-icon-shimmer 1.2s ease-in-out infinite;
     }
-
     .itemImg {
       position: relative;
       z-index: 1;
-      width: 48px;
-      height: 48px;
+      width: 36px;
+      height: 36px;
       opacity: 0;
       transition: opacity 0.2s ease-out;
-
-      &--ready {
-        opacity: 1;
-      }
+      &--ready { opacity: 1; }
     }
-
     .itemName {
-      margin: 10px 0 15px;
-      font-size: 12px;
-      color: var(--ex-default-font-color);
+      margin: 6px 0 0;
+      font-family: 'PingFang SC', -apple-system, sans-serif;
+      font-size: 11px;
+      font-weight: 400;
+      line-height: 1.25;
+      color: rgba(255, 255, 255, 0.85);
       text-align: center;
-      width: 60px;
+      max-width: 64px;
       word-break: break-word;
     }
   }
 }
+
 
 .mainEbc {
   padding-top: 0;
@@ -453,5 +458,12 @@ const toRecharge = () => {
     padding: 20px 15px 30px;
     max-height: 400px;
   }
+}
+
+/* VAM 旧块（notice/客服/快充）—— Figma 没这些，先隐藏 */
+.notice,
+.customerService,
+.linkList {
+  display: none !important;
 }
 </style>

@@ -5,69 +5,102 @@
       <SideBar @closeSideBar="closeSideBar"></SideBar>
     </van-popup>
     <div class="home-top-bar">
-      <img :src="logoSrc" class="home-top-bar__logo" alt="" @click="refreshPage" />
+      <div class="home-top-bar__brand" @click="refreshPage">
+        <img :src="logoG" class="home-top-bar__logo" alt="GXPEX" />
+        <img :src="brandText" class="home-top-bar__brand-text" alt="GXPEX" />
+      </div>
       <div class="home-top-bar__actions">
-        <!-- <img
-          src="@/assets/images/black/user.png"
-          alt=""
-          class="home-top-bar__icon"
-          @click="goMyAssets"
-        /> -->
-        <span class="home-top-bar__menu-btn" role="button" aria-label="菜单" @click="openSideBar">
-          <svg-load name="cebian" />
+        <span
+          class="home-top-bar__icon-btn"
+          role="button"
+          aria-label="service"
+          @click="goService"
+        >
+          <img :src="iconService" alt="" />
+        </span>
+        <span
+          class="home-top-bar__icon-btn"
+          role="button"
+          aria-label="notification"
+          @click="goNotice"
+        >
+          <img :src="iconBell" alt="" />
+        </span>
+        <span
+          class="home-top-bar__icon-btn"
+          role="button"
+          aria-label="menu"
+          @click="openSideBar"
+        >
+          <img :src="iconMenu" alt="" />
         </span>
       </div>
     </div>
-    <div class="carousel">
-      <div
-        v-if="primaryBanner?.imgUrl && !bannerImageReady"
-        class="carousel-skeleton"
-        aria-hidden="true"
+    <!-- Hero 山图区（单图 + 代码写文字 + 紫渐变按钮） -->
+    <div class="hero">
+      <div v-if="primaryBanner?.imgUrl && !bannerImageReady" class="hero__skeleton" aria-hidden="true" />
+      <image-load
+        v-if="primaryBanner?.imgUrl"
+        :filePath="primaryBanner.imgUrl"
+        alt=""
+        class="hero__bg"
+        :class="{ 'hero__bg--ready': bannerImageReady }"
+        loading="eager"
+        fetchpriority="high"
+        @load="onBannerImageReady"
+        @error="onBannerImageReady"
       />
-      <van-swipe
-        v-if="carouselList.length"
-        :autoplay="3000"
-        :loop="carouselList.length > 1"
-        :show-indicators="false"
-      >
-        <van-swipe-item v-for="(item, index) in carouselList.slice(0, 1)" :key="item.noticeId || index">
-          <image-load
-            :filePath="item.imgUrl"
-            alt=""
-            class="carouselItem"
-            :class="{ 'carouselItem--ready': bannerImageReady }"
-            loading="eager"
-            fetchpriority="high"
-            @load="onBannerImageReady"
-            @error="onBannerImageReady"
-            @click="linkto(item)"
-          />
-        </van-swipe-item>
-      </van-swipe>
-      <div class="currentList">
+      <div class="hero__overlay">
+        <h1 class="hero__title">How Colombia will move<br />towards an open data ecosystem</h1>
+        <button class="hero__cta" @click="onHeroCta">
+          <span>View Now</span>
+        </button>
+      </div>
+      <!-- 3 行情卡（叠在 hero 底部） -->
+      <div class="quote-row">
         <div
-          v-for="(item, index) in dataList.filter((it, idx) => idx < 4)"
-          :key="index"
-          class="currentList-card"
-          :class="`currentList-card--${rfdFromChangePercent(item.coin)}`"
+          v-for="item in dataList.slice(0, 3)"
+          :key="item.coin"
+          class="quote-card"
+          :class="`quote-card--${rfdFromChangePercent(item.coin)}`"
           @click="linkTo(item)"
         >
-          <div class="currentList-pair fw-num">{{ item.showSymbol }}</div>
-          <div
-            :class="[
-              rfdFromChangePercent(item.coin),
-              'rfd-sign currentList-change fw-num'
-            ]"
-          >
-            {{ _absChangePercentStr(tradeStore.allCoinPriceInfo[item.coin]?.priceChangePercent) }}%
+          <div class="quote-card__head">
+            <img :src="item.logo" class="quote-card__coin" alt="" />
+            <div class="quote-card__pair">{{ item.showSymbol }}</div>
           </div>
-          <div
-            :class="[
-              rfdFromChangePercent(item.coin),
-              'currentList-price fw-num'
-            ]"
-          >
-            {{ tradeStore.allCoinPriceInfo[item.coin]?.close }}
+          <div class="quote-card__price">
+            {{ tradeStore.allCoinPriceInfo[item.coin]?.close ?? '--' }}
+          </div>
+          <svg class="quote-card__spark" viewBox="0 0 100 24" preserveAspectRatio="none">
+            <defs>
+              <linearGradient :id="`g-${item.coin}`" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0" :stop-color="rfdFromChangePercent(item.coin) === 'fall' ? '#f6465d' : '#2ebd85'" stop-opacity="0.5" />
+                <stop offset="1" :stop-color="rfdFromChangePercent(item.coin) === 'fall' ? '#f6465d' : '#2ebd85'" stop-opacity="0" />
+              </linearGradient>
+            </defs>
+            <path
+              :d="sparkArea(item.coin)"
+              :fill="`url(#g-${item.coin})`"
+            />
+            <polyline
+              :points="sparkPoints(item.coin)"
+              :stroke="rfdFromChangePercent(item.coin) === 'fall' ? '#f6465d' : '#2ebd85'"
+              stroke-width="1.4"
+              fill="none"
+              stroke-linejoin="round"
+              stroke-linecap="round"
+            />
+          </svg>
+          <div class="quote-card__pct">
+            <img
+              :src="rfdFromChangePercent(item.coin) === 'fall' ? arrowDown : arrowUp"
+              class="quote-card__arrow"
+              alt=""
+            />
+            <span>
+              {{ _absChangePercentStr(tradeStore.allCoinPriceInfo[item.coin]?.priceChangePercent) }}%
+            </span>
           </div>
         </div>
       </div>
@@ -80,6 +113,7 @@ import { useMainStore } from '@/store/index.js'
 import { useRouter } from 'vue-router'
 import { onMounted, computed, ref, watch } from 'vue'
 import { _isRFDByChangePercent, _absChangePercentStr } from '@/utils/public'
+import { getKlineHistory } from '@/api/common/kline.js'
 import {
   collectHomeBannerImageUrls,
   preloadImages,
@@ -87,6 +121,14 @@ import {
 } from '@/utils/imagePreload'
 import SideBar from '@/views/home/sidebar/index.vue'
 import logoFallback from '@/assets/images/logo-black.png'
+import logoG from '@/assets/images/gxpex/home/logo-g.png'
+import brandText from '@/assets/images/gxpex/home/brand-text.png'
+import iconService from '@/assets/images/gxpex/home/icon-service.svg'
+import iconBell from '@/assets/images/gxpex/home/icon-bell.svg'
+import iconMenu from '@/assets/images/gxpex/home/icon-menu.svg'
+import arrowUp from '@/assets/images/gxpex/home/arrow-up.png'
+import arrowDown from '@/assets/images/gxpex/home/arrow-down.png'
+import { dispatchCustomEvent } from '@/utils'
 const show = ref(false)
 const openSideBar = () => {
   show.value = true
@@ -106,9 +148,66 @@ const goMyAssets = () => {
   $router.push('/myassets')
 }
 
+const goService = () => dispatchCustomEvent('event_serviceChange')
+const goNotice = () => $router.push('/broadcast')
+
 const rfdFromChangePercent = (coin) => {
   const info = tradeStore.allCoinPriceInfo[coin]
   return _isRFDByChangePercent(info?.priceChangePercent)
+}
+
+// === Sparkline: 真实 K 线数据 ===
+const klineCache = ref({})  // { coin: [close1, close2, ...] }
+
+const fetchSpark = async (item) => {
+  if (!item?.coin || !item?.coinUpperCase) return
+  if (klineCache.value[item.coin]?.length) return
+  try {
+    const { data } = await getKlineHistory({
+      symbol: item.coinUpperCase,
+      interval: 'ONE_HOUR',
+      market: item.market,
+      limit: 24
+    })
+    const bars = data?.historyKline || []
+    if (bars.length) {
+      const sorted = [...bars].sort((a, b) => a.T - b.T)
+      klineCache.value = {
+        ...klineCache.value,
+        [item.coin]: sorted.map((b) => parseFloat(b.c))
+      }
+    }
+  } catch (e) {
+    // ignore
+  }
+}
+
+const sparkPoints = (coin) => {
+  const prices = klineCache.value[coin]
+  if (!prices || prices.length < 2) return ''
+  let min = prices[0], max = prices[0]
+  for (const p of prices) {
+    if (p < min) min = p
+    if (p > max) max = p
+  }
+  const range = max - min || 1
+  const N = prices.length
+  const W = 100
+  const top = 2, bot = 22
+  return prices
+    .map((p, i) => {
+      const x = (i / (N - 1)) * (W - 2) + 1
+      const y = bot - ((p - min) / range) * (bot - top)
+      return `${x.toFixed(1)},${y.toFixed(1)}`
+    })
+    .join(' ')
+}
+const sparkArea = (coin) => {
+  const pts = sparkPoints(coin).split(' ').filter(Boolean)
+  if (!pts.length) return ''
+  const first = pts[0].split(',')[0]
+  const last = pts[pts.length - 1].split(',')[0]
+  return `M${first},24 L${pts.join(' L')} L${last},24 Z`
 }
 
 const dataList = computed(() => {
@@ -133,6 +232,14 @@ const dataList = computed(() => {
   })
   return tempData
 })
+
+// 数据列表变化时拉前 3 个币的 K 线（用于 sparkline）
+watch(
+  () => dataList.value.slice(0, 3),
+  (list) => list.forEach(fetchSpark),
+  { immediate: true, deep: true }
+)
+
 const refreshPage = ()=>{
     window.location.reload();
 }
@@ -186,6 +293,13 @@ const linkto = (detail) => {
   }
 }
 
+// Hero View Now 按钮：跳后端首条 banner 的目标，没有就跳行情
+const onHeroCta = () => {
+  const first = primaryBanner.value
+  if (first) linkto(first)
+  else $router.push('/quote')
+}
+
 onMounted(() => {
   if (!carouselList.value.length) {
     mainStroe.fetchHomeBanner()
@@ -202,7 +316,7 @@ onMounted(() => {
 }
 
 .header-container{
-  padding-top: 54px;
+  padding-top: 0;
 }
 
 .home-top-bar {
@@ -218,154 +332,204 @@ onMounted(() => {
   max-width: var(--ex-max-width);
   margin: 0 auto;
   box-sizing: border-box;
-  padding: 10px 15px;
-  background: #ffffff;
+  padding: 12px 15px;
+  background: transparent;
 }
 
+.home-top-bar__brand {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
 .home-top-bar__logo {
-  height: 32px;
+  width: 28px;
+  height: 28px;
   display: block;
   object-fit: contain;
-  cursor: pointer;
+}
+.home-top-bar__brand-text {
+  height: 22px;
+  width: auto;
+  display: block;
+  object-fit: contain;
 }
 
 .home-top-bar__actions {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
 }
 
-.home-top-bar__icon {
-  width: 24px;
-  height: 24px;
-  display: block;
-  object-fit: contain;
-  cursor: pointer;
-}
-
-.home-top-bar__menu-btn {
+.home-top-bar__icon-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 24px;
-  line-height: 0;
+  width: 24px;
+  height: 24px;
+  img {
+    width: 22px;
+    height: 22px;
+    display: block;
+    object-fit: contain;
+  }
 }
 
-.carousel {
+/* Hero 山图区 */
+.hero {
   position: relative;
-  height: 250px;
-  background: #f0f2f5;
+  height: 270px;
+  background: #111111;
+  overflow: visible;
 
-  .carousel-skeleton {
+  &__skeleton {
     position: absolute;
     inset: 0;
     z-index: 0;
-    background: linear-gradient(90deg, #eef0f3 25%, #e4e7eb 50%, #eef0f3 75%);
-    background-size: 200% 100%;
-    animation: carousel-shimmer 1.2s ease-in-out infinite;
+    background: #111111;
   }
 
-  .carouselItem {
-    position: relative;
+  &__bg {
+    position: absolute;
+    inset: 0;
     z-index: 1;
-    height: 250px;
     width: 100%;
+    height: 100%;
     object-fit: cover;
     opacity: 0;
-    transition: opacity 0.25s ease-out;
-
-    &--ready {
-      opacity: 1;
-    }
+    transition: opacity 0.3s ease-out;
+    &--ready { opacity: 1; }
   }
 
-  .currentList {
+  &__overlay {
     position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    width: calc(100% - 30px);
-    box-sizing: border-box;
-    top: 112px;
+    z-index: 2;
+    left: 0;
+    right: 0;
+    top: 100px;
+    padding: 0 24px;
+    pointer-events: none;
+    & > * { pointer-events: auto; }
+  }
+
+  &__title {
+    margin: 0 0 14px;
+    font-family: 'Roboto', -apple-system, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: 0.1px;
+    color: #ffffff;
+    max-width: 66%;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+  }
+
+  &__cta {
+    border: 0;
+    background: linear-gradient(180deg, #a343ee 0%, #7f2bda 100%);
+    color: #fff;
+    font-family: 'Roboto', -apple-system, sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    padding: 7px 22px;
+    border-radius: 999px;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(160, 65, 237, 0.55);
+    transition: transform 0.15s ease;
+    &:active { transform: scale(0.96); }
+  }
+
+  /* 3 行情卡：叠在 hero 底部，Figma 4 列内容（币 logo+名 / 大价格 / sparkline / 箭头+%） */
+  .quote-row {
+    position: absolute;
+    z-index: 3;
+    left: 10px;
+    right: 10px;
+    bottom: -80px;
     display: flex;
     gap: 8px;
-    padding: 0;
-    background: transparent;
-    box-shadow: none;
+  }
 
-    .currentList-card {
-      flex: 1;
-      min-width: 0;
-      min-height: 96px;
-      border-radius: 14px;
-      padding: 20px 8px;
+  .quote-card {
+    flex: 1;
+    min-width: 0;
+    border-radius: 12px;
+    padding: 10px 10px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    cursor: pointer;
+
+    &__head {
       display: flex;
-      flex-direction: column;
       align-items: center;
-      justify-content: center;
+      gap: 5px;
+    }
+    &__coin {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      object-fit: contain;
+      background: #2a2540;
+    }
+    &__pair {
+      font-family: 'PingFang SC', -apple-system, sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      color: #ffffff;
+      line-height: 1;
+    }
+    &__price {
+      font-family: 'PingFang SC', -apple-system, sans-serif;
+      font-size: 17px;
+      font-weight: 600;
+      line-height: 1.1;
+      margin-top: 3px;
+      letter-spacing: -0.01em;
       text-align: center;
-      gap: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
-
-      &--rise {
-        background: linear-gradient(
-          180deg,
-          #dff5eb 0%,
-          #ffffff 40%,
-          #ffffff 60%,
-          #dff5eb 100%
-        );
-      }
-
-      &--fall {
-        background: linear-gradient(
-          180deg,
-          #fce8ed 0%,
-          #ffffff 40%,
-          #ffffff 60%,
-          #fce8ed 100%
-        );
-      }
-
-      &--draw {
-        background: linear-gradient(
-          180deg,
-          #ebecef 0%,
-          #ffffff 40%,
-          #ffffff 60%,
-          #ebecef 100%
-        );
-      }
+    }
+    &__spark {
+      width: 100%;
+      height: 22px;
+      display: block;
+      margin: 1px 0;
+    }
+    &__pct {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 3px;
+      font-family: 'PingFang SC', -apple-system, sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 1;
+      margin-top: 1px;
+    }
+    &__arrow {
+      width: 10px;
+      height: 12px;
+      object-fit: contain;
     }
 
-    .currentList-pair {
-      font-size: 13px;
-      font-weight: 700;
-      color: #111827;
-      line-height: 1.2;
+    /* 颜色按涨跌 */
+    &--rise {
+      .quote-card__price,
+      .quote-card__pct { color: #2ebd85; }
     }
-
-    .currentList-change {
-      font-size: 20px;
-      font-weight: 800;
-      line-height: 1.15;
-      letter-spacing: -0.02em;
+    &--fall {
+      .quote-card__price,
+      .quote-card__pct { color: #f6465d; }
     }
-
-    .currentList-price {
-      font-size: 14px;
-      font-weight: 700;
-      line-height: 1.2;
+    &--draw {
+      .quote-card__price,
+      .quote-card__pct { color: #7d919d; }
     }
-  }
-}
-
-@keyframes carousel-shimmer {
-  0% {
-    background-position: 100% 0;
-  }
-  100% {
-    background-position: -100% 0;
   }
 }
 </style>

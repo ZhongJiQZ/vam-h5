@@ -1,282 +1,424 @@
-<!-- 注册 -->
+<!-- 注册页 - GXPEX 设计稿（4、注册） -->
 <template>
-  <div class="sign-up-page">
-    <header class="sign-up-header">
-      <img :src="logoPng" class="logo" alt="" />
-      <img
-        :src="langPng"
-        class="lang-icon"
-        alt=""
-        @click="$router.push('/language-selection')"
-      />
-    </header>
+  <div class="signup-page">
+    <img :src="bgImg" class="signup-bg" alt="" />
 
-    <div class="sign-up-card">
-      <button type="button" class="card-close" @click="$router.push('/')" aria-label="close">
-        <img :src="closePng" alt="" />
-      </button>
+    <div class="signup-content">
+      <!-- Logo (G + GXPEX 一体图) -->
+      <div class="logo-block">
+        <img :src="logoG" class="logo-g" alt="GXPEX" />
+      </div>
 
-      <h1 class="card-title">
-        {{ _t18('register_title') }} {{ _getConfig('_APP_META_TITLE') }}
-      </h1>
+      <!-- Welcome To -->
+      <h1 class="welcome">Welcome To</h1>
 
-      <div class="loginMethod">
-        <van-tabs
-          v-model:active="active"
-          shrink
-          color="transparent"
-          title-active-color="#111"
-          title-inactive-color="#666"
-          class="login-tabs"
-        >
-          <van-tab v-for="(item, index) in tabList" :key="index" :title="item.title">
-            <component :is="currentComponent"></component>
-          </van-tab>
-        </van-tabs>
+      <!-- 表单（含玻璃面板） -->
+      <div class="form form--panel">
+        <div class="field">
+          <img :src="iconAccount" class="field__icon" alt="" />
+          <input
+            v-model="form.username"
+            type="text"
+            class="field__input"
+            placeholder="Account"
+            autocomplete="username"
+            @input="onUsernameInput"
+          />
+        </div>
+
+        <div class="field">
+          <img :src="iconLock" class="field__icon" alt="" />
+          <input
+            v-model="form.password"
+            :type="showPwd ? 'text' : 'password'"
+            class="field__input"
+            placeholder="Password"
+            autocomplete="new-password"
+            @input="onPasswordInput"
+          />
+          <img
+            :src="showPwd ? iconEye : iconEyeOff"
+            class="field__icon field__icon--right"
+            alt=""
+            @click="showPwd = !showPwd"
+          />
+        </div>
+
+        <div class="field">
+          <img :src="iconLock" class="field__icon" alt="" />
+          <input
+            v-model="form.password2"
+            :type="showPwd2 ? 'text' : 'password'"
+            class="field__input"
+            placeholder="Confirm Password"
+            autocomplete="new-password"
+            @input="onPassword2Input"
+          />
+          <img
+            :src="showPwd2 ? iconEye : iconEyeOff"
+            class="field__icon field__icon--right"
+            alt=""
+            @click="showPwd2 = !showPwd2"
+          />
+        </div>
+
+        <div class="field">
+          <img :src="iconInvite" class="field__icon" alt="" />
+          <input
+            v-model="form.invitCode"
+            type="text"
+            class="field__input"
+            placeholder="Invitation Code"
+            @input="onInvitInput"
+          />
+        </div>
+
+        <!-- 图形验证码（如后端要求） -->
+        <div v-if="mainStore.getISCode" class="field field--captcha">
+          <input
+            v-model="form.code"
+            type="text"
+            class="field__input field__input--captcha"
+            placeholder="Code"
+          />
+          <img :src="codeUrl" class="captcha-img" @click="refreshCode" alt="" />
+        </div>
+
+        <button class="btn btn--primary" :disabled="loading" @click="doRegister">
+          <span>Sign Up</span>
+        </button>
+
+        <button class="btn btn--secondary" @click="$router.push('/sign-in')">
+          <span>Have an account? Log In Now</span>
+        </button>
+      </div>
+
+      <!-- 服务条款同意 -->
+      <div class="agree">
+        <div class="agree__line">
+          <span
+            class="agree__radio"
+            :class="{ 'agree__radio--on': agreed }"
+            @click="agreed = !agreed"
+          >
+            <img v-if="!agreed" :src="iconRadio" alt="" />
+          </span>
+          <span>I agree to GXPEX's</span>
+        </div>
+        <div class="agree__line">
+          <span class="agree__link" @click="$router.push('/termsOfuse')">《Terms of Service》</span>
+          <span class="agree__and">and</span>
+          <span class="agree__link" @click="$router.push('/privacyPolicy')">《Privacy Policy》</span>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { _t18, _getConfig } from '@/utils/public'
-import AccountRegister from './components/sign-up/AccountRegister.vue'
-import EmailRegister from './components/sign-up/EmailRegister.vue'
-import MobileRegister from './components/sign-up/MobileRegister.vue'
+import { ref, computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { useMainStore } from '@/store/index.js'
-import logoPng from '@/assets/images/login/logo-black.png'
-import langPng from '@/assets/images/language.png'
-import closePng from '@/assets/images/login/close.png'
+import { useToast } from '@/hook/useToast'
+import { signUp } from '@/api/user'
+import bgImg from '@/assets/images/gxpex/login/bg.png'
+import logoG from '@/assets/images/gxpex/login/gxpenlogo.png'
+import iconAccount from '@/assets/images/gxpex/login/icon-account.svg'
+import iconLock from '@/assets/images/gxpex/signup/icon-lock.svg'
+import iconEye from '@/assets/images/gxpex/signup/icon-eye.svg'
+import iconEyeOff from '@/assets/images/gxpex/signup/icon-eye-off.svg'
+import iconInvite from '@/assets/images/gxpex/signup/icon-invite.svg'
+import iconRadio from '@/assets/images/gxpex/signup/icon-radio.svg'
 
-/**
- * 注册方式列表
- */
+const router = useRouter()
+const route = useRoute()
 const mainStore = useMainStore()
-const tabList = computed(() => {
-  let list = []
-  if (mainStore.getLoginMethodList.ordinaryIsOpen) {
-    let obj = {}
-    obj['id'] = 1
-    obj['title'] = _t18('register_account', ['bitmake'])
-    obj['type'] = '1'
-    obj['componentName'] = AccountRegister
-    list.push(obj)
-  }
-  if (mainStore.getLoginMethodList.emailIsOpen) {
-    let obj = {}
-    obj['id'] = 2
-    obj['title'] = _t18('register_email')
-    obj['type'] = '2'
-    obj['componentName'] = EmailRegister
-    list.push(obj)
-  }
-  if (mainStore.getLoginMethodList.phoneIsOpen) {
-    let obj = {}
-    obj['id'] = 3
-    obj['title'] = _t18('register_mobile')
-    obj['type'] = '3'
-    obj['componentName'] = MobileRegister
-    list.push(obj)
-  }
-  if (['coinsexpto'].includes(__config._APP_ENV)) {
-    list = list.reverse()
-  }
-  return list
+const { _toast } = useToast()
+
+const filterAlphanumeric = (val) =>
+  String(val ?? '').replace(/[^a-zA-Z0-9一-龥]/g, '')
+
+const form = ref({
+  username: '',
+  password: '',
+  password2: '',
+  invitCode: filterAlphanumeric(route.query.invite_code),
+  code: ''
 })
-const currentComponent = computed(() => {
-  return tabList.value[active.value].componentName
-})
-const active = ref(0)
+const showPwd = ref(false)
+const showPwd2 = ref(false)
+const agreed = ref(false)
+const loading = ref(false)
+
+const onUsernameInput = (e) => { form.value.username = filterAlphanumeric(e.target.value) }
+const onPasswordInput = (e) => { form.value.password = filterAlphanumeric(e.target.value) }
+const onPassword2Input = (e) => { form.value.password2 = filterAlphanumeric(e.target.value) }
+const onInvitInput = (e) => { form.value.invitCode = filterAlphanumeric(e.target.value) }
+
+// 图形验证码
+const timestamp = ref(+new Date())
+const codeUrl = computed(
+  () => `${mainStore.verificationCodeUrl}?codeType=REGISTER&timestamp=${timestamp.value}`
+)
+const refreshCode = () => { timestamp.value = +new Date() }
+
+const doRegister = async () => {
+  if (loading.value) return
+  if (!agreed.value) return _toast('register_agreeAgreement')
+  if (!form.value.username) return _toast('please_user')
+  if (!form.value.password) return _toast('please_pwd')
+  if (form.value.password !== form.value.password2) return _toast('register_pwd_diff')
+  if (!form.value.invitCode) return _toast('please_shareCode')
+  if (mainStore.getISCode && !form.value.code) return _toast('please_code')
+
+  loading.value = true
+  try {
+    const res = await signUp({
+      signType: 3,
+      loginName: form.value.username,
+      loginPassword: form.value.password,
+      activeCode: form.value.invitCode,
+      code: form.value.code
+    })
+    if (res.code == '200' || res.code == 200) {
+      _toast('register_success')
+      setTimeout(() => router.push('/sign-in'), 500)
+    } else {
+      _toast(res.msg || 'error')
+      refreshCode()
+    }
+  } catch (e) {
+    console.log(e)
+  } finally {
+    loading.value = false
+  }
+}
 </script>
 
 <style lang="scss" scoped>
-$veloxam-dark: #0c1017;
-$veloxam-green: #17ac74;
+$purple-1: #b388ff;
+$purple-2: #a041ed;
+$purple-3: #872ddc;
+$font-raleway: 'Raleway', -apple-system, 'PingFang SC', sans-serif;
+$font-pingfang: 'PingFang SC', -apple-system, 'Raleway', sans-serif;
 
-.sign-up-page {
+.signup-page {
+  position: relative;
   min-height: 100vh;
-  background: $veloxam-dark;
-  background: #fff;
-  display: flex;
-  flex-direction: column;
+  width: 100%;
+  overflow: hidden;
+  background: #0a0816;
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
-.sign-up-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px 28px;
-  flex-shrink: 0;
-
-  .logo {
-    height: 42px;
-    width: auto;
-    max-width: min(200px, 55vw);
-    object-fit: contain;
-    display: block;
-  }
-
-  .lang-icon {
-    width: 32px;
-    height: 32px;
-    object-fit: contain;
-    cursor: pointer;
-  }
-}
-
-.sign-up-card {
-  position: relative;
-  flex: 1;
-  background: #fff;
-  border-radius: 24px 24px 0 0;
-  padding: 28px 20px 24px;
-  margin-top: auto;
-  // box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.12);
-}
-
-.card-close {
+.signup-bg {
   position: absolute;
-  top: 16px;
-  right: 16px;
-  width: 32px;
-  height: 32px;
-  border: none;
-  padding: 0;
-  background: transparent;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.signup-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 28px 24px;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* Logo */
+.logo-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 16px;
+  margin-bottom: 6px;
+}
+.logo-g {
+  width: 92px;
+  height: 92px;
+  display: block;
+  border-radius: 18px;
+  filter: drop-shadow(0 6px 24px rgba(160, 65, 237, 0.5));
+}
+
+.welcome {
+  margin: 20px 0 24px;
+  font-family: $font-raleway;
+  font-size: 28px;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 0.3px;
+  line-height: 1.1;
+  text-align: center;
+}
+
+/* 表单 */
+.form {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+}
+.form--panel {
+  padding: 22px 18px 18px;
+  background: linear-gradient(
+    180deg,
+    rgba(20, 12, 38, 0.45) 0%,
+    rgba(20, 12, 38, 0.15) 100%
+  );
+  border: 1px solid rgba(160, 65, 237, 0.22);
+  border-radius: 22px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 6px 30px rgba(160, 65, 237, 0.15);
+}
+
+.field {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
-  cursor: pointer;
+  height: 48px;
+  margin-bottom: 14px;
+  padding: 0 16px;
+  background: rgba(20, 12, 38, 0.55);
+  border: 1px solid rgba(160, 65, 237, 0.25);
+  border-radius: 999px;
+  backdrop-filter: blur(6px);
 
-  img {
-    width: 20px;
-    height: 20px;
+  &--captcha { padding-right: 6px; }
+
+  &__icon {
+    width: 18px;
+    height: 18px;
+    display: block;
+    flex-shrink: 0;
     object-fit: contain;
-  }
-}
+    opacity: 0.85;
 
-.card-title {
-  margin: 0 40px 20px 0;
-  font-size: 22px;
-  font-weight: 700;
-  color: #111;
-  line-height: 1.35;
-}
-
-.loginMethod {
-  padding: 0;
-
-  :deep(.van-tab__text) {
-    font-size: 15px;
+    &--right {
+      margin-left: auto;
+      cursor: pointer;
+      width: 22px;
+      height: 22px;
+    }
   }
 
-  :deep(.van-tabs__wrap) {
-    height: auto;
-  }
-
-  :deep(.van-tabs__nav) {
-    background: #eceff1 !important;
-    border-radius: 12px;
-    padding: 4px !important;
-    margin: 0 0 8px;
-  }
-
-  :deep(.van-tabs__line) {
-    display: none;
-  }
-
-  :deep(.van-tab) {
+  &__input {
     flex: 1;
-    border-radius: 10px;
-    padding: 10px 8px !important;
-    color: #666 !important;
-    line-height: 1.2;
-  }
-
-  :deep(.van-tab--active) {
-    color: #111 !important;
-    font-weight: 600;
-    background: #fff !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  }
-
-  :deep(.van-tabs__content) {
-    padding-top: 8px;
-  }
-
-  :deep(.van-count-down) {
+    height: 100%;
+    margin-left: 12px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    font-family: $font-pingfang;
     font-size: 14px;
-    color: $veloxam-green;
-    padding: 0;
-  }
+    color: #fff;
+    caret-color: $purple-1;
 
-  :deep(.formData > p) {
-    margin: 18px 0 8px;
-    color: #6b7280;
+    &::placeholder { color: rgba(202, 202, 202, 0.7); }
+    &--captcha { flex: 1; }
+  }
+}
+
+.captcha-img {
+  height: 38px;
+  border-radius: 8px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* 按钮 */
+.btn {
+  display: block;
+  width: 100%;
+  height: 50px;
+  border: 0;
+  border-radius: 999px;
+  font-family: $font-raleway;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  color: #fff;
+  cursor: pointer;
+  user-select: none;
+  margin-top: 8px;
+  margin-bottom: 12px;
+
+  &--primary {
+    background: linear-gradient(135deg, $purple-1 0%, $purple-2 50%, $purple-3 100%);
+    box-shadow:
+      0 8px 22px rgba(160, 65, 237, 0.45),
+      inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    &:active { transform: scale(0.98); }
+    &:disabled { opacity: 0.65; cursor: not-allowed; }
+  }
+  &--secondary {
+    background: rgba(20, 12, 38, 0.4);
+    border: 1px solid rgba(160, 65, 237, 0.45);
+    backdrop-filter: blur(6px);
     font-size: 14px;
+    &:active { background: rgba(160, 65, 237, 0.18); }
+  }
+}
+
+/* 服务条款 */
+.agree {
+  margin-top: auto;
+  padding-top: 18px;
+  font-family: $font-pingfang;
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.65);
+  text-align: center;
+
+  &__line {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
   }
 
-  :deep(.formData > div) {
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    padding: 10px 12px;
-    background: #fafafa;
-  }
+  &__radio {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
-  :deep(.formData input) {
-    border-radius: 0;
-    background: transparent !important;
-  }
-
-  :deep(.formData > div > p) {
-    background: $veloxam-green !important;
-    border-radius: 8px !important;
-    padding: 6px 12px !important;
-    color: #fff !important;
-    font-size: 13px;
-    white-space: nowrap;
-  }
-
-  :deep(.btnBox > div) {
-    border-radius: 999px !important;
-    padding: 15px 0 !important;
-    background: $veloxam-dark !important;
-    color: #fff !important;
-    border: none !important;
-    font-size: 16px;
-    font-weight: 600;
-    margin-top: 28px;
-  }
-
-  :deep(.box) {
-    padding: 0 0 32px;
-  }
-
-  :deep(.account) {
-    padding: 24px 0 0;
-    text-align: center;
-    font-size: 15px;
-    color: #374151;
-
-    span {
-      color: $veloxam-green !important;
-      text-decoration: none !important;
-      font-weight: 500;
+    img {
+      width: 16px;
+      height: 16px;
+      display: block;
+    }
+    &--on {
+      background: linear-gradient(135deg, $purple-1 0%, $purple-2 100%);
+      box-shadow: 0 0 8px rgba(160, 65, 237, 0.5);
+      &::after {
+        content: '';
+        width: 4px;
+        height: 8px;
+        border-right: 2px solid #fff;
+        border-bottom: 2px solid #fff;
+        transform: rotate(45deg) translate(0, -1px);
+      }
     }
   }
 
-  :deep(.info) {
-    margin-top: 20px;
-    text-align: center;
-    font-size: 13px;
-    line-height: 1.55;
-    color: #6b7280;
-
-    span {
-      color: $veloxam-green !important;
-      text-decoration: underline;
-    }
+  &__link {
+    color: $purple-1;
+    cursor: pointer;
+    &:active { opacity: 0.7; }
+  }
+  &__and {
+    color: rgba(255, 255, 255, 0.65);
   }
 }
 </style>

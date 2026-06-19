@@ -13,9 +13,18 @@ onMounted(() => {
 </script>
 
 <template>
-  <!-- <HeaderDiff v-if="DIFF_HOME_BANNER.includes(_getConfig('_APP_ENV'))"></HeaderDiff> -->
-  <!-- <Header v-else></Header> -->
-  <Header />
-  <Menu></Menu>
-  <Footer></Footer>
+  <div class="home-page-wrap">
+    <!-- <HeaderDiff v-if="DIFF_HOME_BANNER.includes(_getConfig('_APP_ENV'))"></HeaderDiff> -->
+    <!-- <Header v-else></Header> -->
+    <Header />
+    <Menu></Menu>
+    <Footer></Footer>
+  </div>
 </template>
+
+<style lang="scss" scoped>
+.home-page-wrap {
+  background: #111111;
+  min-height: 100vh;
+}
+</style>
