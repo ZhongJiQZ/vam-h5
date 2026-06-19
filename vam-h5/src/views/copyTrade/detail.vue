@@ -101,13 +101,10 @@
         </div>
 
         <div
-          v-if="
-            (activeTab === 0 && order._recordGroups?.holding?.length) ||
-            (activeTab === 1 && order._recordGroups?.closed?.length)
-          "
+          v-if="activeTab === 0 || (activeTab === 1 && order._recordGroups?.closed?.length)"
           class="records-wrap"
         >
-          <div v-if="activeTab === 0 && order._recordGroups?.holding?.length" class="records-section">
+          <div v-if="activeTab === 0" class="records-section">
             <div class="section-title-row">
               <div class="section-title-left">
                 <h3 class="section-title">{{ _t18('copy_trade_position_holding') }}</h3>
@@ -130,7 +127,7 @@
               </button>
             </div>
             <PositionRecordCard
-              v-for="(rec, idx) in order._recordGroups.holding"
+              v-for="(rec, idx) in order._recordGroups?.holding || []"
               :key="rec.orderNo || `h-${idx}`"
               :record="rec"
               :parent-symbol="copyTradeRunningSymbol(order)"
