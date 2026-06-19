@@ -452,7 +452,7 @@ const handelShowTab = (item) => {
 :deep(.currencyItem) {
   margin-bottom: 12px;
   padding: 14px 16px;
-  background: #221c31;
+  background: #221C31;
   border-radius: 12px;
   border-bottom: 0;
   display: flex;

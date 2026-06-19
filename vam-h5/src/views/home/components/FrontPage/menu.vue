@@ -241,7 +241,7 @@ const toRecharge = () => {
   top: 0;
   margin: 90px 12px 16px;
   padding: 18px 8px 14px;
-  background: #221c31;
+  background: #221C31;
   border: 0;
   border-radius: 12px;
   display: grid;
