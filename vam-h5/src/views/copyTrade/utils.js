@@ -754,6 +754,21 @@ export function splitCopyTradeRecords(records) {
   return { holding, closed }
 }
 
+/** 详情页 Tab：0=仅持仓中，1=仅历史持仓 */
+export function filterCopyTradeRecordsForDetailTab(records, tab) {
+  const list = Array.isArray(records) ? records : []
+  if (Number(tab) === 1) {
+    return list.filter((rec) => isCopyTradeRecordClosed(rec))
+  }
+  return list.filter((rec) => !isCopyTradeRecordClosed(rec))
+}
+
+export function attachCopyTradeOrderViewModelForDetailTab(order, tab) {
+  if (!order || typeof order !== 'object') return order
+  const records = filterCopyTradeRecordsForDetailTab(order.records, tab)
+  return attachCopyTradeOrderViewModel({ ...order, records })
+}
+
 /** 列表/详情行视图模型：预计算子单分组，避免模板重复遍历 */
 export function attachCopyTradeOrderViewModel(order) {
   if (!order || typeof order !== 'object') return order

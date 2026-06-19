@@ -101,10 +101,13 @@
         </div>
 
         <div
-          v-if="order._recordGroups?.holding?.length || order._recordGroups?.closed?.length"
+          v-if="
+            (activeTab === 0 && order._recordGroups?.holding?.length) ||
+            (activeTab === 1 && order._recordGroups?.closed?.length)
+          "
           class="records-wrap"
         >
-          <div v-if="order._recordGroups?.holding?.length" class="records-section">
+          <div v-if="activeTab === 0 && order._recordGroups?.holding?.length" class="records-section">
             <div class="section-title-row">
               <div class="section-title-left">
                 <h3 class="section-title">{{ _t18('copy_trade_position_holding') }}</h3>
@@ -135,7 +138,7 @@
               :closed="false"
             />
           </div>
-          <div v-if="order._recordGroups?.closed?.length" class="records-section">
+          <div v-if="activeTab === 1 && order._recordGroups?.closed?.length" class="records-section">
             <h3 class="section-title">{{ _t18('copy_trade_history_positions') }}</h3>
             <PositionRecordCard
               v-for="(rec, idx) in order._recordGroups.closed"
@@ -194,7 +197,7 @@ import StopConfirmDialog from './components/StopConfirmDialog.vue'
 import AppendDialog from './components/AppendDialog.vue'
 import CopyTradeMaskExplainPopup from './components/CopyTradeMaskExplainPopup.vue'
 import { _t18 } from '@/utils/public'
-import { getCopyTradeDetail, getCopyTradeList, exitCopyTrade, appendCopyTrade } from '@/api/copyTrade'
+import { getCopyTradeDetail, exitCopyTrade, appendCopyTrade } from '@/api/copyTrade'
 import { priceFormat } from '@/utils/decimal'
 import {
   formatPnl,
@@ -211,7 +214,7 @@ import {
   formatCopyTradeJoinTime,
   formatCopyTradeExitTime,
   normalizeCopyTradeDetailResponse,
-  normalizeCopyTradeListResponse,
+  attachCopyTradeOrderViewModelForDetailTab,
   copyTradeOrderBadgeClass,
   copyTradeOrderStatusText,
   isCopyTradeStrategyEnded,
@@ -269,6 +272,12 @@ function profitShareRateText(rate) {
   return formatProfitShareRate(rate, t18('copy_trade_profit_share_rate_none'))
 }
 
+function mapOrdersForActiveTab(orders) {
+  return (Array.isArray(orders) ? orders : []).map((order) =>
+    attachCopyTradeOrderViewModelForDetailTab(order, activeTab.value)
+  )
+}
+
 function switchTab(tab) {
   if (activeTab.value === tab) return
   activeTab.value = tab
@@ -282,7 +291,7 @@ async function loadDetail() {
     if (res?.code == 200) {
       const parsed = normalizeCopyTradeDetailResponse(res)
       meta.value = parsed.meta
-      orders.value = parsed.orders
+      orders.value = mapOrdersForActiveTab(parsed.orders)
     } else {
       meta.value = {}
       orders.value = []
@@ -301,33 +310,12 @@ async function refreshOrderFromList() {
 
   sectionRefreshing.value = true
   try {
-    const params = {
-      pageNum: 1,
-      pageSize: 100,
-      status: activeTab.value
+    const res = await getCopyTradeDetail(route.query.id, activeTab.value)
+    if (res?.code == 200) {
+      const parsed = normalizeCopyTradeDetailResponse(res)
+      meta.value = parsed.meta
+      orders.value = mapOrdersForActiveTab(parsed.orders)
     }
-    const institutionId = primaryOrder.value.institutionId || route.query.institutionId
-    if (institutionId) params.institutionId = institutionId
-
-    const res = await getCopyTradeList(params)
-    if (res?.code != 200) return
-
-    const parsed = normalizeCopyTradeListResponse(res)
-    const refreshedOrder = parsed.rows.find(
-      (item) => String(item.id) === String(route.query.id)
-    )
-    if (!refreshedOrder) return
-
-    orders.value = orders.value.map((order) =>
-      String(order.id) === String(refreshedOrder.id)
-        ? {
-            ...order,
-            ...refreshedOrder,
-            strategy: refreshedOrder.strategy || order.strategy,
-            institution: refreshedOrder.institution || order.institution
-          }
-        : order
-    )
   } catch (e) {
     void e
   } finally {
