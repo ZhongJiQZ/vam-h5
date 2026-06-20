@@ -14,7 +14,6 @@
           <div class="sharkCode">
             <Copy :data="sharkCode">
               <template #copyMsg>
-                <!-- 邀请码 -->
                 <p class="ff-num">{{ _t18('plug_shareCode') }}：{{ sharkCode }}</p>
               </template>
             </Copy>
@@ -23,7 +22,6 @@
             <p class="ff-num">{{ _t18('plug_shareLink') }}：</p>
             <Copy :data="`${shareLink}${sharkCode}`">
               <template #copyMsg>
-                <!-- 推广链接 -->
                 <p class="ff-num link">{{ shareLink }}{{ sharkCode }}</p>
               </template>
             </Copy>
@@ -32,290 +30,316 @@
       </div>
     </div>
   </div>
-  <div v-else class="plug-page">
-    <DarkHeaderBar
-      :title="_t18('plug')"
-      :border_bottom="false"
-      bg-color="#ffffff"
-      class="white-header-bar"
-    >
-      <template #right>
-        <button
-          type="button"
-          class="plug-header-rule-btn"
-          aria-label="rules"
-          @click="showPopup"
-        >
-          <img :src="plugHeaderRuleIcon" alt="" class="plug-header-rule-img" />
+
+  <div v-else class="page page--referrals">
+    <section class="referrals-hero">
+      <img class="referrals-hero__art" :src="heroArt" alt="" aria-hidden="true" />
+      <header class="referrals-header">
+        <button type="button" class="referrals-header__back" aria-label="back" @click="router.back()">
+          <img :src="iconBack" alt="" class="referrals-header__back-icon" />
         </button>
-      </template>
-    </DarkHeaderBar>
-    <!-- 团队信息 -->
-    <div class="banner">
-      <div class="plug-hero">
-        <div class="shareContent">
-          <!-- 邀请好友一起赚币 -->
-          <p class="shareContent_title fw-bold">{{ _t18('plug_invite', ['aams']) }}</p>
-          <!-- 邀请好友，充值即刻获取佣金 -->
-          <p class="shareContent_info">{{ _t18('plug_toInvite') }}</p>
-          <div class="sharkCode">
-            <Copy :data="sharkCode" :contentFix="'start'" :fontSize="'12px'">
-              <template #copyMsg>
-                <!-- 邀请码 -->
-                <p class="ff-num">{{ _t18('plug_shareCode') }}：{{ sharkCode }}</p>
-              </template>
-            </Copy>
-          </div>
-          <div class="shareLink" :contentFix="'start'">
-            <Copy :data="`${shareLink}${sharkCode}`" :fontSize="'12px'">
-              <template #copyMsg>
-                <!-- 推广链接 -->
-                <p class="ff-num">{{ _t18('plug_shareLink') }}：{{ shareLink }}{{ sharkCode }}</p>
-              </template>
-            </Copy>
-          </div>
-        </div>
-        <div v-if="!['das'].includes(_getConfig('_APP_ENV'))" class="teamInfo">
-          <!-- 一代人数 -->
-          <div>
-            <p>{{ _t18('plug_oneNum', ['aams']) }}</p>
-            <span class="ff-num">{{ teamInfo.oneCount || 0 }}</span>
-          </div>
-          <!-- 二代人数 -->
-          <div>
-            <p>{{ _t18('plug_twoNum', ['aams']) }}</p>
-            <span class="ff-num">{{ teamInfo.twoCount || 0 }}</span>
-          </div>
-          <!-- 三代人数 -->
-          <div>
-            <p>{{ _t18('plug_threeNum', ['aams']) }}</p>
-            <span class="ff-num">{{ teamInfo.threeCount || 0 }}</span>
-          </div>
-          <!-- 推广总人数 -->
-          <div>
-            <p>{{ _t18('plug_sum', ['aams']) }}</p>
-            <span class="fw-num">{{ teamInfo.sumCount || 0 }}</span>
-          </div>
-          <!-- 佣金金额 -->
-          <div>
-            <p>{{ _t18('plug_amount', ['aams']) }}(USDT)</p>
-            <span class="ff-num">{{ formatMoney(teamInfo.sumAmount)}}</span>
-          </div>
-          <div>
-            <p>{{ _t18('plug_records', ['aams']) }}</p>
-            <span class="ff-num">{{ teamInfo.totalRecords || 0 }}</span>
-          </div>
-         <!-- 当日推广总人数 -->
-          <div>
-            <p>{{ _t18('plug_today_sum', ['aams']) }}</p>
-            <span class="ff-num">{{ teamInfo.todaySumCount || 0 }}</span>
-          </div>
-           <!-- 当日佣金金额 -->
-          <div>
-            <p>{{ _t18('plug_today_amount', ['aams']) }}(USDT)</p>
-            <span class="ff-num">{{ teamInfo.todaySumAmount || 0 }}</span>
-          </div>
-        </div>
+        <h1 class="referrals-header__title">{{ _t18('plug') }}</h1>
+        <button type="button" class="referrals-header__action" aria-label="rules" @click="showPopup">
+          <img :src="iconService" alt="" class="referrals-header__action-icon" />
+        </button>
+      </header>
+      <div class="referrals-hero__content">
+        <h2 class="referrals-hero__title">
+          <span class="referrals-hero__title-line">{{ _t18('plug_invite', ['aams']) }}</span>
+        </h2>
+        <p class="referrals-hero__subtitle">{{ _t18('plug_toInvite') }}</p>
       </div>
-    </div>
-    <div v-if="!['das'].includes(_getConfig('_APP_ENV'))">
-      <!-- 我的推广/我的团队 -->
-      <div class="promotion_my" v-if="!['bitfly'].includes(_getConfig('_APP_ENV'))">
-        <div class="title fw-bold">{{ _t18('plug_myShare', ['aams']) }}</div>
-        <!--我的推广-->
-        <Tab
-          :tabList="tabList"
-          :active="curIndex"
-          @change="changeIndex"
-          :lineWidth="0"
-          :flexBetween="true"
-          title-inactive-color="rgba(255, 255, 255, 0.5)"
-          title-active-color="#17AC74"
-          indicator-color="#17AC74"
-        >
-          <!-- 加载中动画 -->
-          <template #tabContent>  
-            <div v-if="!showCommissionRecords"  class="contentBox">
-              <div class="header">
-              <!--用户ID  返佣金额  注册时间 -->
-              <p>{{ _t18('plug_userId') }}</p>
-              <p>{{ _t18('plug_back') }}(USDT)</p>
-              <p>{{ _t18('plug_registerTime') }}</p> 
-            </div>
-            <van-loading v-if="showLoading" />
-              <div  class="content" v-for="(item, index) in teamList" :key="index">
-                <p class="ff-num">{{ item.fromId || '' }}</p>
-                <p class="ff-num">{{ formatMoney(item.sumAmount)}}</p>
-                <!-- <p>{{ item.createTime?_timeFormat(item.createTime, 'HH:mm MM/DD', true):'' }}</p> -->
-                <p class="ff-num">
-                  {{
-                    item.createTime
-                      ? _timeFormat(item.params?.createTime, 'YY/MM/DD HH:mm', true)
-                      : ''
-                  }}
-                </p>
-              </div>
-            <Nodata v-if="teamList.length <= 0 && !showLoading && !showCommissionRecords "></Nodata>
-            </div>
+    </section>
 
-            <div  v-if="showCommissionRecords"  class="contentBox"> 
-              <div class="header">
-                <p>{{ _t18('plug_fromId') }}</p>
-                <p>{{ _t18('plug_commissionType') }}</p>
-                <p>{{ _t18('plug_back') }}(USDT)</p>
-                <p>{{ _t18('plug_commissionTime') }}</p> 
+    <main class="referrals-main">
+      <section class="referrals-card referrals-card--stats">
+        <div class="referrals-invite">
+          <div class="referrals-invite__row">
+            <span class="referrals-invite__label">{{ _t18('plug_shareCode') }}：</span>
+            <div class="referrals-invite__value-wrap">
+              <span class="referrals-invite__value">{{ sharkCode }}</span>
+              <button type="button" class="referrals-copy" aria-label="copy" @click="copyText(sharkCode)">
+                <img :src="iconCopy" alt="" class="referrals-copy__icon" />
+              </button>
+            </div>
+          </div>
+          <div class="referrals-invite__row">
+            <span class="referrals-invite__label">{{ _t18('plug_shareLink') }}:</span>
+            <div class="referrals-invite__value-wrap">
+              <span class="referrals-invite__value">{{ shareLink }}{{ sharkCode }}</span>
+              <button
+                type="button"
+                class="referrals-copy"
+                aria-label="copy"
+                @click="copyText(`${shareLink}${sharkCode}`)"
+              >
+                <img :src="iconCopy" alt="" class="referrals-copy__icon" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="!['das'].includes(_getConfig('_APP_ENV'))" class="referrals-tier__grid">
+          <div v-for="item in tierStats" :key="item.label" class="referrals-tier__cell">
+            <span class="referrals-tier__value">{{ item.value }}</span>
+            <span class="referrals-tier__label">{{ item.label }}</span>
+          </div>
+        </div>
+
+        <div v-if="!['das'].includes(_getConfig('_APP_ENV'))" class="referrals-summary">
+          <div v-for="item in summaryStats" :key="item.label" class="referrals-summary__row">
+            <span class="referrals-summary__label">{{ item.label }}</span>
+            <span class="referrals-summary__value">{{ item.value }}</span>
+          </div>
+        </div>
+      </section>
+
+      <section
+        v-if="!['das'].includes(_getConfig('_APP_ENV')) && !['bitfly'].includes(_getConfig('_APP_ENV'))"
+        class="referrals-team"
+      >
+        <h2 class="referrals-team__title">{{ _t18('plug_myShare', ['aams']) }}</h2>
+        <div class="referrals-tabs" role="tablist">
+          <button
+            v-for="(tab, index) in tabList"
+            :key="tab"
+            type="button"
+            class="referrals-tabs__item"
+            :class="{ 'referrals-tabs__item--active': curIndex === index }"
+            @click="changeIndex(index)"
+          >
+            {{ tab }}
+          </button>
+        </div>
+
+        <div class="referrals-members">
+          <van-loading v-if="showLoading" class="referrals-loading" />
+
+          <template v-if="!showLoading && !showCommissionRecords">
+            <article v-for="(item, index) in teamList" :key="index" class="referrals-member">
+              <div class="referrals-member__id">
+                <img class="referrals-member__avatar" :src="getAvatar(index)" alt="" aria-hidden="true" />
+                <span class="referrals-member__uid">{{ maskUid(item.fromId) }}</span>
               </div>
-              <div  class="content" v-for="(item, index) in commissionRecordsList" :key="index">
-                <p class="ff-num">{{ item.fromId || '' }}</p>
-                <p class="ff-num">{{ getCommissionType(item.type) }}</p>
-                <p class="ff-num">{{ item.sumAmount || 0 }}</p> 
-                <p class="ff-num">
+              <div class="referrals-member__col">
+                <span class="referrals-member__label">{{ _t18('plug_back') }}</span>
+                <span class="referrals-member__value">{{ formatMoney(item.sumAmount) }} USDT</span>
+              </div>
+              <div class="referrals-member__col referrals-member__col--date">
+                <span class="referrals-member__label">{{ _t18('plug_registerTime') }}</span>
+                <span class="referrals-member__value">
                   {{
                     item.createTime
                       ? _timeFormat(item.params?.createTime, 'YY/MM/DD HH:mm', true)
                       : ''
                   }}
-                </p>
+                </span>
               </div>
-            </div>
-           
+            </article>
+            <Nodata v-if="teamList.length <= 0" />
           </template>
-        </Tab>
-      </div>
-    </div>
 
-    <!-- 质押挖矿规则弹窗 -->
+          <template v-if="!showLoading && showCommissionRecords">
+            <article
+              v-for="(item, index) in commissionRecordsList"
+              :key="index"
+              class="referrals-member referrals-member--record"
+            >
+              <div class="referrals-member__col referrals-member__col--record">
+                <span class="referrals-member__label">{{ _t18('plug_fromId') }}</span>
+                <span class="referrals-member__value">{{ item.fromId || '' }}</span>
+              </div>
+              <div class="referrals-member__col referrals-member__col--record">
+                <span class="referrals-member__label">{{ _t18('plug_commissionType') }}</span>
+                <span class="referrals-member__value">{{ getCommissionType(item.type) }}</span>
+              </div>
+              <div class="referrals-member__col referrals-member__col--record">
+                <span class="referrals-member__label">{{ _t18('plug_back') }}</span>
+                <span class="referrals-member__value">{{ item.sumAmount || 0 }} USDT</span>
+              </div>
+              <div class="referrals-member__col referrals-member__col--record">
+                <span class="referrals-member__label">{{ _t18('plug_commissionTime') }}</span>
+                <span class="referrals-member__value">
+                  {{
+                    item.createTime
+                      ? _timeFormat(item.params?.createTime, 'YY/MM/DD HH:mm', true)
+                      : ''
+                  }}
+                </span>
+              </div>
+            </article>
+            <Nodata v-if="commissionRecordsList.length <= 0" />
+          </template>
+        </div>
+      </section>
+    </main>
+
     <Popup
       :show="showRule"
       @handelClose="closePopup"
       :title="txt"
       :content="popupContent"
       :direction="direction"
-    >
-    </Popup>
+    />
   </div>
 </template>
 
 <script setup>
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { NO_SHOW_MEMBER } from '@/config/index'
-import { _t18 } from '@/utils/public'
-import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
-import plugHeaderRuleIcon from '@/assets/images/Frame 10711.png'
+import { _t18, _timeFormat } from '@/utils/public'
 import QRCode from '@/components/common/QRCode/index.vue'
 import Copy from '@/components/common/Copy/index.vue'
-import Tab from '@/components/Tab/index.vue'
 import Popup from '@/components/Popup/index.vue'
 import { useUserStore } from '@/store/user/index'
-import { getAgentInfo, getAgentList,getCommissionRecords } from '@/api/plug.js'
-import { onMounted } from 'vue'
+import { getAgentInfo, getAgentList, getCommissionRecords } from '@/api/plug.js'
 import { rulesList } from '@/api/common/index'
+import { useCopy } from '@/hook/useCopy'
+import iconBack from '@/assets/images/gxpex/trade/icon-back.svg'
+import iconService from '@/assets/images/gxpex/home/icon-service.svg'
+import iconCopy from '@/assets/images/gxpex/referrals/icon-copy.svg'
+import heroArt from '@/assets/images/gxpex/referrals/hero-art.png'
+import avatar1 from '@/assets/images/gxpex/referrals/avatar-1.jpg'
+import avatar2 from '@/assets/images/gxpex/referrals/avatar-2.jpg'
+import avatar3 from '@/assets/images/gxpex/referrals/avatar-3.jpg'
 
+const router = useRouter()
+const { _copy } = useCopy()
 const useStore = useUserStore()
 const userInfo = useStore.userInfo
 const sharkCode = userInfo?.user?.activeCode
-// const shareLink = process.env.VITE_APP_PLATFORM || `https://xhqb.net/#/i&`
 const shareLink = `${location.origin}/#/i&`
-// 推广中心数据
+
 const showLoading = ref(true)
 const showCommissionRecords = ref(false)
 const teamInfo = ref({})
 const teamList = ref([])
-const commissionRecordsList  = ref([])//佣金记录
+const commissionRecordsList = ref([])
 const popupContent = ref({})
+const showRule = ref(false)
+const txt = _t18('plug_rule')
+const direction = ref('bottom')
+const curIndex = ref(0)
+
+const memberAvatars = [avatar1, avatar2, avatar3]
+
+const tierStats = computed(() => [
+  { label: _t18('plug_oneNum', ['aams']), value: teamInfo.value.oneCount || 0 },
+  { label: _t18('plug_twoNum', ['aams']), value: teamInfo.value.twoCount || 0 },
+  { label: _t18('plug_threeNum', ['aams']), value: teamInfo.value.threeCount || 0 },
+  { label: _t18('plug_today_sum', ['aams']), value: teamInfo.value.todaySumCount || 0 },
+  {
+    label: `${_t18('plug_today_amount', ['aams'])}(USDT)`,
+    value: teamInfo.value.todaySumAmount || 0
+  },
+  { label: _t18('plug_records', ['aams']), value: teamInfo.value.totalRecords || 0 }
+])
+
+const summaryStats = computed(() => [
+  { label: _t18('plug_sum', ['aams']), value: teamInfo.value.sumCount || 0 },
+  {
+    label: `${_t18('plug_amount', ['aams'])} (USDT)`,
+    value: formatMoney(teamInfo.value.sumAmount)
+  },
+  { label: _t18('plug_records', ['aams']), value: teamInfo.value.totalRecords || 0 }
+])
+
+const tabList = computed(() => [
+  _t18('plug_one', ['aams']),
+  _t18('plug_two', ['aams']),
+  _t18('plug_three', ['aams']),
+  _t18('plug_myCommissionRecords', ['aams'])
+])
+
+const formatMoney = (val) => Number(val || 0).toFixed(2)
+
+const getAvatar = (index) => memberAvatars[index % memberAvatars.length]
+
+const maskUid = (id) => {
+  if (id === undefined || id === null || id === '') return ''
+  const s = String(id)
+  return `**${s.slice(-4)}`
+}
+
+const copyText = (text) => _copy(text)
+
 const getTeamInfo = async () => {
   const res = await getAgentInfo()
-  if ((res.code == 200)) {
-      teamInfo.value = res.data
+  if (res.code == 200) {
+    teamInfo.value = res.data
   }
 }
-const formatMoney = (val)=>{
-    return Number(val || 0).toFixed(2)
-  }
+
 const getTeamList = async () => {
   showLoading.value = true
-  showCommissionRecords.value = false;
+  showCommissionRecords.value = false
   const res = await getAgentList({ params: { leve: curIndex.value + 1 } })
-  if ((res.code == 200)) {
+  if (res.code == 200) {
     setTimeout(() => {
       showLoading.value = false
       teamList.value = res.data
     }, 500)
+  } else {
+    showLoading.value = false
   }
 }
 
-const getCommissionType = (type)=>{
-  if (type == 1) return _t18('plug_recharge');
-  if (type == 2) return _t18('plug_mining');
-  if (type == 3) return _t18('plug_ustandard');
+const getCommissionType = (type) => {
+  if (type == 1) return _t18('plug_recharge')
+  if (type == 2) return _t18('plug_mining')
+  if (type == 3) return _t18('plug_ustandard')
+  return ''
 }
 
 const getCommissionRecordsList = async () => {
   showLoading.value = true
-  showCommissionRecords.value = true;
+  showCommissionRecords.value = true
   const res = await getCommissionRecords({ params: { leve: curIndex.value + 1 } })
-  if ((res.code == 200)) {
+  if (res.code == 200) {
     setTimeout(() => {
       showLoading.value = false
       commissionRecordsList.value = res.data
     }, 500)
+  } else {
+    showLoading.value = false
   }
 }
 
 const getPopupContent = async () => {
   const res = await rulesList('PROMOTION_CENTER_EXPLAIN')
-  if ((res.code == 200)) {
+  if (res.code == 200) {
     popupContent.value = res.data
   }
 }
+
+const showPopup = () => {
+  showRule.value = true
+}
+
+const closePopup = () => {
+  showRule.value = false
+}
+
+const changeIndex = (v) => {
+  curIndex.value = v
+  teamList.value = []
+  commissionRecordsList.value = []
+  if (v != 3) {
+    getTeamList()
+  } else {
+    getCommissionRecordsList()
+  }
+}
+
 onMounted(() => {
   getTeamInfo()
   getTeamList()
   getPopupContent()
 })
-// const teamInfo = computed(() => {
-//   let obj = {}
-//   obj = { one: 10, two: 20, three: 30, sum: '60', amount: 10000000 }
-//   return obj
-// })
-const showRule = ref(false)
-const txt = _t18('plug_rule') //规则
-const direction = ref('bottom')
-let showPopup = () => {
-  showRule.value = true
-}
-let closePopup = () => {
-  showRule.value = false
-}
-const curIndex = ref(0)
-const tabList = computed(() => {
-  let list = []
-  // list = ['一代', '二代', '三代']
-  list = [
-      _t18('plug_one', ['aams']), 
-      _t18('plug_two', ['aams']),
-      _t18('plug_three', ['aams']),
-      _t18('plug_myCommissionRecords', ['aams'])
-  ]
-  return list
-})
-const changeIndex = (v) => {
-  curIndex.value = v
-  teamList.value = []
-  if (v != 3) {
-    getTeamList()
-  }else {
-    console.log("commission records - ");
-    getCommissionRecordsList();
-  }
-}
 </script>
 
 <style lang="scss" scoped>
-* {
-  color: var(--ex-default-font-color);
-  font-size: 14px;
-}
-
 .content {
   font-size: 0;
   min-height: 2vh;
@@ -379,188 +403,431 @@ const changeIndex = (v) => {
   }
 }
 
-.plug-page {
+.page--referrals {
   min-height: 100vh;
-  background: #0a1f1f;
+  background: #111111;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
 }
 
-.plug-header-rule-btn {
+.referrals-hero {
+  position: relative;
+  min-height: 228px;
+  overflow: visible;
+}
+
+.referrals-hero__art {
+  position: absolute;
+  top: 94px;
+  right: 0;
+  z-index: 1;
+  width: 164px;
+  height: 153px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.referrals-header {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 40px 1fr 40px;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 12px;
+}
+
+.referrals-header__back {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px;
-  margin: -8px;
+  width: 40px;
+  height: 40px;
+  margin-left: -9px;
+  padding: 0;
   border: none;
   background: transparent;
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
 }
 
-.plug-header-rule-img {
+.referrals-header__back-icon {
+  display: block;
+  width: 12px;
+  height: 22px;
+  object-fit: contain;
+  opacity: 0.9;
+}
+
+.referrals-header__title {
+  grid-column: 2;
+  margin: 0;
+  text-align: center;
+  font-family: 'PingFang SC', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #fff;
+}
+
+.referrals-header__action {
+  grid-column: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-right: -9px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.referrals-header__action-icon {
   display: block;
   width: 22px;
   height: 22px;
   object-fit: contain;
+  opacity: 0.9;
 }
 
-.banner {
-  .plug-hero {
-    margin-top: calc(-1 * (60px + constant(safe-area-inset-top)));
-    margin-top: calc(-1 * (60px + env(safe-area-inset-top, 0px)));
-    padding: calc(60px + constant(safe-area-inset-top) + 12px + 60px) 15px 24px;
-    padding: calc(60px + env(safe-area-inset-top, 0px) + 12px + 60px) 15px 24px;
-    background: url('@/assets/images/plug-bg.png') no-repeat center top;
-    background-size: cover;
-
-    .shareContent {
-      width: 100%;
-      max-width: 92%;
-
-      .shareContent_title {
-        font-size: 22px;
-        color: #fff;
-        line-height: 1.35;
-      }
-
-      .shareContent_info {
-        font-size: 14px;
-        color: rgba(255, 255, 255, 0.72);
-        padding: 10px 0 28px;
-      }
-
-      .sharkCode,
-      .shareLink {
-        p {
-          line-height: 1.35;
-          font-size: 12px;
-          word-break: break-all;
-          color: rgba(255, 255, 255, 0.92);
-        }
-      }
-    }
-
-    .teamInfo {
-      margin-top: 14px;
-      padding: 18px 6px 12px;
-      display: flex;
-      flex-wrap: wrap;
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-radius: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
-
-      & > div {
-        width: 33.33%;
-        padding: 15px 5px;
-        text-align: center;
-
-        p {
-          height: 30px;
-          color: rgba(255, 255, 255, 0.62);
-          margin-bottom: 15px;
-          word-wrap: break-word;
-        }
-
-        span {
-          font-size: 16px;
-          font-weight: 600;
-          color: #fff;
-        }
-      }
-    }
-  }
-
-  img {
-    width: 100%;
-    height: auto;
-  }
+.referrals-hero__content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 209px;
+  max-width: calc(100% - 170px);
+  margin-top: 28px;
+  padding: 0 12px 18px 22px;
 }
 
-.plug-page .promotion_my {
-  background: #071818;
-  border-radius: 22px 22px 0 0;
-  padding-bottom: 20px;
-  margin-top: 6px;
-
-  .title {
-    padding: 22px 15px 16px;
-    color: rgba(255, 255, 255, 0.96);
-    font-weight: bold;
-    font-size: 16px;
-  }
-
-  .header {
-    padding: 15px 15px 10px;
-    display: flex;
-
-    & > p:first-child {
-      text-align: left;
-    }
-
-    & > p:last-child {
-      text-align: right;
-    }
-
-    p {
-      font-size: 12px;
-      flex: 1;
-      color: rgba(255, 255, 255, 0.55);
-      text-align: center;
-    }
-  }
-
-  .contentBox {
-    height: 50vh;
-    overflow: auto;
-  }
-
-  .content {
-    padding: 15px 0;
-    display: flex;
-
-    & > p:first-child {
-      text-align: left;
-    }
-
-    & > p:last-child {
-      text-align: right;
-    }
-
-    p {
-      padding: 0 15px;
-      font-size: 12px;
-      flex: 1;
-      text-align: center;
-      font-weight: 400;
-      color: rgba(255, 255, 255, 0.88);
-    }
-  }
-
-  /* Tab 组件 betweenClass 会使用浅色 --ex-home-list-bgcolor，在深色推广页强制与面板一致 */
-  :deep(.van-tabs__wrap),
-  :deep(.van-tabs__nav) {
-    background: #071818 !important;
-  }
-
-  :deep(.tabContent) {
-    border-top-color: rgba(255, 255, 255, 0.08);
-  }
+.referrals-hero__title {
+  margin: 0;
+  font-family: 'PingFang SC', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.18;
+  color: #fff;
 }
 
-.van-loading {
+.referrals-hero__title-line {
+  display: block;
+}
+
+.referrals-hero__subtitle {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+  line-height: 1.3;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.referrals-main {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 12px;
+}
+
+.referrals-card--stats {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0;
+  background: transparent;
+}
+
+.referrals-invite {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(160, 65, 237, 0.5);
+  background: rgba(34, 28, 49, 0.85);
+}
+
+.referrals-invite__row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px;
+  min-height: 20px;
+}
+
+.referrals-invite__label {
+  flex-shrink: 0;
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.referrals-invite__value-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+
+.referrals-invite__value {
+  min-width: 0;
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: #fff;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.referrals-copy {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.referrals-copy__icon {
+  display: block;
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
+.referrals-tier__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.referrals-tier__cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 73px;
+  padding: 10px 4px;
+  border-radius: 12px;
+  border: 1px solid rgba(160, 65, 237, 0.5);
+  background: rgba(34, 28, 49, 0.85);
   text-align: center;
-  padding: 30px;
 }
-:deep(.white-header-bar.dark-header) {
-  background-color: #ffffff !important;
 
-  .left {
-    filter: none;
+.referrals-tier__value {
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1;
+  color: #fff;
+}
+
+.referrals-tier__label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.referrals-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(160, 65, 237, 0.5);
+  background: rgba(34, 28, 49, 0.85);
+}
+
+.referrals-summary__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 21px;
+}
+
+.referrals-summary__label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.referrals-summary__value {
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.85);
+  text-align: right;
+}
+
+.referrals-team {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 16px;
+}
+
+.referrals-team__title {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #fff;
+}
+
+.referrals-tabs {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  min-height: 26px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
   }
-  .title {
-    color: #000000;
+}
+
+.referrals-tabs__item {
+  position: relative;
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  padding: 0 0 6px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.referrals-tabs__item--active {
+  font-size: 16px;
+  font-weight: 500;
+  color: #fff;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    width: 22px;
+    height: 4px;
+    border-radius: 2px;
+    background: rgb(160, 65, 237);
   }
+}
+
+.referrals-members {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 120px;
+}
+
+.referrals-loading {
+  display: flex;
+  justify-content: center;
+  padding: 30px 0;
+}
+
+.referrals-member {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 61px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgb(34, 28, 49);
+}
+
+.referrals-member--record {
+  flex-wrap: wrap;
+  gap: 10px 6px;
+}
+
+.referrals-member__id {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 81px;
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+.referrals-member__avatar {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.referrals-member__uid {
+  font-family: 'Roboto', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: #fff;
+  min-width: 0;
+}
+
+.referrals-member__col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 66px;
+  flex-shrink: 0;
+  min-width: 0;
+  text-align: center;
+}
+
+.referrals-member__col--date {
+  width: 77px;
+}
+
+.referrals-member__col--record {
+  width: calc(50% - 6px);
+  align-items: flex-start;
+  text-align: left;
+}
+
+.referrals-member__label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 11px;
+  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.referrals-member__value {
+  font-family: 'Roboto', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: #fff;
+  word-break: break-all;
 }
 </style>
