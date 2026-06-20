@@ -203,7 +203,6 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   min-height: 26px;
-  margin-top: calc(6px + env(safe-area-inset-top, 0px));
   padding: 0 12px;
 }
 
