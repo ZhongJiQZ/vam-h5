@@ -1,44 +1,63 @@
 <template>
-  <div class="slidebar">
-    <header class="sidebar-header">
-      <div class="sidebar-header__title">{{ _t18('sidebar_personal_center') }}</div>
-      <button type="button" class="sidebar-header__close" @click="closeSideBar">
-        <img
-          src="@/assets/images/close.png"
-          alt=""
-          class="sidebar-header__close-img"
+  <aside class="profile-sidebar-panel" aria-label="Personal center">
+    <button type="button" class="profile-sidebar-panel__close" aria-label="Close" @click="closeSideBar">
+      <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path
+          d="M17.6 15.24L30.01 2.82C30.31 2.52 30.48 2.11 30.48 1.68C30.48 1.25 30.31 0.84 30.01 0.54L29.94 0.47C29.63 0.17 29.22 0 28.79 0C28.37 0 27.96 0.17 27.65 0.47L15.24 12.9L2.83 0.47C2.53 0.17 2.12 0 1.69 0C1.26 0 0.85 0.17 0.55 0.47L0.48 0.54C0.33 0.69 0.21 0.86 0.13 1.06C0.04 1.26 0 1.47 0 1.68C0 1.89 0.04 2.11 0.13 2.3C0.21 2.5 0.33 2.68 0.48 2.82L12.89 15.24L0.48 27.65C0.18 27.96 0.01 28.37 0.01 28.79C0.01 29.22 0.18 29.63 0.48 29.94L0.55 30.01C0.85 30.31 1.26 30.48 1.69 30.48C2.12 30.48 2.53 30.31 2.83 30.01L15.24 17.59L27.65 30.01C27.96 30.31 28.37 30.48 28.79 30.48C29.22 30.48 29.63 30.31 29.94 30.01L30.01 29.94C30.31 29.63 30.48 29.22 30.48 28.8C30.48 28.37 30.31 27.96 30.01 27.65L17.6 15.24Z"
+          fill="rgba(255,255,255,0.650)"
+          fill-rule="nonzero"
         />
+      </svg>
+    </button>
+
+    <UserLogin v-if="isSign" />
+
+    <div v-if="isSign" class="profile-sidebar-panel__divider" role="presentation"></div>
+
+    <Navigation />
+
+    <div v-if="!isSign" class="profile-sidebar-panel__auth">
+      <button type="button" class="profile-sidebar-panel__auth-btn profile-sidebar-panel__auth-btn--primary" @click="_toView('/sign-in')">
+        {{ _t18('login') }}
       </button>
-    </header>
-    <div class="sidebar-body">
-      <UserLogin v-if="isSign"></UserLogin>
-      <Navigation></Navigation>
-    <!-- 未登录 -->
-    <div v-if="!isSign" class="notLogged">
-      <div class="btnBox" @click="_toView('/sign-in')">
-        <!-- 登录 -->
-        <ButtonBar :btnValue="_t18('login')" />
-      </div>
-      <div class="btnBox" @click="_toView('/sign-up')">
-        <!-- 注册 -->
-        <ButtonBar :btnReverse="false" :btnValue="_t18('register')" :btnColor="'#fff'" />
-      </div>
-    </div>
-    <!-- 已登录 -->
-    <div v-if="isSign && !userInfo.addressFlag" class="logged-wrap">
-      <button type="button" class="logged-btn" @click="exit">
-        <img
-          src="@/assets/images/logout.png"
-          alt=""
-          class="logged-icon"
-          aria-hidden="true"
-        />
-        <span class="logged-text">{{ _t18('layout', ['aams']) }}</span>
+      <button type="button" class="profile-sidebar-panel__auth-btn profile-sidebar-panel__auth-btn--ghost" @click="_toView('/sign-up')">
+        {{ _t18('register') }}
       </button>
     </div>
 
-    <!-- 退出弹窗 -->
-    <!-- 您确定要退出登录吗 -->
+    <div v-if="isSign && !userInfo.addressFlag" class="profile-sidebar-panel__logout">
+      <button type="button" class="profile-sidebar-panel__item" @click="exit">
+        <span class="profile-sidebar-panel__icon">
+          <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path
+              d="M12 4H6C4.9 4 4 4.9 4 6V26C4 27.1 4.9 28 6 28H12"
+              stroke="rgba(255,255,255,0.65)"
+              stroke-width="2"
+              stroke-linecap="round"
+              fill="none"
+            />
+            <path
+              d="M20 22L28 16L20 10"
+              stroke="rgba(255,255,255,0.65)"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              fill="none"
+            />
+            <path
+              d="M28 16H12"
+              stroke="rgba(255,255,255,0.65)"
+              stroke-width="2"
+              stroke-linecap="round"
+              fill="none"
+            />
+          </svg>
+        </span>
+        <span class="profile-sidebar-panel__label">{{ _t18('layout', ['aams']) }}</span>
+        <SidebarChevron />
+      </button>
+    </div>
+
     <Dialog
       v-model:value="showDialog"
       :title="``"
@@ -49,177 +68,54 @@
       :confirmButtonText="_t18('btnConfirm', ['bitmake'])"
       :cancelButtonText="_t18('cancel')"
       z-index="200"
-    ></Dialog>
-    </div>
-  </div>
+    />
+  </aside>
 </template>
+
 <script setup>
-import { _back, _t18, _toView, _toReplace } from '@/utils/public'
-import ButtonBar from '@/components/common/ButtonBar/index.vue'
+import { _t18, _toView, _toReplace } from '@/utils/public'
 import { signOut } from '@/api/user'
 import { useUserStore } from '@/store/user/index'
+import { storeToRefs } from 'pinia'
 import UserLogin from '../components/Sidebar/userLogin.vue'
 import Navigation from '../components/Sidebar/navigation.vue'
+import SidebarChevron from '../components/Sidebar/SidebarChevron.vue'
 import Dialog from '@/components/Dialog/index.vue'
 import { useToast } from '@/hook/useToast'
-const { _toast } = useToast()
 
+const { _toast } = useToast()
 const userStore = useUserStore()
 const { userInfo } = storeToRefs(userStore)
-// 判断是否登录
 const isSign = ref(userStore.isSign)
-/**
- * 显示弹窗
- */
 const showDialog = ref(false)
-// 退出登录
+
 const exit = () => {
   showDialog.value = true
 }
+
 const confirmBtn = () => {
   showDialog.value = false
   signOut()
     .then((res) => {
       if (res.code == '200') {
         _toast('layout_success')
-        // 清除token
         userStore.signOut()
         _toReplace('/')
         closeSideBar()
         isSign.value = false
-        // setTimeout(() => location.reload(), 10)
       }
     })
     .catch((err) => {
       console.log(err)
     })
 }
+
 const cancelBtn = () => {
   showDialog.value = false
 }
+
 const emit = defineEmits(['closeSideBar'])
 const closeSideBar = () => {
   emit('closeSideBar')
 }
 </script>
-<style lang="scss" scoped>
-/* 与 /withdraw 一致：外层深色 + 内层浅色圆角内容区 */
-.slidebar {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  background: #05101a;
-  box-sizing: border-box;
-}
-
-.sidebar-header {
-  flex-shrink: 0;
-  padding-top: constant(safe-area-inset-top);
-  padding-top: env(safe-area-inset-top, 0px);
-  padding-left: 15px;
-  padding-right: 15px;
-  min-height: 60px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  background: #05101a;
-  background: #fff;
-  // border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.sidebar-header__title {
-  flex: 1;
-  min-width: 0;
-  font-size: 16px;
-  font-weight: 500;
-  // color: #fff;
-  color: #000;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.sidebar-header__close {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  margin: 0;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.sidebar-header__close-img {
-  display: block;
-  width: 28px;
-  height: 28px;
-  object-fit: contain;
-}
-
-.sidebar-body {
-  flex: 1;
-  min-height: 0;
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
-  background: #fff;
-  // 
-  padding-bottom: calc(100px + constant(safe-area-inset-bottom));
-  padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
-  box-sizing: border-box;
-}
-
-// 未登录
-.notLogged {
-  border-top: 1px solid var(--ex-input-boder-bgColor);
-  padding: 50px 15px 30px;
-  .btnBox {
-    margin-bottom: 20px;
-  }
-}
-// 退出登录（胶囊按钮）
-.logged-wrap {
-  // border-top: 1px solid var(--ex-input-boder-bgColor);
-  margin-top: 50px;
-  padding: 30px 15px;
-}
-
-.logged-btn {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 14px 20px;
-  border: none;
-  border-radius: 999px;
-  background: #0a0f14;
-  color: #fff;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-
-  &:active {
-    opacity: 0.92;
-  }
-}
-
-.logged-icon {
-  flex-shrink: 0;
-  display: block;
-  width: 24px;
-  height: 24px;
-  object-fit: contain;
-}
-
-.logged-text {
-  color: #fff;
-}
-</style>

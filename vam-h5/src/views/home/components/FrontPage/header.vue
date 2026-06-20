@@ -1,7 +1,14 @@
 <!-- 首页 -->
 <template>
   <div class="header-container">
-    <van-popup v-model:show="show" position="left" class="sidebar" @close="closeSideBar">
+    <van-popup
+      v-model:show="show"
+      position="right"
+      class="profile-sidebar-popup"
+      overlay-class="profile-sidebar-overlay"
+      :close-on-click-overlay="true"
+      @close="closeSideBar"
+    >
       <SideBar @closeSideBar="closeSideBar"></SideBar>
     </van-popup>
     <div class="home-top-bar">
@@ -120,6 +127,7 @@ import {
   resolveImageLoadUrl
 } from '@/utils/imagePreload'
 import SideBar from '@/views/home/sidebar/index.vue'
+import '../../styles/profile-sidebar.scss'
 import logoFallback from '@/assets/images/logo-black.png'
 import logoG from '@/assets/images/gxpex/home/logo-g.png'
 import brandText from '@/assets/images/gxpex/home/brand-text.png'
@@ -307,14 +315,6 @@ onMounted(() => {
 })
 </script>
 <style lang="scss" scoped>
-:deep(.sidebar) {
-  margin-top: -1px;
-  max-width: var(--ex-max-width);
-  width: 100%;
-  left: auto;
-  height: 100%;
-}
-
 .header-container{
   padding-top: 0;
 }
