@@ -1,714 +1,754 @@
 <!-- 团队招商 -->
-<template>
-    <div class="investment-page">
-        <div class="investment-body">
-            <!-- Hero --> 
-            <section class="hero">
-                <div class="hero-badge">
-                    <span class="hero-badge__icon">🏆</span>
-                    <span>{{ _t18('investment_badge') }}</span>
-                </div>
-                <h1 class="hero-title">
-                    {{ _t18('investment_hero_title_line1') }}<br />{{ _t18('investment_hero_title_line2') }}
-                </h1>
-                <p class="hero-desc">{{ _t18('investment_hero_desc') }}</p>
-                <div class="hero-actions">
-                    <button type="button" class="btn-primary" @click="handleApply">{{ _t18('investment_apply_btn') }}</button>
-                    <button type="button" class="btn-outline" @click="scrollToRewards">
-                        {{ _t18('investment_view_rewards') }}
-                        <span class="btn-outline__arrow" :class="{ open: showRewards }">∨</span>
-                    </button>
-                </div>
-            </section>
-
-            <!-- 合作机构 -->
-            <section class="section section1">
-                <h2 class="section-title">{{ _t18('investment_partners_title') }}</h2>
-                <div class="partner-tags">
-                    <span v-for="item in partners" :key="item" class="partner-tag">
-                        <i class="partner-tag__check" />
-                        {{ item }}
-                    </span>
-                </div>
-            </section>
-
-            <!-- 实时动态 -->
-            <section class="section section2">
-                <div class="section-head">
-                    <h2 class="section-title">{{ _t18('investment_dynamics_title') }}</h2>
-                    <span class="live-badge"><i class="live-dot" />{{ _t18('investment_live') }}</span>
-                </div>
-                <div class="dynamics-card">
-                    <div v-for="(item, index) in dynamics" :key="index" class="dynamics-item">
-                        <span class="dynamics-item__icon">
-                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M4 10v4h4l5 5V5L8 10H4zm11.5 2c0-1.77-1.02-3.29-2.5-4.03v8.06c1.48-.74 2.5-2.26 2.5-4.03z"
-                                    fill="currentColor" />
-                            </svg>
-                        </span>
-                        <p class="dynamics-item__text">
-                            <span class="dynamics-item__name">{{ item.name }}</span>
-                            {{ _t18('investment_dynamic_joined') }}
-                            <span class="dynamics-item__num">{{ item.size }}+</span>
-                        </p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 入驻要求 -->
-            <section class="section section3">
-                <h2 class="section-title">{{ _t18('investment_requirements_title') }}</h2>
-                <div class="requirements-grid">
-                    <div v-for="item in requirements" :key="item.title" class="requirement-card">
-                        <span class="requirement-card__icon" v-html="item.icon" />
-                        <p class="requirement-card__title">{{ item.title }}</p>
-                        <p class="requirement-card__desc">{{ item.desc }}</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 阶梯奖励 -->
-            <section id="rewards" class="section section4" ref="rewardsRef">
-                <h2 class="section-title">{{ _t18('investment_tiers_title') }}</h2>
-                <div class="tier-list">
-                    <div v-for="tier in tiers" :key="tier.level" class="tier-card"
-                        :class="{ 'tier-card--hot': tier.hot }">
-                        <span v-if="tier.hot" class="tier-hot">{{ _t18('investment_hot') }}</span>
-                        <div class="tier-card__left">
-                            <p class="tier-card__label" :class="{ accent: tier.hot }">
-                                <i v-if="tier.hot" class="tier-star">★</i>
-                                {{ tier.level }}
-                            </p>
-                            <p class="tier-card__people">{{ tier.people }} {{ _t18('investment_tier_people_unit') }}</p>
-                        </div>
-                        <div class="tier-card__right">
-                            <p class="tier-card__rate">{{ tier.rate }}</p>
-                            <p class="tier-card__bonus" :class="{ accent: tier.hot }">{{ tier.bonus }}</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 入驻流程 -->
-            <section class="section section5">
-                <h2 class="section-title">{{ _t18('investment_process_title') }}</h2>
-                <div class="process-list">
-                    <div v-for="(step, index) in processSteps" :key="index" class="process-item">
-                        <div class="process-content">
-                            <h3 class="process-title">{{ step.title }}</h3>
-                            <p class="process-desc">{{ step.desc }}</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 底部 CTA -->
-            <section class="cta-card section6">
-                <h2 class="cta-title">{{ _t18('investment_cta_title') }}</h2>
-                <p class="cta-desc">{{ _t18('investment_cta_desc') }}</p>
-                <button type="button" class="btn-cta" @click="handleApply">{{ _t18('investment_apply_btn') }}</button>
-            </section>
-        </div>
-    </div>
-</template>
-
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { dispatchCustomEvent } from '@/utils'
 import { _t18 } from '@/utils/public'
+import iconBack from '@/assets/images/gxpex/trade/icon-back.svg'
+import heroBg from '@/assets/images/gxpex/partner/hero-bg.png'
+import tierBadge from '@/assets/images/gxpex/partner/tier-badge.png'
+import iconInstitution from '@/assets/images/gxpex/partner/icon-institution.svg'
+import iconReqTeam from '@/assets/images/gxpex/partner/icon-req-team.svg'
+import iconReqQual from '@/assets/images/gxpex/partner/icon-req-qual.svg'
+import iconReqGrowth from '@/assets/images/gxpex/partner/icon-req-growth.svg'
+import iconReqCompliance from '@/assets/images/gxpex/partner/icon-req-compliance.svg'
 
+const router = useRouter()
 const { locale } = useI18n()
 
-const showRewards = ref(false)
 const rewardsRef = ref(null)
 
 const partners = computed(() => {
-    void locale.value
-    return [
-        _t18('investment_partner_1'),
-        _t18('investment_partner_2'),
-        _t18('investment_partner_3'),
-        _t18('investment_partner_4')
-    ]
+  void locale.value
+  return [
+    _t18('investment_partner_1'),
+    _t18('investment_partner_2'),
+    _t18('investment_partner_3'),
+    _t18('investment_partner_4')
+  ]
 })
 
 const dynamics = [
-    { name: 'l**', size: '5000' },
-    { name: 'l**', size: '10000' },
-    { name: 'w**', size: '8000' }
+  { name: 'l**', size: '5000' },
+  { name: 'l**', size: '10000' },
+  { name: 'w**', size: '8000' }
 ]
 
-const ICON_TEAM = `<svg viewBox="0 0 24 24" fill="none"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5C15 14.17 10.33 13 8 13zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" fill="currentColor"/></svg>`
-const ICON_QUAL = `<svg viewBox="0 0 24 24" fill="none"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z" fill="currentColor"/></svg>`
-const ICON_GROWTH = `<svg viewBox="0 0 24 24" fill="none"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6h-6z" fill="currentColor"/></svg>`
-const ICON_COMPLIANCE = `<svg viewBox="0 0 24 24" fill="none"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" fill="currentColor"/></svg>`
-
 const requirements = computed(() => {
-    void locale.value
-    return [
-        {
-            title: _t18('investment_req_team_title'),
-            desc: _t18('investment_req_team_desc'),
-            icon: ICON_TEAM
-        },
-        {
-            title: _t18('investment_req_qual_title'),
-            desc: _t18('investment_req_qual_desc'),
-            icon: ICON_QUAL
-        },
-        {
-            title: _t18('investment_req_growth_title'),
-            desc: _t18('investment_req_growth_desc'),
-            icon: ICON_GROWTH
-        },
-        {
-            title: _t18('investment_req_compliance_title'),
-            desc: _t18('investment_req_compliance_desc'),
-            icon: ICON_COMPLIANCE
-        }
-    ]
+  void locale.value
+  return [
+    {
+      title: _t18('investment_req_team_title'),
+      desc: _t18('investment_req_team_desc'),
+      icon: iconReqTeam
+    },
+    {
+      title: _t18('investment_req_qual_title'),
+      desc: _t18('investment_req_qual_desc'),
+      icon: iconReqQual
+    },
+    {
+      title: _t18('investment_req_growth_title'),
+      desc: _t18('investment_req_growth_desc'),
+      icon: iconReqGrowth
+    },
+    {
+      title: _t18('investment_req_compliance_title'),
+      desc: _t18('investment_req_compliance_desc'),
+      icon: iconReqCompliance
+    }
+  ]
 })
 
 const tiers = computed(() => {
-    void locale.value
-    return [
-        {
-            level: _t18('investment_tier_junior'),
-            people: '3,000',
-            rate: '40%',
-            bonus: _t18('investment_tier_junior_bonus'),
-            hot: false
-        },
-        {
-            level: _t18('investment_tier_senior'),
-            people: '10,000',
-            rate: '50%',
-            bonus: _t18('investment_tier_senior_bonus'),
-            hot: true
-        },
-        {
-            level: _t18('investment_tier_super'),
-            people: '30,000',
-            rate: '60%',
-            bonus: _t18('investment_tier_super_bonus'),
-            hot: false
-        }
-    ]
+  void locale.value
+  return [
+    {
+      level: _t18('investment_tier_junior'),
+      people: '3,000',
+      rate: '40%',
+      bonus: _t18('investment_tier_junior_bonus')
+    },
+    {
+      level: _t18('investment_tier_senior'),
+      people: '10,000',
+      rate: '50%',
+      bonus: _t18('investment_tier_senior_bonus')
+    },
+    {
+      level: _t18('investment_tier_super'),
+      people: '30,000',
+      rate: '60%',
+      bonus: _t18('investment_tier_super_bonus')
+    }
+  ]
 })
 
 const processSteps = computed(() => {
-    void locale.value
-    return [
-        {
-            title: _t18('investment_step1_title'),
-            desc: _t18('investment_step1_desc')
-        },
-        {
-            title: _t18('investment_step2_title'),
-            desc: _t18('investment_step2_desc')
-        },
-        {
-            title: _t18('investment_step3_title'),
-            desc: _t18('investment_step3_desc')
-        },
-        {
-            title: _t18('investment_step4_title'),
-            desc: _t18('investment_step4_desc')
-        }
-    ]
+  void locale.value
+  return [
+    {
+      title: _t18('investment_step1_title'),
+      desc: _t18('investment_step1_desc')
+    },
+    {
+      title: _t18('investment_step2_title'),
+      desc: _t18('investment_step2_desc')
+    },
+    {
+      title: _t18('investment_step3_title'),
+      desc: _t18('investment_step3_desc')
+    },
+    {
+      title: _t18('investment_step4_title'),
+      desc: _t18('investment_step4_desc')
+    }
+  ]
 })
 
+function stepNumber(index) {
+  return `${String(index + 1).padStart(2, '0')}.`
+}
+
+function stepTitle(full) {
+  return String(full || '').replace(/^\d+\.\s*/, '')
+}
+
 const handleApply = () => {
-    dispatchCustomEvent('event_serviceChange')
+  dispatchCustomEvent('event_serviceChange')
 }
 
 const scrollToRewards = () => {
-    showRewards.value = !showRewards.value
-    rewardsRef.value?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  rewardsRef.value?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 </script>
 
+<template>
+  <div class="page page--partner">
+    <section class="partner-hero">
+      <img class="partner-hero__bg" :src="heroBg" alt="" aria-hidden="true" />
+      <div class="partner-hero__shade" aria-hidden="true"></div>
+
+      <header class="partner-header">
+        <button type="button" class="partner-header__back" aria-label="back" @click="router.back()">
+          <img :src="iconBack" alt="" class="partner-header__back-icon" />
+        </button>
+        <h1 class="partner-header__title">{{ _t18('investment') }}</h1>
+        <span class="partner-header__spacer" aria-hidden="true"></span>
+      </header>
+
+      <div class="partner-hero__content">
+        <div class="partner-hero__badge">{{ _t18('investment_badge') }}</div>
+        <h2 class="partner-hero__title">
+          {{ _t18('investment_hero_title_line1') }}<br />{{ _t18('investment_hero_title_line2') }}
+        </h2>
+        <p class="partner-hero__subtitle">{{ _t18('investment_hero_desc') }}</p>
+        <div class="partner-hero__actions">
+          <button type="button" class="partner-hero__btn partner-hero__btn--ghost" @click="scrollToRewards">
+            {{ _t18('investment_view_rewards') }}
+          </button>
+          <button type="button" class="partner-hero__btn partner-hero__btn--primary" @click="handleApply">
+            {{ _t18('investment_apply_btn') }}
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <main class="partner-main">
+      <section class="partner-section partner-section--inst">
+        <h2 class="partner-section__title">{{ _t18('investment_partners_title') }}</h2>
+        <div class="partner-inst__scroll">
+          <article v-for="item in partners" :key="item" class="partner-inst__card">
+            <img :src="iconInstitution" alt="" class="partner-inst__icon" />
+            <span class="partner-inst__name">{{ item }}</span>
+          </article>
+        </div>
+      </section>
+
+      <section class="partner-section partner-section--feed">
+        <h2 class="partner-section__title">{{ _t18('investment_dynamics_title') }}</h2>
+        <div class="partner-feed__list">
+          <div v-for="(item, index) in dynamics" :key="index" class="partner-feed__item">
+            <span class="partner-feed__message">
+              {{ item.name }}{{ _t18('investment_dynamic_joined') }}
+            </span>
+            <span class="partner-feed__size">{{ item.size }}+</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="partner-section partner-section--req">
+        <h2 class="partner-section__title">{{ _t18('investment_requirements_title') }}</h2>
+        <div class="partner-req__list">
+          <article v-for="item in requirements" :key="item.title" class="partner-req__card">
+            <img :src="item.icon" alt="" class="partner-req__icon" />
+            <div class="partner-req__body">
+              <h3 class="partner-req__title">{{ item.title }}</h3>
+              <p class="partner-req__desc">{{ item.desc }}</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="rewards" ref="rewardsRef" class="partner-section partner-section--tiers">
+        <h2 class="partner-section__title">{{ _t18('investment_tiers_title') }}</h2>
+        <div class="partner-tier__list">
+          <article v-for="tier in tiers" :key="tier.level" class="partner-tier__card">
+            <div class="partner-tier__badge">
+              <img class="partner-tier__badge-img" :src="tierBadge" alt="" />
+            </div>
+            <div class="partner-tier__main">
+              <div class="partner-tier__level">{{ tier.level }}</div>
+              <div class="partner-tier__users">
+                {{ tier.people }} {{ _t18('investment_tier_people_unit') }}
+              </div>
+            </div>
+            <div class="partner-tier__rebate">
+              <div class="partner-tier__rebate-label">{{ tier.bonus }}</div>
+              <div class="partner-tier__rebate-value">{{ tier.rate }}</div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="partner-section partner-section--process">
+        <h2 class="partner-section__title">{{ _t18('investment_process_title') }}</h2>
+        <div class="partner-step__list">
+          <article v-for="(step, index) in processSteps" :key="index" class="partner-step">
+            <div class="partner-step__content">
+              <div class="partner-step__head">
+                <span class="partner-step__num">{{ stepNumber(index) }}</span>
+                <h3 class="partner-step__title">{{ stepTitle(step.title) }}</h3>
+              </div>
+              <p class="partner-step__desc">{{ step.desc }}</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="partner-cta">
+        <div class="partner-cta__copy">
+          <h2 class="partner-cta__title">{{ _t18('investment_cta_title') }}</h2>
+          <p class="partner-cta__subtitle">{{ _t18('investment_cta_desc') }}</p>
+        </div>
+        <button type="button" class="partner-cta__btn" @click="handleApply">
+          {{ _t18('investment_apply_btn') }}
+        </button>
+      </section>
+    </main>
+  </div>
+</template>
+
 <style lang="scss" scoped>
-$bg: #f9f7f2;
-$teal: #17ac74;
-$teal-light: linear-gradient(135deg, #cdf4e6 0%, #fff 100%);
-$dark: #0d1f1b;
-$text: #241818;
-$text-muted: #888;
-$card-grey: #f2f1ed;
-
-.investment-page {
-    min-height: 100vh;
+.page--partner {
+  position: relative;
+  min-height: 100vh;
+  background: #111111;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
 }
 
-:deep(.investment-header.dark-header) {
-    background-color: $bg !important;
-    border-bottom: 1px solid #ebe8e0 !important;
-
-    .left {
-        filter: none;
-    }
-
-    .title {
-        color: $text;
-        font-weight: 600;
-    }
-
-    .icon-img {
-        filter: none;
-    }
+.partner-hero {
+  position: relative;
+  min-height: 469px;
+  overflow: hidden;
 }
 
-.investment-body {
-    padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px));
+.partner-hero__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
 }
 
-/* Hero */
-.hero {
-    background: linear-gradient(135deg, #cdf4e6 0%, #fff 100%);
-    padding: 40px 20px 28px;
-    border-radius: 0 0 24px 24px;
+.partner-hero__shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(17, 17, 17, 0.15) 0%,
+    rgba(17, 17, 17, 0.55) 45%,
+    rgba(17, 17, 17, 0.92) 78%,
+    #111111 100%
+  );
 }
 
-.hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    border: 1px solid $teal;
-    border-radius: 20px;
-    font-size: 11px;
-    color: $teal;
-    margin-bottom: 16px;
-
-    &__icon {
-        font-size: 12px;
-    }
+.partner-header {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 40px 1fr 40px;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 12px;
 }
 
-.hero-title {
-    margin: 0 0 12px;
-    font-size: 26px;
-    font-weight: 700;
-    line-height: 1.35;
-    color: $text;
+.partner-header__back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-left: -9px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
 }
 
-.hero-desc {
-    margin: 0 0 20px;
-    font-size: 13px;
-    line-height: 1.6;
-    color: $text-muted;
+.partner-header__back-icon {
+  display: block;
+  width: 12px;
+  height: 22px;
+  object-fit: contain;
+  opacity: 0.9;
 }
 
-.hero-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+.partner-header__title {
+  grid-column: 2;
+  margin: 0;
+  text-align: center;
+  font-family: 'PingFang SC', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #fff;
 }
 
-.btn-primary {
-    width: 100%;
-    height: 48px;
-    border: none;
-    border-radius: 12px;
-    background: $dark;
-    color: #fff;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
+.partner-header__spacer {
+  grid-column: 3;
+  width: 40px;
+  height: 40px;
 }
 
-.btn-outline {
-    width: 100%;
-    height: 48px;
-    border: 1px solid $teal;
-    border-radius: 12px;
-    background: #fff;
-    color: $teal;
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    -webkit-tap-highlight-color: transparent;
-
-    &__arrow {
-        display: inline-block;
-        transition: transform 0.2s;
-
-        &.open {
-            transform: rotate(180deg);
-        }
-    }
+.partner-hero__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 177px 12px 24px;
 }
 
-/* Sections */
-.section {
-    padding: 20px;
+.partner-hero__badge {
+  display: inline-flex;
+  align-self: flex-start;
+  max-width: 100%;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.65);
+  font-family: 'Roboto', sans-serif;
+  font-size: 10px;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  color: rgb(160, 65, 237);
 }
 
-.section1 {
-    background: #fcf9f2;
+.partner-hero__title {
+  margin: 0;
+  font-family: 'PingFang SC', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #fff;
 }
 
-.section2 {
-    background: #f6f3ee;
+.partner-hero__subtitle {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.75);
 }
 
-.section3 {
-    background: #fcf9f2;
+.partner-hero__actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
 }
 
-.section4 {
-    background: #f6f3ee;
+.partner-hero__btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+  cursor: pointer;
 }
 
-.section-head {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 12px;
+.partner-hero__btn--ghost {
+  border: 1px solid rgb(160, 65, 237);
+  background: rgb(27, 27, 27);
+  color: rgb(160, 65, 237);
 }
 
-.section-title {
-    margin: 0 0 12px;
-    font-size: 17px;
-    font-weight: 700;
-    color: $text;
+.partner-hero__btn--primary {
+  border: none;
+  background: linear-gradient(-43deg, rgb(127, 43, 218) 0%, rgb(163, 67, 238) 100%);
+  box-shadow: 0 4px 12px rgba(127, 43, 218, 0.35);
+  color: #fff;
 }
 
-.section-head .section-title {
-    margin-bottom: 0;
+.partner-main {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 12px 12px 0;
 }
 
-/* Partners */
-.partner-tags {
-    display: flex;
-    flex-wrap: nowrap;
-    gap: 10px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 4px;
-
-    &::-webkit-scrollbar {
-        display: none;
-    }
+.partner-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.partner-tag {
-    flex-shrink: 0;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 14px;
-    border: 1px solid #e5e3dd;
-    border-radius: 20px;
-    background: #fff;
-    font-size: 12px;
-    color: $text;
-
-    &__check {
-        width: 14px;
-        height: 14px;
-        border-radius: 50%;
-        background: $teal-light;
-        position: relative;
-
-        &::after {
-            content: '';
-            position: absolute;
-            left: 4px;
-            top: 2px;
-            width: 4px;
-            height: 7px;
-            border: solid $teal;
-            border-width: 0 2px 2px 0;
-            transform: rotate(45deg);
-        }
-    }
+.partner-section__title {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #fff;
 }
 
-/* Live dynamics */
-.live-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 2px 8px;
-    background: #ffe8e8;
-    color: #e85d5d;
-    font-size: 10px;
-    font-weight: 700;
-    border-radius: 10px;
+.partner-inst__scroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
-.live-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #e85d5d;
-    animation: pulse 1.2s ease-in-out infinite;
+.partner-inst__card {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 169px;
+  min-height: 32px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgb(34, 28, 49);
 }
 
-@keyframes pulse {
-
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.4;
-    }
+.partner-inst__icon {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  display: block;
+  object-fit: contain;
 }
 
-.dynamics-card {
-    background: #fff;
-    border-radius: 14px;
-    padding: 4px 0;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+.partner-inst__name {
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: nowrap;
 }
 
-.dynamics-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 16px;
-
-    &+& {
-        border-top: 1px solid #f5f3ee;
-    }
-
-    &__icon {
-        flex-shrink: 0;
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        background: $teal-light;
-        color: $teal;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        svg {
-            width: 18px;
-            height: 18px;
-        }
-    }
-
-    &__text {
-        margin: 0;
-        font-size: 13px;
-        color: $text-muted;
-        line-height: 1.5;
-    }
-
-    &__name {
-        color: $text;
-        font-weight: 500;
-    }
-
-    &__num {
-        color: $teal;
-        font-weight: 600;
-    }
+.partner-feed__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-/* Requirements */
-.requirements-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
+.partner-feed__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 36px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgb(34, 28, 49);
 }
 
-.requirement-card {
-    background: $card-grey;
-    border-radius: 12px;
-    padding: 16px 12px;
-
-    &__icon {
-        display: flex;
-        width: 28px;
-        height: 28px;
-        color: $teal;
-        margin-bottom: 10px;
-
-        :deep(svg) {
-            width: 28px;
-            height: 28px;
-        }
-    }
-
-    &__title {
-        margin: 0 0 6px;
-        font-size: 14px;
-        font-weight: 600;
-        color: $text;
-    }
-
-    &__desc {
-        margin: 0;
-        font-size: 11px;
-        line-height: 1.5;
-        color: $text-muted;
-    }
+.partner-feed__message {
+  flex: 1;
+  min-width: 0;
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+  line-height: 1.3;
+  color: rgba(255, 255, 255, 0.85);
 }
 
-/* Tiers */
-.tier-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+.partner-feed__size {
+  flex-shrink: 0;
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: rgb(160, 65, 237);
 }
 
-.tier-card {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #fff;
-    border-radius: 14px;
-    padding: 18px 16px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-
-    &--hot {
-        border: 1.5px solid $teal;
-        background: $teal-light;
-    }
-
-    &__left {
-        flex: 1;
-    }
-
-    &__label {
-        margin: 0 0 6px;
-        font-size: 12px;
-        color: $text-muted;
-
-        &.accent {
-            color: $teal;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-    }
-
-    &__people {
-        margin: 0;
-        font-size: 20px;
-        font-weight: 700;
-        color: $text;
-    }
-
-    &__right {
-        text-align: right;
-    }
-
-    &__rate {
-        margin: 0 0 4px;
-        font-size: 22px;
-        font-weight: 700;
-        color: $teal;
-    }
-
-    &__bonus {
-        margin: 0;
-        font-size: 11px;
-        color: $text-muted;
-
-        &.accent {
-            color: $teal;
-        }
-    }
+.partner-req__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.tier-hot {
-    position: absolute;
-    top: -1px;
-    right: 16px;
-    padding: 2px 10px;
-    background: #ff5e5e;
-    color: #fff;
-    font-size: 10px;
-    font-weight: 700;
-    border-radius: 0 0 8px 8px;
+.partner-req__card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgb(34, 28, 49);
 }
 
-.tier-star {
-    font-style: normal;
-    font-size: 11px;
+.partner-req__icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: block;
+  object-fit: contain;
 }
 
-/* Process */
-.process-list {
-    margin-left: 6px;
-    padding-left: 18px;
-    border-left: 3px solid $teal;
+.partner-req__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.process-item {
-    padding-bottom: 24px;
-
-    &:last-child {
-        padding-bottom: 0;
-    }
+.partner-req__title {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: #fff;
 }
 
-.process-content {
-    padding-top: 0;
+.partner-req__desc {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.65);
 }
 
-.process-title {
-    margin: 0 0 8px;
-    font-size: 15px;
-    font-weight: 700;
-    color: $text;
+.partner-tier__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.process-desc {
-    margin: 0;
-    font-size: 13px;
-    line-height: 1.6;
-    color: $text-muted;
+.partner-tier__card {
+  display: grid;
+  grid-template-columns: 43px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  min-height: 64px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgb(34, 28, 49);
 }
 
-/* CTA */
-.cta-card {
-    margin-top: 32px;
-    padding: 28px 20px;
-    background: $dark;
-    border-radius: 16px;
-    text-align: center;
+.partner-tier__badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 43px;
+  height: 43px;
 }
 
-.cta-title {
-    margin: 0 0 8px;
-    font-size: 20px;
-    font-weight: 700;
-    color: #fff;
+.partner-tier__badge-img {
+  width: 43px;
+  height: 43px;
+  object-fit: contain;
+  border-radius: 50%;
 }
 
-.cta-desc {
-    margin: 0 0 20px;
-    font-size: 13px;
-    color: rgba(255, 255, 255, 0.65);
+.partner-tier__main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
 }
 
-.btn-cta {
-    width: 100%;
-    height: 48px;
-    border: none;
-    border-radius: 24px;
-    background: $teal;
-    color: #fff;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
+.partner-tier__level {
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: #fff;
+}
+
+.partner-tier__users {
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.partner-tier__rebate {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.partner-tier__rebate-label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 11px;
+  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.65);
+  text-align: right;
+}
+
+.partner-tier__rebate-value {
+  font-family: 'Roboto', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: rgb(160, 65, 237);
+}
+
+.partner-step__list {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 12px 16px 28px;
+  border-radius: 12px;
+  background: rgb(34, 28, 49);
+}
+
+.partner-step__list::before {
+  content: '';
+  position: absolute;
+  left: 17px;
+  top: 22px;
+  bottom: 22px;
+  width: 1px;
+  background: rgb(158, 64, 235);
+}
+
+.partner-step {
+  position: relative;
+  display: flex;
+  min-height: 45px;
+}
+
+.partner-step::before {
+  content: '';
+  position: absolute;
+  left: -16px;
+  top: 5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgb(160, 65, 237);
+  box-shadow: 0 0 0 2px rgb(34, 28, 49);
+}
+
+.partner-step__content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.partner-step__head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+}
+
+.partner-step__num {
+  flex-shrink: 0;
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: rgb(160, 65, 237);
+}
+
+.partner-step__title {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: rgb(160, 65, 237);
+}
+
+.partner-step__desc {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.partner-cta {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 12px;
+  border-radius: 12px;
+  background: rgb(34, 28, 49);
+}
+
+.partner-cta__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.partner-cta__title {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #fff;
+}
+
+.partner-cta__subtitle {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+  line-height: 1.3;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.partner-cta__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 40px;
+  border: none;
+  border-radius: 20px;
+  background: linear-gradient(-43deg, rgb(127, 43, 218) 0%, rgb(163, 67, 238) 100%);
+  box-shadow: 0 4px 12px rgba(127, 43, 218, 0.35);
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: #fff;
+  cursor: pointer;
 }
 </style>
