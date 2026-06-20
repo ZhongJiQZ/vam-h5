@@ -1,6 +1,8 @@
 <script setup>
+import { computed, ref, watch } from 'vue'
 import { _t18 } from '@/utils/public'
-import pledgeCoinIcon from '@/assets/images/Frame 981370.png'
+import iconUsdt from '@/assets/images/gxpex/staking/icon-usdt.svg'
+import cardArt from '@/assets/images/gxpex/staking/card-art.png'
 
 const props = defineProps({
   cardData: {
@@ -8,10 +10,10 @@ const props = defineProps({
   }
 })
 
-const dataValue = computed(() => props.cardData || {})
+const emit = defineEmits(['buy'])
 
-const defaultPledgeIcon = pledgeCoinIcon
-const listIconSrc = ref(defaultPledgeIcon)
+const dataValue = computed(() => props.cardData || {})
+const listIconSrc = ref(iconUsdt)
 
 function remoteIconUrl(raw) {
   if (typeof raw !== 'string') return ''
@@ -21,11 +23,11 @@ function remoteIconUrl(raw) {
 
 function syncListIcon() {
   const remote = remoteIconUrl(props.cardData?.icon)
-  listIconSrc.value = remote || defaultPledgeIcon
+  listIconSrc.value = remote || iconUsdt
 }
 
 function onListIconError() {
-  listIconSrc.value = defaultPledgeIcon
+  listIconSrc.value = iconUsdt
 }
 
 watch(
@@ -35,167 +37,163 @@ watch(
   },
   { immediate: true }
 )
+
+const availableText = computed(() => {
+  if (['dev'].includes(_getConfig('_APP_ENV'))) {
+    return `${dataValue.value.buyPurchase}/${dataValue.value.timeLimit}`
+  }
+  return `${dataValue.value.timeLimit ?? 0}`
+})
+
+const onBuy = () => {
+  emit('buy')
+}
 </script>
+
 <template>
-  <div class="box">
-    <div class="top">
-      <div class="top_left">
-        <span class="pledge-icon-wrap" aria-hidden="true">
-          <img
-            :src="listIconSrc"
-            alt=""
-            class="pledge-coin-icon"
-            loading="lazy"
-            decoding="async"
-            @error="onListIconError"
-          />
-        </span>
-        <div class="title fw-bold">{{ dataValue.title }}</div>
+  <article class="staking-card" @click="onBuy">
+    <div class="staking-card__head">
+      <div class="staking-card__coin">
+        <img :src="listIconSrc" alt="" class="staking-card__coin-icon" @error="onListIconError" />
+        <span class="staking-card__symbol">{{ dataValue.title || 'USDT' }}</span>
       </div>
-      <div class="top_right">{{ _t18('pledge_Buy', ['aams']) }}</div>
-      <!-- <div class="top_right">
-        可购：<span class="ff-num">{{ `${dataValue.kegou}/${dataValue.sum}` }}</span>
-      </div> -->
+      <button type="button" class="staking-card__buy" @click.stop="onBuy">
+        {{ _t18('pledge_Buy', ['aams']) }}
+      </button>
     </div>
-    <div class="content">
-      <div class="left">
-        <div class="content1">
-          <!-- 限额 -->
-          <p>{{ _t18('pledge_quota') }}</p>
-          <span class="fw-num">{{ dataValue.limitMin }}~{{ dataValue.limitMax }}</span>
+    <div class="staking-card__body">
+      <img class="staking-card__art" :src="cardArt" alt="" aria-hidden="true" />
+      <div class="staking-card__stats">
+        <div class="staking-card__stat">
+          <span class="staking-card__stat-label">{{ _t18('pledge_quota') }}</span>
+          <span class="staking-card__stat-value">{{ dataValue.limitMin }}~{{ dataValue.limitMax }}</span>
         </div>
-        <div class="content2">
-          <!-- 天数 -->
-          <p>{{ _t18('pledge_number_days') }}</p>
-          <span class="fw-num">{{ dataValue.days }}</span>
+        <div class="staking-card__stat">
+          <span class="staking-card__stat-label">{{ _t18('pledge_number_days') }}</span>
+          <span class="staking-card__stat-value">{{ dataValue.days }}</span>
         </div>
-        <div class="content3">
-          <!-- 可购 -->
-          <p>{{ _t18('pledge_available_purchase', ['aams']) }}</p>
-          <span class="fw-num" v-if="['dev'].includes(_getConfig('_APP_ENV'))">{{ `${dataValue.buyPurchase}/${dataValue.timeLimit}` }}</span>
-          <!-- buyPurchase -->
-          <span class="fw-num" v-else>{{ `${dataValue.timeLimit}` }}</span>
+        <div class="staking-card__stat">
+          <span class="staking-card__stat-label">{{ _t18('pledge_available_purchase', ['aams']) }}</span>
+          <span class="staking-card__stat-value">{{ availableText }}</span>
         </div>
-        <div class="content3">
-          <!-- 收益率 -->
-          <p>{{ _t18('pledge_rate_return') }}</p>
-          <span class="fw-num rate">{{ dataValue.minOdds }}%~{{ dataValue.maxOdds }}%</span>
+        <div class="staking-card__stat">
+          <span class="staking-card__stat-label">{{ _t18('pledge_rate_return') }}</span>
+          <span class="staking-card__stat-value staking-card__stat-value--accent">
+            {{ dataValue.minOdds }}%~{{ dataValue.maxOdds }}%
+          </span>
         </div>
-      </div>
-      <div class="right">
-        <image-load filePath="zhiyacard.png" name="zhiyacard" class="zhiyacard"></image-load>
       </div>
     </div>
-  </div>
+  </article>
 </template>
+
 <style lang="scss" scoped>
-.box {
-  margin-top: 0;
+.staking-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgb(34, 28, 49);
   cursor: pointer;
+}
+
+.staking-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 32px;
+}
+
+.staking-card__coin {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.staking-card__coin-icon {
+  width: 24px;
+  height: 24px;
+  display: block;
+  flex-shrink: 0;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+.staking-card__symbol {
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: #fff;
+}
+
+.staking-card__buy {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 47px;
+  height: 24px;
+  padding: 0 10px;
   border: none;
-  border-radius: 0;
-  background: transparent;
+  border-radius: 999px;
+  background: rgb(160, 65, 237);
+  font-family: 'Roboto', sans-serif;
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.78);
+  font-weight: 500;
+  line-height: 1.2;
+  color: #fff;
+  cursor: pointer;
+}
 
-  & + .box {
-    margin-top: 18px;
-    padding-top: 18px;
-    border-top: 1px solid rgba(255, 255, 255, 0.14);
-  }
+.staking-card__body {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
 
-  .top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 4px 18px;
-    .top_left {
-      display: flex;
-      align-items: center;
-      min-width: 0;
-      .title {
-        font-weight: bold;
-        color: #fff;
-        min-width: 0;
-      }
-      .pledge-icon-wrap {
-        width: 22px;
-        height: 22px;
-        margin-right: 10px;
-        flex-shrink: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        overflow: hidden;
-        background: rgba(255, 255, 255, 0.08);
-      }
-      .pledge-coin-icon {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        object-position: center;
-        display: block;
-      }
-    }
-    .top_right {
-      min-width: 88px;
-      padding: 8px 18px;
-      color: #fff;
-      text-align: center;
-      border-radius: 999px;
-      font-size: 14px;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-      -webkit-tap-highlight-color: transparent;
-      border: none;
-      background: linear-gradient(
-        165deg,
-        rgba(255, 255, 255, 0.22) 0%,
-        rgba(255, 255, 255, 0.07) 45%,
-        rgba(255, 255, 255, 0.05) 100%
-      );
-      backdrop-filter: blur(18px) saturate(1.15);
-      -webkit-backdrop-filter: blur(18px) saturate(1.15);
-      /* 无描边：用内高光模拟玻璃上沿更亮，避免整圈线框感 */
-      box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.65),
-        inset 0 -1px 0 rgba(0, 0, 0, 0.18),
-        0 2px 14px rgba(0, 0, 0, 0.22);
-    }
-  }
-  .content {
-    display: flex;
-    padding: 18px 4px 8px;
-    justify-content: space-between;
-    .left {
-      display: flex;
-      flex-direction: column;
-      & > div {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        color: rgba(255, 255, 255, 0.78);
-        font-size: 12px;
-        p {
-          min-width: 36px;
-          color: rgba(255, 255, 255, 0.78);
-        }
-        span {
-          margin-left: 20px;
-          color: rgba(255, 255, 255, 0.96);
-          font-size: 18px;
-        }
-        span.rate {
-          color: #5cff8f;
-        }
-      }
-    }
-    .right {
-      .zhiyacard {
-        font-size: 120px;
-      }
-    }
-  }
+.staking-card__art {
+  flex-shrink: 0;
+  width: 75px;
+  height: 75px;
+  object-fit: contain;
+}
+
+.staking-card__stats {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.staking-card__stat {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.staking-card__stat-label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.staking-card__stat-value {
+  font-family: 'Roboto', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1;
+  color: #fff;
+  text-align: right;
+}
+
+.staking-card__stat-value--accent {
+  color: rgb(160, 65, 237);
 }
 </style>
