@@ -179,7 +179,7 @@ onMounted(() => {
 
 .staking-hero {
   position: relative;
-  min-height: 375px;
+  z-index: 2;
   padding-bottom: 0;
 }
 
@@ -358,12 +358,12 @@ onMounted(() => {
 
 .staking-main {
   position: relative;
-  z-index: 1;
+  z-index: 4;
   display: flex;
   flex-direction: column;
   gap: 12px;
   margin-top: -4px;
   padding: 0 12px 16px;
-  background: transparent;
+  background: #111111;
 }
 </style>

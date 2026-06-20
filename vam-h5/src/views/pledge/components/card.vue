@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
-import { _t18 } from '@/utils/public'
+import { _t18, _getConfig } from '@/utils/public'
 import iconUsdt from '@/assets/images/gxpex/staking/icon-usdt.svg'
 import cardArt from '@/assets/images/gxpex/staking/card-art.png'
 
