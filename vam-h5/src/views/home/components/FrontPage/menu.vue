@@ -261,14 +261,14 @@ const toRecharge = () => {
 
     .item-icon-wrap {
       position: relative;
-      width: 36px;
-      height: 36px;
+      width: 28px;
+      height: 28px;
       flex-shrink: 0;
     }
     .item-icon-skeleton {
       position: absolute;
       inset: 0;
-      border-radius: 10px;
+      border-radius: 8px;
       background: linear-gradient(90deg, #2a2540 25%, #1f1a36 50%, #2a2540 75%);
       background-size: 200% 100%;
       animation: menu-icon-shimmer 1.2s ease-in-out infinite;
@@ -276,8 +276,8 @@ const toRecharge = () => {
     .itemImg {
       position: relative;
       z-index: 1;
-      width: 36px;
-      height: 36px;
+      width: 28px;
+      height: 28px;
       opacity: 0;
       transition: opacity 0.2s ease-out;
       &--ready { opacity: 1; }

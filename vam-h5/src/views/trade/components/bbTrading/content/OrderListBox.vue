@@ -34,12 +34,13 @@
       </van-tab>
     </van-tabs>
     <div class="tab_right">
-      <svg-load
-        :name="showEye ? 'yanjin-k' : 'yanjin-g'"
-        class="entrustRImg"
+      <img
+        :src="iconEye"
+        :class="['entrustRImg', { 'entrustRImg--off': !showEye }]"
         @click="handelEye"
-      ></svg-load>
-      <svg-load name="shuaxin" class="entrustRImg" @click="refresh"></svg-load>
+        alt=""
+      />
+      <img :src="iconRefresh" class="entrustRImg" @click="refresh" alt="" />
     </div>
   </div>
 </template>
@@ -49,6 +50,8 @@ import { formatCurrentcurrency } from '@/utils/filters'
 import { _t18 } from '@/utils/public'
 import { onMounted } from 'vue'
 import EntrustOrderItem from './EntrustOrderItem.vue'
+import iconEye from '@/assets/images/gxpex/trade/icon-order-filter2.svg'
+import iconRefresh from '@/assets/images/gxpex/trade/icon-order-filter1.svg'
 import { getOrderListCurrencyApi } from '@/api/trade/index'
 import { useUserStore } from '@/store/user/index'
 const userStore = useUserStore()

@@ -352,8 +352,8 @@ dataFeedInstance.resolveSymbol = async () => {
  */
 const initWidget = () => {
   datafeeds = new Datafees(dataFeedInstance)
-  // 主题
-  let theme = window.__theme
+  // 主题：trade 页面强制 dark，配合 tradingview_dark.css 让 K线全黑底
+  let theme = 'dark'
   widget = new TradingView.widget({
     symbol: props.coinInfo.symbolUpperCase,
     theme,
@@ -383,7 +383,19 @@ const initWidget = () => {
     },
 
     preset: 'mobile',
-    ...getConfig(theme)
+    ...getConfig(theme),
+    /* TradingView canvas 不支持真透明，挂跟 page bg 同色 #111216 视觉等同透明 */
+    overrides: {
+      ...(getConfig(theme)?.overrides || {}),
+      'paneProperties.background': '#111216',
+      'paneProperties.backgroundType': 'solid',
+      'paneProperties.vertGridProperties.color': 'rgba(255,255,255,0.05)',
+      'paneProperties.horzGridProperties.color': 'rgba(255,255,255,0.05)',
+      'scalesProperties.backgroundColor': '#111216',
+      'scalesProperties.lineColor': 'rgba(255,255,255,0.08)',
+      'scalesProperties.textColor': 'rgba(255,255,255,0.55)'
+    },
+    loading_screen: { backgroundColor: '#111216', foregroundColor: '#a13cff' }
   })
   widget.onChartReady(() => {
     createStudy()
@@ -676,7 +688,7 @@ const setStudy = (name) => {
 <style lang="scss" scoped>
 .candlestick {
   height: 348px;
-  background-color: var(--ex-candlestick-bg);
+  background-color: transparent;
 }
 .hightItem {
   color: var(--ex-font-color9) !important;
@@ -686,7 +698,7 @@ const setStudy = (name) => {
   padding: 0px 15px 10px;
   border-bottom: 1px solid var(--ex-border-color);
   .list {
-    background-color: #000;
+    background-color: transparent;
     display: flex;
     justify-content: space-between;
     align-items: center;

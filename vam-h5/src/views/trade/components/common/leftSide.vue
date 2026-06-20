@@ -1,6 +1,5 @@
 <template>
   <div class="leftSide">
-    <div class="leftSideHeader fw-bold">{{ _t18('quote') }}</div>
     <div class="search">
       <svg-load name="sousuo-h" class="searchImg"></svg-load>
       <div class="contain">
@@ -142,48 +141,134 @@ const toSort = (v) => {
 
 <style lang="scss" scoped>
 .leftSide {
-  .leftSideHeader {
-    margin: 20px 15px 0;
-    padding-top: 10px;
-    font-size: 24px;
-    font-weight: bold;
-    color: var(--ex-default-font-color);
-  }
+  /* 搜索贴顶，下间距收紧 */
   .search {
-    margin: 30px 15px 15px;
-    height: 46px;
-    background: var(--ex-div-bgColor8);
-    border-radius: 23px;
+    margin: 10px 10px 4px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
     display: flex;
-    padding: 0 20px;
+    padding: 0 10px;
     align-items: center;
-    justify-content: space-between;
     .searchImg {
-      width: 20px;
-      height: 20px;
-      margin-right: 10px;
+      width: 12px;
+      height: 12px;
+      margin-right: 6px;
+      opacity: 0.55;
     }
     .contain {
       flex: 1;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      font-size: 14px;
-      color: var(--ex-default-font-color);
+      font-size: 11px;
+      color: #f5f3f8;
       .inputSearch {
         flex: 1;
-        background: var(--ex-div-bgColor8);
+        background: transparent;
+        border: none;
+        outline: none;
+        color: #f5f3f8;
+        font-size: 11px;
+        width: 100%;
       }
-      input::-webkit-input-placeholder {
-        color: var(--ex-font-color5);
-      }
-      input::-moz-input-placeholder {
-        color: var(--ex-font-color5);
-      }
-      input::-ms-input-placeholder {
-        color: var(--ex-font-color5);
-      }
+      input::-webkit-input-placeholder { color: rgba(255, 255, 255, 0.4); }
+      input::-moz-input-placeholder { color: rgba(255, 255, 255, 0.4); }
+      input::-ms-input-placeholder { color: rgba(255, 255, 255, 0.4); }
     }
+  }
+
+  /* 列头：trade 共用 filter.vue 用 .mainBgc/.main/.mainItem 类，3 列 grid 对齐 */
+  :deep(.mainBgc) {
+    background: transparent !important;
+  }
+  :deep(.main_collect) {
+    background: transparent !important;
+    padding: 0 !important;
+  }
+  :deep(.main_collect .main) {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto 60px !important;
+    gap: 0 12px !important;
+    padding: 4px 12px 8px !important;
+    background: transparent !important;
+    align-items: center;
+  }
+  :deep(.main_collect .mainItem) {
+    font-size: 10px !important;
+    color: rgba(255, 255, 255, 0.55) !important;
+    flex: none !important;
+    margin: 0 !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    white-space: nowrap;
+    > div:first-child { white-space: nowrap; }
+  }
+  :deep(.main_collect .mainItem:nth-child(1)) {
+    justify-content: flex-start !important;
+    text-align: left !important;
+  }
+  :deep(.main_collect .mainItem:nth-child(2)) {
+    justify-content: flex-end !important;
+    text-align: right !important;
+  }
+  :deep(.main_collect .mainItem:nth-child(3)) {
+    justify-content: flex-end !important;
+    text-align: right !important;
+  }
+  :deep(.main_collect .mainItem .arrows) {
+    margin-left: 4px;
+    .itemImg { width: 5px; height: 7px; }
+  }
+
+  /* 币种行：grid 3 列对齐头 (用 display:contents 展平 .right/.rightBox) */
+  :deep(.currencyItem) {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto 60px !important;
+    gap: 0 12px;
+    align-items: center;
+    padding: 7px 12px !important;
+    margin: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+  }
+  :deep(.currencyItem .right),
+  :deep(.currencyItem .rightBox) {
+    display: contents !important;
+  }
+  :deep(.currencyItem .left) {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    .leftImg {
+      width: 20px;
+      height: 20px;
+      margin-right: 8px;
+    }
+    .topText .textTop {
+      font-size: 12px !important;
+    }
+  }
+  :deep(.currencyItem .rightLeft) {
+    text-align: right;
+    font-size: 12px !important;
+    color: #f5f3f8;
+    font-variant-numeric: tabular-nums;
+  }
+  :deep(.currencyItem .rightRight) {
+    width: 60px !important;
+    max-width: 60px !important;
+    min-width: 0 !important;
+    margin-left: 0 !important;
+    padding: 2px 6px !important;
+    font-size: 10px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  :deep(.currencyItem:last-child) {
+    border-bottom: none !important;
   }
 }
 </style>

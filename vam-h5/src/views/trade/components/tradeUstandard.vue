@@ -752,4 +752,54 @@ const showSidePopup = () => {
 .van-popup.van-popup--bottom .bbList .item:last-child {
   border-bottom: none;
 }
+
+/* 切币种 左侧抽屉：玻璃模糊 + 让出顶部 (back+tabs) + 内部可滚 */
+.van-popup.van-popup--left {
+  background: rgba(26, 22, 42, 0.65) !important;
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  width: 65% !important;
+  top: calc(106px + env(safe-area-inset-top)) !important;
+  height: calc(100% - 106px - env(safe-area-inset-top)) !important;
+  /* van 默认 translateY(-50%) 居中，跟我们的 top 冲突，置 0 */
+  transform: translate(0, 0) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden;
+  border-top-right-radius: 14px;
+  -webkit-overflow-scrolling: touch;
+}
+/* 紫高斯光晕（挂在 ::before/::after 上，popup 自身 position:fixed 已是定位上下文） */
+.van-popup.van-popup--left::before {
+  content: '';
+  position: absolute;
+  top: -80px;
+  right: -60px;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #a642ec 0%, #802bda 50%, transparent 80%);
+  filter: blur(70px);
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: 0;
+}
+.van-popup.van-popup--left::after {
+  content: '';
+  position: absolute;
+  bottom: -80px;
+  left: -60px;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #6f33d6 0%, #4d22a8 50%, transparent 80%);
+  filter: blur(70px);
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: 0;
+}
+.van-popup.van-popup--left > * {
+  position: relative;
+  z-index: 1;
+}
 </style>

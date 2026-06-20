@@ -485,16 +485,24 @@ const countChange = () => {
       form.delegateFee = fmt6(form.count * props.coinInfo.feeRate / 100)
       form.slider = parseInt(_mul(_div(val, availableBalance.value), 100))
   } else if (form.delegateType == 0) {
-    console.log(" (限价&&卖出)||(限价&&买入)")
     // (限价&&卖出)||(限价&&买入)
     if (Number(form.price) && Number(val)) {
-      // 根据数量、价格form.price计算成交额
+      // 根据数量、价格 form.price 计算成交额
       form.turnover = _toFixed(_mul(form.price, val))
 
       form.delegateAmount = form.count;
       form.delegateFee = fmt6(form.count * props.coinInfo.feeRate / 100)
-      // form.slider = parseInt(_mul(_div(val, form.delegateAmount), 100))
 
+      // 输入数量 → 自动算滑块百分比
+      // 买: 用 turnover/availableBalance (USDT)，卖: 用 count/availableBalance (币)
+      const avail = Number(availableBalance.value) || 0
+      if (avail > 0) {
+        const ratio = form.type == 0
+          ? _div(form.turnover, avail)
+          : _div(val, avail)
+        const pct = parseInt(_mul(ratio, 100))
+        form.slider = Math.min(100, Math.max(0, pct))
+      }
     }
   } else if (form.delegateType == 1) {
     // 市价&&买入

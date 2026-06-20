@@ -1,41 +1,38 @@
 <template>
   <!-- K线 -->
   <Candlestick :coinInfo="coinInfo" type="secondContract"></Candlestick>
-  <div class="line"></div>
-  <!-- 订单信息 -->
-  <div class="entrust">
+  <!-- 订单信息 (80/20 分栏 + Figma 图标 + 紫色下划线) -->
+  <div class="entrust sc-entrust">
     <div class="entrustL">
       <!-- 当前委托 -->
       <div
         :class="currentEntruset === 0 ? 'entrustItem hightItem' : 'entrustItem'"
         @click="switchingEntrust(0)"
       >
-        {{ _t18(`exchange_curentrust`, ['bitmake', 'ebc']) }}{{ firstNum ? `(${firstNum})` : '' }}
+        <span class="entrustItem__text">
+          {{ _t18(`exchange_curentrust`, ['bitmake', 'ebc']) }}{{ firstNum ? `(${firstNum})` : '' }}
+        </span>
       </div>
       <!-- 历史委托 -->
       <div
         :class="currentEntruset === 1 ? 'entrustItem hightItem' : 'entrustItem'"
         @click="switchingEntrust(1)"
       >
-        {{ _t18(`exchange_hisentrust`, ['bitmake', 'ebc']) }}{{ secondNum ? `(${secondNum})` : '' }}
+        <span class="entrustItem__text">
+          {{ _t18(`exchange_hisentrust`, ['bitmake', 'ebc']) }}{{ secondNum ? `(${secondNum})` : '' }}
+        </span>
       </div>
     </div>
 
-    <!-- 隐藏其他币种，刷新 -->
+    <!-- 眼睛 + 刷新 (Figma icons) -->
     <div class="entrustR">
-      <svg-load
-        v-if="currentEye"
-        name="yanjin-k"
-        class="entrustRImg"
+      <img
+        :src="iconEye"
+        :class="['entrustRImg', { 'entrustRImg--off': !currentEye }]"
         @click="switchingEye"
-      ></svg-load>
-      <svg-load
-        v-if="!currentEye"
-        name="yanjin-g"
-        class="entrustRImg"
-        @click="switchingEye"
-      ></svg-load>
-      <svg-load name="shuaxin" class="entrustRUpdateImg" @click="toRefresh"></svg-load>
+        alt=""
+      />
+      <img :src="iconRefresh" class="entrustRImg" @click="toRefresh" alt="" />
     </div>
   </div>
   <!-- 合约历史 -->
@@ -52,8 +49,11 @@
     ></ContractHistory>
   </div>
 
-  <!-- 暂无数据   -->
-  <Nodata v-if="historyNewList.length === 0"></Nodata>
+  <!-- 暂无数据 — Figma 占位图 icon-bjwu -->
+  <div v-if="historyNewList.length === 0" class="sc-no-data">
+    <img :src="iconBjwu" class="sc-no-data__img" alt="" />
+    <div class="sc-no-data__text">{{ _t18(`no_data`) }}</div>
+  </div>
   <div class="placeholder"></div>
 
   <!-- 分享收益-->
@@ -72,6 +72,9 @@ import { useRoute } from 'vue-router'
 import Candlestick from '../../common/candlestick.vue'
 import ContractHistory from './contractHistory.vue'
 import ShareCommissionDetail from './../../common/ShareCommissionDetail.vue'
+import iconEye from '@/assets/images/gxpex/trade/icon-order-filter2.svg'
+import iconRefresh from '@/assets/images/gxpex/trade/icon-order-filter1.svg'
+import iconBjwu from '@/assets/images/gxpex/trade/icon-bjwu.png'
 
 import { secondContractOrderselectOrderList } from '@/api/trade/index'
 import { formatCurrentcurrency, profitAndloss } from '@/utils/filters'
@@ -354,65 +357,105 @@ const submit = () => {
 }
 
 .sc-history-wrap {
-  padding: 10px 0 0;
+  padding: 10px 18px 0;
 }
 
-.hightItem {
-  color: #f5f3f8 !important;
+/* 当前委托 / 历史 tab 行 — 跟 BB/U本位 同款 */
+.sc-entrust {
   position: relative;
-  padding-bottom: 4px;
-
-  &::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 2px;
-    background: #a13cff;
-    border-radius: 1px;
-  }
-}
-
-.line {
-  height: 5px;
-  background: var(--ex-div-bgColor10);
-}
-
-.entrust {
-  height: 50px;
   display: flex;
-  padding: 0 15px;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid var(--ex-border-color);
-
-  .entrustL {
-    font-size: 14px;
-    color: #999;
-    display: flex;
-
-    .entrustItem {
-      margin-right: 16px;
-    }
-  }
-
-  .entrustR {
-    display: flex;
-    align-items: center;
-
-    .entrustRImg {
-      width: 16px;
-      height: 12px;
-    }
-
-    .entrustRUpdateImg {
-      margin-left: 20px;
-      width: 12px;
-      height: 12px;
-    }
-  }
+  padding: 0 18px;
+  height: 36px;
+  background: transparent;
 }
+
+.sc-entrust .entrustL {
+  flex: 0 0 80%;
+  display: flex;
+  align-items: center;
+  height: 36px;
+  background: transparent;
+}
+
+.sc-entrust .entrustItem {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  margin-right: 18px;
+  padding: 0 0 4px;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  position: relative;
+  background: transparent !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sc-entrust .entrustItem.hightItem {
+  color: #f5f3f8 !important;
+  font-weight: 600;
+}
+
+.sc-entrust .entrustItem.hightItem::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 2px;
+  transform: translateX(-50%);
+  width: 18px;
+  height: 3px;
+  background: #a13cff;
+  border-radius: 2px;
+}
+
+/* 通用 hightItem 兜底（其他地方用到） */
+.hightItem {
+  color: #f5f3f8 !important;
+}
+
+/* 眼睛 / 刷新 — 右 20% 区透明 */
+.sc-entrust .entrustR {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+  background: transparent;
+
+  .entrustRImg {
+    width: 18px;
+    height: 18px;
+    opacity: 0.75;
+    cursor: pointer;
+    transition: opacity 0.18s ease;
+  }
+  .entrustRImg:hover { opacity: 1; }
+  .entrustRImg--off { opacity: 0.35; }
+}
+
+/* 暂无数据 — 自定义 icon-bjwu */
+.sc-no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 0 40px;
+}
+.sc-no-data__img {
+  width: 140px;
+  height: auto;
+  display: block;
+  opacity: 0.95;
+}
+.sc-no-data__text {
+  margin-top: 10px;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 13px;
+}
+
+/* 旧的 .line / .entrust 16x12 小图标已被新 .sc-entrust 规则替代，删除 */
 
 // 分享弹出层
 .share-revenue-box {

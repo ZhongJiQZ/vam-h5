@@ -58,9 +58,9 @@
         @error="onBannerImageReady"
       />
       <div class="hero__overlay">
-        <h1 class="hero__title">How Colombia will move<br />towards an open data ecosystem</h1>
+        <h1 class="hero__title">{{ _t18('home_hero_title') }}</h1>
         <button class="hero__cta" @click="onHeroCta">
-          <span>View Now</span>
+          <span>{{ _t18('home_view_now') }}</span>
         </button>
       </div>
       <!-- 3 行情卡（叠在 hero 底部） -->
@@ -119,7 +119,7 @@ import { useTradeStore } from '@/store/trade/index'
 import { useMainStore } from '@/store/index.js'
 import { useRouter } from 'vue-router'
 import { onMounted, computed, ref, watch } from 'vue'
-import { _isRFDByChangePercent, _absChangePercentStr } from '@/utils/public'
+import { _t18, _isRFDByChangePercent, _absChangePercentStr } from '@/utils/public'
 import { getKlineHistory } from '@/api/common/kline.js'
 import {
   collectHomeBannerImageUrls,

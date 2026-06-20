@@ -305,6 +305,8 @@ const delegateTotal = ref('') // 数量（手）
 const delegatePrice = ref('') // 价格（限价）
 const sliderValue = ref(0) // 滑块百分比
 const marginValue = ref('0') // 保证金
+/** 当 slider 由用户手动输入数量推出来时打开，跳过 sliderValue watch 中对 delegateTotal 的反算，避免覆盖用户输入 */
+const sliderFromInput = ref(false)
 
 /**
  * 下单数量精度
@@ -461,6 +463,19 @@ const turnoverChange = () => {
       val = ''
     }
     delegateTotal.value = val
+    // 输入数量 → 自动算滑块
+    const lotsInt = toNum(val, 0)
+    if (maxLotsInt > 0 && lotsInt > 0) {
+      const pct = Math.round((lotsInt / maxLotsInt) * 100)
+      const clamped = Math.min(100, Math.max(0, pct))
+      if (clamped !== sliderValue.value) {
+        sliderFromInput.value = true
+        sliderValue.value = clamped
+      }
+    } else if (lotsInt === 0 && sliderValue.value !== 0) {
+      sliderFromInput.value = true
+      sliderValue.value = 0
+    }
     return
   }
 
@@ -487,6 +502,20 @@ const turnoverChange = () => {
   }
 
   delegateTotal.value = val
+
+  // 输入数量 → 自动算滑块百分比 (打 sliderFromInput 标，让 watch 跳过反算保留原值)
+  const lotsForRatio = toNum(val, 0)
+  if (maxLots > 0 && lotsForRatio > 0) {
+    const pct = Math.round((lotsForRatio / maxLots) * 100)
+    const clamped = Math.min(100, Math.max(0, pct))
+    if (clamped !== sliderValue.value) {
+      sliderFromInput.value = true
+      sliderValue.value = clamped
+    }
+  } else if (lotsForRatio === 0 && sliderValue.value !== 0) {
+    sliderFromInput.value = true
+    sliderValue.value = 0
+  }
 }
 
 /**
@@ -583,6 +612,11 @@ const bearableValue = computed(() => {
 watch(
   () => sliderValue.value,
   (n) => {
+    // 由用户手动输入数量推出来的 slider 变化：跳过反算，保留用户原值
+    if (sliderFromInput.value) {
+      sliderFromInput.value = false
+      return
+    }
     const maxLots = toNum(bearableValue.value, 0)
 
     if (!maxLots) {

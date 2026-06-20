@@ -122,8 +122,8 @@
             :speed="100"
             :stroke-width="`100`"
             :size="`150px`"
-            :layer-color="`#D9D9D9`"
-            :color="`#138A5D`"
+            :layer-color="`rgba(255,255,255,0.08)`"
+            :color="titleFlag ? `#31c48d` : `#ff435d`"
             :text="countdownNum(countDown)"
           />
         </div>
@@ -729,60 +729,65 @@ const handelClose = () => {
   color: var(--ex-font-color10) !important;
 }
 .hightColor {
-  background-color: var(--ex-div-bgColor1) !important;
-  color: var(--ex-font-color) !important;
+  background: linear-gradient(135deg, #a13cff 0%, #7d2bd6 100%) !important;
+  color: #ffffff !important;
+  border-color: rgba(161, 60, 255, 0.5) !important;
+  box-shadow: 0 0 10px rgba(161, 60, 255, 0.3);
 }
-.firstList::-webkit-scrollbar {
-  display: none;
-}
-//输入量
+.firstList::-webkit-scrollbar { display: none; }
+
+/* 输入量 */
 .inputQuantity {
   display: flex;
   align-items: center;
-  height: 50px;
-  background: var(--ex-default-background-color) !important;
-  border-radius: 3px 3px 3px 3px;
-  opacity: 1;
-  border: 1px solid var(--ex-border-color2);
+  height: 48px;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   font-size: 14px;
-  color: var(--ex-default-font-color);
+  font-weight: 500;
+  color: #f5f3f8;
   width: 100%;
-  padding: 0 10px;
-  :deep(.van-cell) {
-    padding: 0 !important;
+  padding: 0 14px;
+  box-sizing: border-box;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  &:focus {
+    outline: none;
+    border-color: rgba(161, 60, 255, 0.55);
+    box-shadow: 0 0 0 3px rgba(161, 60, 255, 0.12);
   }
+  :deep(.van-cell) { padding: 0 !important; }
   :deep(.van-field__control::-webkit-input-placeholder) {
-    color: var(--ex-font-color1);
+    color: rgba(255, 255, 255, 0.35);
   }
 }
-input::-webkit-input-placeholder {
-  color: var(--ex-font-color1);
-}
-input::-moz-input-placeholder {
-  color: var(--ex-font-color1);
-}
-input::-ms-input-placeholder {
-  color: var(--ex-font-color1);
-}
+input::-webkit-input-placeholder { color: rgba(255, 255, 255, 0.35); }
+input::-moz-input-placeholder { color: rgba(255, 255, 255, 0.35); }
+input::-ms-input-placeholder { color: rgba(255, 255, 255, 0.35); }
 
 .quantityList {
-  padding: 10px 0 5px;
+  padding: 12px 0 5px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: flex-start;
+  gap: 10px;
   .item {
-    width: 25%;
+    flex: 0 0 calc((100% - 30px) / 4);
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 75px;
     height: 36px;
-    background: var(--ex-div-bgColor17);
-    color: var(--ex-font-color6);
-    border-radius: 3px 3px 3px 3px;
-    font-size: 14px;
-    margin: 0 5px 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #f5f3f8;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    margin: 0 0 4px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    box-sizing: border-box;
   }
 }
 .upsAndDowns {
@@ -792,42 +797,59 @@ input::-ms-input-placeholder {
   align-items: center;
   justify-content: space-between;
   bottom: 0;
-  height: 104px;
-  background-color: var(--ex-default-background-color);
+  height: 96px;
+  background-color: transparent;
   z-index: 9;
-  padding: 0 15px;
+  padding: 12px 14px calc(20px + env(safe-area-inset-bottom));
+  gap: 12px;
   .item {
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 165px;
     height: 50px;
-    font-size: 16px;
-    color: var(--ex-font-color);
-    border-radius: 3px 3px 3px 3px;
+    font-size: 17px;
+    font-weight: 600;
+    color: #ffffff;
+    border-radius: 26px;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: opacity 0.18s ease;
   }
+  .item:active { opacity: 0.85; }
   .ups {
-    background: var(--ex-div-bgColor1);
+    background: linear-gradient(135deg, #3cd699 0%, #1eb47a 100%);
+    box-shadow:
+      0 0 14px rgba(49, 196, 141, 0.55),
+      0 0 4px rgba(49, 196, 141, 0.4);
   }
   .downs {
-    background-color: var(--ex-div-bgColor7);
+    background: linear-gradient(135deg, #ff2447 0%, #db1638 100%);
+    box-shadow:
+      0 0 14px rgba(255, 36, 71, 0.55),
+      0 0 4px rgba(255, 36, 71, 0.4);
   }
 }
+/* 弹窗顶部标题：币种 + Long/Short 标识 */
 .titleLeft {
   font-size: 16px;
-  color: var(--ex-default-font-color);
+  color: #f5f3f8;
   display: flex;
   align-items: center;
+  font-weight: 600;
   .titleName {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    padding: 5px 8px;
-    background-color: var(--ex-div-bgColor1);
+    padding: 4px 10px;
+    background: linear-gradient(135deg, #3cd699 0%, #1eb47a 100%);
     border-radius: 6px;
     font-size: 12px;
-    color: var(--ex-font-color);
+    font-weight: 600;
+    color: #ffffff;
     margin-left: 10px;
+    box-shadow: 0 0 8px rgba(49, 196, 141, 0.4);
 
     .titleName__icon {
       width: 14px;
@@ -837,15 +859,17 @@ input::-ms-input-placeholder {
     }
   }
   .titleColor {
-    background: var(--ex-div-bgColor9);
+    background: linear-gradient(135deg, #ff2447 0%, #db1638 100%);
+    box-shadow: 0 0 8px rgba(255, 36, 71, 0.4);
   }
 }
 .popupContain {
   .item {
     .firstHeader {
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       font-size: 14px;
-      color: var(--ex-default-font-color);
+      font-weight: 600;
+      color: #f5f3f8;
     }
     .firstList {
       display: flex;
@@ -853,23 +877,24 @@ input::-ms-input-placeholder {
       flex-wrap: nowrap;
       gap: 10px;
       overflow-x: auto;
-      margin-bottom: 30px;
+      margin-bottom: 24px;
       -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
 
-      &::-webkit-scrollbar {
-        display: none;
-      }
+      &::-webkit-scrollbar { display: none; }
 
       .firstItem {
         flex: 0 0 auto;
-        width: 75px;
-        height: 66px;
+        width: 78px;
+        height: 64px;
         display: flex;
         flex-direction: column;
-        border-radius: 8px;
+        border-radius: 10px;
         overflow: hidden;
         box-sizing: border-box;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        transition: all 0.18s ease;
+        cursor: pointer;
 
         .firstItemTop {
           flex: 1;
@@ -878,8 +903,8 @@ input::-ms-input-placeholder {
           justify-content: center;
           font-size: 14px;
           font-weight: 600;
-          background: #9ca3af;
-          color: #fff;
+          background: rgba(255, 255, 255, 0.06);
+          color: #f5f3f8;
           line-height: 1;
         }
 
@@ -888,22 +913,23 @@ input::-ms-input-placeholder {
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 14px;
-          background: color-mix(in srgb, #9ca3af 22%, transparent);
-          color: #333;
+          font-size: 12px;
+          background: rgba(255, 255, 255, 0.03);
+          color: #aaa5b3;
           line-height: 1;
         }
 
-        /* 选中：上与底部「看涨」同色，下为同色半透明 */
+        /* 选中：紫色渐变 */
         &--selected {
+          border-color: rgba(161, 60, 255, 0.5);
+          box-shadow: 0 0 10px rgba(161, 60, 255, 0.3);
           .firstItemTop {
-            background: var(--ex-div-bgColor1);
-            color: var(--ex-font-color);
+            background: linear-gradient(135deg, #a13cff 0%, #7d2bd6 100%);
+            color: #ffffff;
           }
-
           .firstItemBottom {
-            background: color-mix(in srgb, var(--ex-div-bgColor1) 28%, transparent);
-            color: var(--ex-div-bgColor1);
+            background: rgba(161, 60, 255, 0.15);
+            color: #c89bff;
             font-weight: 600;
           }
         }
@@ -911,37 +937,95 @@ input::-ms-input-placeholder {
     }
   }
   .balance {
-    font-size: 14px;
-    color: var(--ex-default-font-color);
+    font-size: 13px;
+    color: #aaa5b3;
     display: flex;
+    margin-top: 12px;
+    .fw-num { color: #f5f3f8; font-weight: 600; }
   }
   .okButton {
-    padding-top: 50px;
+    padding-top: 32px;
     .button {
       height: 50px;
-      background: var(--ex-div-bgColor1);
-      border-radius: 3px 3px 3px 3px;
+      background: linear-gradient(135deg, #3cd699 0%, #1eb47a 100%);
+      border-radius: 26px;
       font-size: 16px;
-      color: var(--ex-font-color);
+      font-weight: 600;
+      color: #ffffff;
+      letter-spacing: 0.3px;
       display: flex;
       justify-content: center;
       align-items: center;
+      box-shadow: 0 4px 16px rgba(49, 196, 141, 0.4);
+      transition: opacity 0.18s ease;
+      &:active { opacity: 0.85; }
     }
   }
 }
+/* GXPEX 倒计时弹窗：暗紫底 + 紫光晕 + 绿/红圆环 */
 .countdown {
-  font-size: 16px;
-  color: var(--ex-default-font-color);
+  position: relative;
+  font-size: 14px;
+  color: #f5f3f8;
+  background: #0a0612;
+  border-radius: 16px;
+  padding: 18px 18px 22px;
+  overflow: hidden;
+  min-width: 300px;
+  /* 高斯紫光晕 */
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #a642ec 0%, #802bda 50%, transparent 80%);
+    filter: blur(60px);
+    opacity: 0.35;
+    pointer-events: none;
+    z-index: 0;
+  }
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -50px;
+    left: -50px;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #6f33d6 0%, #4d22a8 50%, transparent 80%);
+    filter: blur(60px);
+    opacity: 0.3;
+    pointer-events: none;
+    z-index: 0;
+  }
+  > * { position: relative; z-index: 1; }
+
   .closeBtn {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #f5f3f8;
     .closeSvg {
-      width: 24px;
-      height: 24px;
+      width: 22px;
+      height: 22px;
       object-fit: contain;
       display: block;
+      cursor: pointer;
+      filter: brightness(0) invert(1);
+      opacity: 0.6;
+      padding: 4px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-sizing: content-box;
+      transition: opacity 0.18s ease;
+      &:active { opacity: 1; }
     }
   }
   .countdownHeader {
@@ -949,48 +1033,145 @@ input::-ms-input-placeholder {
     align-items: flex-end;
     justify-content: center;
     font-size: 36px;
-    font-weight: bold;
+    font-weight: 800;
     margin-bottom: 15px;
+    color: #f5f3f8;
     .countdownHeaderName {
       margin-left: 5px;
-      font-size: 16px;
-      color: var(--ex-passive-font-color);
+      font-size: 14px;
+      color: #aaa5b3;
+      font-weight: 400;
     }
   }
   .countdownOver {
-    color: var(--ex-passive-font-color);
-    font-size: 14px;
+    color: #aaa5b3;
+    font-size: 13px;
     margin-bottom: 20px;
     text-align: center;
   }
   .circle {
-    margin-top: 20px;
+    margin: 8px 0 6px;
     text-align: center;
   }
   :deep(.van-circle__text) {
-    font-size: 28px;
-    color: var(--ex-default-font-color);
+    font-size: 30px;
+    font-weight: 700;
+    color: #f5f3f8;
     font-family: 'DINOT-Medium' !important;
+    font-variant-numeric: tabular-nums;
   }
   .countList {
     .item {
       display: flex;
       justify-content: space-between;
-      font-size: 14px;
-      color: var(--ex-passive-font-color);
-      padding: 10px 0;
+      align-items: center;
+      font-size: 12px;
+      color: #aaa5b3;
+      padding: 6px 0;
+      min-height: 22px;
       .itemRight {
-        color: var(--ex-default-font-color);
+        color: #f5f3f8;
+        font-weight: 500;
+        font-variant-numeric: tabular-nums;
       }
     }
   }
   .margin20 {
-    padding-top: 20px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    margin-top: 8px;
   }
   .countFooter {
-    padding-top: 20px;
-    font-size: 14px;
-    color: var(--ex-default-font-color);
+    padding-top: 14px;
+    margin-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    font-size: 11px;
+    color: #aaa5b3;
+    line-height: 1.4;
+    text-align: center;
+  }
+}
+</style>
+
+<!-- 弹窗外层全局样式 (van-popup Teleport 出来 scoped 触不到) -->
+<style lang="scss">
+/* 看涨看跌弹窗：黑底 + 紫色高斯光晕 + 顶部关闭按钮强化
+   注意：不要覆盖 .van-popup 的 position:fixed，否则弹窗会失去底部锚定 */
+.van-popup.van-popup--bottom {
+  background: #0a0612 !important;
+  overflow: hidden;
+}
+
+/* 用 popupHeader 作为光晕容器的 anchor，避免动到 popup 自身定位 */
+.van-popup.van-popup--bottom .popupHeader {
+  position: relative;
+  border-bottom-color: rgba(255, 255, 255, 0.06) !important;
+  overflow: visible;
+  z-index: 1;
+}
+
+/* 紫高斯光晕 — 左上，放在 header 的 ::before 里挂在 popup 角落 */
+.van-popup.van-popup--bottom .popupHeader::before {
+  content: '';
+  position: absolute;
+  top: -30px;
+  left: -60px;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #a642ec 0%, #802bda 50%, transparent 80%);
+  filter: blur(70px);
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* 紫高斯光晕 — 右下，放在 popupContent 的 ::after 里 */
+.van-popup.van-popup--bottom .popupContent {
+  position: relative;
+  z-index: 1;
+}
+.van-popup.van-popup--bottom .popupContent::after {
+  content: '';
+  position: absolute;
+  bottom: -60px;
+  right: -50px;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #6f33d6 0%, #4d22a8 45%, transparent 80%);
+  filter: blur(60px);
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* slot 内容抬高 */
+.van-popup.van-popup--bottom .popupContain,
+.van-popup.van-popup--bottom .countdown {
+  position: relative;
+  z-index: 1;
+}
+
+/* 关闭按钮强化：圆形描边 + 白图标 */
+.van-popup.van-popup--bottom .close-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.18s ease;
+  &:active {
+    background: rgba(255, 255, 255, 0.12) !important;
+  }
+  .close-img {
+    width: 14px !important;
+    height: 14px !important;
+    filter: brightness(0) invert(1);
+    opacity: 0.85;
   }
 }
 </style>

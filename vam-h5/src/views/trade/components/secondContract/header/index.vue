@@ -1,96 +1,77 @@
 <template>
-  <div>
-    <div class="top">
-      <div class="first">
-        <!-- 打开弹窗 -->
-        <div class="firLeft">
-          <svg-load
-            name="cebian17x14"
-            class="firLeftImg"
-            @click="emits('showSidePopup')"
-          ></svg-load>
-          <div class="fw-bold">{{ coinInfo.showSymbol }}</div>
+  <div class="sc-header">
+    <!-- 顶部行：币种 + 涨跌% 左 / 双按钮 右 -->
+    <div class="sc-symbol-row">
+      <div class="symbol-pill" @click="emits('showSidePopup')">
+        <img v-if="coinInfo.logo" :src="coinInfo.logo" class="symbol-pill__logo" alt="" />
+        <div v-else class="symbol-pill__logo symbol-pill__logo--ph"></div>
+        <div class="symbol-pill__name fw-bold">
+          {{ coinInfo.showSymbol }}
         </div>
-        <!-- 秒合约规则，收藏 -->
-        <div class="first">
-          <svg-load
-            name="guize"
-            class="senLeftImg"
-            @click="_toView('/tradingRules?type=0')"
-          ></svg-load>
-          <!-- <svg-load
-            v-if="mainStore.hasOption"
-            @click="setCollectByCoin"
-            :name="coinCollect ? 'tianjia24x24-x' : 'tianjia24x24-w'"
-            class="senLeftImg"
-          ></svg-load> -->
+        <img :src="iconChevron" class="symbol-pill__chev" alt="" />
+      </div>
+
+      <div class="symbol-actions">
+        <div class="action-info" @click="_toView('/tradingRules?type=0')">
+          <img :src="iconInfo" class="action-info__icon" alt="" />
         </div>
       </div>
-      <div class="second">
-        <!-- 当前币种价格 -->
-        <div class="secondLeft">
-          <div :class="[_isRFD(coinPriceInfo.open, coinPriceInfo.close, 'buy', 'rise'), ' fw-num']">
-            {{ coinPriceInfo.close || '0.00' }}
-          </div>
-          <div
-            :class="[
-              _isRFDByChangePercent(coinPriceInfo?.priceChangePercent, 'buy', 'rise'),
-              ' rfd-sign secondLeftB fw-num'
-            ]"
-            v-if="false"
-          >
-            {{ _absChangePercentStr(coinPriceInfo?.priceChangePercent) }}%
-          </div>
+    </div>
+
+    <!-- 价格 + 涨跌% (左) / 高/低/量 (右) -->
+    <div class="sc-price-row">
+      <div class="sc-price-block">
+        <div
+          class="sc-price"
+          :class="_isRFD(coinPriceInfo.open, coinPriceInfo.close, 'buy', 'rise')"
+        >
+          <span class="fw-num">{{ coinPriceInfo.close || '0.00' }}</span>
         </div>
-        <div class="secondRight">
-          <!-- 高 -->
-          <div class="secondItem">
-            <div class="itemL">{{ _t18(`k_hight`, ['ebc']) }}</div>
-            <div class="itemR fw-num" v-if="coinPriceInfo?.high24">
-              {{ priceFormat(coinPriceInfo.high24) }}
-            </div>
-            <div class="itemR fw-num" v-else>
-              {{ priceFormat(tradeStore.klineTicker.highPrice || 0) }}
-            </div>
-          </div>
-          <!-- 低 -->
-          <div class="secondItem">
-            <div class="itemL">{{ _t18(`k_low`, ['ebc']) }}</div>
-            <div class="itemR fw-num" v-if="coinPriceInfo?.low24">
-              {{ priceFormat(coinPriceInfo.low24) }}
-            </div>
-            <div class="itemR fw-num" v-else>
-              {{ priceFormat(tradeStore.klineTicker.lowPrice || 0) }}
-            </div>
-          </div>
-          <!-- 量 -->
-          <div class="secondItem">
-            <div class="itemL">{{ _t18(`k_quantity`) }}</div>
-            <div class="itemR fw-num" v-if="coinPriceInfo?.volume24">
-              {{ countFormat(coinPriceInfo.volume24) }}
-            </div>
-            <div class="itemR fw-num" v-else>
-              {{ countFormat(tradeStore.klineTicker.volume || 0) }}
-            </div>
-          </div>
+        <div
+          :class="[
+            _isRFDByChangePercent(coinPriceInfo?.priceChangePercent, 'buy', 'rise'),
+            'rfd-sign sc-change fw-num'
+          ]"
+        >
+          {{ _absChangePercentStr(coinPriceInfo?.priceChangePercent) }}%
+        </div>
+      </div>
+      <div class="sc-stats">
+        <div class="sc-stat-item">
+          <span class="sc-stat-item__label">{{ _t18(`k_hight`, ['ebc']) }}</span>
+          <span class="sc-stat-item__value fw-num">
+            {{ priceFormat(coinPriceInfo?.high24 || tradeStore.klineTicker.highPrice || 0) }}
+          </span>
+        </div>
+        <div class="sc-stat-item">
+          <span class="sc-stat-item__label">{{ _t18(`k_low`, ['ebc']) }}</span>
+          <span class="sc-stat-item__value fw-num">
+            {{ priceFormat(coinPriceInfo?.low24 || tradeStore.klineTicker.lowPrice || 0) }}
+          </span>
+        </div>
+        <div class="sc-stat-item">
+          <span class="sc-stat-item__label">{{ _t18(`k_quantity`) }}</span>
+          <span class="sc-stat-item__value fw-num">
+            {{ countFormat(coinPriceInfo?.volume24 || tradeStore.klineTicker.volume || 0) }}
+          </span>
         </div>
       </div>
     </div>
   </div>
 </template>
+
 <script setup>
 import { useTradeStore } from '@/store/trade'
 import { countFormat, priceFormat } from '@/utils/decimal'
-import { _t18, _isRFD, _isRFDByChangePercent, _absChangePercentStr } from '@/utils/public'
+import { _t18, _toView, _isRFD, _isRFDByChangePercent, _absChangePercentStr } from '@/utils/public'
 import { useMainStore } from '@/store/index.js'
 import { onMounted } from 'vue'
+import iconChevron from '@/assets/images/gxpex/trade/icon-symbol-info.svg'
+import iconInfo from '@/assets/images/gxpex/help/icon-faq-info.svg'
 const mainStore = useMainStore()
 
 const props = defineProps({
-  coinInfo: {
-    type: Object,
-    default: () => {}
-  }
+  coinInfo: { type: Object, default: () => {} }
 })
 const coinCollect = ref()
 onMounted(() => {
@@ -103,140 +84,147 @@ watch(
   },
   { deep: true }
 )
-/**
- * 黄金白银取值
- */
 
 const tradeStore = useTradeStore()
 const coinPriceInfo = computed(() => {
   return tradeStore.allCoinPriceInfo[props.coinInfo.coin] || {}
 })
 const emits = defineEmits(['showSidePopup'])
-// 点击收藏按钮
-const setCollectByCoin = () => {}
 </script>
-<style lang="scss" scoped>
-.hightItem {
-  color: var(--ex-active-font-color) !important;
-}
-.top {
-  padding: 20px 15px 0;
-  z-index: 9;
-  background-color: var(--ex-default-background-color);
-  .first {
-    display: flex;
-    justify-content: space-between;
-    .firLeft {
-      display: flex;
-      align-items: center;
-      font-size: 16px;
-      color: var(--ex-default-font-color);
-      .firLeftImg {
-        width: 17px;
-        height: 14px;
-        margin-right: 10px;
-      }
-      .firNum {
-        font-size: 14px;
-        margin-left: 10px;
-      }
-    }
-    .senLeftImg {
-      margin-left: 10px;
-      display: block;
-      width: 24px;
-      height: 24px;
-    }
-  }
-  .second {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 0 10px;
-    .secondLeft {
-      font-size: 36px;
-      font-weight: bold;
-      color: var(--ex-font-color10);
-      > * {
-        transition: 0.3s;
-      }
-      .secondLeftB {
-        font-size: 14px;
-        margin-top: 5px;
-      }
-    }
-    .secondRight {
-      .secondItem {
-        display: flex;
-        align-items: center;
-        padding: 6px 0;
-        font-size: 14px;
-        justify-content: space-between;
-        .itemL {
-          color: var(--ex-passive-font-color);
-          margin-right: 10px;
-        }
 
-        .itemR {
-          color: var(--ex-default-font-color);
-        }
-      }
-    }
-  }
-  .third {
-    margin-top: 20px;
-    .list {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      .thirdLeft {
-        display: flex;
-        font-size: 14px;
-        color: var(--ex-default-font-color);
-        .item {
-          margin-right: 30px;
-        }
-      }
-      .thirdRight {
-        display: flex;
-        align-items: center;
-        font-size: 14px;
-        color: var(--ex-font-color9);
-        .thirdRightImg {
-          width: 10px;
-          height: 6px;
-          margin-left: 5px;
-        }
-      }
-    }
-  }
+<style lang="scss" scoped>
+.sc-header {
+  padding: 0;
+  background: transparent;
 }
-.selectTimes {
-  position: fixed;
-  height: 100vh;
-  width: var(--ex-max-width);
-  background: rgba($color: #000000, $alpha: 0.6);
-  z-index: 10;
-  .times {
-    background-color: var(--ex-default-background-color);
-    position: absolute;
-    width: 100%;
-    height: 84px;
-    display: flex;
-    align-items: center;
-    border-radius: 0px 0px 15px 15px;
-    .item {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 15px;
-      width: 37px;
-      height: 23px;
-      background: var(--ex-div-bgColor12);
-      border-radius: 2px 2px 2px 2px;
-      font-size: 12px;
-      color: var(--ex-default-font-color);
-    }
+
+/* 第 1 行：币种 + 按钮 (跟 U本位/BB 同款 28px 高小尺寸) */
+.sc-symbol-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px 8px;
+  gap: 8px;
+}
+
+.symbol-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  min-width: 0;
+
+  &__logo {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    object-fit: contain;
+    background: rgba(255, 255, 255, 0.08);
+    flex-shrink: 0;
+  }
+  &__logo--ph { background: rgba(255, 255, 255, 0.12); }
+
+  &__name {
+    font-family: 'Inter', 'PingFang SC', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #f5f3f8;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  &__chev {
+    width: 10px;
+    height: 10px;
+    opacity: 0.6;
+    margin-left: 2px;
+  }
+
+}
+
+.symbol-actions {
+  display: flex;
+  align-items: center;
+}
+
+.action-info {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  &__icon {
+    width: 18px;
+    height: 18px;
+    /* 把 SVG 自带的紫色滤成白色，再用 opacity 调暗，跟 U本位 icon 同调 */
+    filter: brightness(0) invert(1);
+    opacity: 0.6;
+    transition: opacity 0.18s ease;
+  }
+  &:active &__icon { opacity: 1; }
+}
+
+/* 第 2 行：左 价格+涨跌% 列 / 右 高低量 */
+.sc-price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 4px 14px 12px;
+  gap: 12px;
+}
+
+.sc-price-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.sc-price {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.3px;
+  font-variant-numeric: tabular-nums;
+  color: #f5f3f8;
+
+  &.rise { color: #31c48d; }
+  &.fall { color: #ff435d; }
+}
+
+.sc-change {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.sc-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sc-stat-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+
+  &__label {
+    color: #aaa5b3;
+    min-width: 28px;
+  }
+  &__value {
+    color: #f5f3f8;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
   }
 }
 </style>

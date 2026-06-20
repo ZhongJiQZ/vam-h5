@@ -243,7 +243,7 @@ onMounted(() => {
 .trade-header {
   position: relative;
   z-index: 2;
-  background: #111216;
+  background: transparent;
   padding-top: env(safe-area-inset-top);
 }
 
@@ -335,6 +335,37 @@ onMounted(() => {
   :deep(.entrustR) {
     background: transparent !important;
   }
+
+  /* 订单区两侧 padding 18 — 顶部 tab 行和图标都更松 */
+  :deep(.orderBox) {
+    padding: 4px 18px 24px !important;
+    position: relative;
+  }
+
+  /* 交易页空状态换成自选页那张 Figma 占位图 */
+  :deep(.noData) {
+    position: relative;
+    padding: 30px 0 50px !important;
+  }
+  :deep(.noData .noDatAimg) {
+    display: none !important;
+  }
+  :deep(.noData::before) {
+    content: '';
+    display: block;
+    width: 160px;
+    height: 120px;
+    margin: 0 auto 12px;
+    background-image: url('@/assets/images/gxpex/quote/empty-watchlist.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+  :deep(.noData .noName) {
+    color: rgba(255, 255, 255, 0.55) !important;
+    font-size: 13px !important;
+    margin-top: 4px !important;
+  }
   :deep(.van-cell) {
     background: transparent !important;
   }
@@ -349,11 +380,16 @@ onMounted(() => {
   :deep(.us-order-tabs .van-tab) {
     color: rgba(255, 255, 255, 0.55) !important;
     background: transparent !important;
+    font-size: 13px !important;
+    margin-right: 16px !important;
+    padding: 0 !important;
+    flex: none !important;
   }
   :deep(.bb-order-tabs .van-tab--active),
   :deep(.sc-order-tabs .van-tab--active),
   :deep(.us-order-tabs .van-tab--active) {
     color: #f5f3f8 !important;
+    font-weight: 600;
   }
   :deep(.bb-order-tabs .van-tabs__line),
   :deep(.sc-order-tabs .van-tabs__line) {
@@ -361,19 +397,47 @@ onMounted(() => {
     width: 18px !important;
     height: 3px !important;
     border-radius: 2px;
+    bottom: 2px;
   }
-  /* 通用 tab_right 透明（U-standard 单独覆盖） */
+  /* BB/SC tabs 限制 80% 宽，给右侧 20% 留图标区 */
+  :deep(.bb-order-tabs .van-tabs__wrap),
+  :deep(.sc-order-tabs .van-tabs__wrap) {
+    width: 80% !important;
+    overflow: hidden !important;
+    height: 36px !important;
+  }
+  :deep(.bb-order-tabs .van-tabs__nav),
+  :deep(.sc-order-tabs .van-tabs__nav) {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    background: transparent !important;
+  }
+  /* tab_right 透明，右 12px 间距，18×18 Figma 图标 */
   :deep(.bb-order-tabs ~ .tab_right),
   :deep(.sc-order-tabs ~ .tab_right) {
+    position: absolute !important;
+    top: 4px !important;
+    right: 12px !important;
+    padding: 0 !important;
+    z-index: 5;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end;
+    gap: 14px;
+    height: 28px;
     background: transparent !important;
-    padding: 0 12px 0 0 !important;
+    border: none !important;
     .entrustRImg {
       width: 18px;
       height: 18px;
-      padding: 0 6px;
+      padding: 0;
       opacity: 0.75;
-      filter: brightness(1.6);
+      cursor: pointer;
+      transition: opacity 0.18s ease;
+      box-sizing: content-box;
     }
+    .entrustRImg:hover { opacity: 1; }
+    .entrustRImg--off { opacity: 0.35; }
   }
 }
 </style>

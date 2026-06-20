@@ -135,14 +135,16 @@ const showSidePopup = () => {
     -webkit-tap-highlight-color: transparent;
 
     &.hightColor {
-      background: #31c48d;
+      background: linear-gradient(135deg, #3cd699 0%, #1eb47a 100%);
       color: #ffffff;
-      box-shadow: 0 0 10px rgba(49, 196, 141, 0.4);
+      box-shadow: 0 0 12px rgba(49, 196, 141, 0.5);
     }
     &.hightColorRed {
-      background: #ff2d4d;
+      background: linear-gradient(135deg, #ff2447 0%, #db1638 100%);
       color: #ffffff;
-      box-shadow: 0 0 10px rgba(255, 45, 77, 0.55);
+      box-shadow:
+        0 0 14px rgba(255, 36, 71, 0.7),
+        0 0 4px rgba(255, 36, 71, 0.45);
     }
   }
 }
@@ -375,5 +377,110 @@ const showSidePopup = () => {
 
 .u-trade-wrap :deep(.rightSeat) {
   display: none;
+}
+
+/* === BB 订单卡：同 U本位 暗紫卡 + 紧凑明细 + 撤单按钮 === */
+.u-trade-wrap :deep(.hisToryList) {
+  background: #1a1626 !important;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 12px 14px 10px;
+  margin-bottom: 10px;
+}
+
+.u-trade-wrap :deep(.hisToryList .header) {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 6px;
+}
+
+.u-trade-wrap :deep(.hisToryList .header .headerLeft) {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #f5f3f8;
+  font-size: 13px;
+  font-weight: 600;
+  flex: 1;
+  min-width: 0;
+}
+
+/* 买/卖 badge */
+.u-trade-wrap :deep(.hisToryList .header .name) {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+  letter-spacing: 0.2px;
+  background: rgba(49, 196, 141, 0.16);
+  color: #31c48d;
+}
+.u-trade-wrap :deep(.hisToryList .header .name.name2) {
+  background: rgba(255, 67, 93, 0.16);
+  color: #ff435d;
+}
+
+/* 币对名 */
+.u-trade-wrap :deep(.hisToryList .header .pair-name) {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: #f5f3f8 !important;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.2px;
+}
+
+/* 撤单按钮 */
+.u-trade-wrap :deep(.hisToryList .header .headerRight) {
+  flex-shrink: 0;
+  height: 26px;
+  padding: 0 12px;
+  background: rgba(161, 60, 255, 0.12);
+  border: 1px solid rgba(161, 60, 255, 0.2);
+  color: #a13cff;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.18s ease;
+}
+.u-trade-wrap :deep(.hisToryList .header .headerRight:active) {
+  background: rgba(161, 60, 255, 0.22);
+}
+
+/* 明细行 */
+.u-trade-wrap :deep(.hisToryList .list .item) {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #8c8696;
+  padding: 5px 0;
+  gap: 8px;
+  min-height: 20px;
+  > div:first-child {
+    flex-shrink: 0;
+    font-weight: 400;
+  }
+  .numItem {
+    color: #ebe7f0;
+    font-weight: 500;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    letter-spacing: 0.1px;
+  }
 }
 </style>

@@ -6,7 +6,7 @@
       <div class="promo__content">
         <img :src="promoTitle" class="promo__title" alt="Deposit & Earn" />
         <div class="promo__btn">
-          <span>Limited Offer</span>
+          <span>{{ _t18('home_limited_offer') }}</span>
         </div>
       </div>
     </div>
@@ -35,8 +35,8 @@
     <div class="main">
       <!-- Figma 风格 2 列表头 -->
       <div class="market-header">
-        <div class="market-header__name">Name</div>
-        <div class="market-header__price">Price / Change</div>
+        <div class="market-header__name">{{ _t18('home_currencyName') }}</div>
+        <div class="market-header__price">{{ _t18('home_newPrice') }} / {{ _t18('home_upDown') }}</div>
       </div>
 
       <!-- <div v-if="tradeStore.secondContractCoinList.length">
