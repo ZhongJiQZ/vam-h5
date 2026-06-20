@@ -103,17 +103,19 @@
     <van-action-sheet
       v-model:show="showSheet"
       title=""
+      class="assets-picker-sheet"
       style="max-width: var(--ex-max-width); left: 50%; translate: -50%"
     >
-      <div class="walletList">
-        <div
+      <div class="picker-list">
+        <button
           v-for="item in walletOptions"
           :key="item.value"
-          class="walletItem"
+          type="button"
+          class="picker-item"
           @click="selectWallet(item)"
         >
-          {{ item.text }}
-        </div>
+          <span class="picker-item__label">{{ item.text }}</span>
+        </button>
       </div>
     </van-action-sheet>
   </div>
@@ -123,6 +125,7 @@
 import { DIFF_ISFREEZE } from '@/config/index'
 import { useFreeze } from '@/hook/useFreeze'
 import iconBack from '@/assets/images/gxpex/trade/icon-back.svg'
+import '../styles/picker-sheet.scss'
 import { getTransferList, getUserBalance } from '@/api/account'
 import { onMounted, ref, computed, watch } from 'vue'
 import { showToast } from 'vant'
@@ -594,17 +597,5 @@ onMounted(() => {
     pointer-events: none;
     cursor: not-allowed;
   }
-}
-
-.walletList {
-  max-height: 250px;
-}
-
-.walletItem {
-  padding: 15px 16px;
-  font-size: 16px;
-  color: var(--ex-passive-font-color);
-  background: var(--ex-default-background-color);
-  cursor: pointer;
 }
 </style>

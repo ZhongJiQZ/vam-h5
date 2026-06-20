@@ -1,0 +1,68 @@
+/* Teleported van-action-sheet — dark theme for assets pages */
+.assets-picker-sheet.van-popup,
+.assets-picker-sheet.van-action-sheet {
+  background: rgb(34, 28, 49) !important;
+  border-radius: 12px 12px 0 0 !important;
+  color: #fff;
+}
+
+.assets-picker-sheet .van-action-sheet__content {
+  background: rgb(34, 28, 49) !important;
+  padding: 0;
+}
+
+.assets-picker-sheet .picker-list {
+  max-height: 50vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 8px 0 calc(8px + env(safe-area-inset-bottom, 0px));
+}
+
+.assets-picker-sheet .picker-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+
+  &:active {
+    background: rgba(160, 65, 237, 0.12);
+  }
+
+  &:not(:last-child) {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+}
+
+.assets-picker-sheet .picker-item__icon {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  overflow: hidden;
+
+  img,
+  svg {
+    width: 28px;
+    height: 28px;
+    display: block;
+  }
+}
+
+.assets-picker-sheet .picker-item__label {
+  flex: 1;
+  min-width: 0;
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: #fff;
+}

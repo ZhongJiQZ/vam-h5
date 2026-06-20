@@ -112,25 +112,29 @@
     <van-action-sheet
       v-model:show="showSheet"
       title=""
+      class="assets-picker-sheet"
       id="sheetPopup"
       style="max-width: var(--ex-max-width); left: 50%; translate: -50%"
     >
-      <div class="coinList">
-        <div v-for="(item, index) in action" :key="item.id" class="coinItem" @click="selectCoin(item, index)">
-          <div class="svgImg">
+      <div class="picker-list">
+        <button
+          v-for="(item, index) in action"
+          :key="item.id ?? item.coin ?? index"
+          type="button"
+          class="picker-item"
+          @click="selectCoin(item, index)"
+        >
+          <span class="picker-item__icon">
             <image-load
               v-if="displayIconUrl(item)"
               :filePath="displayIconUrl(item)"
               alt=""
-              class="iconImg"
               @error="onIconError(item?.coin)"
             />
-            <svg-load v-else :name="displaySvgIcon(item)" class="icon" />
-          </div>
-          <div>
-            <p>{{ item.coin?.toLocaleUpperCase() }}</p>
-          </div>
-        </div>
+            <svg-load v-else :name="displaySvgIcon(item)" />
+          </span>
+          <span class="picker-item__label">{{ item.coin?.toLocaleUpperCase() }}</span>
+        </button>
       </div>
     </van-action-sheet>
   </div>
@@ -148,6 +152,7 @@ import { rate, toExchange } from '@/api/account'
 import { debounce } from 'lodash'
 import { priceFormat } from '@/utils/decimal.js'
 import iconBack from '@/assets/images/gxpex/trade/icon-back.svg'
+import '../styles/picker-sheet.scss'
 import { ref, computed, onMounted, watch } from 'vue'
 import { useAccountStore } from '@/store/account/index'
 import { useUserStore } from '@/store/user/index'
@@ -713,51 +718,6 @@ const submit = () => {
 
   &:active {
     opacity: 0.92;
-  }
-}
-
-.coinList {
-  max-height: 250px;
-}
-
-.coinItem {
-  display: flex;
-  align-items: center;
-  padding: 15px 0;
-  flex: 1;
-  background: var(--ex-default-background-color);
-
-  div {
-    flex: 1;
-  }
-
-  .svgImg {
-    text-align: right;
-
-    .icon {
-      text-align: right;
-      font-size: 30px;
-    }
-
-    img {
-      width: 24px !important;
-      height: 24px !important;
-    }
-  }
-
-  p {
-    font-size: 16px;
-    color: var(--ex-passive-font-color);
-  }
-
-  & > div:first-child {
-    text-align: end;
-    margin-right: 5px;
-  }
-
-  & > div:last-child {
-    text-align: start;
-    margin-left: 5px;
   }
 }
 </style>
