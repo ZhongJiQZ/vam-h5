@@ -1,87 +1,102 @@
 <!-- 兑换 -->
 <template>
-  <div class="swap-page">
-    <DarkHeaderBar :title="_t18('swap')" :border_bottom="false" right="" />
+  <div class="page page--swap">
+    <header class="swap-header">
+      <button type="button" class="swap-header__back" aria-label="back" @click="_back()">
+        <img :src="iconBack" alt="" class="swap-header__back-icon" />
+      </button>
+      <h1 class="swap-header__title">{{ _t18('swap') }}</h1>
+    </header>
 
-    <div class="swap-page__body">
-      <div class="swap-page__sheet">
-        <div class="swap-page__sheet-bg" aria-hidden="true" />
-        <div class="swap-page__panel">
-          <div class="swap-card">
-            <div class="swap-box swap-box--from">
-              <p class="swap-balance">
-                {{ _t18('swap_available') }}
-                <span class="swap-balance__num ff-num">{{ priceFormat(availableAmount || 0) }}</span>
-                {{ list1Current?.coin?.toLocaleUpperCase() }}
-              </p>
-              <div class="swap-row">
-                <input v-model="fromNum" type="number" class="swap-input ff-num" :placeholder="_t18('swap_input')" />
-                <div class="swap-row__meta">
-                  <div class="swap-all" @click="fromNum = String(list1Current?.amount || '0')">
-                    {{ _t18('swap_all') }}
-                  </div>
-                  <span class="swap-divider">|</span>
-                  <div class="swap-coin" @click="showAction('from')">
-                    {{ list1Current?.coin?.toLocaleUpperCase() }}
-                    <div class="swap-coin__icon">
-                      <image-load
-                        v-if="displayIconUrl(list1Current)"
-                        :filePath="displayIconUrl(list1Current)"
-                        alt=""
-                        class="swap-coin__img"
-                        @error="onIconError(list1Current?.coin)"
-                      />
-                      <svg-load v-else :name="displaySvgIcon(list1Current)" class="swap-coin__svg" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="swap-fab-wrap">
-              <button type="button" class="swap-fab" aria-label="swap" @click="jiaohuan()">
-                <img :src="exchangeIcon" alt="" class="swap-fab__icon" />
+    <main class="swap-main">
+      <div class="swap-stack">
+        <section class="swap-card">
+          <div class="swap-panel swap-panel--from">
+            <div class="swap-panel__row">
+              <button type="button" class="swap-token" @click="showAction('from')">
+                <span class="swap-token__icon">
+                  <image-load
+                    v-if="displayIconUrl(list1Current)"
+                    :filePath="displayIconUrl(list1Current)"
+                    alt=""
+                    @error="onIconError(list1Current?.coin)"
+                  />
+                  <svg-load v-else :name="displaySvgIcon(list1Current)" />
+                </span>
+                <span class="swap-token__symbol">{{ list1Current?.coin?.toLocaleUpperCase() }}</span>
+                <span class="swap-token__chevron" aria-hidden="true"></span>
               </button>
-            </div>
-
-            <div class="swap-box swap-box--to">
-              <div class="swap-row">
-                <input v-model="toNum" type="number" disabled class="swap-input swap-input--to ff-num"
-                  :placeholder="_t18('swap_number')" />
-                <div class="swap-row__meta">
-                  <div class="swap-coin swap-coin--solo" @click="showAction('to')">
-                    {{ list2Current?.coin?.toLocaleUpperCase() }}
-                    <div class="swap-coin__icon">
-                      <image-load
-                        v-if="displayIconUrl(list2Current)"
-                        :filePath="displayIconUrl(list2Current)"
-                        alt=""
-                        class="swap-coin__img"
-                        @error="onIconError(list2Current?.coin)"
-                      />
-                      <svg-load v-else :name="displaySvgIcon(list2Current)" class="swap-coin__svg" />
-                    </div>
-                  </div>
-                </div>
+              <div class="swap-panel__field">
+                <input
+                  v-model="fromNum"
+                  type="number"
+                  class="swap-panel__input ff-num"
+                  :placeholder="_t18('swap_input')"
+                  :aria-label="_t18('swap_input')"
+                />
+                <button type="button" class="swap-panel__max" @click="fromNum = String(list1Current?.amount || '0')">
+                  {{ _t18('swap_all') }}
+                </button>
               </div>
-              <p class="swap-rate ff-num">
-                {{ _t18('swap_rateDay') }}：1
-                <span>{{ list1Current?.coin?.toLocaleUpperCase() }}</span>
-                &nbsp;≈&nbsp;<span>{{ curRate }}</span>
-                <span>{{ list2Current?.coin?.toLocaleUpperCase() }}</span>
-              </p>
+            </div>
+            <div class="swap-panel__head">
+              <span class="swap-panel__label">{{ _t18('swap_available') }}</span>
+              <div class="swap-panel__balance">
+                <span class="swap-panel__balance-value ff-num">{{ priceFormat(availableAmount || 0) }}</span>
+                <span class="swap-panel__balance-unit">{{ list1Current?.coin?.toLocaleUpperCase() }}</span>
+              </div>
             </div>
           </div>
+        </section>
 
-          <div class="swap-submit" @click="submit">
-            {{ _t18('btnConfirm', ['bitmake']) }}
-          </div>
+        <div class="swap-flip">
+          <button type="button" class="swap-flip__btn" aria-label="swap" @click="jiaohuan()">
+            <span class="swap-flip__icon" aria-hidden="true">
+              <SwapFlipIcon />
+            </span>
+          </button>
         </div>
-      </div>
-    </div>
 
-    <van-action-sheet v-model:show="showSheet" title="" id="sheetPopup"
-      style="max-width: var(--ex-max-width); left: 50%; translate: -50%">
+        <section class="swap-card">
+          <div class="swap-panel swap-panel--to">
+            <div class="swap-panel__label swap-panel__label--section">{{ _t18('swap_number') }}</div>
+            <div class="swap-panel__row">
+              <button type="button" class="swap-token" @click="showAction('to')">
+                <span class="swap-token__icon">
+                  <image-load
+                    v-if="displayIconUrl(list2Current)"
+                    :filePath="displayIconUrl(list2Current)"
+                    alt=""
+                    @error="onIconError(list2Current?.coin)"
+                  />
+                  <svg-load v-else :name="displaySvgIcon(list2Current)" />
+                </span>
+                <span class="swap-token__symbol">{{ list2Current?.coin?.toLocaleUpperCase() }}</span>
+                <span class="swap-token__chevron" aria-hidden="true"></span>
+              </button>
+              <div class="swap-panel__amount ff-num">{{ toNum || '0.00' }}</div>
+            </div>
+            <p class="swap-rate ff-num">
+              {{ _t18('swap_rateDay') }}：1
+              <span>{{ list1Current?.coin?.toLocaleUpperCase() }}</span>
+              &nbsp;≈&nbsp;<span>{{ curRate }}</span>
+              <span>{{ list2Current?.coin?.toLocaleUpperCase() }}</span>
+            </p>
+          </div>
+        </section>
+      </div>
+
+      <button type="button" class="swap-confirm" @click="submit">
+        {{ _t18('btnConfirm', ['bitmake']) }}
+      </button>
+    </main>
+
+    <van-action-sheet
+      v-model:show="showSheet"
+      title=""
+      id="sheetPopup"
+      style="max-width: var(--ex-max-width); left: 50%; translate: -50%"
+    >
       <div class="coinList">
         <div v-for="(item, index) in action" :key="item.id" class="coinItem" @click="selectCoin(item, index)">
           <div class="svgImg">
@@ -108,14 +123,14 @@ import { DIFF_ISFREEZE } from '@/config/index'
 import { useFreeze } from '@/hook/useFreeze'
 const { _isFreeze } = useFreeze()
 import { showToast } from 'vant'
-import { _t18 } from '@/utils/public'
+import { _t18, _back } from '@/utils/public'
 import { useToast } from '@/hook/useToast'
 const { _toast } = useToast()
 import { rate, toExchange } from '@/api/account'
 import { debounce } from 'lodash'
 import { priceFormat } from '@/utils/decimal.js'
-import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
-import exchangeIcon from '@/assets/images/swap/exchange.png'
+import iconBack from '@/assets/images/gxpex/trade/icon-back.svg'
+import SwapFlipIcon from './components/SwapFlipIcon.vue'
 import { ref, computed, onMounted, watch } from 'vue'
 import { useAccountStore } from '@/store/account/index'
 import { useUserStore } from '@/store/user/index'
@@ -391,214 +406,294 @@ const submit = () => {
 </script>
 
 <style lang="scss" scoped>
-$swap-top: #05101a;
-$swap-green: #008710;
-$swap-card-bg: #f6f7fa;
-$swap-input-border: #e8e8e8;
-$swap-btn-bg: #050e17;
-
-.swap-page {
+.page--swap {
   min-height: 100vh;
-  background: #ffffff;
-  padding-bottom: env(safe-area-inset-bottom, 0);
+  background: #111111;
+  color: #fff;
+  padding-bottom: calc(79px + env(safe-area-inset-bottom, 0px));
 }
 
-.swap-page__body {
-  background: $swap-top;
-}
-
-.swap-page__sheet {
+.swap-header {
   position: relative;
-  z-index: 0;
-  min-height: calc(100vh - 64px);
-
-  background: #ffffff;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 22px 1fr 22px;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 12px;
 }
 
-.swap-page__sheet-bg {
-  position: absolute;
-  top: -20px;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 0;
-  background: #ffffff;
-  border-radius: 24px 24px 0 0;
-  box-shadow: 0 -8px 32px rgba(5, 16, 26, 0.18);
-  pointer-events: none;
+.swap-header__back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-left: -9px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
 }
 
-.swap-page__panel {
+.swap-header__back-icon {
+  display: block;
+  width: 12px;
+  height: 22px;
+  object-fit: contain;
+  opacity: 0.9;
+}
+
+.swap-header__title {
+  grid-column: 2;
+  margin: 0;
+  text-align: center;
+  font-family: 'PingFang SC', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #fff;
+}
+
+.swap-main {
   position: relative;
   z-index: 1;
-  background: transparent;
-  padding: 8px 15px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 12px 12px 0;
+}
+
+.swap-stack {
+  display: flex;
+  flex-direction: column;
 }
 
 .swap-card {
-  background: $swap-card-bg;
-  border-radius: 22px;
-  padding: 22px 18px 22px;
-  box-shadow: 0 2px 14px rgba(5, 16, 26, 0.06);
+  padding: 20px 12px;
+  border-radius: 12px;
+  background: rgb(34, 28, 49);
 }
 
-.swap-box {
-  background: #ffffff;
-  border: 1px solid $swap-input-border;
-  border-radius: 16px;
-  padding: 16px 16px 18px;
+.swap-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.swap-balance {
-  margin: 0 0 12px;
-  font-size: 12px;
-  color: #999;
-  line-height: 1.4;
+.swap-panel--to {
+  gap: 12px;
 }
 
-.swap-balance__num {
-  margin: 0 4px;
-  color: #666;
-  font-weight: 500;
-}
-
-.swap-row {
+.swap-panel__head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  min-height: 44px;
+  gap: 8px;
+  min-height: 17px;
 }
 
-.swap-input {
-  flex: 1;
-  min-width: 0;
-  padding: 0;
-  border: none;
-  background: transparent;
-  font-size: 17px;
-  font-weight: 500;
-  color: #333;
+.swap-panel__label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.65);
+}
 
-  &::placeholder {
-    color: #bbb;
-    font-weight: 400;
+.swap-panel__label--section {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.swap-panel__balance {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.swap-panel__balance-value,
+.swap-panel__balance-unit {
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.swap-panel__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 50px;
+  padding: 9px 12px;
+  border-radius: 25px;
+  background: rgb(34, 34, 34);
+}
+
+.swap-token {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  min-width: 77px;
+  height: 32px;
+  padding: 0 8px 0 4px;
+  border: none;
+  border-radius: 999px;
+  background: rgb(27, 27, 27);
+  cursor: pointer;
+}
+
+.swap-token__icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  overflow: hidden;
+
+  :deep(img),
+  :deep(svg) {
+    width: 24px;
+    height: 24px;
+    display: block;
   }
 }
 
-.swap-input--to {
-  font-size: 22px;
-  font-weight: 700;
-  color: #111;
-}
-
-.swap-row__meta {
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-  gap: 10px;
-}
-
-.swap-all {
+.swap-token__symbol {
+  font-family: 'Roboto', sans-serif;
   font-size: 14px;
   font-weight: 500;
-  color: $swap-green;
-  cursor: pointer;
+  line-height: 1.2;
+  color: #fff;
   white-space: nowrap;
 }
 
-.swap-divider {
-  font-size: 12px;
-  color: #ccc;
+.swap-token__chevron {
+  width: 5px;
+  height: 5px;
+  border-right: 1px solid rgba(255, 255, 255, 0.65);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.65);
+  transform: rotate(45deg);
+  margin-top: -2px;
+  flex-shrink: 0;
 }
 
-.swap-coin {
+.swap-panel__field {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 8px;
-  font-size: 15px;
-  font-weight: 600;
-  color: #333;
+  flex: 1;
+  min-width: 0;
+}
+
+.swap-panel__input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  font-family: 'Roboto', sans-serif;
+  font-size: 18px;
+  line-height: 1.2;
+  color: #fff;
+  text-align: right;
+  outline: none;
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.45);
+  }
+}
+
+.swap-panel__max {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  min-height: 24px;
+  padding: 0 8px;
+  border: none;
+  border-radius: 999px;
+  background: rgb(160, 65, 237);
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+  line-height: 1.2;
+  color: #fff;
   cursor: pointer;
 }
 
-.swap-coin--solo {
-  margin-left: auto;
+.swap-panel__amount {
+  flex: 1;
+  min-width: 0;
+  font-family: 'Roboto', sans-serif;
+  font-size: 18px;
+  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.85);
+  text-align: right;
 }
 
-.swap-coin__icon {
-  // width: 22px;
-  // height: 22px;
-  flex-shrink: 0;
-  :deep(img) {
-    width: 28px !important;
-    height: 28px !important;
-  }
-}
-
-.swap-coin__svg {
-  font-size: 22px;
-
-  :deep(img) {
-    width: 28px !important;
-    height: 28px !important;
-  }
-}
-
-.swap-coin__img {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.swap-fab-wrap {
+.swap-flip {
   display: flex;
   justify-content: center;
-  margin: -14px 0;
-  padding: 4px 0;
+  margin: 20px 0;
   position: relative;
-  z-index: 2;
+  z-index: 1;
 }
 
-.swap-fab {
-  width: 38px;
-  height: 38px;
+.swap-flip__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
   padding: 0;
   border: none;
-  border-radius: 0;
   background: transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
 }
 
-.swap-fab__icon {
+.swap-flip__icon {
   display: block;
-  width: 38px;
-  height: 38px;
-  object-fit: contain;
+  width: 40px;
+  height: 40px;
+
+  :deep(svg) {
+    width: 40px;
+    height: 40px;
+    display: block;
+  }
 }
 
 .swap-rate {
-  margin: 14px 0 0;
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
   font-size: 12px;
-  color: #999;
-  line-height: 1.5;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.65);
 }
 
-.swap-submit {
-  margin-top: 28px;
-  padding: 15px 20px;
-  text-align: center;
+.swap-confirm {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 40px;
+  border: none;
+  border-radius: 20px;
+  background: linear-gradient(-43deg, rgb(127, 43, 218) 0%, rgb(163, 67, 238) 100%);
+  box-shadow: 0 4px 12px rgba(127, 43, 218, 0.35);
+  font-family: 'Roboto', sans-serif;
   font-size: 16px;
   font-weight: 500;
+  line-height: 1.2;
   color: #fff;
-  background: $swap-btn-bg;
-  border-radius: 999px;
   cursor: pointer;
+
+  &:active {
+    opacity: 0.92;
+  }
 }
 
 .coinList {
@@ -624,7 +719,7 @@ $swap-btn-bg: #050e17;
       font-size: 30px;
     }
 
-    img{
+    img {
       width: 24px !important;
       height: 24px !important;
     }
@@ -635,19 +730,14 @@ $swap-btn-bg: #050e17;
     color: var(--ex-passive-font-color);
   }
 
-  &>div:first-child {
+  & > div:first-child {
     text-align: end;
     margin-right: 5px;
   }
 
-  &>div:last-child {
+  & > div:last-child {
     text-align: start;
     margin-left: 5px;
   }
-}
-
-input:disabled {
-  opacity: 1;
-  -webkit-text-fill-color: #111;
 }
 </style>
