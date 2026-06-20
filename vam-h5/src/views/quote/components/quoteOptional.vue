@@ -33,7 +33,7 @@
 import { filterKeyCoin } from '@/utils/filters'
 import Filter from './common/filter.vue'
 import CollectItem from './common/collectItem.vue'
-import noDataImg from '@/assets/images/quote/no-data.png'
+import noDataImg from '@/assets/images/gxpex/quote/empty-watchlist.png'
 import { getCollect } from '@/api/trade'
 import { onMounted } from 'vue'
 import { useUserStore } from '@/store/user'
@@ -107,28 +107,29 @@ const linkTo = (item) => {
 }
 
 .quote-optional__empty-img {
-  width: 160px;
+  width: 220px;
   height: auto;
   display: block;
+  opacity: 0.95;
 }
 
 .quote-optional__empty-text {
   margin-top: 16px;
   font-size: 14px;
-  color: #8b9099;
+  color: rgba(255, 255, 255, 0.55);
 }
 
 .quote-optional__empty-btn {
   margin-top: 24px;
   width: 100%;
   max-width: 280px;
-  height: 48px;
-  border: none;
+  height: 44px;
+  border: 1px solid #9f40ec;
   border-radius: 999px;
-  background: #0b1118;
-  font-size: 15px;
+  background: transparent;
+  font-size: 14px;
   font-weight: 500;
-  color: #fff;
+  color: #9e40eb;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }

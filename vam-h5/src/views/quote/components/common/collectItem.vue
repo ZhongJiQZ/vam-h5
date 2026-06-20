@@ -2,7 +2,6 @@
   <div class="collectItem">
     <div class="left">
       <img v-if="collectItem.icon" :src="collectItem.icon" class="leftImg" alt="" />
-      <!-- <p class="fw-bold">{{ item.coin?.toUpperCase() }}</p> -->
       <div class="nameBlock">
         <div class="topText ff-num">
           <div class="textTop fw-num">
@@ -12,10 +11,6 @@
         <div v-if="playStyleLabel" class="play-style">{{ playStyleLabel }}</div>
       </div>
     </div>
-    <!-- <div class="right">
-          <p>{{ tradeStore.allCoinPriceInfo[`${item.coin}`]?.close }}</p>
-          <p>{{ tradeStore.allCoinPriceInfo[`${item.coin}`]?.priceChangePercent }}</p>
-        </div> -->
     <div class="right">
       <div class="rightLeft">
         <div class="fw-num">
@@ -77,96 +72,125 @@ const playStyleLabel = computed(() => {
 </script>
 
 <style lang="scss" scoped>
+/* Figma GXPEX 行情列表卡 - 暗紫卡片 + 圆形币图 + 涨跌徽章 */
 .collectItem {
-  padding: 8px 15px;
+  margin: 0 12px 12px;
+  padding: 14px 16px;
+  background: #221c31;
+  border-radius: 12px;
   display: flex;
+  align-items: center;
   justify-content: space-between;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
   .left {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
+    gap: 12px;
     min-width: 0;
+
     .leftImg {
-      width: 25px;
-      height: 25px;
-      margin-right: 10px;
-      margin-top: 2px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: contain;
+      background: rgba(255, 255, 255, 0.08);
       flex-shrink: 0;
     }
+
     .nameBlock {
       min-width: 0;
     }
+
+    .topText {
+      display: flex;
+      align-items: flex-end;
+      .textTop {
+        color: #ffffff;
+        font-family: 'Roboto', sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 1.1;
+      }
+    }
+
     .play-style {
       margin-top: 4px;
       font-size: 11px;
       line-height: 1.2;
-      color: var(--ex-font-color21);
-    }
-    .topText {
-      display: flex;
-      align-items: flex-end;
-      font-size: 12px;
-      color: var(--ex-font-color21);
-      .textTop {
-        color: var(--ex-font-color6);
-        font-size: 14px;
-      }
-      .tip {
-        margin-left: 5px;
-        display: flex;
-        align-items: center;
-        padding: 5px;
-        height: 15px;
-        background: var(--ex-div-bgColor21);
-        border-radius: 1px 1px 1px 1px;
-        font-size: 12px;
-        font-weight: 400;
-        color: var(--ex-active-font-color) !important;
-      }
-    }
-    .bottomText {
-      margin-top: 4px;
-      display: flex;
-      align-items: center;
-      font-size: 12px;
-      color: var(--ex-font-color21);
-      .bottomTextNum {
-        margin-left: 5px;
-        color: var(--ex-font-color20s);
-      }
+      color: rgba(255, 255, 255, 0.45);
     }
   }
+
   .right {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+
     .rightLeft {
-      text-align: right;
+      color: #ffffff;
+      font-family: 'Roboto', sans-serif;
       font-size: 14px;
-      color: var(--ex-font-color6);
-      .numRight {
-        font-size: 12px;
-        margin-top: 4px;
-        color: var(--ex-font-color20);
-      }
+      font-weight: 500;
+      text-align: right;
+      line-height: 1.1;
     }
+
     .rightBox {
-      height: 100%;
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-end;
 
       .rightRight {
-        color: var(--ex-rfd-draw);
-        background-color: var(--ex-rfd-draw-bg);
-        max-width: 80px;
-        min-width: 80px;
-        height: 80%;
-        margin-left: 20px;
-        border-radius: 3px;
-        padding: 12px 0;
-        display: flex;
+        display: inline-flex;
         align-items: center;
-        justify-content: center;
-        font-size: 14px;
+        gap: 3px;
+        min-width: 0;
+        max-width: 100px;
+        height: auto;
+        margin-left: 0;
+        padding: 3px 8px;
+        border-radius: 6px;
+        font-family: 'PingFang SC', -apple-system, sans-serif;
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 1;
+        background: rgba(125, 145, 157, 0.15);
+        color: #7d919d;
+
+        &::before {
+          content: '';
+          width: 8px;
+          height: 10px;
+          display: inline-block;
+          background-repeat: no-repeat;
+          background-position: center;
+          background-size: contain;
+        }
+
+        &.rise {
+          background: rgba(46, 189, 133, 0.15);
+          color: #2ebd85;
+          &::before {
+            background-image: url('@/assets/images/gxpex/home/arrow-up.png');
+          }
+        }
+        &.fall {
+          background: rgba(246, 70, 93, 0.15);
+          color: #f6465d;
+          &::before {
+            background-image: url('@/assets/images/gxpex/home/arrow-down.png');
+          }
+        }
+        &.draw {
+          background: rgba(125, 145, 157, 0.15);
+          color: #7d919d;
+          &::before {
+            display: none;
+          }
+        }
       }
     }
   }

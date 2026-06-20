@@ -354,12 +354,11 @@ const submit = () => {
 }
 
 .sc-history-wrap {
-  padding: 10px 12px 0;
-  background: #fff;
+  padding: 10px 0 0;
 }
 
 .hightItem {
-  color: #000 !important;
+  color: #f5f3f8 !important;
   position: relative;
   padding-bottom: 4px;
 
@@ -370,7 +369,7 @@ const submit = () => {
     right: 0;
     bottom: 0;
     height: 2px;
-    background: #008710;
+    background: #a13cff;
     border-radius: 1px;
   }
 }

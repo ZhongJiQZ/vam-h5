@@ -931,6 +931,7 @@
   "recharge_tip4": "Please ensure the security of your device to prevent information leakage.",
   "recharge_tip5": "After the platform receives your recharge, it will be credited automatically. Transfers require confirmation by the entire blockchain network. When the node confirmation reaches 10 times, the assets will be automatically deposited into your account.",
   "copy": "Copy",
+  "copy_trade": "Copy Trade",
   "trade_share": "Share",
   "activity": "Welfare activities",
   "fly_swap": "FlySwap",

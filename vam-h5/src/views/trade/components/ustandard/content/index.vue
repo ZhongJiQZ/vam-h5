@@ -104,6 +104,7 @@
         </div>
         <!-- slider滑动条 -->
         <div class="rightFourth">
+          <div class="slider-fixed-percent">{{ sliderValue }}%</div>
           <div class="lineBg">
             <div
               :class="

@@ -364,122 +364,165 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss" scoped>
+/* GXPEX 暗紫盘口 (按 2nd Figma spec)：Price | Qty + 右端 volume bar + 中价大字 */
 .handicapBox {
-  padding-right: 20px;
+  padding-right: 2px;
+  font-variant-numeric: tabular-nums;
 }
+
+/* 列头 Price / Qty */
 .title {
   display: flex;
   justify-content: space-between;
-  font-size: 12px;
-  color: var(--ex-passive-font-color);
-  .title_left {
-    text-align: left;
-  }
+  align-items: baseline;
+  font-size: 11px;
+  font-weight: 500;
+  color: #aaa5b3;
+  padding: 2px 2px 10px;
+
+  .title_left,
   .title_right {
-    text-align: right;
+    display: flex;
+    align-items: baseline;
+    gap: 3px;
+  }
+  .title_right { text-align: right; }
+
+  .name {
+    color: #aaa5b3;
+    font-size: 11px;
+    font-weight: 500;
   }
   .unit {
-    margin-top: 2px;
+    margin-top: 0;
+    font-size: 10px;
+    color: #625d6d;
   }
 }
+
 .leftList {
-  height: 100%;
-  margin-top: 12px;
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+
   .itemList {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    &.asks {
-      flex-direction: column-reverse; /* 水平反转主轴方向 */
-    }
+    &.asks { flex-direction: column-reverse; }
+
     .item {
-      overflow: hidden;
-      font-size: 12px;
-      color: var(--ex-font-color2);
+      position: relative;
+      z-index: 2;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 20px;
-      position: relative;
-      z-index: 2;
-      margin-bottom: 4px;
-      padding: 0 5px;
+      height: 22px;
+      margin-bottom: 2px;
+      padding: 0 2px;
+      font-size: 12px;
+      font-family: 'Inter', 'Roboto', sans-serif;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+      color: #ff435d;
+      white-space: nowrap;
+
+      &.itemHight { color: #31c48d; }
+
       .itemName {
-        color: var(--ex-default-font-color);
+        color: #f5f3f8;
+        font-size: 12px;
+        font-variant-numeric: tabular-nums;
       }
+
       .hightItem {
-        transition: 0.5s;
-        right: 0;
         position: absolute;
-        height: 20px;
-        min-width: 2%;
+        right: 0;
+        height: 16px;
+        min-width: 3px;
+        max-width: 36%;
+        border-radius: 2px;
+        opacity: 0.16;
         z-index: -1;
+        transition: width 0.4s ease;
       }
+      .hightItem.fall { background: #ff435d !important; }
+      .hightItem.rise { background: #31c48d !important; }
     }
   }
+
+  /* 中间最新价：居中 + 上下分割线 + 大字 */
   .itemCenter {
     text-align: center;
-    font-size: 12px;
-    color: var(--ex-passive-font-color);
-    padding: 12px 0;
+    padding: 14px 2px;
+    color: #aaa5b3;
+    font-size: 11px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    margin: 6px 0;
+
     .centername {
-      color: var(--ex-default-font-color);
-      font-size: 16px;
-      margin-bottom: 3px;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      line-height: 1.1;
+      letter-spacing: 0.2px;
+      font-variant-numeric: tabular-nums;
+      text-align: center;
+
+      &.rise { color: #31c48d; }
+      &.fall { color: #ff435d; }
     }
   }
 }
+
+/* 底部聚合深度 + 展示切换 */
 .leftBottom {
-  margin-top: 5px;
+  margin-top: 6px;
   display: flex;
   justify-content: space-between;
+  align-items: center;
+
   .bottomLeft {
     display: flex;
-    padding: 0 10px;
+    padding: 0 8px;
     justify-content: space-between;
     align-items: center;
-    width: 118px;
-    height: 25px;
-    background: var(--ex-div-bgColor);
-    border-radius: 2px;
-    font-size: 12px;
+    min-width: 60px;
+    height: 22px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 5px;
+    font-size: 11px;
     font-weight: 500;
-    color: var(--ex-default-font-color);
-    .img {
-      width: 10px;
-      height: 5px;
-    }
+    color: #f5f3f8;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    .img { width: 8px; height: 4px; margin-left: 4px; filter: brightness(2); }
   }
+
   .bottomRight {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 27px;
-    height: 25px;
-    background: var(--ex-div-bgColor);
-    border-radius: 2px;
-    .img {
-      width: 15px;
-      height: 15px;
-    }
+    width: 22px;
+    height: 22px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 5px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    .img { width: 12px; height: 12px; filter: brightness(2); }
   }
 }
-// 选择BB
+
+/* 聚合精度弹窗 */
 .bbList {
+  background: #211b32;
   text-align: center;
   .item {
-    // color:var(--ex-font-color2);
-    color: var(--ex-default-font-color);
+    color: #f5f3f8;
     font-size: 14px;
-    padding: 20px 0;
-    border-bottom: 1px solid var(--ex-border-color5);
+    padding: 18px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
   }
-  .item:last-child {
-    border-bottom: none;
-  }
+  .item:last-child { border-bottom: none; }
 }
 </style>

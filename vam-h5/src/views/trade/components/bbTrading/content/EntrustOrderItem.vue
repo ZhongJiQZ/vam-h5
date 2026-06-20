@@ -166,9 +166,9 @@ const cancelOrder = async () => {
     .headerRight {
       flex-shrink: 0;
       padding: 4px 8px;
-      background: #fff;
+      background: rgba(255, 255, 255, 0.06);
       border-radius: 4px;
-      border: 1px solid var(--ex-border-color4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       font-size: 12px;
       color: var(--ex-font-color9);
     }

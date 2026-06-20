@@ -1,13 +1,22 @@
 <!-- 交易页面：秒合约，币币交易，U本位 trade/index.vue -->
 <template>
   <div class="trade-page">
-    <!-- tabs：深色顶栏 -->
+    <!-- 紫色高斯光晕背景 (与 quote 一致) -->
+    <div class="bg-glow bg-glow--1"></div>
+    <div class="bg-glow bg-glow--2"></div>
+
     <van-sticky>
-      <div class="headerList darkheader">
-        <div class="left">
-          <svg-load name="jiantou-z" class="leftImg" @click="_back()"></svg-load>
+      <div class="trade-header">
+        <!-- 顶部条：back + "Trade" 居中 -->
+        <div class="trade-topbar">
+          <div class="trade-topbar__back" @click="_back()">
+            <img :src="iconBack" alt="back" class="trade-topbar__back-icon" />
+          </div>
+          <div class="trade-topbar__title">{{ _t18('trade') }}</div>
         </div>
-        <div class="headerChoose">
+
+        <!-- tabs 行：秒/币/U本位 -->
+        <div class="trade-tabs">
           <van-tabs
             swipeable
             shrink
@@ -17,18 +26,15 @@
             title-active-color="#ffffff"
             title-inactive-color="rgba(255, 255, 255, 0.45)"
           >
-            <van-tab v-for="(item, index) in headerList" :key="index" :title="item.title">
-            </van-tab>
+            <van-tab v-for="(item, index) in headerList" :key="index" :title="item.title" />
           </van-tabs>
         </div>
       </div>
     </van-sticky>
-    <!-- 主内容：白底圆角承接深色头 -->
+
+    <!-- 主内容 -->
     <div class="trade-sheet">
-      <component
-        :is="currentComponent"
-        :headerList="headerList"
-      ></component>
+      <component :is="currentComponent" :headerList="headerList"></component>
     </div>
   </div>
 </template>
@@ -41,9 +47,11 @@ import { useTradeStore } from '@/store/trade'
 const tradeStore = useTradeStore()
 import { useRoute } from 'vue-router'
 const $route = useRoute()
+import { _t18 } from '@/utils/public'
 import SecondContract from './components/tradeSecondContract.vue'//秒合约
 import BBTrading from './components/tradeBBTrading.vue'//币币
-import Ustandard from './components/tradeUstandard.vue'//U本位合约 
+import Ustandard from './components/tradeUstandard.vue'//U本位合约
+import iconBack from '@/assets/images/gxpex/trade/icon-back.svg'
 
 
 // tabs
@@ -146,94 +154,226 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .trade-page {
+  position: relative;
   min-height: 100vh;
-  // background: #0b1118;
-  background: #fff;
+  background: #111216;
   box-sizing: border-box;
+  overflow-x: hidden;
+
+  /* GXPEX 暗紫主题 — 3 个 mode (U本位/秒合约/币币) 共用，沿 DOM 继承 */
+  --page-bg: #111216;
+  --panel-bg: #211b32;
+  --input-bg: #181326;
+  --input-bg-hover: #1c162b;
+  --text-primary: #f5f3f8;
+  --text-secondary: #aaa5b3;
+  --text-disabled: #625d6d;
+  --buy-color: #31c48d;
+  --sell-color: #ff435d;
+  --ask-color: #ff5968;
+  --bid-color: #5fc692;
+  --purple: #a13cff;
+  --divider: rgba(255, 255, 255, 0.09);
+
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Microsoft YaHei', sans-serif;
+  color: var(--text-primary);
+
+  --ex-default-font-color: var(--text-primary);
+  --ex-passive-font-color: var(--text-secondary);
+  --ex-font-color: var(--text-primary);
+  --ex-font-color1: var(--text-disabled);
+  --ex-font-color2: var(--purple);
+  --ex-font-color6: var(--text-primary);
+  --ex-font-color9: var(--text-primary);
+  --ex-font-color10: var(--text-primary);
+  --ex-font-color21: var(--text-secondary);
+  --ex-font-color22: var(--text-primary);
+  --ex-active-font-color: var(--purple);
+  --ex-tip-font-color: var(--sell-color);
+  --ex-border-color: rgba(255, 255, 255, 0.07);
+  --ex-border-color5: rgba(255, 255, 255, 0.07);
+
+  --ex-default-background-color: transparent;
+  --ex-div-bgColor: var(--input-bg);
+  --ex-div-bgColor1: var(--buy-color);
+  --ex-div-bgColor2: var(--input-bg);
+  --ex-div-bgColor3: rgba(255, 255, 255, 0.18);
+  --ex-div-bgColor4: var(--purple);
+  --ex-div-bgColor5: var(--input-bg);
+  --ex-div-bgColor7: rgba(239, 86, 101, 0.18);
+  --ex-div-bgColor8: transparent;
+  --ex-div-bgColor10: var(--divider);
+  --ex-div-bgColor12: var(--input-bg);
+  --ex-div-bgColor19: rgba(0, 0, 0, 0.6);
+  --ex-div-bgColor21: rgba(161, 60, 255, 0.16);
+  --ex-div-bgColor29: rgba(161, 60, 255, 0.18);
+
+  --ex-rfd-rise-bg: rgba(49, 196, 141, 0.18);
+  --ex-rfd-fall-bg: rgba(255, 67, 93, 0.18);
+  --ex-rfd-draw-bg: rgba(125, 145, 157, 0.15);
+  --ex-rfd-rise: var(--bid-color);
+  --ex-rfd-fall: var(--ask-color);
+  --ex-rfd-draw: #7d919d;
 }
 
-.headerList {
+.bg-glow {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, #a642ec 0%, #802bda 60%, transparent 100%);
+  filter: blur(60px);
+  opacity: 0.18;
+  pointer-events: none;
+  z-index: 0;
+
+  &--1 {
+    top: -80px;
+    right: -60px;
+    width: 260px;
+    height: 260px;
+  }
+  &--2 {
+    top: 200px;
+    left: -90px;
+    width: 240px;
+    height: 240px;
+  }
+}
+
+.trade-header {
+  position: relative;
+  z-index: 2;
+  background: #111216;
+  padding-top: env(safe-area-inset-top);
+}
+
+/* 顶部条：back + 居中标题 (≈ 68px 高) */
+.trade-topbar {
+  position: relative;
+  height: 56px;
   display: flex;
   align-items: center;
-  z-index: 9;
-  padding-left: 15px;
-  padding-right: 12px;
-  padding-top: env(safe-area-inset-top);
-  height: calc(60px + env(safe-area-inset-top));
-  box-sizing: border-box;
-  border-bottom: none;
+  justify-content: center;
 
-  &.darkheader {
-    // background: #0b1118;
-    background: #fff;
-  }
-
-  .left {
+  &__back {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
     display: flex;
-    flex-shrink: 0;
     align-items: center;
-    font-size: 16px;
-    font-weight: normal;
-    color: #fff;
-
-    .leftImg {
-      width: 16px;
-      height: 12px;
-      margin-right: 12px;
-      // filter: brightness(0) invert(1);
-    }
+    justify-content: center;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  .headerChoose {
-    flex: 1;
-    min-width: 0;
-    display: flex;
+  &__back-icon {
+    width: 12px;
+    height: 22px;
+    opacity: 0.9;
+  }
+
+  &__title {
+    font-family: 'Inter', 'PingFang SC', sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: #f5f3f8;
+    line-height: 1.2;
+    text-align: center;
+  }
+}
+
+/* tabs */
+.trade-tabs {
+  padding: 4px 14px 12px;
+
+  :deep(.van-tabs__wrap) {
+    height: 44px;
+    background: transparent;
+  }
+
+  :deep(.van-tabs__nav) {
+    background: transparent;
+    padding: 0 4px;
+  }
+
+  :deep(.van-tab) {
+    flex: none;
+    font-size: 14px;
+    margin-right: 22px;
     padding: 0;
     background: transparent;
+    color: #aaa5b3 !important;
+  }
 
-    :deep(.van-tabs__wrap) {
-      height: 44px;
-    }
+  :deep(.van-tab:last-child) {
+    margin-right: 0;
+  }
 
-    :deep(.van-tabs__nav) {
-      background: transparent;
-    }
+  :deep(.van-tab--active) {
+    font-weight: 600;
+    color: #f5f3f8 !important;
+  }
 
-    :deep(.van-tabs__nav--complete) {
-      padding: 0 4px;
-    }
-
-    :deep(.van-tab) {
-      flex: none;
-      font-size: 15px;
-      margin-right: 22px;
-      padding: 0;
-      // color: rgba(255, 255, 255, 0.45) !important;
-      color: #3333 !important;
-      background: transparent;
-    }
-
-    :deep(.van-tab:last-child) {
-      margin-right: 0;
-    }
-
-    :deep(.van-tab--active) {
-      font-weight: 500;
-      // color: #ffffff !important;
-      color: #000 !important;
-    }
-
-    :deep(.van-tabs__line) {
-      display: none;
-    }
+  :deep(.van-tabs__line) {
+    display: none;
   }
 }
 
 .trade-sheet {
-  background: #fff;
-  // border-top-left-radius: 16px;
-  // border-top-right-radius: 16px;
-  min-height: calc(100vh - 60px - env(safe-area-inset-top));
-  overflow: hidden;
+  position: relative;
+  z-index: 1;
+  min-height: calc(100vh - 104px - env(safe-area-inset-top));
+
+  /* 通用暗色补丁 — 3 个 mode 共享 */
+  :deep(.listBox),
+  :deep(.van-list),
+  :deep(.noData),
+  :deep(.entrust),
+  :deep(.entrustR) {
+    background: transparent !important;
+  }
+  :deep(.van-cell) {
+    background: transparent !important;
+  }
+  :deep(.van-tabs__wrap),
+  :deep(.van-tabs__nav) {
+    background: transparent !important;
+  }
+
+  /* 订单 tabs 通用样式：tab 字 + 紫色短下划线 */
+  :deep(.bb-order-tabs .van-tab),
+  :deep(.sc-order-tabs .van-tab),
+  :deep(.us-order-tabs .van-tab) {
+    color: rgba(255, 255, 255, 0.55) !important;
+    background: transparent !important;
+  }
+  :deep(.bb-order-tabs .van-tab--active),
+  :deep(.sc-order-tabs .van-tab--active),
+  :deep(.us-order-tabs .van-tab--active) {
+    color: #f5f3f8 !important;
+  }
+  :deep(.bb-order-tabs .van-tabs__line),
+  :deep(.sc-order-tabs .van-tabs__line) {
+    background: #a13cff !important;
+    width: 18px !important;
+    height: 3px !important;
+    border-radius: 2px;
+  }
+  /* 通用 tab_right 透明（U-standard 单独覆盖） */
+  :deep(.bb-order-tabs ~ .tab_right),
+  :deep(.sc-order-tabs ~ .tab_right) {
+    background: transparent !important;
+    padding: 0 12px 0 0 !important;
+    .entrustRImg {
+      width: 18px;
+      height: 18px;
+      padding: 0 6px;
+      opacity: 0.75;
+      filter: brightness(1.6);
+    }
+  }
 }
 </style>

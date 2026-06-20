@@ -17,6 +17,11 @@
         </div>
         <div class="ff-num headerLeftIcon">{{ recordListItem.leverage }}x</div>
       </div>
+      <div class="headerRight">
+        <div :class="[_isRFDE(yieldValue), 'fw-num yield-big']">
+          {{ Number(yieldValue) > 0 ? '+' : '' }}{{ yieldValue }}%
+        </div>
+      </div>
     </div>
     <div class="list">
       <!-- 持仓量 -->
@@ -74,11 +79,7 @@
           {{ recordListItem.closePrice <= 0 ? '--' : recordListItem.closePrice }} USDT
         </div>
       </div>
-      <!-- 收益率 -->
-      <div class="item">
-        <div>{{ _t18(`yield_rate`, ['rxce']) }}</div>
-        <div :class="[_isRFDE(yieldValue), 'fw-num numItem ']">{{ yieldValue }}%</div>
-      </div>
+      <!-- 收益率已挪到 header 右上做大字 -->
       <!-- 收益 -->
       <div class="item">
         <div>{{ _t18(`income`) }}</div>

@@ -931,6 +931,7 @@
   "recharge_tip4": "请确保您设备的安全，防止信息泄露。",
   "recharge_tip5": "平台收到您的充值后，会自动到账。转账需要整个区块链网络确认。当节点确认达到10次时，资产会自动存入您的账户。",
   "copy": "复制",
+  "copy_trade": "跟单",
   "trade_share": "分享",
   "activity": "福利活动",
   "fly_swap": "FlySwap",

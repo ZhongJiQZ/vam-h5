@@ -1,41 +1,34 @@
-<!-- 序列 -->
+<!-- 列表头：Section 标题 (Spot/自选) + 2 列排序 (Name / Price·Change) -->
 <template>
-  <div>
-    <div class="mainBgc">
-      <div class="main_collect">
-        <div class="main_header" v-if="isOptional">
-          <!-- 现货 -->
-          <div class="left">{{ _t18(`quote_spot`) }}</div>
-          <div class="right" @click="$router.push('/editOptional')">
-            <svg-load name="bianji"></svg-load>
-          </div>
-        </div>
-        <div class="main">
-          <div class="mainItem" @click="toDealSort">
-            <div>{{ _t18(`home_currencyName`, ['latcoin']) }}</div>
-            <div class="arrows">
-              <svg-load v-if="arrowList.firstIcon === 0" name="moren" class="itemImg"></svg-load>
-              <svg-load v-if="arrowList.firstIcon === 1" name="gao" class="itemImg"></svg-load>
-              <svg-load v-if="arrowList.firstIcon === 2" name="di" class="itemImg"></svg-load>
-            </div>
-          </div>
-          <div class="mainItem" @click="toUpSort">
-            <div>{{ _t18(`home_newPrice`, ['latcoin']) }}</div>
-            <div class="arrows">
-              <svg-load v-if="arrowList.secondIcon === 0" name="moren" class="itemImg"></svg-load>
-              <svg-load v-if="arrowList.secondIcon === 1" name="gao" class="itemImg"></svg-load>
-              <svg-load v-if="arrowList.secondIcon === 2" name="di" class="itemImg"></svg-load>
-            </div>
-          </div>
-          <div class="mainItem" @click="toRafSort">
-            <div>{{ _t18(`home_upDown`, ['latcoin']) }}</div>
-            <div class="arrows">
-              <svg-load v-if="arrowList.thirdIcon === 0" name="moren" class="itemImg"></svg-load>
-              <svg-load v-if="arrowList.thirdIcon === 1" name="gao" class="itemImg"></svg-load>
-              <svg-load v-if="arrowList.thirdIcon === 2" name="di" class="itemImg"></svg-load>
-            </div>
-          </div>
-        </div>
+  <div class="market-filter">
+    <!-- Section 标题行 (自选时展示「Spot」+ 右侧编辑/筛选入口) -->
+    <div class="market-filter__section" v-if="isOptional">
+      <div class="market-filter__section-title">{{ _t18(`quote_spot`) }}</div>
+      <div
+        class="market-filter__section-action"
+        @click="$router.push('/editOptional')"
+      >
+        <img :src="iconFilter" alt="" class="market-filter__section-icon" />
+      </div>
+    </div>
+
+    <!-- 列头：Name / Price·Change (2 列) -->
+    <div class="market-filter__cols">
+      <div class="market-filter__col market-filter__col--name" @click="toDealSort">
+        <span>{{ _t18(`home_currencyName`, ['latcoin']) || 'Name' }}</span>
+        <span class="market-filter__arrows">
+          <svg-load v-if="arrowList.firstIcon === 0" name="moren" class="itemImg"></svg-load>
+          <svg-load v-if="arrowList.firstIcon === 1" name="gao" class="itemImg"></svg-load>
+          <svg-load v-if="arrowList.firstIcon === 2" name="di" class="itemImg"></svg-load>
+        </span>
+      </div>
+      <div class="market-filter__col market-filter__col--price" @click="togglePriceChangeSort">
+        <span>{{ _t18(`home_newPrice`, ['latcoin']) || 'Price' }} / {{ _t18(`home_upDown`, ['latcoin']) || 'Change' }}</span>
+        <span class="market-filter__arrows">
+          <svg-load v-if="priceChangeIcon === 0" name="moren" class="itemImg"></svg-load>
+          <svg-load v-if="priceChangeIcon === 1" name="gao" class="itemImg"></svg-load>
+          <svg-load v-if="priceChangeIcon === 2" name="di" class="itemImg"></svg-load>
+        </span>
       </div>
     </div>
   </div>
@@ -49,6 +42,8 @@ import {
   LatestpriceSmallToLarge
 } from '@/utils/filters'
 import { useTradeStore } from '@/store/trade'
+import iconFilter from '@/assets/images/gxpex/quote/icon-filter.svg'
+import { _t18 } from '@/utils/public'
 const tradeStore = useTradeStore()
 const props = defineProps({
   isOptional: {
@@ -62,7 +57,7 @@ const props = defineProps({
 })
 const listResult = []
 const emits = defineEmits(['toSort'])
-// 筛选
+// 排序状态
 let arrowList = reactive({
   firstIcon: 0,
   secondIcon: 0,
@@ -91,10 +86,10 @@ const toUpSort = () => {
   arrowList.thirdIcon = 0
   if (arrowList.secondIcon === 0) {
     arrowList.secondIcon = 1
-    listResult.value = LatestpriceLargeToSmall(props.list,tradeStore.allCoinPriceInfo, 'close')
+    listResult.value = LatestpriceLargeToSmall(props.list, tradeStore.allCoinPriceInfo, 'close')
   } else if (arrowList.secondIcon === 1) {
     arrowList.secondIcon = 2
-    listResult.value = LatestpriceSmallToLarge(props.list,tradeStore.allCoinPriceInfo, 'close')
+    listResult.value = LatestpriceSmallToLarge(props.list, tradeStore.allCoinPriceInfo, 'close')
   } else if (arrowList.secondIcon === 2) {
     arrowList.secondIcon = 0
     listResult.value = props.list
@@ -107,111 +102,105 @@ const toRafSort = () => {
   arrowList.secondIcon = 0
   if (arrowList.thirdIcon === 0) {
     arrowList.thirdIcon = 1
-    listResult.value = LatestpriceLargeToSmall(props.list,tradeStore.allCoinPriceInfo, 'change',1)
+    listResult.value = LatestpriceLargeToSmall(props.list, tradeStore.allCoinPriceInfo, 'change', 1)
   } else if (arrowList.thirdIcon === 1) {
     arrowList.thirdIcon = 2
-    listResult.value = LatestpriceSmallToLarge(props.list,tradeStore.allCoinPriceInfo, 'change',1)
+    listResult.value = LatestpriceSmallToLarge(props.list, tradeStore.allCoinPriceInfo, 'change', 1)
   } else if (arrowList.thirdIcon === 2) {
     arrowList.thirdIcon = 0
     listResult.value = props.list
   }
   emits('toSort', listResult.value)
 }
+
+// Price/Change 合并成一列后的 4 段循环：默认 → 价↓ → 价↑ → 涨↓ → 涨↑ → 默认
+// （沿用原 toUpSort / toRafSort，只是把两次状态推进合并到同一个 header）
+const priceChangeIcon = computed(() => {
+  if (arrowList.secondIcon !== 0) return arrowList.secondIcon
+  if (arrowList.thirdIcon !== 0) return arrowList.thirdIcon
+  return 0
+})
+const togglePriceChangeSort = () => {
+  // 先把 price 循环走完，再走 change 循环
+  if (arrowList.thirdIcon === 0 && arrowList.secondIcon !== 2) {
+    toUpSort()
+  } else if (arrowList.thirdIcon === 0 && arrowList.secondIcon === 2) {
+    arrowList.secondIcon = 0
+    toRafSort()
+  } else {
+    toRafSort()
+  }
+}
 </script>
 
 <style lang="scss" scoped>
-.mainBgc {
-  background: var(--ex-div-bgColor8);
+.market-filter {
+  background: transparent;
+  padding: 4px 12px 0;
+}
 
-  .main {
-    background-color: var(--ex-default-background-color);
-    border-radius: 20px 20px 0px 0;
-    padding: 20px 15px 10px;
-    font-size: 12px;
-    color: var(--ex-passive-font-color);
-    display: flex;
-    justify-content: space-between;
+.market-filter__section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 4px 6px;
 
-    .mainItem {
-      display: flex;
-      align-items: center;
-
-      .arrows {
-        display: flex;
-        flex-direction: column;
-        margin-left: 5px;
-
-        .itemImg {
-          width: 6px;
-          height: 8px;
-        }
-      }
-    }
-
-    .mainItem:nth-child(2) {
-      flex: 1;
-      text-align: right;
-      justify-content: right;
-    }
-
-    .mainItem:nth-child(3) {
-      margin-left: 20px;
-      max-width: 80px;
-      min-width: 80px;
-      text-align: right;
-      justify-content: flex-end;
-    }
+  &-title {
+    font-family: 'Roboto', 'PingFang SC', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.2;
   }
 
-  .main_collect {
-    background-color: var(--ex-default-background-color);
-    border-radius: 20px 20px 0px 0;
-    padding: 10px 15px 10px;
-    font-size: 12px;
-    color: var(--ex-passive-font-color);
+  &-action {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
 
-    .main_header {
-      display: flex;
-      justify-content: space-between;
-      font-size: 14px;
-      color: var(--ex-font-color22);
-      padding: 10px 15px 0;
-    }
+  &-icon {
+    width: 20px;
+    height: 20px;
+    opacity: 0.8;
+  }
+}
 
-    .main {
-      display: flex;
-      justify-content: space-between;
+.market-filter__cols {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 4px 14px;
+}
 
-      .mainItem {
-        display: flex;
-        align-items: center;
+.market-filter__col {
+  font-family: 'PingFang SC', -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 
-        .arrows {
-          display: flex;
-          flex-direction: column;
-          margin-left: 5px;
+  &--price {
+    text-align: right;
+  }
+}
 
-          .itemImg {
-            width: 6px;
-            height: 8px;
-          }
-        }
-      }
-    }
+.market-filter__arrows {
+  display: inline-flex;
+  flex-direction: column;
+  margin-left: 4px;
 
-    .mainItem:nth-child(2) {
-      flex: 1;
-      text-align: right;
-      justify-content: right;
-    }
-
-    .mainItem:nth-child(3) {
-      margin-left: 20px;
-      max-width: 80px;
-      min-width: 80px;
-      text-align: right;
-      justify-content: flex-end;
-    }
+  .itemImg {
+    width: 6px;
+    height: 8px;
   }
 }
 </style>

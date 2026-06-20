@@ -39,14 +39,15 @@
         </div>
       </van-tab>
     </van-tabs>
-    <!-- 隐藏其他币种，刷新 -->
+    <!-- 隐藏其他币种，刷新 (Figma icons) -->
     <div class="tab_right">
-      <svg-load
-        :name="showEye ? 'yanjin-k' : 'yanjin-g'"
-        class="entrustRImg"
+      <img
+        :src="iconEye"
+        :class="['entrustRImg', { 'entrustRImg--off': !showEye }]"
         @click="handelEye"
-      ></svg-load>
-      <svg-load name="shuaxin" class="entrustRImg" @click="handelRefresh"></svg-load>
+        alt=""
+      />
+      <img :src="iconRefresh" class="entrustRImg" @click="handelRefresh" alt="" />
     </div>
   </div>
 </template>
@@ -63,6 +64,8 @@ import {
   orderList
 } from '@/api/trade/index'
 import { useTradeStore } from '@/store/trade'
+import iconEye from '@/assets/images/gxpex/trade/icon-order-filter2.svg'
+import iconRefresh from '@/assets/images/gxpex/trade/icon-order-filter1.svg'
 const props = defineProps({
   coinInfo: {
     type: Object,
@@ -406,41 +409,23 @@ defineExpose({
   position: relative;
 }
 
+/* 暗主题覆盖在 tradeUstandard.vue 的 :deep 里 */
 .us-order-tabs {
-  :deep(.van-tabs__wrap) {
-    border-bottom: 1px solid var(--ex-border-color);
-  }
-
-  :deep(.van-tabs__nav) {
-    padding-right: 80px;
-    background: #fff !important;
-  }
-
   :deep(.van-tab--active .van-tab__text) {
     font-weight: 600;
   }
-
-  :deep(.van-tabs__line) {
-    background: #008710;
-  }
 }
 
+/* 暗主题覆盖在 tradeUstandard.vue 的 :deep 里，这里清空原浅色样式 */
 .tab_right {
   position: absolute;
   top: 0;
   right: 0;
-  background: #fff !important;
-  padding: 15px 5px;
-
-  .entrustRImg {
-    padding: 0 8px;
-    font-size: 12px;
-  }
 }
 
+/* 暗主题覆盖在 tradeUstandard.vue 的 :deep 里 */
 .listBox {
-  padding: 10px 12px 0;
-  background: #fff;
+  padding: 10px 0 0;
 }
 
 :deep(.van-cell) {

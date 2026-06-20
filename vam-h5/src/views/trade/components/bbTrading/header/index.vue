@@ -1,63 +1,55 @@
 <template>
-  <div>
-    <div class="top">
-      <div class="first">
-        <!-- 打开弹窗 -->
-        <div class="firLeft">
-          <svg-load
-            name="cebian17x14"
-            class="firLeftImg"
-            @click="emits('showSidePopup')"
-          ></svg-load>
-          <div class="fw-bold">{{ coinInfo.showSymbol }}</div>
-          <div
-          :class="[
-            _isRFDByChangePercent(coinPriceInfo?.priceChangePercent, 'buy', 'rise'),
-            ' rfd-sign firNum fw-num'
-          ]"
-        >
-          {{ _absChangePercentStr(coinPriceInfo?.priceChangePercent) }}%
-        </div>
-        </div>
-        <!-- 币币交易规则，收藏 -->
-        <div class="first">
-          <svg-load
-          name="k-xian"
-          class="senLeftImg"
+  <div class="bb-symbol-header">
+    <!-- 左：币种 + 涨跌% -->
+    <div class="symbol-pill" @click="emits('showSidePopup')">
+      <img v-if="coinInfo.logo" :src="coinInfo.logo" class="symbol-pill__logo" alt="" />
+      <div v-else class="symbol-pill__logo symbol-pill__logo--ph"></div>
+      <div class="symbol-pill__name fw-bold">
+        {{ coinInfo.showSymbol }}
+      </div>
+      <img :src="iconChevron" class="symbol-pill__chev" alt="" />
+      <div
+        :class="[
+          _isRFDByChangePercent(coinPriceInfo?.priceChangePercent, 'buy', 'rise'),
+          'rfd-sign symbol-pill__change fw-num'
+        ]"
+      >
+        {{ _absChangePercentStr(coinPriceInfo?.priceChangePercent) }}%
+      </div>
+    </div>
+
+    <!-- 右：双按钮 -->
+    <div class="symbol-actions">
+      <div class="action-pill">
+        <div
+          class="action-pill__btn"
           @click="$router.push(`/detail?symbol=${coinInfo.coin}&type=1`)"
-        ></svg-load>
-          <svg-load
-            name="guize"
-            class="senLeftImg"
-            @click="_toView('/tradingRules?type=1')"
-          ></svg-load>
-          <!-- <svg-load
-            v-if="mainStore.hasOption"
-            @click="setCollectByCoin"
-            :name="coinCollect ? 'tianjia24x24-x' : 'tianjia24x24-w'"
-            class="senLeftImg"
-          ></svg-load> -->
+        >
+          <img :src="iconDepth" class="action-pill__icon" alt="" />
+        </div>
+        <div
+          class="action-pill__btn action-pill__btn--active"
+          @click="_toView('/tradingRules?type=1')"
+        >
+          <img :src="iconOrderbook" class="action-pill__icon" alt="" />
         </div>
       </div>
     </div>
   </div>
 </template>
+
 <script setup>
 import { useTradeStore } from '@/store/trade'
-import { countFormat, priceFormat } from '@/utils/decimal'
-import { _t18, _isRFDByChangePercent, _absChangePercentStr } from '@/utils/public'
+import { _t18, _toView, _isRFDByChangePercent, _absChangePercentStr } from '@/utils/public'
 import { useMainStore } from '@/store/index.js'
+import iconChevron from '@/assets/images/gxpex/trade/icon-symbol-info.svg'
+import iconDepth from '@/assets/images/gxpex/trade/icon-btn-left.svg'
+import iconOrderbook from '@/assets/images/gxpex/trade/icon-btn-right.svg'
 const mainStore = useMainStore()
 
 const props = defineProps({
-  coinInfo: {
-    type: Object,
-    default: () => {}
-  }
+  coinInfo: { type: Object, default: () => {} }
 })
-/**
- * 黄金白银取值
- */
 
 const tradeStore = useTradeStore()
 const coinPriceInfo = computed(() => {
@@ -65,128 +57,101 @@ const coinPriceInfo = computed(() => {
 })
 const emits = defineEmits(['showSidePopup'])
 </script>
-<style lang="scss" scoped>
-.hightItem {
-  color: var(--ex-active-font-color) !important;
-}
-.top {
-  padding: 20px 15px 0;
-  z-index: 9;
-  background-color: var(--ex-default-background-color);
-  .first {
-    display: flex;
-    justify-content: space-between;
-    .firLeft {
-      display: flex;
-      align-items: center;
-      font-size: 16px;
-      color: var(--ex-default-font-color);
-      .firLeftImg {
-        width: 17px;
-        height: 14px;
-        margin-right: 10px;
-      }
-      .firNum {
-        font-size: 14px;
-        margin-left: 10px;
-      }
-    }
-    .senLeftImg {
-      margin-left: 10px;
-      display: block;
-      width: 24px;
-      height: 24px;
-    }
-  }
-  .second {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 0 10px;
-    .secondLeft {
-      font-size: 36px;
-      font-weight: bold;
-      color: var(--ex-font-color10);
-      > * {
-        transition: 0.3s;
-      }
-      .secondLeftB {
-        font-size: 14px;
-        margin-top: 5px;
-      }
-    }
-    .secondRight {
-      .secondItem {
-        display: flex;
-        align-items: center;
-        padding: 6px 0;
-        font-size: 14px;
-        justify-content: space-between;
-        .itemL {
-          color: var(--ex-passive-font-color);
-          margin-right: 10px;
-        }
 
-        .itemR {
-          color: var(--ex-default-font-color);
-        }
-      }
-    }
+<style lang="scss" scoped>
+.bb-symbol-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px 8px;
+  background: transparent;
+  gap: 8px;
+}
+
+/* 左：币种 (无胶囊，直接透到页面) */
+.symbol-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  min-width: 0;
+
+  &__logo {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    object-fit: contain;
+    background: rgba(255, 255, 255, 0.08);
+    flex-shrink: 0;
   }
-  .third {
-    margin-top: 20px;
-    .list {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      .thirdLeft {
-        display: flex;
-        font-size: 14px;
-        color: var(--ex-default-font-color);
-        .item {
-          margin-right: 30px;
-        }
-      }
-      .thirdRight {
-        display: flex;
-        align-items: center;
-        font-size: 14px;
-        color: var(--ex-font-color9);
-        .thirdRightImg {
-          width: 10px;
-          height: 6px;
-          margin-left: 5px;
-        }
-      }
-    }
+  &__logo--ph { background: rgba(255, 255, 255, 0.12); }
+
+  &__name {
+    font-family: 'Inter', 'PingFang SC', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #f5f3f8;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  &__chev {
+    width: 10px;
+    height: 10px;
+    opacity: 0.6;
+    margin-left: 2px;
+  }
+
+  &__change {
+    margin-left: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
   }
 }
-.selectTimes {
-  position: fixed;
-  height: 100vh;
-  width: var(--ex-max-width);
-  background: rgba($color: #000000, $alpha: 0.6);
-  z-index: 10;
-  .times {
-    background-color: var(--ex-default-background-color);
-    position: absolute;
-    width: 100%;
-    height: 84px;
-    display: flex;
-    align-items: center;
-    border-radius: 0px 0px 15px 15px;
-    .item {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 15px;
-      width: 37px;
-      height: 23px;
-      background: var(--ex-div-bgColor12);
-      border-radius: 2px 2px 2px 2px;
-      font-size: 12px;
-      color: var(--ex-default-font-color);
-    }
+
+/* 右：双按钮 (透明，无胶囊) */
+.symbol-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.action-pill {
+  display: flex;
+  align-items: center;
+  background: transparent;
+  padding: 0;
+  gap: 4px;
+}
+
+.action-pill__btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.2s ease;
+
+  &__icon {
+    width: 16px;
+    height: 16px;
+    opacity: 0.6;
+  }
+
+  &--active {
+    background: #a13cff;
+    .action-pill__icon { opacity: 1; }
   }
 }
+
+.action-pill__icon { width: 16px; height: 16px; }
 </style>

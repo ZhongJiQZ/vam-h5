@@ -173,22 +173,10 @@ defineExpose({
   position: relative;
 }
 
+/* 暗主题：tab_right/listBox 白底等都清掉，公用 deep 在 trade/index.vue */
 .bb-order-tabs {
-  :deep(.van-tabs__wrap) {
-    border-bottom: 1px solid var(--ex-border-color);
-  }
-
-  :deep(.van-tabs__nav) {
-    padding-right: 80px;
-    background: #fff !important;
-  }
-
   :deep(.van-tab--active .van-tab__text) {
     font-weight: 600;
-  }
-
-  :deep(.van-tabs__line) {
-    background: #008710;
   }
 }
 
@@ -196,18 +184,10 @@ defineExpose({
   position: absolute;
   top: 0;
   right: 0;
-  background: #fff !important;
-  padding: 15px 5px;
-
-  .entrustRImg {
-    padding: 0 8px;
-    font-size: 12px;
-  }
 }
 
 .listBox {
-  padding: 10px 12px 0;
-  background: #fff;
+  padding: 10px 0 0;
 }
 
 :deep(.van-cell) {

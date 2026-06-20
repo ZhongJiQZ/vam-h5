@@ -4,7 +4,7 @@
     <div class="content">
       <!-- 盘口信息 -->
       <div class="content_left">
-        <Handicap :coinInfo="coinInfo" @setTradePrice="setTradePrice"></Handicap>
+        <Handicap :rows="6" :coinInfo="coinInfo" @setTradePrice="setTradePrice"></Handicap>
       </div>
       <!-- 下单 -->
       <div class="content_right">
@@ -84,44 +84,30 @@
             })`"
           />
         </div>
-        <!-- 滑块部分 -->
+        <!-- 滑块部分：对齐 U本位 5 钻石节点 + 紫钻石手柄 + 红 % 跟随 -->
         <div class="rightFourth">
-          <div class="slider-t">
-            <div class="item" v-for="(item, index) in 4" :key="index">
-              <div
-                class="hightItem"
-                :class="{ hightColorRed: form.type == 1 }"
-                :style="{
-                  width: `${
-                    form.slider >= (index + 1) * 25
-                      ? '100%'
-                      : form.slider < (index + 1) * 25 && form.slider >= index * 25
-                      ? (form.slider / 25 - index) * 100 + '%'
-                      : '0%'
-                  }`
-                }"
-              ></div>
-            </div>
-          </div>
-          <div class="slider-name ff-num">
+          <div class="lineBg">
             <div
-              class="item"
-              :class="form.slider >= (index + 1) * 25 ? 'itemHight' : ''"
-              v-for="(item, index) in 4"
-              :key="index" 
-            >
-              {{ 25 * (index + 1) }}
-            </div>
+              class="node"
+              v-for="(item, index) in 5"
+              :key="index"
+              :class="form.slider >= index * 25 ? 'active' : ''"
+            ></div>
           </div>
-          <div class="rightLine"></div>
           <van-slider
             v-model="form.slider"
             @change="sliderChange"
-            active-color="var(--ex-div-bgColor1)"
-            inactive-color="var(--ex-div-bgColor)"
-            button-size="16"
-          ></van-slider>
-          <div class="rightLine"></div>
+            :step="1"
+          >
+            <template #button>
+              <div class="init">
+                <div :class="{ marl: form.slider <= 3, marr: form.slider > 98 }">
+                  <div class="initimg"></div>
+                  <div class="initNum ff-num">{{ form.slider }}%</div>
+                </div>
+              </div>
+            </template>
+          </van-slider>
         </div>
         <!-- 市价>买入，限价>买入，限价>卖出：成交金额 -->
         <div class="rightFifth" v-if="!(form.type == 1 && form.delegateType == '1')">
