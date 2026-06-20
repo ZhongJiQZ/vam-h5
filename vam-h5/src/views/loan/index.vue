@@ -1,34 +1,36 @@
 <script setup>
+import { ref, onMounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { _t18 } from '@/utils/public'
-import HeaderBar from '@/components/HeaderBar/index.vue'
-// import Success from './components/success.vue'
-import { reactive, ref, onMounted, computed } from 'vue'
 import { _div, _mul, priceFormat } from '@/utils/decimal.js'
 import { getLoanProductList, getLoan } from '@/api/loan.js'
 import { dict } from '@/api/common/index'
 import { uploadImg } from '@/api/common/index.js'
 import { showToast } from 'vant'
 import { useToast } from '@/hook/useToast'
+import iconBack from '@/assets/images/gxpex/trade/icon-back.svg'
+import iconHistory from '@/assets/images/gxpex/loan/icon-history.svg'
+import kycIdFrontPlaceholder from '@/assets/images/gxpex/kyc/id-front.png'
+import kycIdBackPlaceholder from '@/assets/images/gxpex/kyc/id-back.png'
+import kycCameraIcon from '@/assets/images/gxpex/kyc/icon-camera.svg'
+import '@/views/assets/styles/picker-sheet.scss'
+
 const { _toast } = useToast()
-import { _toView } from '@/utils/public'
-import { useRouter } from 'vue-router'
 const router = useRouter()
 const ProductList = ref([])
 const amount = ref('')
-
-// 当前选择还款周期
 const currentProduct = ref({})
-// 当前商品
 const productDetail = ref({})
 const repaymentCycle = ref([])
 const fileList1 = ref([])
 const fileList2 = ref([])
 const fileList3 = ref([])
+const showProductSheet = ref(false)
+const dictList = ref()
+
 const afterRead1 = (file) => {
   file.status = 'uploading'
-  // 此时可以自行将文件上传至服务器
-  // console.log(file)
-  let formData = new FormData()
+  const formData = new FormData()
   formData.append('file', file.file)
   uploadImg(formData).then((res) => {
     res = res.data
@@ -41,11 +43,10 @@ const afterRead1 = (file) => {
     }
   })
 }
+
 const afterRead2 = (file) => {
   file.status = 'uploading'
-  // 此时可以自行将文件上传至服务器
-  // console.log(file)
-  let formData = new FormData()
+  const formData = new FormData()
   formData.append('file', file.file)
   uploadImg(formData).then((res) => {
     res = res.data
@@ -58,11 +59,10 @@ const afterRead2 = (file) => {
     }
   })
 }
+
 const afterRead3 = (file) => {
   file.status = 'uploading'
-  // 此时可以自行将文件上传至服务器
-  // console.log(file)
-  let formData = new FormData()
+  const formData = new FormData()
   formData.append('file', file.file)
   uploadImg(formData).then((res) => {
     res = res.data
@@ -75,7 +75,7 @@ const afterRead3 = (file) => {
     }
   })
 }
-//利息
+
 const interest = computed(() => {
   let tempValue = 0
   if (amount.value && productDetail?.value.odds && productDetail?.value.cycleType) {
@@ -85,28 +85,21 @@ const interest = computed(() => {
       'up'
     )
   }
-
   return tempValue
 })
-const cuttentRight = {
-  iconRight: [
-    { iconName: 'guize', clickTo: '/loan-rule' },
-    { iconName: 'jilu', clickTo: '/loan-record' }
-  ]
-}
-const showNation = ref(false)
+
 onMounted(async () => {
   await getDict()
   getProductList()
 })
-const dictList = ref()
+
 const getDict = async () => {
   const res = await dict('t_repay_type')
   if (res.code == '200') {
     dictList.value = res.data
   }
 }
-/**借贷产品 */
+
 const getProductList = async () => {
   const res = await getLoanProductList()
   if (res.code == '200') {
@@ -114,13 +107,13 @@ const getProductList = async () => {
     repaymentCycle.value = res.rows.map((elem, index) => {
       return {
         id: index,
-        name: elem.cycleType, //周期
+        name: elem.cycleType,
         value: elem.id,
         amountMin: elem.amountMin,
         amountMax: elem.amountMax,
         repayTypeLabel: dictList.value?.filter((item) => {
           return parseInt(item.dictValue) == elem.repayType
-        })[0].dictLabel
+        })[0]?.dictLabel
       }
     })
     selectorAction(repaymentCycle.value[0])
@@ -130,15 +123,15 @@ const getProductList = async () => {
 const selectorAction = (item) => {
   currentProduct.value = item
   productDetail.value = ProductList.value.find((elem) => elem.id == item.value)
-  showNation.value = false
+  showProductSheet.value = false
 }
+
 const submit = () => {
   if (
     amount.value == '' ||
     amount.value > productDetail.value.amountMax ||
     amount.value < productDetail.value.amountMin
   ) {
-    // showErr.value = true
     _toast(`loan_amountErr`)
     return
   }
@@ -155,11 +148,11 @@ const submit = () => {
     return
   }
   const file1 = fileList1.value[0] || {}
-  let filePath1 = file1.res
+  const filePath1 = file1.res
   const file2 = fileList2.value[0] || {}
-  let filePath2 = file2.res
+  const filePath2 = file2.res
   const file3 = fileList3.value[0] || {}
-  let filePath3 = file3.res
+  const filePath3 = file3.res
 
   getLoan({
     proId: productDetail.value.id,
@@ -180,361 +173,578 @@ const submit = () => {
   })
 }
 
-const showErr = ref(false)
 const blur = () => {
   if (
     amount.value > productDetail.value.amountMax ||
     amount.value < productDetail.value.amountMin
   ) {
-    showErr.value = true
-    // 借贷金额超出可借范围
     _toast(`loan_amountMore`)
     amount.value = ''
   }
 }
 </script>
+
 <template>
-  <!-- 助力贷 -->
-  <HeaderBar
-    :currentName="_t18('asset_loan')"
-    :cuttentRight="cuttentRight"
-    :border_bottom="true"
-  ></HeaderBar>
-  <div class="content">
-    <div class="top">
-      <!-- 经平台审核，您可向平台申请一笔借款！ -->
-      <strong class="tip">{{ _t18('loan_msg') }}</strong>
-      <!-- 借贷产品 -->
-      <div class="type">{{ _t18('loan_product') }} <span></span></div>
-      <div class="form">
-        <div class="formInput" @click="showNation = true">
-          <!-- <input v-model="productDetail.amount" class="form-input" disabled /> -->
-          <p>{{ productDetail.amountMin }}-{{ productDetail.amountMax }}</p>
-        </div>
-      </div>
-      <!-- 借款金额 -->
-      <div class="type">{{ _t18('loan_amount') }} <span>(USDT)</span></div>
-      <div class="form">
-        <div class="formInput">
-          <!-- 输入贷款金额 -->
-          <input
-            v-model="amount"
-            class="form-input"
-            :placeholder="_t18('loan_pleaseInput')"
-            @blur="blur"
-          />
-          <!-- <span v-if="showErr">*金额不符合</span> -->
-        </div>
+  <div class="page page--loan">
+    <header class="loan-header">
+      <button type="button" class="loan-header__back" aria-label="back" @click="router.back()">
+        <img :src="iconBack" alt="" class="loan-header__back-icon" />
+      </button>
+      <h1 class="loan-header__title">{{ _t18('asset_loan') }}</h1>
+      <button
+        type="button"
+        class="loan-header__history"
+        aria-label="history"
+        @click="router.push('/loan-record')"
+      >
+        <img :src="iconHistory" alt="" class="loan-header__history-icon" />
+      </button>
+    </header>
+
+    <main class="loan-main">
+      <div class="loan-banner">
+        <span class="loan-banner__icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M12 24C5.37 24 0 18.63 0 12C0 5.37 5.37 0 12 0C18.63 0 24 5.37 24 12C24 18.63 18.63 24 12 24ZM12 1.33C6.11 1.33 1.33 6.11 1.33 12C1.33 17.89 6.11 22.67 12 22.67C17.89 22.67 22.67 17.89 22.67 12C22.67 6.11 17.89 1.33 12 1.33ZM12 18.67C11.26 18.67 10.67 18.07 10.67 17.33C10.67 16.6 11.26 16 12 16C12.74 16 13.33 16.6 13.33 17.33C13.33 18.07 12.74 18.67 12 18.67ZM11.25 14.67L10.69 5.33L13.32 5.33L12.73 14.67L11.25 14.67Z"
+              fill="rgb(160,65,237)"
+              transform="translate(6, 6)"
+            />
+          </svg>
+        </span>
+        <p class="loan-banner__text">{{ _t18('loan_msg') }}</p>
       </div>
 
-      <van-action-sheet
-        v-model:show="showNation"
-        style="max-width: var(--ex-max-width); left: 50%; translate: -50%"
-        ><template #default>
-          <ul class="action">
-            <li v-for="item in repaymentCycle" :key="item.id" @click="selectorAction(item)">
-              <div class="selector">
-                <span>{{ item.amountMin }}-{{ item.amountMax }} USDT</span>
+      <section class="loan-card loan-card--form">
+        <div class="loan-field">
+          <div class="loan-field__label">{{ _t18('loan_product') }}</div>
+          <button type="button" class="loan-field__row loan-field__row--select" @click="showProductSheet = true">
+            <span class="loan-field__value">
+              {{ productDetail.amountMin }}-{{ productDetail.amountMax }}
+            </span>
+          </button>
+        </div>
+
+        <div class="loan-field">
+          <div class="loan-field__label">{{ _t18('loan_amount') }} (USDT)</div>
+          <div class="loan-field__row">
+            <input
+              v-model="amount"
+              class="loan-field__input"
+              type="text"
+              inputmode="decimal"
+              :placeholder="_t18('loan_pleaseInput')"
+              :aria-label="_t18('loan_amount')"
+              @blur="blur"
+            />
+          </div>
+        </div>
+
+        <div class="loan-field">
+          <div class="loan-field__label">{{ _t18('loan_cycle') }}</div>
+          <div class="loan-field__row">
+            <span class="loan-field__value">{{ productDetail.cycleType }}</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="loan-card loan-card--info">
+        <div class="loan-info__row">
+          <span class="loan-info__label">{{ _t18('loan_rateDay') }}</span>
+          <span class="loan-info__value">{{ productDetail.odds }}%</span>
+        </div>
+        <div class="loan-info__row">
+          <span class="loan-info__label">{{ _t18('loan_interest') }}</span>
+          <span class="loan-info__value">{{ interest }} USDT</span>
+        </div>
+        <div class="loan-info__row">
+          <span class="loan-info__label">{{ _t18('loan_repayType') }}</span>
+          <span class="loan-info__value">{{ currentProduct.repayTypeLabel || '' }}</span>
+        </div>
+        <div class="loan-info__row">
+          <span class="loan-info__label">{{ _t18('loan_repayOrg') }}</span>
+          <span class="loan-info__value">{{ productDetail.repayOrg }}</span>
+        </div>
+      </section>
+
+      <section class="loan-upload">
+        <div class="loan-upload__head">
+          <h2 class="loan-upload__title">{{ _t18('loan_idImg') }}</h2>
+          <p class="loan-upload__subtitle">{{ _t18('loan_idMsg') }}</p>
+        </div>
+        <div class="loan-upload__grid">
+          <div
+            class="loan-upload__card"
+            :class="{ 'loan-upload__card--filled': fileList1.length > 0 }"
+          >
+            <van-uploader class="loan-uploader" :after-read="afterRead1" v-model="fileList1">
+              <div class="loan-upload__card-body">
+                <img
+                  v-if="!fileList1.length"
+                  class="loan-upload__preview"
+                  :src="kycIdFrontPlaceholder"
+                  alt=""
+                />
+                <img
+                  v-if="!fileList1.length"
+                  class="loan-upload__icon"
+                  :src="kycCameraIcon"
+                  alt=""
+                />
               </div>
-            </li>
-          </ul>
-        </template>
-      </van-action-sheet>
-      <!-- 还款周期 -->
-      <div class="type">{{ _t18('loan_cycle') }}</div>
-      <div class="form">
-        <div class="formInput">
-          <input v-model="productDetail.cycleType" class="form-input" disabled />
-        </div>
-      </div>
-    </div>
+            </van-uploader>
+            <span class="loan-upload__card-label">{{ _t18('loan_front') }}</span>
+          </div>
 
-    <!-- 借贷信息 -->
-    <div class="loan-detail">
-      <div class="item">
-        <!-- 日利率 -->
-        <div class="left">{{ _t18('loan_rateDay') }}</div>
-        <div class="right">{{ productDetail.odds }}%</div>
-      </div>
-      <div class="item">
-        <!-- 利息 -->
-        <div class="left">{{ _t18('loan_interest') }}</div>
-        <div class="right">{{ interest }} USDT</div>
-      </div>
-      <div class="item">
-        <!-- 还款方式 -->
-        <div class="left">{{ _t18('loan_repayType') }}</div>
-        <!-- 到期一次还本息 -->
-        <div class="right">{{ currentProduct.repayTypeLabel || '' }}</div>
-      </div>
-      <div class="item">
-        <!-- 放款机构 -->
-        <div class="left">{{ _t18('loan_repayOrg') }}</div>
-        <div class="right">{{ productDetail.repayOrg }}</div>
-      </div>
-    </div>
+          <div
+            class="loan-upload__card"
+            :class="{ 'loan-upload__card--filled': fileList2.length > 0 }"
+          >
+            <van-uploader class="loan-uploader" :after-read="afterRead2" v-model="fileList2">
+              <div class="loan-upload__card-body">
+                <img
+                  v-if="!fileList2.length"
+                  class="loan-upload__preview"
+                  :src="kycIdBackPlaceholder"
+                  alt=""
+                />
+                <img
+                  v-if="!fileList2.length"
+                  class="loan-upload__icon"
+                  :src="kycCameraIcon"
+                  alt=""
+                />
+              </div>
+            </van-uploader>
+            <span class="loan-upload__card-label">{{ _t18('loan_reverse') }}</span>
+          </div>
 
-    <div class="bottom">
-      <div class="upload">
-        <!-- 证件照 请确保证件照清晰可见-->
-        <div class="photo">
-          {{ _t18('loan_idImg') }} <span class="hui">({{ _t18('loan_idMsg') }})</span>
+          <div
+            class="loan-upload__card"
+            :class="{ 'loan-upload__card--filled': fileList3.length > 0 }"
+          >
+            <van-uploader class="loan-uploader" :after-read="afterRead3" v-model="fileList3">
+              <div class="loan-upload__card-body">
+                <img
+                  v-if="!fileList3.length"
+                  class="loan-upload__preview"
+                  :src="kycIdBackPlaceholder"
+                  alt=""
+                />
+                <img
+                  v-if="!fileList3.length"
+                  class="loan-upload__icon"
+                  :src="kycCameraIcon"
+                  alt=""
+                />
+              </div>
+            </van-uploader>
+            <span class="loan-upload__card-label">{{ _t18('loan_hand') }}</span>
+          </div>
         </div>
+      </section>
+
+      <button type="button" class="loan-confirm" @click="submit">
+        {{ _t18('loan_require') }}
+      </button>
+    </main>
+
+    <van-action-sheet
+      v-model:show="showProductSheet"
+      title=""
+      class="assets-picker-sheet"
+      style="max-width: var(--ex-max-width); left: 50%; translate: -50%"
+    >
+      <div class="picker-list">
+        <button
+          v-for="item in repaymentCycle"
+          :key="item.id"
+          type="button"
+          class="picker-item"
+          @click="selectorAction(item)"
+        >
+          <span class="picker-item__label">{{ item.amountMin }}-{{ item.amountMax }} USDT</span>
+        </button>
       </div>
-      <div class="upload-box">
-        <div class="item">
-          <!-- 上传正面 -->
-          <van-uploader :after-read="afterRead1" v-model="fileList1">
-            <img src="@/assets/defi/delete.png" alt="" class="img" />
-            <div class="tit">{{ _t18('loan_front') }}</div>
-          </van-uploader>
-        </div>
-        <div class="item">
-          <!-- 上传反面 -->
-          <van-uploader :after-read="afterRead2" v-model="fileList2">
-            <img src="@/assets/defi/delete.png" alt="" class="img" />
-            <div class="tit">{{ _t18('loan_reverse') }}</div>
-          </van-uploader>
-        </div>
-        <div class="item">
-          <!-- 上传手持证件照 -->
-          <van-uploader :after-read="afterRead3" v-model="fileList3">
-            <img src="@/assets/defi/delete.png" alt="" class="img" />
-            <div class="tit">{{ _t18('loan_hand') }}</div>
-          </van-uploader>
-        </div>
-      </div>
-      <!-- 确认上传 -->
-      <div class="btn" @click="submit">{{ _t18('loan_require') }}</div>
-    </div>
+    </van-action-sheet>
   </div>
-  <!-- <Success :text="'认证成功'" :imgUrl="'/src/assets/defi/success.png'"></Success> -->
 </template>
+
 <style lang="scss" scoped>
-:deep(.van-action-sheet__content) {
-  background: var(--ex-default-background-color);
+.page--loan {
+  min-height: 100vh;
+  background: #111111;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
 }
-.van-cell {
-  height: 46px;
-  background: var(--ex-div-bgColor20);
-  border-radius: 3px;
-  padding: 0 10px;
-  font-size: 14px;
+
+.loan-header {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 12px;
+}
+
+.loan-header__back {
   display: flex;
   align-items: center;
-}
-
-.action {
-  li {
-    color: var(--ex-default-font-color);
-    text-align: center;
-    line-height: 50px;
-    font-size: 16px;
-    border-bottom: 1px solid var(--ex-border-color);
-  }
-}
-
-.content {
-  padding-top: 20px;
-
-  .top {
-    padding: 0 15px;
-
-    .tip {
-      display: block;
-      font-size: 12px;
-      color: var(--ex-tip-font-color);
-      margin-bottom: 30px;
-    }
-
-    .type {
-      font-size: 14px;
-      color: var(--ex-default-font-color);
-      margin-bottom: 10px;
-
-      span {
-        font-size: 14px;
-        color: var(--ex-passive-font-color);
-      }
-    }
-
-    .form {
-      .formInput {
-        padding: 0 10px;
-        display: flex;
-        justify-content: space-between;
-        background: var(--ex-div-bgColor20);
-        border-radius: 3px;
-        align-items: center;
-        margin-bottom: 20px;
-        & > span {
-          color: var(--ex-tip-font-color);
-        }
-
-        input {
-          flex: 1;
-          width: 100%;
-          height: 46px;
-          font-size: 14px;
-          background: var(--ex-div-bgColor20);
-          color: var(--ex-default-font-color);
-
-          &::placeholder {
-            color: var(--ex-default-font-color);
-            font-size: 14px;
-          }
-        }
-
-        p {
-          width: 100%;
-          height: 46px;
-          font-size: 14px;
-          line-height: 46px;
-          color: var(--ex-default-font-color);
-        }
-      }
-    }
-  }
-
-  .loan-detail {
-    margin-top: 30px;
-    border-top: 1px solid var(--ex-border-color);
-    border-bottom: 1px solid var(--ex-border-color);
-
-    .item {
-      padding: 0 15px;
-      margin: 30px 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-
-      .left {
-        font-size: 14px;
-        color: var(--ex-passive-font-color);
-      }
-
-      .right {
-        font-size: 14px;
-        color: var(--ex-default-font-color);
-        text-align: right;
-      }
-    }
-  }
-
-  .bottom {
-    padding: 0 15px;
-
-    .upload {
-      margin: 30px 0 10px 0;
-
-      .photo {
-        font-size: 14px;
-        color: var(--ex-default-font-color);
-      }
-
-      span {
-        font-size: 14px;
-        color: var(--ex-passive-font-color);
-      }
-    }
-
-    .upload-box {
-      .item {
-        height: 194px;
-        background: var(--ex-default-background-color);
-        border-radius: 3px;
-        border: 1px solid var(--ex-border-color1);
-        margin-bottom: 10px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        overflow: hidden;
-
-        .van-uploader {
-          width: 100%;
-
-          :deep(.van-uploader__wrapper) {
-            width: 100%;
-            height: 100%;
-            display: block;
-
-            .van-uploader__input-wrapper {
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-            }
-
-            .van-uploader__preview {
-              width: 100%;
-              height: 100%;
-              margin: auto;
-
-              .van-uploader__preview-image {
-                width: 100%;
-                height: 194px;
-              }
-            }
-
-            .van-uploader__preview-delete {
-              width: 20px;
-              height: 20px;
-
-              .van-uploader__preview-delete-icon {
-                font-size: 22px;
-              }
-            }
-          }
-        }
-
-        .img {
-          // width: 100%;
-          // height: 100%;
-          width: 50px;
-          height: 50px;
-          min-width: none;
-          min-height: none;
-          object-fit: contain;
-          margin: 50px 0 20px 0;
-        }
-
-        .tit {
-          box-sizing: border-box;
-          width: 100%;
-          text-align: center;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 14px;
-          font-weight: 400;
-          color: var(--ex-passive-font-color);
-        }
-      }
-    }
-
-    .btn {
-      font-size: 14px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 50px;
-      background: var(--ex-div-bgColor1);
-      border-radius: 3px;
-      color: var(--ex-font-color);
-      margin: 50px 0;
-    }
-  }
-}
-
-.submit {
-  width: 100%;
-  font-size: 14px;
-  display: flex;
   justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-left: -9px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.loan-header__back-icon {
+  display: block;
+  width: 12px;
+  height: 22px;
+  object-fit: contain;
+  opacity: 0.9;
+}
+
+.loan-header__title {
+  grid-column: 2;
+  margin: 0;
+  text-align: center;
+  font-family: 'PingFang SC', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #fff;
+}
+
+.loan-header__history {
+  grid-column: 3;
+  display: flex;
   align-items: center;
-  height: 50px;
-  background: var(--ex-primary-color);
-  border-radius: 3px;
-  color: var(--ex-font-color);
-  margin: 50px 0;
+  justify-content: center;
+  width: 52px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: rgb(34, 28, 49);
+  cursor: pointer;
+}
+
+.loan-header__history-icon {
+  display: block;
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.loan-main {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px 12px 0;
+}
+
+.loan-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  min-height: 36px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  background: rgb(34, 28, 49);
+}
+
+.loan-banner__icon {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    display: block;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.loan-banner__text {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+  line-height: 1.4;
+  color: rgb(160, 65, 237);
+}
+
+.loan-card {
+  padding: 20px 12px;
+  border-radius: 12px;
+  background: rgb(34, 28, 49);
+}
+
+.loan-card--form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.loan-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.loan-field__label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.loan-field__row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 40px;
+  padding: 9px 12px;
+  border: none;
+  border-radius: 25px;
+  background: rgb(34, 34, 34);
+  text-align: left;
+  cursor: default;
+}
+
+.loan-field__row--select {
+  cursor: pointer;
+}
+
+.loan-field__value {
+  font-family: 'Roboto', sans-serif;
+  font-size: 18px;
+  line-height: 1.2;
+  color: #fff;
+  text-align: left;
+}
+
+.loan-field__input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-family: 'Roboto', sans-serif;
+  font-size: 18px;
+  line-height: 1.2;
+  color: #fff;
+  text-align: left;
+  outline: none;
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.45);
+  }
+}
+
+.loan-card--info {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.loan-info__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 20px;
+}
+
+.loan-info__label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.loan-info__value {
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  line-height: 1.2;
+  color: #fff;
+  text-align: right;
+}
+
+.loan-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.loan-upload__head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.loan-upload__title {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: #fff;
+}
+
+.loan-upload__subtitle {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.loan-upload__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.loan-upload__card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  min-height: 131px;
+  padding: 12px 7px 10px;
+  border-radius: 12px;
+  background: rgb(34, 28, 49);
+}
+
+.loan-upload__card-label {
+  flex-shrink: 0;
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.85);
+  text-align: center;
+}
+
+.loan-upload__card-body {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 100%;
+  height: 85px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: transparent;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 8px;
+    background: rgba(0, 28, 58, 0.3);
+    pointer-events: none;
+    z-index: 1;
+  }
+}
+
+.loan-upload__card--filled .loan-upload__card-body::after {
+  display: none;
+}
+
+.loan-upload__preview {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.loan-upload__icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  width: 24px;
+  height: 24px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  display: block;
+  object-fit: contain;
+}
+
+.loan-uploader {
+  width: 100%;
+
+  :deep(.van-uploader__wrapper) {
+    width: 100%;
+    display: block;
+  }
+
+  :deep(.van-uploader__input-wrapper) {
+    display: block;
+    width: 100%;
+  }
+
+  :deep(.van-uploader__preview) {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+  }
+
+  :deep(.van-uploader__preview-image) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  :deep(.van-uploader__preview-delete) {
+    top: 4px;
+    right: 4px;
+    width: 18px;
+    height: 18px;
+    background: rgba(0, 0, 0, 0.55);
+    border-radius: 50%;
+    z-index: 4;
+
+    .van-uploader__preview-delete-icon {
+      font-size: 14px;
+      top: 1px;
+      right: 1px;
+    }
+  }
+}
+
+.loan-confirm {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 40px;
+  margin-top: 8px;
+  margin-bottom: 16px;
+  border: none;
+  border-radius: 20px;
+  background: linear-gradient(-43deg, rgb(127, 43, 218) 0%, rgb(163, 67, 238) 100%);
+  box-shadow: 0 4px 12px rgba(127, 43, 218, 0.35);
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: #fff;
+  cursor: pointer;
 }
 </style>
