@@ -1,65 +1,56 @@
 <template>
-  <div class="assetDetails">
-    <div v-if="assetDetails?.length" class="asset-list-group">
-      <div class="asset-list-bar">
-        {{ _t18('asset_detail', ['ebc']) }}
-      </div>
-      <div v-for="(item, index) in assetDetails" :key="index" class="asset-card">
-        <div class="top">
+  <section class="assets-list" :aria-label="_t18('asset_detail', ['ebc'])">
+    <h2 class="assets-list__title">{{ _t18('asset_detail', ['ebc']) }}</h2>
+
+    <article v-for="(item, index) in assetDetails" :key="index" class="assets-row">
+      <div class="assets-row__head">
+        <span class="assets-row__icon">
           <svg-load
-            v-if="item.title == 'USDT'"
-            style="width: 30px"
+            v-if="item.title === 'USDT'"
             :name="item.icon"
-            class="currencyIcon"
+            class="assets-row__icon-svg"
           />
-          <img v-else :src="item.loge" style="width: 30px" />
-          <p class="fw-num">{{ item.title }}</p>
+          <img v-else-if="item.loge" :src="item.loge" alt="" class="assets-row__icon-img" />
+        </span>
+        <span class="assets-row__symbol">{{ item.title }}</span>
+      </div>
+      <div class="assets-row__stats">
+        <div class="assets-row__stat">
+          <span class="assets-row__stat-label">{{ _t18('asset_available') }}</span>
+          <span class="assets-row__stat-value fw-num">{{ amountFormat(item.keyong) }}</span>
         </div>
-        <div class="bottom">
-          <div>
-            <p class="til">{{ _t18('asset_available') }}</p>
-            <p class="num fw-num">
-              {{ amountFormat(item.keyong) }}
-            </p>
-          </div>
-          <div>
-            <p class="til">
-              {{ _t18('asset_occupation') }}
-            </p>
-            <p class="num fw-num">
-              {{ amountFormat(item.zhanyong, 4) }}
-            </p>
-          </div>
-          <div>
-            <p class="til">{{ _t18('asset_equivalent', ['bitmake', 'ebc']) }}(USDT)</p>
-            <p class="num fw-num">
-              {{ amountFormat(item.zhehe) }}
-            </p>
-          </div>
+        <div class="assets-row__stat">
+          <span class="assets-row__stat-label">{{ _t18('asset_occupation') }}</span>
+          <span class="assets-row__stat-value fw-num">{{ amountFormat(item.zhanyong, 4) }}</span>
+        </div>
+        <div class="assets-row__stat">
+          <span class="assets-row__stat-label">
+            {{ _t18('asset_equivalent', ['bitmake', 'ebc']) }}(USDT)
+          </span>
+          <span class="assets-row__stat-value fw-num">{{ amountFormat(item.zhehe) }}</span>
         </div>
       </div>
-    </div>
-  </div>
+    </article>
+
+    <Nodata v-if="!assetDetails?.length" />
+  </section>
 </template>
 
 <script setup>
 import { _hide, _t18, _numberWithCommas } from '@/utils/public.js'
 import { priceFormat } from '@/utils/decimal.js'
+
 const props = defineProps({
   assetDetails: {
-    type: Object
+    type: Array,
+    default: () => [],
   },
   showNum: {
-    type: Boolean
-  }
+    type: Boolean,
+    default: true,
+  },
 })
 
-/**
- * 金额格式化
- * @param {*} amount
- * @param {*} hide
- * @param {*} decimal
- */
 const amountFormat = (amount, decimal = 0) => {
   let tempVal = priceFormat(amount, decimal)
   if (props.showNum) {
@@ -72,88 +63,105 @@ const amountFormat = (amount, decimal = 0) => {
 </script>
 
 <style lang="scss" scoped>
-.assetDetails {
-  padding: 0 0 100px;
-}
-
-.asset-list-group {
-  margin: 0 15px;
+.assets-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   padding-bottom: 12px;
 }
 
-.asset-list-bar {
-  background: #f6f7fb;
-  border-radius: 10px;
-  padding: 12px 15px;
-  font-size: 14px;
-  color: #7a8c99;
+.assets-list__title {
+  margin: 0;
+  padding: 0 2px 4px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: #fff;
 }
 
-.asset-card {
-  background: #f6f7fb;
-  border-radius: 10px;
-  padding: 14px 15px;
+.assets-row {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgb(34, 28, 49);
+}
 
-  .top {
-    display: flex;
+.assets-row__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 24px;
+}
+
+.assets-row__icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.assets-row__icon-svg,
+.assets-row__icon-img {
+  width: 24px;
+  height: 24px;
+  display: block;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.assets-row__symbol {
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.assets-row__stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 8px;
+}
+
+.assets-row__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+
+  &:nth-child(1) {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  &:nth-child(2) {
     align-items: center;
-    margin-bottom: 10px;
-
-    img {
-      border-radius: 100%;
-      width: 22px;
-      height: 22px;
-      margin-right: 8px;
-    }
-
-    .currencyIcon {
-      font-size: 14px;
-      margin-right: 8px;
-    }
-
-    p {
-      margin: 0;
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--ex-font-color6);
-    }
+    text-align: center;
   }
 
-  .bottom {
-    display: flex;
-    justify-content: space-between;
-    gap: 8px;
-
-    & > div {
-      flex: 1;
-      text-align: center;
-      min-width: 0;
-
-      .til {
-        margin: 0;
-        padding: 0 0 6px;
-        font-size: 12px;
-        color: var(--ex-passive-font-color);
-      }
-
-      .num {
-        margin: 0;
-        font-size: 14px;
-        font-weight: 600;
-        color: var(--ex-font-color6);
-      }
-
-      &:first-child {
-        text-align: start;
-      }
-
-      &:last-child {
-        text-align: end;
-      }
-    }
+  &:nth-child(3) {
+    align-items: flex-end;
+    text-align: right;
   }
+}
+
+.assets-row__stat-label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 13px;
+  line-height: 1.15;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.assets-row__stat-value {
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  line-height: 1.18;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: nowrap;
 }
 </style>

@@ -29,20 +29,7 @@
           <div class="asset-record__head">
             <p class="asset-record__title">{{ _t18('center_asset_flow') }}</p>
             <div class="asset-record__shortcuts">
-              <button
-                v-for="(link, i) in headerLinks"
-                :key="i"
-                type="button"
-                class="asset-record__shortcut"
-                :aria-label="link.aria"
-                @click="_toView(link.path)"
-              >
-                <img
-                  :src="isHeaderLinkActive(link.path) ? link.imgActive : link.img"
-                  alt=""
-                  class="asset-record__shortcut-img"
-                />
-              </button>
+              <AssetsShortcuts />
             </div>
           </div>
 
@@ -60,29 +47,12 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { useRoute } from 'vue-router'
-import { _t18, _toView } from '@/utils/public'
+import { _t18 } from '@/utils/public'
 import flowMiningComponent from './components/flowMiningComponent.vue'
 import flowInvestComponent from './components/flowInvestComponent.vue'
 import flowDepositComponent from './components/flowDepositComponent.vue'
 import flowWithdrawComponent from './components/flowWithdrawComponent.vue'
-import imgQianbao from '@/assets/images/assets/qianbao.png'
-import imgQianbaoX from '@/assets/images/assets/qianbao-x.png'
-import imgWenhao from '@/assets/images/assets/wenhao.png'
-import imgWenhaoX from '@/assets/images/assets/wenhao-x.png'
-import imgLishi from '@/assets/images/assets/lishi.png'
-import imgLishiX from '@/assets/images/assets/lishi-x.png'
-
-const route = useRoute()
-
-const headerLinks = [
-  { path: '/myassets', aria: 'myassets', img: imgQianbao, imgActive: imgQianbaoX },
-  { path: '/orderCenter', aria: 'orderCenter', img: imgWenhao, imgActive: imgWenhaoX },
-  { path: '/assetRecord', aria: 'assetRecord', img: imgLishi, imgActive: imgLishiX },
-]
-
-const isHeaderLinkActive = (path) =>
-  route.path === path || route.path.startsWith(`${path}/`)
+import AssetsShortcuts from './components/AssetsShortcuts.vue'
 
 const tabInnerList = computed(() => {
   const list = [

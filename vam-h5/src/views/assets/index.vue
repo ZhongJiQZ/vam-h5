@@ -1,42 +1,41 @@
 <template>
-  <div class="assets-index">
-    <div class="assets-index__tabs-wrap">
-      <van-tabs
-        shrink
-        v-model:active="tabActive"
-        class="assets-index__tabs"
-        title-inactive-color="#92a4b0"
-        title-active-color="#e8f1f6"
-        color="#17ac74"
-        line-width="20"
-        line-height="3"
-        @click-tab="clickInnerTab"
-      >
-        <van-tab
-          v-for="(item, index) in tabList"
-          :key="index"
-          :title="item.title"
-          :name="item.key"
-        />
-      </van-tabs>
-    </div>
-    <div class="assets-index__body" style="background:#05101a;">
-    <div class="assets-index__sheet">
-      <div class="assets-index__sheet-bg" aria-hidden="true" />
-      <div class="assets-index__panel">
-        <component
-          v-if="currentComp"
-          :is="currentComp"
-          :amountSum="amountSum"
-          :assetDetails="assetDetails"
-          :showNum="showNum"
-          :type="tabActive"
-          @handleYanjin="handleYanjin"
-          @handleShuaxin="handleShuaxin"
-        />
+  <div class="page page--assets">
+    <header class="assets-header">
+      <h1 class="assets-header__title">{{ _t18('myassets') }}</h1>
+    </header>
+
+    <main class="assets-main">
+      <div class="assets-tabs">
+        <div class="assets-tabs__viewport">
+          <div ref="tabsScrollRef" class="assets-tabs__scroll">
+            <button
+              v-for="item in tabList"
+              :key="item.key"
+              type="button"
+              class="assets-tabs__tab"
+              :class="{ 'assets-tabs__tab--active': tabActive === item.key }"
+              @click="onTabClick(item.key)"
+            >
+              {{ item.title }}
+            </button>
+          </div>
+          <div class="assets-tabs__overflow" aria-hidden="true">
+            <span class="assets-tabs__arrow"></span>
+          </div>
+        </div>
       </div>
-    </div>
-    </div>
+
+      <component
+        v-if="currentComp"
+        :is="currentComp"
+        :amountSum="amountSum"
+        :assetDetails="assetDetails"
+        :showNum="showNum"
+        :type="tabActive"
+        @handleYanjin="handleYanjin"
+        @handleShuaxin="handleShuaxin"
+      />
+    </main>
   </div>
 </template>
 
@@ -45,9 +44,9 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { _t18 } from '@/utils/public'
 import { _add, priceFormat } from '@/utils/decimal'
-import Plat from './components/account/platformAccount.vue'//平台资产
-import finance from './components/account/financeAccount.vue'//理财资产
-import Contarct from './components/account/contarctAccount.vue'//合约资产
+import Plat from './components/account/platformAccount.vue'
+import finance from './components/account/financeAccount.vue'
+import Contarct from './components/account/contarctAccount.vue'
 
 import { useUserStore } from '@/store/user/index'
 import { useMainStore } from '@/store'
@@ -58,30 +57,23 @@ import { getFreezeList } from '@/api/user'
 import { DIFF_FREEZE_ASSETS } from '@/config/index'
 
 const router = useRouter()
-
 const userStore = useUserStore()
 const mainStore = useMainStore()
 
-/** ✅ 统一用 key 做逻辑，title 只负责展示 */
 const tabList = computed(() => {
-  // 你原来的 mainStore.getAssetsTabList 结构不确定，
-  // 这里做一层“中文 name -> key”的映射，保证逻辑稳定
   const nameToKey = {
     平台资产: 'plat',
-    理财资产: 'finance',//finance
+    理财资产: 'finance',
     合约资产: 'contract',
     我的投资: 'invest',
   }
 
   const list = (mainStore.getAssetsTabList || []).map((item) => {
     const key = item.key || nameToKey[item.name] || item.name
-    const title = _t18(item.keyStr, ['latcoin']) // 你原来的翻译逻辑保留
-    // console.log("item key:",item.keyStr)
-    // console.log("title",title)
+    const title = _t18(item.keyStr, ['latcoin'])
     return { ...item, key, title }
   })
 
-  // 追加“我的投资”
   list.push({
     key: 'invest',
     title: _t18('my_invest', ['latcoin']),
@@ -91,15 +83,14 @@ const tabList = computed(() => {
   return list.sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0))
 })
 
-/** ✅ tabActive 默认用 key */
 const tabActive = ref(tabList.value[0]?.key || 'plat')
 
-const clickInnerTab = (e) => {
-  if (!e?.name) return
-  if (e.name === 'invest') {
+const onTabClick = (key) => {
+  if (key === 'invest') {
     router.push('/myInvestment')
     return
   }
+  tabActive.value = key
   userStore.getUserInfo()
 }
 
@@ -127,7 +118,6 @@ const handleShuaxin = async () => {
 const { asset } = storeToRefs(userStore)
 const freezeList = ref()
 
-/** ✅ 动态组件映射：避免 v-show 同时挂多个组件 */
 const compMap = {
   plat: Plat,
   finance: finance,
@@ -135,7 +125,6 @@ const compMap = {
 }
 const currentComp = computed(() => compMap[tabActive.value] || null)
 
-/** ✅ 资产列表：match 用 key，不用中文 */
 const assetDetails = computed(() => {
   const list = []
   asset.value.forEach((item) => {
@@ -162,7 +151,7 @@ const assetDetails = computed(() => {
 
     obj.zhehe = priceFormat(item.exchageAmount)
     obj.loge = item.loge
-    obj.totalPnlUsdt = item.totalPnlUsdt || 0;
+    obj.totalPnlUsdt = item.totalPnlUsdt || 0
 
     const sym = (item.symbol || '').trim()
     const isUsdt = sym.toLowerCase() === 'usdt'
@@ -196,106 +185,123 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-/* 资产页顶栏：与 #05101a 同系的冷灰字、浅青白选中、品牌绿下划线 */
-// $assets-top-bg: #05101a;
-$assets-top-bg: #fff;
-// $assets-tab-inactive: #92a4b0;
-$assets-tab-inactive: #3333;
-// $assets-tab-active: #e8f1f6;
-$assets-tab-active: #000;
-$assets-accent: #17ac74;
-
-.assets-index {
+.page--assets {
   min-height: 100vh;
-  background: #fff;
-  padding-bottom: env(safe-area-inset-bottom, 0);
+  background:
+    radial-gradient(ellipse 140px 140px at -5% 35%, rgba(128, 43, 218, 0.55), transparent 70%),
+    radial-gradient(ellipse 160px 160px at 105% 15%, rgba(128, 43, 218, 0.45), transparent 70%),
+    radial-gradient(ellipse 130px 130px at 90% 75%, rgba(128, 43, 218, 0.35), transparent 70%),
+    #111111;
+  color: #fff;
+  padding-bottom: calc(79px + env(safe-area-inset-bottom, 0px));
 }
 
-.assets-index__tabs-wrap {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 10;
-  box-sizing: border-box;
-  width: 100%;
-  max-width: var(--ex-max-width, 100%);
-  margin-left: auto;
-  margin-right: auto;
-  background: $assets-top-bg;
-  padding-top: calc(8px + env(safe-area-inset-top, 0px));
-  padding-bottom: 8px;
-}
-
-/* 顶栏占位：8 + 48(tab) + 8 + 安全区，与 .assets-index__tabs-wrap 高度一致 */
-.assets-index__body {
-  padding-top: calc(64px + env(safe-area-inset-top, 0px));
-}
-
-.assets-index__tabs {
-  :deep(.van-tabs__wrap) {
-    height: 48px;
-    border-bottom: none;
-    background: transparent !important;
-  }
-
-  :deep(.van-tabs__nav) {
-    background: transparent !important;
-    padding-left: 8px;
-    padding-right: 8px;
-  }
-
-  :deep(.van-tab) {
-    flex: none;
-    padding: 0 10px;
-    font-size: 15px;
-  }
-
-  :deep(.van-tab__text) {
-    font-weight: 400;
-  }
-
-  :deep(.van-tab--active .van-tab__text) {
-    font-weight: 600;
-    color: $assets-tab-active !important;
-  }
-
-  :deep(.van-tab:not(.van-tab--active) .van-tab__text) {
-    color: $assets-tab-inactive !important;
-  }
-
-  :deep(.van-tabs__line) {
-    display: none !important;
-  }
-
-  :deep(.van-tab--shrink) {
-    margin-right: 8px;
-  }
-}
-
-.assets-index__sheet {
+.assets-header {
   position: relative;
-  z-index: 0;
-  min-height: calc(100vh - 64px - env(safe-area-inset-top, 0px));
-  
-  background: #fff;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 26px;
+  margin-top: calc(6px + env(safe-area-inset-top, 0px));
+  padding: 0 12px;
 }
 
-.assets-index__sheet-bg {
+.assets-header__title {
+  margin: 0;
+  font-family: 'PingFang SC', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #fff;
+}
+
+.assets-main {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px 12px 0;
+}
+
+.assets-tabs {
+  display: flex;
+  align-items: center;
+}
+
+.assets-tabs__viewport {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 29px;
+}
+
+.assets-tabs__scroll {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  min-height: 29px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-right: 18px;
+}
+
+.assets-tabs__scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.assets-tabs__overflow {
   position: absolute;
-  top: -20px;
-  left: 0;
+  top: 0;
   right: 0;
   bottom: 0;
-  z-index: 0;
-  border-radius: 24px 24px 0 0;
-  box-shadow: 0 -8px 32px rgba(5, 16, 26, 0.18);
+  width: 23px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 2px;
   pointer-events: none;
+  background: linear-gradient(90deg, rgba(17, 17, 17, 0) 0%, #111111 46.74%);
 }
 
-.assets-index__panel {
+.assets-tabs__arrow {
+  display: block;
+  width: 7px;
+  height: 7px;
+  border-top: 1.5px solid rgba(255, 255, 255, 0.65);
+  border-right: 1.5px solid rgba(255, 255, 255, 0.65);
+  transform: rotate(45deg);
+  flex-shrink: 0;
+}
+
+.assets-tabs__tab {
   position: relative;
-  z-index: 1;
+  flex-shrink: 0;
+  border: none;
   background: transparent;
+  color: #fff;
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  line-height: 1.2;
+  padding: 0 0 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.assets-tabs__tab--active {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.assets-tabs__tab--active::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 22px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgb(160, 65, 237);
 }
 </style>

@@ -28,20 +28,7 @@
           <div class="order-center__head">
             <p class="order-center__title">{{ _t18('center_order') }}</p>
             <div class="order-center__shortcuts">
-              <button
-                v-for="(link, i) in headerLinks"
-                :key="i"
-                type="button"
-                class="order-center__shortcut"
-                :aria-label="link.aria"
-                @click="_toView(link.path)"
-              >
-                <img
-                  :src="isHeaderLinkActive(link.path) ? link.imgActive : link.img"
-                  alt=""
-                  class="order-center__shortcut-img"
-                />
-              </button>
+              <AssetsShortcuts />
             </div>
           </div>
 
@@ -62,27 +49,11 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { _t18, _toView } from '@/utils/public'
+import { _t18 } from '@/utils/public'
 import SecondContractEntrust from './components/orderCenter/SecondContractEntrust.vue'
 import SpotEntrust from './components/orderCenter/SpotEntrust.vue'
 import UstandardOrderList from './components/orderCenter/UstandardOrderList.vue'
-import imgQianbao from '@/assets/images/assets/qianbao.png'
-import imgQianbaoX from '@/assets/images/assets/qianbao-x.png'
-import imgWenhao from '@/assets/images/assets/wenhao.png'
-import imgWenhaoX from '@/assets/images/assets/wenhao-x.png'
-import imgLishi from '@/assets/images/assets/lishi.png'
-import imgLishiX from '@/assets/images/assets/lishi-x.png'
-
-const route = useRoute()
-
-const headerLinks = [
-  { path: '/myassets', aria: 'myassets', img: imgQianbao, imgActive: imgQianbaoX },
-  { path: '/orderCenter', aria: 'orderCenter', img: imgWenhao, imgActive: imgWenhaoX },
-  { path: '/assetRecord', aria: 'assetRecord', img: imgLishi, imgActive: imgLishiX },
-]
-
-const isHeaderLinkActive = (path) =>
-  route.path === path || route.path.startsWith(`${path}/`)
+import AssetsShortcuts from './components/AssetsShortcuts.vue'
 
 const tabList = computed(() => {
   const list = [
