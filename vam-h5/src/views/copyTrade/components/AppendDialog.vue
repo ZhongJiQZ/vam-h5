@@ -44,6 +44,7 @@ import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { _t18 } from '@/utils/public'
 import { priceFormat } from '@/utils/decimal'
+import { normalizeCopyTradeAmount, resolveCopyTradeFillAmount } from '../utils'
 import { useUserStore } from '@/store/user/index'
 import { storeToRefs } from 'pinia'
 import { showToast } from 'vant'
@@ -73,17 +74,17 @@ function onOpen() {
 }
 
 function setMax() {
-  const max = Number(contractBalance.value) || 0
-  amount.value = max > 0 ? String(max) : ''
+  amount.value = resolveCopyTradeFillAmount(contractBalance.value)
 }
 
 function handleConfirm() {
-  const val = Number(amount.value)
-  if (!val || val <= 0) {
+  const val = normalizeCopyTradeAmount(amount.value)
+  if (!val) {
     showToast(t18('copy_trade_append_amount_error'))
     return
   }
-  if (val > Number(contractBalance.value)) {
+  const balanceCap = normalizeCopyTradeAmount(contractBalance.value)
+  if (balanceCap != null && val > balanceCap) {
     showToast(t18('copy_trade_insufficient_balance'))
     return
   }

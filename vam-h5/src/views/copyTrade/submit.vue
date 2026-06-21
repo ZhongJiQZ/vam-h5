@@ -14,7 +14,7 @@ import {
   subscribeCopyTradeInstitution
 } from '@/api/copyTrade'
 import { priceFormat } from '@/utils/decimal'
-import { isInstitutionSubscribed, patchInstitutionSubscribed, isInstitutionSecretLocked, isSecretKeyLockMessage, setInstitutionSecretLock, normalizeStrategyDetail, resolveStrategyAmountRange, parseAmountRangeText, parseCopyTradeStrategyQuery, getStrategyJoinBlockMessage, formatCopyTradeDisplayDate, formatCopyTradeAmountRangeTip, formatCopyTradeAmountPlaceholder, validateCopyTradeSubmitAmount, getCopyTradeAmountValidationMessage } from './utils'
+import { isInstitutionSubscribed, patchInstitutionSubscribed, isInstitutionSecretLocked, isSecretKeyLockMessage, setInstitutionSecretLock, normalizeStrategyDetail, resolveStrategyAmountRange, parseAmountRangeText, parseCopyTradeStrategyQuery, getStrategyJoinBlockMessage, formatCopyTradeDisplayDate, formatCopyTradeAmountRangeTip, formatCopyTradeAmountPlaceholder, validateCopyTradeSubmitAmount, getCopyTradeAmountValidationMessage, resolveCopyTradeFillAmount, normalizeCopyTradeAmount } from './utils'
 import { getCopyTradeAgreementDoc, getCopyTradeRiskDoc, resolveCopyTradeDoc } from './documents'
 import { useUserStore } from '@/store/user/index'
 import { storeToRefs } from 'pinia'
@@ -159,8 +159,7 @@ function applyAmountLimits(extra = {}) {
 }
 
 function setMax() {
-  const max = Math.min(Number(displayBalance.value) || 0, Number(amountLimits.value.maxAmount) || Infinity)
-  amount.value = max > 0 ? String(max) : ''
+  amount.value = resolveCopyTradeFillAmount(displayBalance.value, amountLimits.value)
 }
 
 async function loadStrategyDetail() {
@@ -271,7 +270,11 @@ async function submitForm() {
     showToast(getCopyTradeAmountValidationMessage(amountCheck, t18, i18n))
     return
   }
-  const val = Number(amount.value)
+  const val = normalizeCopyTradeAmount(amount.value)
+  if (!val) {
+    showToast(getCopyTradeAmountValidationMessage({ ok: false, key: 'copy_trade_amount_required' }, t18, i18n))
+    return
+  }
   const inviteCode = String(secretKey.value || '').trim()
   if (!inviteCode) {
     showToast(t18('copy_trade_submit_invite_required'))

@@ -1,4 +1,35 @@
-import { _mul, _div, priceFormat } from '@/utils/decimal'
+import { _mul, _div, priceFormat, _toFixed } from '@/utils/decimal'
+
+/** 跟单金额精度（USDT 两位小数，提交时向下截断避免超额） */
+export const COPY_TRADE_AMOUNT_DECIMALS = 2
+
+/** 跟单金额向下截断到指定精度，无效值返回 null */
+export function normalizeCopyTradeAmount(val, decimals = COPY_TRADE_AMOUNT_DECIMALS) {
+  if (val === '' || val == null) return null
+  const n = Number(val)
+  if (!Number.isFinite(n) || n <= 0) return null
+  return Number(_toFixed(n, decimals, 'down'))
+}
+
+/** 全额填入：min(余额, 上限) 后向下截断，避免四舍五入导致超额 */
+export function resolveCopyTradeFillAmount(balance, limits = {}, decimals = COPY_TRADE_AMOUNT_DECIMALS) {
+  const bal = normalizeCopyTradeAmount(balance, decimals)
+  if (bal == null) return ''
+
+  const rawMax =
+    limits.maxAmount != null && limits.maxAmount !== '' ? Number(limits.maxAmount) : null
+  const maxCap =
+    Number.isFinite(rawMax) && rawMax > 0 ? normalizeCopyTradeAmount(rawMax, decimals) : null
+
+  let fill = bal
+  if (maxCap != null) fill = Math.min(fill, maxCap)
+
+  const rawMin =
+    limits.minAmount != null && limits.minAmount !== '' ? Number(limits.minAmount) : null
+  if (Number.isFinite(rawMin) && rawMin > 0 && fill < rawMin) return ''
+
+  return fill > 0 ? String(fill) : ''
+}
 import { formatLocalTime } from '@/utils/time'
 import dayjs from 'dayjs'
 
@@ -241,13 +272,16 @@ export function formatCopyTradeAmountPlaceholder(minAmount, maxAmount, translate
 
 /** 提交跟单金额校验（可选 balance 校验合约余额） */
 export function validateCopyTradeSubmitAmount(val, limits = {}, balance = null) {
-  const amount = Number(val)
+  const amount = normalizeCopyTradeAmount(val)
   const minAmount =
     limits.minAmount != null && limits.minAmount !== '' ? Number(limits.minAmount) : null
   const maxAmount =
     limits.maxAmount != null && limits.maxAmount !== '' ? Number(limits.maxAmount) : null
+  const maxCap = maxAmount != null ? normalizeCopyTradeAmount(maxAmount) : null
+  const balanceCap =
+    balance != null && balance !== '' ? normalizeCopyTradeAmount(balance) : null
 
-  if (val === '' || val == null || !Number.isFinite(amount) || amount <= 0) {
+  if (val === '' || val == null || amount == null) {
     return { ok: false, key: 'copy_trade_amount_required' }
   }
   if (minAmount == null || maxAmount == null || !Number.isFinite(minAmount) || !Number.isFinite(maxAmount)) {
@@ -260,14 +294,14 @@ export function validateCopyTradeSubmitAmount(val, limits = {}, balance = null) 
       params: { min: priceFormat(minAmount) }
     }
   }
-  if (amount > maxAmount) {
+  if (maxCap != null && amount > maxCap) {
     return {
       ok: false,
       key: 'copy_trade_amount_above_max',
       params: { max: priceFormat(maxAmount) }
     }
   }
-  if (balance != null && balance !== '' && Number.isFinite(Number(balance)) && amount > Number(balance)) {
+  if (balanceCap != null && amount > balanceCap) {
     return { ok: false, key: 'copy_trade_insufficient_balance' }
   }
   return { ok: true }
