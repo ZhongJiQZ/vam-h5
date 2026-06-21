@@ -321,6 +321,34 @@ export function getCopyTradeAmountValidationMessage(result, translate, i18n = nu
   return resolveCopyTradeI18nText(i18n, translate, key, result.params || {})
 }
 
+/** POST /api/copyTrade/submit 业务码（以 code 判断，勿用 msg 文案） */
+export const COPY_TRADE_SUBMIT_CODE = {
+  SUCCESS: 200,
+  JOIN_WINDOW_ENDED: 40901,
+  STRATEGY_STARTED: 40902,
+  JOIN_NOT_OPEN: 40903
+}
+
+export function isCopyTradeSubmitJoinClosedCode(code) {
+  const c = Number(code)
+  return (
+    c === COPY_TRADE_SUBMIT_CODE.JOIN_WINDOW_ENDED || c === COPY_TRADE_SUBMIT_CODE.STRATEGY_STARTED
+  )
+}
+
+export function isCopyTradeSubmitJoinNotOpenCode(code) {
+  return Number(code) === COPY_TRADE_SUBMIT_CODE.JOIN_NOT_OPEN
+}
+
+/** 从 submit 接口响应或 axios reject 中解析 code / msg */
+export function parseCopyTradeSubmitResponse(errOrRes) {
+  const data = errOrRes?.data ?? errOrRes?.response?.data ?? errOrRes ?? {}
+  return {
+    code: data?.code,
+    msg: String(data?.msg || '').trim()
+  }
+}
+
 export function formatPnl(val, digits = 2) {
   const n = Number(val)
   if (!Number.isFinite(n)) return '0.00'

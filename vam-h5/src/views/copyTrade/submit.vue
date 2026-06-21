@@ -13,7 +13,7 @@ import {
   getCopyTradeInstitutionDetail,
   subscribeCopyTradeInstitution
 } from '@/api/copyTrade'
-import { isInstitutionSubscribed, patchInstitutionSubscribed, isInstitutionSecretLocked, isSecretKeyLockMessage, setInstitutionSecretLock, normalizeStrategyDetail, resolveStrategyAmountRange, parseAmountRangeText, parseCopyTradeStrategyQuery, getStrategyJoinBlockMessage, formatCopyTradeDisplayDate, formatCopyTradeAmountRangeTip, formatCopyTradeAmountPlaceholder, validateCopyTradeSubmitAmount, getCopyTradeAmountValidationMessage, resolveCopyTradeFillAmount, normalizeCopyTradeAmount, formatCopyTradeBalance } from './utils'
+import { isInstitutionSubscribed, patchInstitutionSubscribed, isInstitutionSecretLocked, isSecretKeyLockMessage, setInstitutionSecretLock, normalizeStrategyDetail, resolveStrategyAmountRange, parseAmountRangeText, parseCopyTradeStrategyQuery, getStrategyJoinBlockMessage, formatCopyTradeDisplayDate, formatCopyTradeAmountRangeTip, formatCopyTradeAmountPlaceholder, validateCopyTradeSubmitAmount, getCopyTradeAmountValidationMessage, resolveCopyTradeFillAmount, normalizeCopyTradeAmount, formatCopyTradeBalance, COPY_TRADE_SUBMIT_CODE, isCopyTradeSubmitJoinClosedCode, isCopyTradeSubmitJoinNotOpenCode, parseCopyTradeSubmitResponse } from './utils'
 import { getCopyTradeAgreementDoc, getCopyTradeRiskDoc, resolveCopyTradeDoc } from './documents'
 import { useUserStore } from '@/store/user/index'
 import { storeToRefs } from 'pinia'
@@ -52,6 +52,7 @@ const showSubscribe = ref(false)
 const subscribeLoading = ref(false)
 const showDocDrawer = ref(false)
 const activeDoc = ref(null)
+const submitLoading = ref(false)
 
 const isSubscribed = computed(() => isInstitutionSubscribed(institution.value) || isInstitutionSubscribed(strategy))
 
@@ -143,7 +144,9 @@ const amountFieldError = computed(() => {
   return check.ok ? '' : getCopyTradeAmountValidationMessage(check, t18, i18n)
 })
 
-const canSubmit = computed(() => agreed.value && !pageLoading.value && !amountFieldError.value)
+const canSubmit = computed(
+  () => agreed.value && !pageLoading.value && !submitLoading.value && !amountFieldError.value
+)
 
 function applyAmountLimits(extra = {}) {
   const limits = resolveStrategyAmountRange({ ...strategy, ...extra }, {}, { strategyOnly: true })
@@ -155,10 +158,11 @@ function setMax() {
   amount.value = resolveCopyTradeFillAmount(contractBalance.value, amountLimits.value)
 }
 
-async function loadStrategyDetail() {
+async function loadStrategyDetail(options = {}) {
+  const silent = options.silent === true
   const strategyId = route.query.strategyId || strategy.id
   if (!strategyId) return
-  pageLoading.value = true
+  if (!silent) pageLoading.value = true
   try {
     const res = await getCopyTradeStrategyDetail({ strategyId })
     if (res?.code == 200 && res.data) {
@@ -186,8 +190,21 @@ async function loadStrategyDetail() {
     }
     applyAmountLimits()
   } finally {
-    pageLoading.value = false
+    if (!silent) pageLoading.value = false
   }
+}
+
+async function refreshStrategyAndOrders() {
+  await Promise.all([loadStrategyDetail({ silent: true }), userStore.getUserInfo()])
+}
+
+function leaveSubmitPage() {
+  const institutionId = route.query.institutionId || strategy.institutionId || institution.value.id
+  if (institutionId) {
+    router.replace({ path: '/copy-trade/strategies', query: { institutionId } })
+    return
+  }
+  router.back()
 }
 
 function showDocument(doc) {
@@ -274,12 +291,48 @@ async function submitForm() {
     return
   }
   const payload = { strategyId: strategy.id, amount: val, secretKey: inviteCode }
-  const res = await submitCopyTrade(payload)
-  if (res.code == 200) {
-    showToast(res.msg || t18('copy_trade_submit_success'))
-    setTimeout(() => router.replace('/copy-trade/my'), 500)
-  } else {
-    showToast(res.msg)
+  submitLoading.value = true
+  try {
+    const res = await submitCopyTrade(payload)
+    const code = Number(res?.code)
+    const msg = String(res?.msg || '').trim()
+
+    if (code === COPY_TRADE_SUBMIT_CODE.SUCCESS) {
+      showToast(msg || t18('copy_trade_submit_success'))
+      setTimeout(() => router.replace('/copy-trade/my'), 500)
+      return
+    }
+
+    if (isCopyTradeSubmitJoinClosedCode(code)) {
+      showToast(msg || t18('copy_trade_unjoinable'))
+      await refreshStrategyAndOrders()
+      leaveSubmitPage()
+      return
+    }
+
+    if (isCopyTradeSubmitJoinNotOpenCode(code)) {
+      showToast(msg || getStrategyJoinBlockMessage(strategy, t18))
+      await refreshStrategyAndOrders()
+      return
+    }
+
+    showToast(msg || t18('error'))
+  } catch (e) {
+    const { code, msg } = parseCopyTradeSubmitResponse(e)
+    if (isCopyTradeSubmitJoinClosedCode(code)) {
+      showToast(msg || t18('copy_trade_unjoinable'))
+      await refreshStrategyAndOrders()
+      leaveSubmitPage()
+      return
+    }
+    if (isCopyTradeSubmitJoinNotOpenCode(code)) {
+      showToast(msg || getStrategyJoinBlockMessage(strategy, t18))
+      await refreshStrategyAndOrders()
+      return
+    }
+    showToast(getResponseErrorMsg(e))
+  } finally {
+    submitLoading.value = false
   }
 }
 
@@ -406,7 +459,7 @@ function submit() {
 
     <div v-if="!pageLoading" class="bottom-bar">
       <button type="button" class="submit-btn" :disabled="!canSubmit" @click="submit">
-        {{ t18('copy_trade_confirm_join') }}
+        {{ submitLoading ? t18('loading') : t18('copy_trade_confirm_join') }}
       </button>
     </div>
 

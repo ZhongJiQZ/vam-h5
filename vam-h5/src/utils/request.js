@@ -83,7 +83,10 @@ _axios.interceptors.response.use((response) => {
     const ok = c === 200 || c === '200'
     const isUContractSubmit = response?.config?.url?.includes('/api/contract/order/submit')
     const isPriceConfirmRequired = isUContractSubmit && (c === 601 || c === '601')
-    if (response.data && (ok || isPriceConfirmRequired)) {
+    const isCopyTradeSubmit = response?.config?.url?.includes('/api/copyTrade/submit')
+    const isCopyTradeSubmitJoinPhaseCode =
+      isCopyTradeSubmit && [40901, 40902, 40903, '40901', '40902', '40903'].includes(c)
+    if (response.data && (ok || isPriceConfirmRequired || isCopyTradeSubmitJoinPhaseCode)) {
       return Promise.resolve(response.data)
     } else {
       if (!response.config?.skipBizErrorToast) {
