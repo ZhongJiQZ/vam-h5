@@ -326,7 +326,7 @@ function submit() {
       <section class="card balance-card">
         <p class="balance-card__label">{{ t18('copy_trade_contract_balance_label') }}</p>
         <p class="balance-card__value ff-num">
-          {{ priceFormat(displayBalance) }}
+          {{ formatCopyTradeBalance(contractBalance) }}
           <span class="balance-card__unit">USDT</span>
         </p>
       </section>
