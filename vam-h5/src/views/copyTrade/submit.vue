@@ -13,8 +13,7 @@ import {
   getCopyTradeInstitutionDetail,
   subscribeCopyTradeInstitution
 } from '@/api/copyTrade'
-import { priceFormat } from '@/utils/decimal'
-import { isInstitutionSubscribed, patchInstitutionSubscribed, isInstitutionSecretLocked, isSecretKeyLockMessage, setInstitutionSecretLock, normalizeStrategyDetail, resolveStrategyAmountRange, parseAmountRangeText, parseCopyTradeStrategyQuery, getStrategyJoinBlockMessage, formatCopyTradeDisplayDate, formatCopyTradeAmountRangeTip, formatCopyTradeAmountPlaceholder, validateCopyTradeSubmitAmount, getCopyTradeAmountValidationMessage, resolveCopyTradeFillAmount, normalizeCopyTradeAmount } from './utils'
+import { isInstitutionSubscribed, patchInstitutionSubscribed, isInstitutionSecretLocked, isSecretKeyLockMessage, setInstitutionSecretLock, normalizeStrategyDetail, resolveStrategyAmountRange, parseAmountRangeText, parseCopyTradeStrategyQuery, getStrategyJoinBlockMessage, formatCopyTradeDisplayDate, formatCopyTradeAmountRangeTip, formatCopyTradeAmountPlaceholder, validateCopyTradeSubmitAmount, getCopyTradeAmountValidationMessage, resolveCopyTradeFillAmount, normalizeCopyTradeAmount, formatCopyTradeBalance } from './utils'
 import { getCopyTradeAgreementDoc, getCopyTradeRiskDoc, resolveCopyTradeDoc } from './documents'
 import { useUserStore } from '@/store/user/index'
 import { storeToRefs } from 'pinia'
@@ -82,13 +81,7 @@ const subscribeTag = computed(() => {
   return isSubscribed.value ? t18('copy_trade_inst_subscribed') : t18('copy_trade_inst_subscribe')
 })
 
-const displayBalance = computed(() => {
-  if (strategy.contractBalance != null && strategy.contractBalance !== '') {
-    return strategy.contractBalance
-  }
-  return contractBalance.value
-})
-
+/** 合约可用余额：仅用资产接口原始值，策略详情里的 contractBalance 可能已四舍五入 */
 const contractBalance = computed(() => {
   const cur = asset.value?.filter((item) => item.type === 3) || []
   return cur[0]?.availableAmount ?? 0
@@ -145,7 +138,7 @@ const amountFieldError = computed(() => {
   const check = validateCopyTradeSubmitAmount(
     amount.value,
     amountLimits.value,
-    displayBalance.value
+    contractBalance.value
   )
   return check.ok ? '' : getCopyTradeAmountValidationMessage(check, t18, i18n)
 })
@@ -159,7 +152,7 @@ function applyAmountLimits(extra = {}) {
 }
 
 function setMax() {
-  amount.value = resolveCopyTradeFillAmount(displayBalance.value, amountLimits.value)
+  amount.value = resolveCopyTradeFillAmount(contractBalance.value, amountLimits.value)
 }
 
 async function loadStrategyDetail() {
@@ -264,7 +257,7 @@ async function submitForm() {
   const amountCheck = validateCopyTradeSubmitAmount(
     amount.value,
     amountLimits.value,
-    displayBalance.value
+    contractBalance.value
   )
   if (!amountCheck.ok) {
     showToast(getCopyTradeAmountValidationMessage(amountCheck, t18, i18n))

@@ -1,4 +1,6 @@
 import { _mul, _div, priceFormat, _toFixed } from '@/utils/decimal'
+import { formatLocalTime } from '@/utils/time'
+import dayjs from 'dayjs'
 
 /** 跟单金额精度（USDT 两位小数，提交时向下截断避免超额） */
 export const COPY_TRADE_AMOUNT_DECIMALS = 2
@@ -9,6 +11,14 @@ export function normalizeCopyTradeAmount(val, decimals = COPY_TRADE_AMOUNT_DECIM
   const n = Number(val)
   if (!Number.isFinite(n) || n <= 0) return null
   return Number(_toFixed(n, decimals, 'down'))
+}
+
+/** 跟单页余额展示（向下截断，避免四舍五入高于接口真实可用余额） */
+export function formatCopyTradeBalance(val, decimals = COPY_TRADE_AMOUNT_DECIMALS) {
+  if (val === '' || val == null) return '0.00'
+  const n = Number(val)
+  if (!Number.isFinite(n) || n <= 0) return '0.00'
+  return _toFixed(n, decimals, 'down')
 }
 
 /** 全额填入：min(余额, 上限) 后向下截断，避免四舍五入导致超额 */
@@ -30,8 +40,6 @@ export function resolveCopyTradeFillAmount(balance, limits = {}, decimals = COPY
 
   return fill > 0 ? String(fill) : ''
 }
-import { formatLocalTime } from '@/utils/time'
-import dayjs from 'dayjs'
 
 /** 带正负号的比率展示（正数带 +，如 +3.49） */
 export function formatSignedRate(val, digits = 2) {

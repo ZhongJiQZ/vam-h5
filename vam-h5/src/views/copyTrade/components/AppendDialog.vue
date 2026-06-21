@@ -24,7 +24,7 @@
       />
       <div class="balance-row">
         <span>{{ _t18('copy_trade_contract_balance') }}</span>
-        <span class="ff-num">{{ priceFormat(contractBalance) }} USDT</span>
+        <span class="ff-num">{{ formatCopyTradeBalance(contractBalance) }} USDT</span>
       </div>
 
       <div class="dialog-actions">
@@ -43,8 +43,7 @@
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { _t18 } from '@/utils/public'
-import { priceFormat } from '@/utils/decimal'
-import { normalizeCopyTradeAmount, resolveCopyTradeFillAmount } from '../utils'
+import { normalizeCopyTradeAmount, resolveCopyTradeFillAmount, formatCopyTradeBalance } from '../utils'
 import { useUserStore } from '@/store/user/index'
 import { storeToRefs } from 'pinia'
 import { showToast } from 'vant'
