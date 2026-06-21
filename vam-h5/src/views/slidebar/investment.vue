@@ -7,6 +7,8 @@ import { dispatchCustomEvent } from '@/utils'
 import { _t18 } from '@/utils/public'
 import iconBack from '@/assets/images/gxpex/trade/icon-back.svg'
 import heroBg from '@/assets/images/gxpex/partner/hero-bg.png'
+import badgeIcon from '@/assets/images/gxpex/assets/icon-hg.png'
+import labaIcon from '@/assets/images/gxpex/assets/icon-laba.png'
 import tierBadge from '@/assets/images/gxpex/partner/tier-badge.png'
 import iconInstitution from '@/assets/images/gxpex/partner/icon-institution.svg'
 import iconReqTeam from '@/assets/images/gxpex/partner/icon-req-team.svg'
@@ -31,9 +33,15 @@ const partners = computed(() => {
 
 const dynamics = [
   { name: 'l**', size: '5000' },
-  { name: 'l**', size: '10000' },
-  { name: 'w**', size: '8000' }
+  { name: 'w**', size: '10000' },
+  { name: 'a**', size: '8000' },
+  { name: 'h**', size: '12000' },
+  { name: 'k**', size: '6500' },
+  { name: 'm**', size: '15000' },
+  { name: 's**', size: '7200' },
+  { name: 'r**', size: '9500' }
 ]
+const dynamicsLoop = computed(() => [...dynamics, ...dynamics])
 
 const requirements = computed(() => {
   void locale.value
@@ -139,7 +147,10 @@ const scrollToRewards = () => {
       </header>
 
       <div class="partner-hero__content">
-        <div class="partner-hero__badge">{{ _t18('investment_badge') }}</div>
+        <div class="partner-hero__badge">
+          <img class="partner-hero__badge-icon" :src="badgeIcon" alt="" aria-hidden="true" />
+          <span>{{ _t18('investment_badge') }}</span>
+        </div>
         <h2 class="partner-hero__title">
           {{ _t18('investment_hero_title_line1') }}<br />{{ _t18('investment_hero_title_line2') }}
         </h2>
@@ -168,12 +179,15 @@ const scrollToRewards = () => {
 
       <section class="partner-section partner-section--feed">
         <h2 class="partner-section__title">{{ _t18('investment_dynamics_title') }}</h2>
-        <div class="partner-feed__list">
-          <div v-for="(item, index) in dynamics" :key="index" class="partner-feed__item">
-            <span class="partner-feed__message">
-              {{ item.name }}{{ _t18('investment_dynamic_joined') }}
-            </span>
-            <span class="partner-feed__size">{{ item.size }}+</span>
+        <div class="partner-feed__viewport">
+          <div class="partner-feed__track">
+            <div v-for="(item, index) in dynamicsLoop" :key="index" class="partner-feed__item">
+              <img :src="labaIcon" alt="" class="partner-feed__icon" aria-hidden="true" />
+              <span class="partner-feed__message">
+                {{ item.name }} {{ _t18('investment_dynamic_joined') }}
+              </span>
+              <span class="partner-feed__size">{{ item.size }}+</span>
+            </div>
           </div>
         </div>
       </section>
@@ -329,21 +343,43 @@ const scrollToRewards = () => {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 177px 12px 24px;
+  margin: 177px 12px 24px;
+  padding: 20px 16px;
+  border-radius: 18px;
+  background: linear-gradient(160deg, rgba(127, 43, 218, 0.18) 0%, rgba(34, 28, 49, 0.45) 55%, rgba(17, 17, 17, 0.55) 100%);
+  border: 1px solid rgba(160, 65, 237, 0.28);
+  backdrop-filter: blur(22px) saturate(140%);
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
 }
 
 .partner-hero__badge {
   display: inline-flex;
+  align-items: center;
   align-self: flex-start;
+  gap: 6px;
   max-width: 100%;
-  padding: 4px 8px;
-  border-radius: 4px;
-  background: rgba(0, 0, 0, 0.65);
+  padding: 6px 14px 6px 10px;
+  border-radius: 999px;
+  background: rgba(127, 43, 218, 0.18);
+  border: 1px solid rgba(160, 65, 237, 0.45);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   font-family: 'Roboto', sans-serif;
-  font-size: 10px;
+  font-size: 11px;
+  font-weight: 500;
   line-height: 1.3;
-  letter-spacing: 0.02em;
-  color: rgb(160, 65, 237);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.partner-hero__badge-icon {
+  display: block;
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .partner-hero__title {
@@ -352,7 +388,11 @@ const scrollToRewards = () => {
   font-size: 24px;
   font-weight: 700;
   line-height: 1.25;
-  color: #fff;
+  background: linear-gradient(135deg, #ffffff 0%, #ffffff 45%, rgb(196, 124, 255) 78%, rgb(160, 65, 237) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
 .partner-hero__subtitle {
@@ -409,23 +449,24 @@ const scrollToRewards = () => {
 .partner-section {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
 .partner-section__title {
   margin: 0;
+  padding: 0 2px;
   font-family: 'Roboto', sans-serif;
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 600;
-  line-height: 1.2;
+  line-height: 1.3;
   color: #fff;
 }
 
 .partner-inst__scroll {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   overflow-x: auto;
-  padding-bottom: 2px;
+  padding: 2px 2px 4px;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
 
@@ -438,45 +479,69 @@ const scrollToRewards = () => {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
-  gap: 8px;
-  min-width: 169px;
-  min-height: 32px;
-  padding: 8px 10px;
-  border-radius: 8px;
+  gap: 10px;
+  min-width: 180px;
+  min-height: 44px;
+  padding: 10px 14px;
+  border-radius: 10px;
   background: rgb(34, 28, 49);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .partner-inst__icon {
   flex-shrink: 0;
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   display: block;
   object-fit: contain;
 }
 
 .partner-inst__name {
   font-family: 'Roboto', sans-serif;
-  font-size: 12px;
+  font-size: 13px;
+  font-weight: 500;
   line-height: 1.2;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.92);
   white-space: nowrap;
 }
 
-.partner-feed__list {
+.partner-feed__viewport {
+  position: relative;
+  height: 132px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: rgb(34, 28, 49);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 4px 0;
+  mask-image: linear-gradient(180deg, transparent 0, #000 16%, #000 84%, transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 16%, #000 84%, transparent 100%);
+}
+
+.partner-feed__track {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  animation: partner-feed-scroll 18s linear infinite;
+}
+
+@keyframes partner-feed-scroll {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
 }
 
 .partner-feed__item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 8px;
   min-height: 36px;
-  padding: 8px 10px;
-  border-radius: 8px;
-  background: rgb(34, 28, 49);
+  padding: 8px 14px;
+}
+
+.partner-feed__icon {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  display: block;
+  object-fit: contain;
 }
 
 .partner-feed__message {
@@ -486,6 +551,9 @@ const scrollToRewards = () => {
   font-size: 12px;
   line-height: 1.3;
   color: rgba(255, 255, 255, 0.85);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .partner-feed__size {
@@ -706,15 +774,15 @@ const scrollToRewards = () => {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 16px 12px;
-  border-radius: 12px;
-  background: rgb(34, 28, 49);
+  padding: 16px 4px;
+  text-align: center;
 }
 
 .partner-cta__copy {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  align-items: center;
+  gap: 6px;
 }
 
 .partner-cta__title {
@@ -724,6 +792,7 @@ const scrollToRewards = () => {
   font-weight: 600;
   line-height: 1.2;
   color: #fff;
+  text-align: center;
 }
 
 .partner-cta__subtitle {
@@ -732,6 +801,7 @@ const scrollToRewards = () => {
   font-size: 12px;
   line-height: 1.3;
   color: rgba(255, 255, 255, 0.65);
+  text-align: center;
 }
 
 .partner-cta__btn {

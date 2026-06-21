@@ -53,24 +53,28 @@ const isActive = (path) => {
 <style lang="scss" scoped>
 .earn-tabs {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
+  align-items: center;
+  justify-content: space-around;
   gap: 0;
-  min-height: 51px;
+  min-height: 76px;
+  padding: 14px 12px;
+  background: #221b32;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 14px;
 }
 
 .earn-tabs__item {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 109px;
-  flex-shrink: 0;
   gap: 6px;
   padding: 0;
   border: none;
   background: transparent;
   cursor: pointer;
   color: inherit;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .earn-tabs__icon {

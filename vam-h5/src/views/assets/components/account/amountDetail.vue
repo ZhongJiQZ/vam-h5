@@ -67,12 +67,13 @@ const amountFormat = (amount, decimal = 0) => {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  padding-top: 18px;
   padding-bottom: 12px;
 }
 
 .assets-list__title {
   margin: 0;
-  padding: 0 2px 4px;
+  padding: 0 2px 8px;
   font-family: 'Roboto', sans-serif;
   font-size: 16px;
   font-weight: 500;

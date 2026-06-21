@@ -191,14 +191,28 @@ const blur = () => {
         <img :src="iconBack" alt="" class="loan-header__back-icon" />
       </button>
       <h1 class="loan-header__title">{{ _t18('asset_loan') }}</h1>
-      <button
-        type="button"
-        class="loan-header__history"
-        aria-label="history"
-        @click="router.push('/loan-record')"
-      >
-        <img :src="iconHistory" alt="" class="loan-header__history-icon" />
-      </button>
+      <div class="loan-header__actions">
+        <button
+          type="button"
+          class="loan-header__icon-btn"
+          aria-label="rule"
+          @click="router.push('/loan-rule')"
+        >
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="11" cy="11" r="9.25" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" />
+            <circle cx="11" cy="6.6" r="1.1" fill="rgba(255,255,255,0.9)" />
+            <rect x="10.1" y="9.4" width="1.8" height="7" rx="0.9" fill="rgba(255,255,255,0.9)" />
+          </svg>
+        </button>
+        <button
+          type="button"
+          class="loan-header__icon-btn"
+          aria-label="history"
+          @click="router.push('/loan-record')"
+        >
+          <img :src="iconHistory" alt="" class="loan-header__history-icon" />
+        </button>
+      </div>
     </header>
 
     <main class="loan-main">
@@ -380,20 +394,22 @@ const blur = () => {
 .loan-header {
   position: relative;
   z-index: 2;
-  display: grid;
-  grid-template-columns: 40px 1fr auto;
-  align-items: center;
-  min-height: 26px;
-  padding: 0 12px;
-}
-
-.loan-header__back {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  margin-left: -9px;
+  min-height: 44px;
+  padding: calc(14px + env(safe-area-inset-top)) 18px 6px;
+}
+
+.loan-header__back {
+  position: absolute;
+  left: 12px;
+  top: calc(14px + env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
   padding: 0;
   border: none;
   background: transparent;
@@ -402,34 +418,40 @@ const blur = () => {
 
 .loan-header__back-icon {
   display: block;
-  width: 12px;
-  height: 22px;
+  width: 10px;
+  height: 18px;
   object-fit: contain;
   opacity: 0.9;
 }
 
 .loan-header__title {
-  grid-column: 2;
   margin: 0;
-  text-align: center;
   font-family: 'PingFang SC', sans-serif;
   font-size: 17px;
   font-weight: 600;
   line-height: 1.2;
   color: #fff;
+  text-align: center;
 }
 
-.loan-header__history {
-  grid-column: 3;
+.loan-header__actions {
+  position: absolute;
+  right: 12px;
+  top: calc(14px + env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.loan-header__icon-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 52px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   padding: 0;
   border: none;
-  border-radius: 4px;
-  background: rgb(34, 28, 49);
+  background: transparent;
   cursor: pointer;
 }
 
@@ -438,6 +460,7 @@ const blur = () => {
   width: 20px;
   height: 20px;
   object-fit: contain;
+  opacity: 0.9;
 }
 
 .loan-main {
@@ -513,9 +536,9 @@ const blur = () => {
   width: 100%;
   min-height: 40px;
   padding: 9px 12px;
-  border: none;
   border-radius: 25px;
   background: rgb(34, 34, 34);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   text-align: left;
   cursor: default;
 }
@@ -580,13 +603,15 @@ const blur = () => {
 .loan-upload {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
+  margin-top: 8px;
 }
 
 .loan-upload__head {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
+  padding: 4px 2px 4px;
 }
 
 .loan-upload__title {

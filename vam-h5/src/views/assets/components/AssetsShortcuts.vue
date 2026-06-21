@@ -8,7 +8,7 @@
       :aria-label="link.aria"
       @click="_toView(link.path)"
     >
-      <AssetsIcon :name="link.icon" :size="16" :active="isActive(link.path)" />
+      <AssetsIcon :name="link.icon" :size="20" :active="isActive(link.path)" />
     </button>
   </div>
 </template>
@@ -38,7 +38,7 @@ const isActive = (path) =>
 .assets-shortcuts {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 14px;
   flex-shrink: 0;
 }
 
@@ -46,11 +46,14 @@ const isActive = (path) =>
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   padding: 0;
   border: none;
   background: transparent;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  /* SVG 内部不同 transform 偏移略调，确保视觉居中 */
+  :deep(.assets-icon) { width: 20px !important; height: 20px !important; }
 }
 </style>

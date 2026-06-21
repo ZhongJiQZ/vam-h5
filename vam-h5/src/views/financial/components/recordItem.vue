@@ -155,11 +155,11 @@ const purchaseTimeDisplay = computed(() => {
 
 <style lang="scss" scoped>
 .record-card {
-  background: #f6f7fa;
-  border-radius: 14px;
-  padding: 16px 16px 14px;
-  margin-bottom: 14px;
-  box-shadow: 0 1px 4px rgba(5, 16, 26, 0.04);
+  background: rgba(30, 21, 48, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 6px 16px 10px;
+  margin-bottom: 12px;
 }
 
 .record-card__row {
@@ -167,31 +167,33 @@ const purchaseTimeDisplay = computed(() => {
   justify-content: space-between;
   align-items: flex-start;
   gap: 12px;
-  padding: 8px 0;
+  padding: 10px 0;
   font-size: 13px;
 }
 
 .record-card__label {
   flex-shrink: 0;
-  color: #999;
+  color: rgba(255, 255, 255, 0.55);
   max-width: 42%;
 }
 
 .record-card__value {
   flex: 1;
   text-align: right;
-  color: #333;
+  color: #fff;
+  font-weight: 500;
   word-break: break-all;
 }
 
 .record-card__row--time {
-  padding-top: 10px;
+  padding-top: 12px;
   margin-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .record-card__value--time {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
-  color: #222;
+  color: rgba(255, 255, 255, 0.85);
 }
 </style>

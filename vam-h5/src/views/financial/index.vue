@@ -50,58 +50,64 @@ const goNotice = () => $router.push('/broadcast')
   padding-bottom: calc(79px + env(safe-area-inset-bottom, 0px));
 }
 
+/* 顶栏跟 quote (Markets) 页面对齐 */
 .earn-header {
   position: relative;
   z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 26px;
-  padding: 0 12px;
+  min-height: 44px;
+  padding: calc(14px + env(safe-area-inset-top)) 18px 6px;
+  margin: 0;
 }
 
 .earn-header__title {
   margin: 0;
-  font-family: 'PingFang SC', sans-serif;
+  font-family: 'PingFang SC', -apple-system, sans-serif;
   font-size: 17px;
   font-weight: 600;
   line-height: 1.2;
-  color: #fff;
+  color: #ffffff;
+  text-align: center;
 }
 
 .earn-header__actions {
   position: absolute;
-  right: 12px;
+  right: 14px;
   top: 50%;
   transform: translateY(-50%);
+  margin-top: calc(env(safe-area-inset-top) / 2);
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 
 .earn-header__action {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   padding: 0;
   border: none;
   background: transparent;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 
   img {
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
     display: block;
     object-fit: contain;
+    opacity: 0.85;
   }
 }
 
 .earn-main {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 18px 12px 0;
+  gap: 10px;
+  padding: 8px 12px 0;
 }
 </style>

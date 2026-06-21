@@ -19,9 +19,6 @@
               {{ item.title }}
             </button>
           </div>
-          <div class="assets-tabs__overflow" aria-hidden="true">
-            <span class="assets-tabs__arrow"></span>
-          </div>
         </div>
       </div>
 
@@ -196,30 +193,33 @@ onMounted(() => {
   padding-bottom: calc(79px + env(safe-area-inset-bottom, 0px));
 }
 
+/* 顶栏跟 quote (Markets) / financial 对齐 */
 .assets-header {
   position: relative;
   z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 26px;
-  padding: 0 12px;
+  min-height: 44px;
+  padding: calc(14px + env(safe-area-inset-top)) 18px 6px;
+  margin: 0;
 }
 
 .assets-header__title {
   margin: 0;
-  font-family: 'PingFang SC', sans-serif;
+  font-family: 'PingFang SC', -apple-system, sans-serif;
   font-size: 17px;
   font-weight: 600;
   line-height: 1.2;
-  color: #fff;
+  color: #ffffff;
+  text-align: center;
 }
 
 .assets-main {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 18px 12px 0;
+  gap: 10px;
+  padding: 8px 12px 0;
 }
 
 .assets-tabs {
@@ -242,35 +242,11 @@ onMounted(() => {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  padding-right: 18px;
+  padding: 0 4px;
 }
 
 .assets-tabs__scroll::-webkit-scrollbar {
   display: none;
-}
-
-.assets-tabs__overflow {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 23px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding-right: 2px;
-  pointer-events: none;
-  background: linear-gradient(90deg, rgba(17, 17, 17, 0) 0%, #111111 46.74%);
-}
-
-.assets-tabs__arrow {
-  display: block;
-  width: 7px;
-  height: 7px;
-  border-top: 1.5px solid rgba(255, 255, 255, 0.65);
-  border-right: 1.5px solid rgba(255, 255, 255, 0.65);
-  transform: rotate(45deg);
-  flex-shrink: 0;
 }
 
 .assets-tabs__tab {

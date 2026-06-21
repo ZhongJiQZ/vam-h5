@@ -65,7 +65,7 @@
 
 <script setup>
 import { _t18 } from '@/utils/public'
-import yieldBg from '@/assets/images/gxpex/earn/yield-bg.png'
+import yieldBg from '@/assets/images/gxpex/staking/GXPEX.png'
 import defaultFundIcon from '@/assets/images/Frame 981370.png'
 
 const props = defineProps({
@@ -184,7 +184,8 @@ watch(
   font-family: 'PingFang SC', sans-serif;
   font-size: 12px;
   line-height: 1.42;
-  color: #fff;
+  color: rgba(255, 255, 255, 0.55);
+  text-align: right;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -225,7 +226,7 @@ watch(
   height: 100%;
   object-fit: cover;
   object-position: center;
-  opacity: 0.45;
+  opacity: 1;
 }
 
 .earn-card__rate {
@@ -257,12 +258,18 @@ watch(
   font-family: 'Roboto', sans-serif;
   font-size: 12px;
   line-height: 1.25;
-  color: rgba(255, 255, 255, 0.85);
+}
+
+.earn-card__stat-label {
+  color: rgba(255, 255, 255, 0.55);
+  font-weight: 400;
 }
 
 .earn-card__stat-value {
-  color: #fff;
+  color: #ffffff;
+  font-weight: 500;
   text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 
 .earn-card__cta {

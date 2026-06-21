@@ -437,46 +437,52 @@ const submit = () => {
   padding-bottom: calc(79px + env(safe-area-inset-bottom, 0px));
 }
 
+/* 顶栏跟 quote / financial / myassets 对齐 */
 .swap-header {
   position: relative;
   z-index: 2;
-  display: grid;
-  grid-template-columns: 22px 1fr 22px;
-  align-items: center;
-  min-height: 26px;
-  padding: 0 12px;
-}
-
-.swap-header__back {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  margin-left: -9px;
+  min-height: 44px;
+  padding: calc(14px + env(safe-area-inset-top)) 18px 6px;
+  margin: 0;
+}
+
+.swap-header__back {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-top: calc(env(safe-area-inset-top) / 2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
   padding: 0;
   border: none;
   background: transparent;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .swap-header__back-icon {
   display: block;
-  width: 12px;
-  height: 22px;
+  width: 10px;
+  height: 18px;
   object-fit: contain;
   opacity: 0.9;
 }
 
 .swap-header__title {
-  grid-column: 2;
   margin: 0;
-  text-align: center;
-  font-family: 'PingFang SC', sans-serif;
+  font-family: 'PingFang SC', -apple-system, sans-serif;
   font-size: 17px;
   font-weight: 600;
   line-height: 1.2;
-  color: #fff;
+  color: #ffffff;
+  text-align: center;
 }
 
 .swap-main {
@@ -551,6 +557,7 @@ const submit = () => {
   padding: 9px 12px;
   border-radius: 25px;
   background: rgb(34, 34, 34);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .swap-token {

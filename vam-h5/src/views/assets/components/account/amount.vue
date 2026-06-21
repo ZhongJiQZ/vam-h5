@@ -168,7 +168,7 @@ const t18Type = (type) => {
   justify-content: space-between;
   gap: 8px;
   min-height: 23px;
-  padding: 0 2px;
+  padding: 12px 2px 4px;
 }
 
 .assets-summary__label {
@@ -255,27 +255,31 @@ const t18Type = (type) => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 12px;
-  height: 12px;
+  width: 18px;
+  height: 18px;
   padding: 0;
   border: none;
   background: transparent;
   cursor: pointer;
   flex-shrink: 0;
-  font-size: 12px;
+  font-size: 16px;
   line-height: 1;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .assets-balance__inline-icon {
   display: block;
-  width: 12px;
-  height: 12px;
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.65);
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.85);
+  opacity: 0.85;
+  object-fit: cover;
 
   :deep(.icon) {
-    width: 12px;
-    height: 12px;
+    width: 16px !important;
+    height: 16px !important;
+    object-fit: cover;
   }
 }
 
