@@ -367,6 +367,8 @@ export default {
     reviewFail: "审核失败",
     totol: "全部",
     bindBankCard: "绑定银行卡",
+    unboundBankCard: "未绑定银行卡",
+    plsBindBankCardFirst: "请先绑定银行卡",
     withdrawWay: "提现方式",
     plsSelectWithdrawWay: "请选择提现方式",
     plsSetAssetsPsw: "请设置资金密码",

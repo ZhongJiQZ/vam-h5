@@ -1134,6 +1134,9 @@ export default {
           if (res.data.data.length > 0) {
             this.withdrawBankList = res.data.data;
             this.curBank = this.withdrawBankList[0];
+          } else {
+            this.withdrawBankList = [];
+            this.curBank = {};
           }
         }
       });

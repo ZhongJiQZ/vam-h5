@@ -367,6 +367,8 @@ export default {
     reviewFail: "Review Failed",
     totol: "Total",
     bindBankCard: "Bind Bank Card",
+    unboundBankCard: "No bank card bound",
+    plsBindBankCardFirst: "Please bind a bank card first",
     withdrawWay: "Withdrawal",
     plsSelectWithdrawWay: "Please Select Withdrawal Method",
     plsSetAssetsPsw: "Please set the fund password",

@@ -38,19 +38,14 @@
             </el-form-item> -->
             <el-form-item :label="$t('assets.bankCard')" v-show="withdrawInfo.icon == 'card'">
               <!-- <el-input v-model="withdrawForm.bankCard"></el-input> -->
-              <el-select v-model="curBank.id" :placeholder="$t('utils.plsSelect')" clearable @change="changeBank">
+              <el-select v-model="withdrawForm.bankId" :placeholder="$t('utils.plsSelect')" clearable @change="changeBank">
                 <el-option v-if="withdrawBankList.length > 0" v-for="(item, index) in withdrawBankList" :key="index"
                   :label="item.bankName + item.cardNumber" :value="item.id"></el-option>
-                <!-- <p class="bankName">
-            {{ item?.bankName }} <span class="scl" v-if="item?.coin">（{{ item?.coin }}）</span>
-          </p>
-          <p class="cardNumber fw-num">{{ hideBank(item?.cardNumber) }}</p> -->
-                <!-- <el-option label="USDT-ERC" value="1"></el-option>
-                <el-option label="USDT-TRC" value="2"></el-option>
-                <el-option label="ETH" value="3"></el-option>
-                <el-option label="BTC" value="4"></el-option>
-                <el-option label="ddd" value="5"></el-option> -->
               </el-select>
+              <p v-if="withdrawBankList.length === 0" class="bank-empty-tip">
+                {{ $t('assets.unboundBankCard') }}，
+                <span class="bank-empty-link cur_p" @click="goBindBankCard">{{ $t('assets.bindBankCard') }}</span>
+              </p>
             </el-form-item>
             <el-form-item :label="$t('assets.withdrawAddress')" prop="address" :rules="[
               {
@@ -139,9 +134,74 @@ export default {
     };
   },
   mounted() {
-    // this.changeCoin(this.withdrawForm.coinType);
+    this.syncDefaultBankSelection()
+  },
+  watch: {
+    withdrawBankList: {
+      handler() {
+        this.syncDefaultBankSelection()
+      },
+      deep: true,
+    },
+    curBank: {
+      handler(val) {
+        if (val?.id != null) {
+          this.withdrawForm.bankId = val.id
+        }
+      },
+      deep: true,
+      immediate: true,
+    },
   },
   methods: {
+    goBindBankCard() {
+      this.$router.push({
+        path: '/user/index',
+        query: { key: 'bank' },
+      })
+    },
+    notifyUnboundBankCard() {
+      this.$message({
+        message: this.$t('assets.plsBindBankCardFirst'),
+        type: 'warning',
+      })
+      setTimeout(() => {
+        this.goBindBankCard()
+      }, 800)
+    },
+    syncDefaultBankSelection() {
+      if (!Array.isArray(this.withdrawBankList) || this.withdrawBankList.length === 0) {
+        this.withdrawForm.bankId = ''
+        return
+      }
+      const matched = this.withdrawBankList.find((item) => item.id === this.withdrawForm.bankId)
+      const bank = matched || this.withdrawBankList[0]
+      this.withdrawForm.bankId = bank.id
+      this.$emit('getCurBankInfo', { param1: bank.id })
+    },
+    getValidatedBankCard() {
+      if (!Array.isArray(this.withdrawBankList) || this.withdrawBankList.length === 0) {
+        return null
+      }
+      const bank =
+        this.withdrawBankList.find((item) => item.id === this.withdrawForm.bankId) ||
+        this.curBank ||
+        this.withdrawBankList[0]
+      const cardNumber = String(bank?.cardNumber || '').trim()
+      const bankName = String(bank?.bankName || '').trim()
+      const userName = String(bank?.userName || '').trim()
+      if (!cardNumber || !bankName || !userName) {
+        return null
+      }
+      return bank
+    },
+    validateBankCardForWithdraw() {
+      if (this.getValidatedBankCard()) {
+        return true
+      }
+      this.notifyUnboundBankCard()
+      return false
+    },
     submit() {
       this.withdrawSubmit();
     },
@@ -164,6 +224,9 @@ export default {
       // this.selectWidthdrawInfo=item;
 
       this.commonEmitGetCanUse(item.icon);
+      if (item?.icon === 'card' && !this.getValidatedBankCard()) {
+        this.notifyUnboundBankCard();
+      }
       if (this.withdrawForm.amount.length > 0) {
         this.initAllNum();
       }
@@ -183,13 +246,36 @@ export default {
         }, 800);
         return;
       }
+      if (
+        this.withdrawForm.amount === '' ||
+        this.withdrawForm.amount === null ||
+        this.withdrawForm.amount === undefined ||
+        Number(this.withdrawForm.amount) <= 0
+      ) {
+        this.$message({
+          message: this.$t('assets.plsInputWithdrawMoney'),
+          type: 'warning',
+        })
+        return
+      }
+      if (!this.withdrawForm.psw) {
+        this.$message({
+          message: this.$t('assets.withdrawPsw'),
+          type: 'warning',
+        })
+        return
+      }
       let params = "";
       if (this.withdrawInfo.icon == "card") {
+        if (!this.validateBankCardForWithdraw()) {
+          return
+        }
+        const bank = this.getValidatedBankCard()
         params = `amount=${priceFormat(
           this.withdrawForm.amount
-        )}&coinType=BANK&pwd=${this.withdrawForm.psw}&adress=${this.curBank.cardNumber
-          }&coin=${this.withdrawInfo.card.toLowerCase()}&bankName=${this.curBank.bankName
-          }&bankUserName=${this.curBank.userName}&bankBranch=${this.curBank.bankBranch
+        )}&coinType=BANK&pwd=${this.withdrawForm.psw}&adress=${bank.cardNumber
+          }&coin=${this.withdrawInfo.card.toLowerCase()}&bankName=${bank.bankName
+          }&bankUserName=${bank.userName}&bankBranch=${bank.bankBranch || ''
           }`;
       } else {
         params = `amount=${priceFormat(this.withdrawForm.amount)}&coinType=${this.withdrawInfo.title
@@ -274,6 +360,17 @@ export default {
             font-size: 18px;
             background: #536fff;
           }
+        }
+
+        .bank-empty-tip {
+          margin: 8px 0 0;
+          font-size: 13px;
+          color: #e8503a;
+          line-height: 1.5;
+        }
+
+        .bank-empty-link {
+          color: #536fff;
         }
       }
     }
