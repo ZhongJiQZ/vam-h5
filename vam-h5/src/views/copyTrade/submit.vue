@@ -13,7 +13,7 @@ import {
   getCopyTradeInstitutionDetail,
   subscribeCopyTradeInstitution
 } from '@/api/copyTrade'
-import { isInstitutionSubscribed, patchInstitutionSubscribed, isInstitutionSecretLocked, isSecretKeyLockMessage, setInstitutionSecretLock, normalizeStrategyDetail, resolveStrategyAmountRange, parseAmountRangeText, parseCopyTradeStrategyQuery, getStrategyJoinBlockMessage, formatCopyTradeDisplayDate, formatCopyTradeAmountRangeTip, formatCopyTradeAmountPlaceholder, validateCopyTradeSubmitAmount, getCopyTradeAmountValidationMessage, resolveCopyTradeFillAmount, normalizeCopyTradeAmount, formatCopyTradeBalance, COPY_TRADE_SUBMIT_CODE, isCopyTradeSubmitJoinClosedCode, isCopyTradeSubmitJoinNotOpenCode, parseCopyTradeSubmitResponse } from './utils'
+import { isInstitutionSubscribed, patchInstitutionSubscribed, isInstitutionSecretLocked, isSecretKeyLockMessage, setInstitutionSecretLock, normalizeStrategyDetail, resolveStrategyAmountRange, parseAmountRangeText, parseCopyTradeStrategyQuery, getStrategyJoinBlockMessage, formatCopyTradeDisplayDate, formatCopyTradeAmountRangeTip, formatCopyTradeAmountPlaceholder, validateCopyTradeSubmitAmount, getCopyTradeAmountValidationMessage, resolveCopyTradeFillAmount, normalizeCopyTradeAmount, formatCopyTradeBalance, COPY_TRADE_SUBMIT_CODE, isCopyTradeSubmitJoinClosedCode, isCopyTradeSubmitJoinNotOpenCode, parseCopyTradeSubmitResponse, shouldLeaveSubmitPageOnJoinBlock, isStrategyFollowing } from './utils'
 import { getCopyTradeAgreementDoc, getCopyTradeRiskDoc, resolveCopyTradeDoc } from './documents'
 import { useUserStore } from '@/store/user/index'
 import { storeToRefs } from 'pinia'
@@ -167,6 +167,9 @@ async function loadStrategyDetail(options = {}) {
     const res = await getCopyTradeStrategyDetail({ strategyId })
     if (res?.code == 200 && res.data) {
       Object.assign(strategy, normalizeStrategyDetail(res.data), { id: res.data.id || strategyId })
+      if (!silent) {
+        handleJoinBlockedIfNeeded()
+      }
     }
     const institutionId = route.query.institutionId || strategy.institutionId
     if (institutionId) {
@@ -198,13 +201,39 @@ async function refreshStrategyAndOrders() {
   await Promise.all([loadStrategyDetail({ silent: true }), userStore.getUserInfo()])
 }
 
-function leaveSubmitPage() {
+function leaveSubmitPage(item = strategy) {
+  if (isStrategyFollowing(item)) {
+    router.replace('/copy-trade/my')
+    return
+  }
+  if (window.history.length > 1) {
+    router.back()
+    return
+  }
   const institutionId = route.query.institutionId || strategy.institutionId || institution.value.id
   if (institutionId) {
     router.replace({ path: '/copy-trade/strategies', query: { institutionId } })
     return
   }
-  router.back()
+  router.replace({ path: '/copy-trade' })
+}
+
+function handleJoinBlockedIfNeeded(item = strategy) {
+  if (item?.canJoin !== false) return
+  showToast(getStrategyJoinBlockMessage(item, t18))
+  if (shouldLeaveSubmitPageOnJoinBlock(item)) {
+    leaveSubmitPage(item)
+  }
+}
+
+async function handleSubmitJoinClosed(msg) {
+  showToast(msg || t18('copy_trade_unjoinable'))
+  try {
+    await refreshStrategyAndOrders()
+  } catch (_) {
+    /* 刷新失败仍应离开加入页 */
+  }
+  leaveSubmitPage()
 }
 
 function showDocument(doc) {
@@ -268,7 +297,7 @@ onMounted(() => {
 async function submitForm() {
   if (!agreed.value) return
   if (strategy?.canJoin === false) {
-    showToast(getStrategyJoinBlockMessage(strategy, t18))
+    handleJoinBlockedIfNeeded(strategy)
     return
   }
   const amountCheck = validateCopyTradeSubmitAmount(
@@ -304,9 +333,7 @@ async function submitForm() {
     }
 
     if (isCopyTradeSubmitJoinClosedCode(code)) {
-      showToast(msg || t18('copy_trade_unjoinable'))
-      await refreshStrategyAndOrders()
-      leaveSubmitPage()
+      await handleSubmitJoinClosed(msg)
       return
     }
 
@@ -320,9 +347,7 @@ async function submitForm() {
   } catch (e) {
     const { code, msg } = parseCopyTradeSubmitResponse(e)
     if (isCopyTradeSubmitJoinClosedCode(code)) {
-      showToast(msg || t18('copy_trade_unjoinable'))
-      await refreshStrategyAndOrders()
-      leaveSubmitPage()
+      await handleSubmitJoinClosed(msg)
       return
     }
     if (isCopyTradeSubmitJoinNotOpenCode(code)) {

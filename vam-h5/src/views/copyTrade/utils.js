@@ -1003,12 +1003,26 @@ function getStrategyStartMillis(item) {
 export function isStrategyNotStarted(item) {
   if (!item) return false
   const status = Number(item.followStatus)
-  if (status === 0) return true
+  if (status === 1 || status === 0) return true
   const text = String(item.followStatusText || item.statusText || '')
   if (/暂未开始|未开启|等待开启|尚未开始|not started|not open/i.test(text)) return true
   if (item.canJoin !== false) return false
   const startMs = getStrategyStartMillis(item)
   return startMs != null && startMs > Date.now()
+}
+
+/** followStatus=5：跟单已结束，不可再加入 */
+export function isStrategyJoinEnded(item) {
+  if (!item) return false
+  if (Number(item.followStatus) === 5) return true
+  const text = String(item.followStatusText || item.statusText || '')
+  return /跟单结束|copy trade ended|ended/i.test(text)
+}
+
+/** 加入页不可加入时是否应离开（暂未开启保留当前页） */
+export function shouldLeaveSubmitPageOnJoinBlock(item) {
+  if (!item || item.canJoin !== false) return false
+  return !isStrategyNotStarted(item)
 }
 
 /** 策略不可加入时的提示文案 */
