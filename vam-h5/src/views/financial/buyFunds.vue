@@ -1,13 +1,14 @@
 <template>
-  <div class="buy-funds-page">
-    <DarkHeaderBar
-      :title="t18('buy_funds')"
-      :backwardNum="backwardNum"
-      :border_bottom="false"
-    />
+  <div class="bf-page">
+    <header class="bf-header">
+      <button type="button" class="bf-header__back" aria-label="back" @click="onBack">
+        <img :src="iconBack" alt="" class="bf-header__back-icon" />
+      </button>
+      <h1 class="bf-header__title">{{ t18('buy_funds') }}</h1>
+    </header>
 
-    <div class="buy-funds-body">
-      <div v-if="!isSuccess" class="buy-funds-content">
+    <main class="bf-main">
+      <div v-if="!isSuccess" class="bf-content">
         <section class="card card-overview">
           <h1 class="overview-title">{{ proDetail.title || '—' }}</h1>
           <div
@@ -30,12 +31,16 @@
 
         <section class="card">
           <div class="card-title fw-bold">{{ t18('buy_limit') }}</div>
-          <input
-            v-model="limit"
-            type="text"
-            :placeholder="t18('exchange.input')"
-            class="quota-input"
-          />
+          <div class="quota-input-wrap">
+            <input
+              v-model="limit"
+              type="text"
+              inputmode="decimal"
+              :placeholder="t18('exchange.input')"
+              class="quota-input"
+            />
+            <span v-if="coninName" class="quota-input__unit">{{ coninName }}</span>
+          </div>
         </section>
 
         <section class="card">
@@ -69,34 +74,43 @@
             <span class="value fw-num rate-highlight">{{ proDetail.avgRate }}%</span>
           </div>
         </section>
-
-        <div class="buy-actions">
-          <button type="button" class="pay-btn" @click="payNow">{{ t18('to pay') }}</button>
-          <div class="protocol">
-            <svg-load v-if="!isCheck" name="gou" class="protocol-img" @click="toSwitch" />
-            <svg-load v-if="isCheck" name="gouH" class="protocol-img" @click="toSwitch" />
-            <span>{{ t18('read_and_confirm') }}</span>
-            <span class="protocol-link" @click="$router.push('/financialAgreement')">
-              {{ t18('financial agreement') }}
-            </span>
-          </div>
-        </div>
       </div>
 
-      <div v-else class="success">
-        <svg-load name="icon8" class="success-img" />
-        <div class="success-text">{{ t18('payment_successful') }}</div>
-        <button type="button" class="success-home" @click="$router.push('/')">
+      <div v-else class="bf-success">
+        <span class="bf-success__icon" aria-hidden="true">
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="32" cy="32" r="30" stroke="currentColor" stroke-width="2.5" opacity="0.4" />
+            <path d="M18 33L28 43L46 23" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </span>
+        <div class="bf-success__text">{{ t18('payment_successful') }}</div>
+        <button type="button" class="bf-success__home" @click="$router.push('/')">
           {{ t18('backhome') }}
         </button>
       </div>
+    </main>
+
+    <!-- 底部固定支付区 -->
+    <div v-if="!isSuccess" class="bf-footer">
+      <div class="bf-protocol">
+        <span class="bf-protocol__check" :class="{ 'bf-protocol__check--on': isCheck }" @click="toSwitch" aria-hidden="true">
+          <svg v-if="isCheck" viewBox="0 0 16 16" fill="none">
+            <path d="M3 8.5L6.5 12L13 5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </span>
+        <span class="bf-protocol__text">{{ t18('read_and_confirm') }}</span>
+        <span class="bf-protocol__link" @click="$router.push('/financialAgreement')">
+          {{ t18('financial agreement') }}
+        </span>
+      </div>
+      <button type="button" class="bf-pay-btn" @click="payNow">{{ t18('to pay') }}</button>
     </div>
   </div>
 </template>
 
 <script setup>
 import { onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { showToast } from 'vant'
 import { useI18n } from 'vue-i18n'
 
@@ -104,9 +118,9 @@ import { DIFF_ISFREEZE } from '@/config/index'
 import { useFreeze } from '@/hook/useFreeze'
 import { useToast } from '@/hook/useToast'
 
-import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import { financialDetail, financialSubmit } from '@/api/financial/index'
-import projectBg from '@/assets/images/financial/project-bg.png'
+import iconBack from '@/assets/images/gxpex/trade/icon-back.svg'
+import projectBg from '@/assets/images/gxpex/financial/detail-hero.png'
 
 const { t } = useI18n()
 const t18 = (key) => t(key)
@@ -115,6 +129,7 @@ const { _isFreeze } = useFreeze()
 const { _toast } = useToast()
 
 const Route = useRoute()
+const router = useRouter()
 
 const limit = ref('')
 const dayNum = ref('')
@@ -133,6 +148,10 @@ const isSuccess = ref(false)
 const backwardNum = ref(-1)
 const minNum = ref(0)
 const maxNum = ref(0)
+
+const onBack = () => {
+  router.go(backwardNum.value)
+}
 
 const payNowForm = () => {
   if (!isCheck.value) return _toast(t18('please_agree_financial'))
@@ -175,10 +194,10 @@ const getDetail = async () => {
   try {
     const res = await financialDetail(Route.params.id)
     if (res.code === 200) {
-      const { title, icon, avgRate, days, limitMin, limitMax, coin } = res.data
+      const { title, avgRate, days, limitMin, limitMax, coin } = res.data
       minNum.value = limitMin
       maxNum.value = limitMax
-      coninName.value = coin.toUpperCase()
+      coninName.value = coin ? coin.toUpperCase() : ''
       dayNum.value = days
 
       const { process, totalInvestAmount, remainAmount, timeLimit } = res.data
@@ -189,10 +208,12 @@ const getDetail = async () => {
         remainAmount,
         timeLimit,
         avgRate,
-        coin: coin.toUpperCase()
+        coin: coin ? coin.toUpperCase() : ''
       }
     }
-  } catch (e) {}
+  } catch (e) {
+    void e
+  }
 }
 
 onMounted(() => {
@@ -201,32 +222,70 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-.buy-funds-page {
+.bf-page {
   min-height: 100vh;
-  background: #010e1a;
+  background: #0a0610;
+  color: #f5f3f8;
+  padding-bottom: calc(140px + env(safe-area-inset-bottom, 0));
   box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'PingFang SC', sans-serif;
 }
 
-.buy-funds-body {
-  background: #f6f7fa;
-  
-  min-height: calc(100vh - 60px);
-  padding: 12px 0 calc(24px + env(safe-area-inset-bottom, 0px));
-  box-sizing: border-box;
+/* GXPEX 同款顶栏 */
+.bf-header {
   position: relative;
-  box-shadow: 0 -8px 32px rgba(5, 16, 26, 0.12);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: calc(14px + env(safe-area-inset-top)) 18px 6px;
 }
 
-.buy-funds-content {
+.bf-header__back {
+  position: absolute;
+  left: 12px;
+  top: calc(14px + env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
   padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
 }
 
+.bf-header__back-icon {
+  display: block;
+  width: 10px;
+  height: 18px;
+  object-fit: contain;
+  opacity: 0.9;
+}
+
+.bf-header__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #fff;
+  text-align: center;
+}
+
+.bf-main {
+  padding: 12px 0 0;
+}
+
+/* 暗紫卡 */
 .card {
-  background: #fff;
-  border-radius: 14px;
-  margin: 0 15px 12px;
+  background: #1a1626;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  margin: 0 14px 12px;
   padding: 16px;
-  box-shadow: 0 2px 12px rgba(1, 14, 26, 0.06);
+  box-shadow: none;
   box-sizing: border-box;
 }
 
@@ -237,30 +296,36 @@ onMounted(() => {
 .overview-title {
   margin: 0 0 14px;
   font-size: 16px;
-  font-weight: 600;
-  color: #1a1a1a;
+  font-weight: 700;
+  color: #fff;
   text-align: center;
   line-height: 1.35;
   word-break: break-word;
 }
 
+/* hero 利率横幅 */
 .rate-banner {
-  min-height: 112px;
+  min-height: 120px;
   margin-bottom: 14px;
-  border-radius: 10px;
+  border-radius: 12px;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  background-color: rgba(160, 65, 237, 0.12);
+  border: 1px solid rgba(160, 65, 237, 0.32);
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
 .rate-value {
-  font-size: 28px;
-  font-weight: 700;
+  font-size: 32px;
+  font-weight: 800;
   line-height: 1;
-  color: #e85d75;
+  color: #fff;
+  text-shadow: 0 4px 18px rgba(160, 65, 237, 0.55);
+  letter-spacing: 0.5px;
 }
 
 .overview-rows .detail-row {
@@ -271,25 +336,50 @@ onMounted(() => {
 }
 
 .card-title {
-  font-size: 16px;
-  color: #1a1a1a;
+  font-size: 15px;
+  color: #fff;
+  font-weight: 600;
   margin-bottom: 12px;
 }
 
-.quota-input {
+/* 金额输入 */
+.quota-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
   width: 100%;
-  height: 48px;
-  padding: 0 14px;
-  border: 1px solid #e4e6eb;
-  border-radius: 10px;
-  font-size: 15px;
-  color: #2a2f36;
-  background: #f6f7fa;
+  height: 50px;
+  padding: 0 16px;
+  border: 1px solid rgba(160, 65, 237, 0.45);
+  border-radius: 25px;
+  background: rgb(34, 34, 34);
+  box-shadow: 0 0 0 1px rgba(160, 65, 237, 0.12), 0 0 14px rgba(160, 65, 237, 0.18);
   box-sizing: border-box;
 }
 
-.quota-input::placeholder {
-  color: #a8b0ba;
+.quota-input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 15px;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.45);
+  }
+}
+
+.quota-input__unit {
+  margin-left: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgb(196, 124, 255);
+  letter-spacing: 0.2px;
 }
 
 .detail-row {
@@ -298,42 +388,105 @@ onMounted(() => {
   justify-content: space-between;
   gap: 12px;
   font-size: 13px;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
   &:last-child {
     margin-bottom: 0;
   }
 }
 
 .label {
-  color: #8b9099;
+  color: rgba(255, 255, 255, 0.55);
   flex-shrink: 0;
 }
 
 .value {
-  color: #2a2f36;
+  color: #fff;
+  font-weight: 500;
   text-align: right;
   word-break: break-all;
+  font-variant-numeric: tabular-nums;
 }
 
 .rate-highlight {
-  color: #e85d75;
+  color: rgb(196, 124, 255);
+  font-weight: 600;
 }
 
-.buy-actions {
-  margin: 8px 15px 0;
-  padding-top: 8px;
+/* 底部固定支付区 */
+.bf-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  padding: 12px 14px calc(12px + env(safe-area-inset-bottom, 0));
+  background: linear-gradient(180deg, rgba(10, 6, 16, 0) 0%, rgba(10, 6, 16, 0.95) 30%, #0a0610 100%);
+  max-width: var(--ex-max-width, 100%);
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
-.pay-btn {
+.bf-protocol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 12px;
+  padding: 0 8px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.65);
+  text-align: center;
+  line-height: 1.45;
+}
+
+.bf-protocol__check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease;
+  flex-shrink: 0;
+
+  svg {
+    width: 12px;
+    height: 12px;
+    display: block;
+  }
+
+  &--on {
+    background: linear-gradient(-43deg, rgb(127, 43, 218) 0%, rgb(163, 67, 238) 100%);
+    border-color: transparent;
+  }
+}
+
+.bf-protocol__text {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.bf-protocol__link {
+  color: rgb(196, 124, 255);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.bf-pay-btn {
   display: block;
   width: 100%;
   padding: 14px 20px;
   border: none;
   border-radius: 999px;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 500;
   color: #fff;
-  background: #010e1a;
+  background: linear-gradient(-43deg, rgb(127, 43, 218) 0%, rgb(163, 67, 238) 100%);
+  box-shadow: 0 4px 12px rgba(127, 43, 218, 0.35);
   text-align: center;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -342,56 +495,43 @@ onMounted(() => {
   }
 }
 
-.protocol {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  margin-top: 20px;
-  padding: 0 8px;
-  font-size: 13px;
-  color: #8b9099;
-  text-align: center;
-  line-height: 1.45;
-}
-
-.protocol-img {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
-}
-
-.protocol-link {
-  color: #17ac74;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-.success {
+/* Success 成功态 */
+.bf-success {
   padding: 80px 24px 40px;
   text-align: center;
 }
 
-.success-img {
-  width: 114px;
-  height: 112px;
+.bf-success__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 110px;
+  height: 110px;
   margin: 0 auto 24px;
+  color: rgb(196, 124, 255);
+  filter: drop-shadow(0 8px 24px rgba(160, 65, 237, 0.45));
+
+  svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
 }
 
-.success-text {
-  font-size: 16px;
-  color: #2a2f36;
-  margin-bottom: 24px;
+.bf-success__text {
+  font-size: 17px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 28px;
 }
 
-.success-home {
-  padding: 12px 32px;
-  border: 1px solid #17ac74;
+.bf-success__home {
+  padding: 12px 36px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 999px;
   background: transparent;
-  font-size: 15px;
-  color: #17ac74;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.85);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }

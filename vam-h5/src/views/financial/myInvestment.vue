@@ -2,7 +2,7 @@
 <template>
   <div class="myinv-page">
     <header class="myinv-header">
-      <button type="button" class="myinv-header__back" aria-label="back" @click="_back">
+      <button type="button" class="myinv-header__back" aria-label="back" @click="_back()">
         <img :src="iconBack" alt="" class="myinv-header__back-icon" />
       </button>
       <h1 class="myinv-header__title">{{ _t18('my_invest') }}</h1>
