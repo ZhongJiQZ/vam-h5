@@ -42,7 +42,7 @@
       <div class="item" v-if="!currentEntruset">
         <div>{{ _t18(`option_now_price`) }}</div>
         <div class="fw-num numItem">
-          {{ tradeStore.allCoinPriceInfo[itemHistroy.coinSymbol].close }}
+          {{ tradeStore.allCoinPriceInfo?.[itemHistroy.coinSymbol]?.close ?? '--' }}
           {{ itemHistroy.baseSymbol ? itemHistroy.baseSymbol.toUpperCase() : '' }}
         </div>
       </div>
@@ -91,7 +91,7 @@
             formatExpectedProfitColor(
               Number(itemHistroy.betContent),
               itemHistroy.openPrice,
-              tradeStore.allCoinPriceInfo[itemHistroy.coinSymbol].close
+              tradeStore.allCoinPriceInfo?.[itemHistroy.coinSymbol]?.close
             )
           "
         >
@@ -99,7 +99,7 @@
             formatExpectedProfit(
               Number(itemHistroy.betContent),
               itemHistroy.openPrice,
-              tradeStore.allCoinPriceInfo[itemHistroy.coinSymbol].close,
+              tradeStore.allCoinPriceInfo?.[itemHistroy.coinSymbol]?.close,
               itemHistroy.betAmount,
               itemHistroy.rate
             )
@@ -212,7 +212,7 @@ const sharedImg = (model) => {
 }
 
 /* GXPEX 暗紫订单卡 */
-.historyItem--orderCenter {
+.historyItem.historyItem--orderCenter {
   padding: 12px 14px 4px;
   margin-bottom: 10px;
   border-bottom: none;
@@ -259,7 +259,7 @@ const sharedImg = (model) => {
     }
 
     .header-time {
-      color: #aaa5b3;
+      color: rgba(255, 255, 255, 0.6);
       font-size: 11px;
       font-variant-numeric: tabular-nums;
     }
@@ -269,19 +269,19 @@ const sharedImg = (model) => {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 4px 0;
-    font-size: 12px;
-    color: #8c8696;
-    min-height: 22px;
+    padding: 6px 0;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.7) !important;
+    min-height: 24px;
 
     &.item--pair > div:first-child {
-      color: #f5f3f8;
+      color: #fff !important;
       font-weight: 600;
-      font-size: 13px;
+      font-size: 14px;
     }
 
     .numItem {
-      color: #ebe7f0;
+      color: #fff !important;
       font-weight: 500;
       font-variant-numeric: tabular-nums;
       text-align: right;

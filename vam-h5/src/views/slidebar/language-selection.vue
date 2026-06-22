@@ -1,37 +1,35 @@
 <template>
   <div class="page-language">
-    <DarkHeaderBar
-      :title="_t18('sidebar_language')"
-      right="service"
-      :border_bottom="true"
-    />
-    <div class="card">
-      <div class="section-head">
-        <span class="section-title">{{ _t18('sidebar_language') }}</span>
-        <img :src="languageIcon" alt="" class="section-icon" />
-      </div>
-      <van-radio-group :model-value="checked">
-        <van-radio
+    <header class="lang-header">
+      <button type="button" class="lang-header__back" aria-label="back" @click="_back()">
+        <img :src="iconBack" alt="" class="lang-header__back-icon" />
+      </button>
+      <h1 class="lang-header__title">{{ _t18('sidebar_language') }}</h1>
+    </header>
+
+    <main class="lang-main">
+      <ul class="lang-list">
+        <li
           v-for="(item, index) in languageList"
           :key="index"
-          :name="index"
-          shape="round"
-          label-position="left"
-          checked-color="#17ac74"
-          class="lang-row"
+          class="lang-item"
+          :class="{ 'lang-item--active': checked === index }"
           @click="setLanguage(item)"
         >
-          {{ item.remark }}
-        </van-radio>
-      </van-radio-group>
-    </div>
+          <span class="lang-item__label">{{ item.remark }}</span>
+          <span class="lang-item__radio" aria-hidden="true">
+            <span v-if="checked === index" class="lang-item__radio-dot"></span>
+          </span>
+        </li>
+      </ul>
+    </main>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
-import languageIcon from '@/assets/images/language.png'
+import { computed, ref } from 'vue'
+import { _t18, _back } from '@/utils/public'
+import iconBack from '@/assets/images/gxpex/trade/icon-back.svg'
 import { storageDict } from '@/config/dict'
 import { useMainStore } from '@/store/index.js'
 
@@ -59,58 +57,126 @@ const languageList = mainStore.languageList
 <style lang="scss" scoped>
 .page-language {
   min-height: 100vh;
-  background: #05101a;
-  padding-bottom: constant(safe-area-inset-bottom);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-}
-
-.card {
-  min-height: calc(100vh - 60px - constant(safe-area-inset-top));
-  min-height: calc(100vh - 60px - env(safe-area-inset-top, 0px));
-  background: #fff;
-  
-  padding: 20px 15px 28px;
+  background: #0a0610;
+  color: #f5f3f8;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0));
   box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'PingFang SC', sans-serif;
 }
 
-.section-head {
+/* GXPEX 同款顶栏 */
+.lang-header {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
+  justify-content: center;
+  min-height: 44px;
+  padding: calc(14px + env(safe-area-inset-top)) 18px 6px;
 }
 
-.section-title {
-  font-size: 16px;
-  font-weight: 500;
-  color: #646566;
+.lang-header__back {
+  position: absolute;
+  left: 12px;
+  top: calc(14px + env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
 }
 
-.section-icon {
-  width: 22px;
-  height: 22px;
+.lang-header__back-icon {
+  display: block;
+  width: 10px;
+  height: 18px;
   object-fit: contain;
-  flex-shrink: 0;
+  opacity: 0.9;
 }
 
-.card :deep(.lang-row.van-radio) {
+.lang-header__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #fff;
+  text-align: center;
+}
+
+/* Body */
+.lang-main {
+  padding: 16px 14px 0;
+}
+
+/* 语言列表 — 一卡内多行，行间分隔 */
+.lang-list {
+  list-style: none;
+  margin: 0;
+  padding: 4px 18px;
+  background: rgba(30, 21, 48, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+}
+
+.lang-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 0;
-  margin: 0;
+  gap: 12px;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.18s ease;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:active {
+    opacity: 0.7;
+  }
 }
 
-.card :deep(.lang-row .van-radio__label) {
+.lang-item__label {
   flex: 1;
-  margin-left: 0;
-  margin-right: 12px;
   font-size: 15px;
-  color: #646566;
-  line-height: 1.4;
+  font-weight: 400;
+  line-height: 1.3;
+  color: rgba(255, 255, 255, 0.85);
 }
 
-.card :deep(.lang-row .van-radio__icon) {
+.lang-item--active .lang-item__label {
+  color: #fff;
+  font-weight: 500;
+}
+
+/* 自定义 radio — 圆环 + 选中紫色实心点 */
+.lang-item__radio {
   flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.18s ease;
+}
+
+.lang-item--active .lang-item__radio {
+  border-color: rgb(160, 65, 237);
+}
+
+.lang-item__radio-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgb(160, 65, 237);
+  box-shadow: 0 0 8px rgba(160, 65, 237, 0.5);
 }
 </style>

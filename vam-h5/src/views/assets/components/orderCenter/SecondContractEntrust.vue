@@ -48,7 +48,10 @@
           @shareRevenue="shareRevenue"
         />
       </div>
-      <Nodata v-else />
+      <div v-else class="sc-empty">
+        <img :src="iconEmpty" alt="" class="sc-empty__icon" />
+        <p class="sc-empty__text">{{ _t18('no_data') }}</p>
+      </div>
     </div>
   
     <div class="placeholder"></div>
@@ -72,6 +75,7 @@
   import { secondContractOrderselectOrderList } from '@/api/trade/index'
   import { formatCurrentcurrency, profitAndloss } from '@/utils/filters'
   import { _t18 } from '@/utils/public'
+  import iconEmpty from '@/assets/images/gxpex/trade/icon-bjwu.png'
   
   import { useUserStore } from '@/store/user'
   import { socketDict } from '@/config/dict'
@@ -185,7 +189,7 @@
         const result = res.data || []
         if (status) secondNum.value = result.length
         else firstNum.value = result.length
-  
+
         historyList.value = fifterTimeDown(attachCountdown(result))
         historyNewList.value = historyList.value
         filterEyes()
@@ -279,69 +283,117 @@
   .placeholder {
     height: 104px;
   }
-  
+
   .sc-order-body {
-    background: #fff;
+    background: transparent;
     min-height: 200px;
   }
 
   .sc-order-list {
-    padding: 12px 15px 0;
+    padding: 12px 4px 0;
   }
 
-  .sc-order-body :deep(.van-empty),
-  .sc-order-body :deep(.nodata) {
-    padding-top: 40px;
-  }
-
+  /* Current Entrust / Order History 子 tab 行 */
   .entrust {
-    min-height: 48px;
+    position: relative;
+    min-height: 40px;
     display: flex;
-    padding: 0 15px;
+    padding: 0 4px;
+    margin-top: 4px;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 1px solid #ebebeb;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 
     .entrustL {
-      font-size: 14px;
-      color: #999;
       display: flex;
-      gap: 20px;
+      gap: 22px;
 
       .entrustItem {
-        padding-bottom: 10px;
-        margin-bottom: -11px;
+        position: relative;
+        padding: 4px 0 12px;
+        margin-bottom: -1px;
+        font-size: 13px;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.55);
         cursor: pointer;
+        transition: color 0.18s ease;
       }
 
       .hightItem {
-        color: #000 !important;
+        color: #fff !important;
         font-weight: 600;
-        border-bottom: 2px solid #008710;
+      }
+
+      .hightItem::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        transform: translateX(-50%);
+        width: 18px;
+        height: 3px;
+        background: #a13cff;
+        border-radius: 2px;
       }
     }
-  
+
     .entrustR {
       display: flex;
       align-items: center;
-  
+      gap: 14px;
+
       .entrustRImg {
-        width: 16px;
-        height: 12px;
+        width: 18px;
+        height: 18px;
+        opacity: 0.75;
+        cursor: pointer;
+        transition: opacity 0.18s ease;
       }
-  
+
+      .entrustRImg:hover {
+        opacity: 1;
+      }
+
       .entrustRUpdateImg {
-        margin-left: 20px;
-        width: 12px;
-        height: 12px;
+        width: 18px;
+        height: 18px;
+        opacity: 0.75;
+        cursor: pointer;
+        filter: brightness(0) invert(1);
+        transition: opacity 0.18s ease;
+      }
+
+      .entrustRUpdateImg:hover {
+        opacity: 1;
       }
     }
   }
-  
+
+  /* 空态 */
+  .sc-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 64px 0 24px;
+  }
+
+  .sc-empty__icon {
+    display: block;
+    width: 140px;
+    height: 140px;
+    object-fit: contain;
+  }
+
+  .sc-empty__text {
+    margin: 10px 0 0;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.45);
+  }
+
   /* 分享弹出层 */
   .share-revenue-box {
     z-index: 99;
-  
+
     .share-revenue {
       :deep(.share-commission) {
         position: absolute;

@@ -1,6 +1,14 @@
 <template>
   <div class="page-recharge-amount">
-    <DarkHeaderBar :title="currentName" :border_bottom="true" />
+    <header class="ra-header">
+      <button type="button" class="ra-header__back" aria-label="back" @click="_back()">
+        <img :src="iconBack" alt="" class="ra-header__back-icon" />
+      </button>
+      <h1 class="ra-header__title">{{ currentName }}</h1>
+      <button type="button" class="ra-header__action" aria-label="service" @click="goService">
+        <img :src="iconService" alt="" class="ra-header__action-icon" />
+      </button>
+    </header>
     <div class="page-body">
       <div class="card">
         <div class="coin-row">
@@ -69,10 +77,12 @@
 
 <script setup>
 import { rechargeSubmit, getUserRechageNewApi } from '@/api/account.js'
-import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import { useMainStore } from '@/store'
 import { useRoute, useRouter } from 'vue-router'
-import { _t18, filterCoin2, _numberWithCommas } from '@/utils/public'
+import { _t18, _back, filterCoin2, _numberWithCommas } from '@/utils/public'
+import { dispatchCustomEvent } from '@/utils'
+import iconBack from '@/assets/images/gxpex/trade/icon-back.svg'
+import iconService from '@/assets/images/gxpex/home/icon-service.svg'
 import { useToast } from '@/hook/useToast'
 import { computed, ref, watch } from 'vue'
 import { priceFormat } from '@/utils/decimal'
@@ -248,24 +258,98 @@ const onNext = async () => {
 
   jumpToApply(orderId)
 }
+
+const goService = () => dispatchCustomEvent('event_serviceChange')
 </script>
 
 <style lang="scss" scoped>
 .page-recharge-amount {
   min-height: 100vh;
-  background: #05101a;
+  background: #0a0610;
+  color: #f5f3f8;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0));
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'PingFang SC', sans-serif;
+}
+
+/* GXPEX 同款顶栏 */
+.ra-header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: calc(14px + env(safe-area-inset-top)) 18px 6px;
+}
+
+.ra-header__back {
+  position: absolute;
+  left: 12px;
+  top: calc(14px + env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.ra-header__back-icon {
+  display: block;
+  width: 10px;
+  height: 18px;
+  object-fit: contain;
+  opacity: 0.9;
+}
+
+.ra-header__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60vw;
+}
+
+.ra-header__action {
+  position: absolute;
+  right: 12px;
+  top: calc(14px + env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.ra-header__action-icon {
+  display: block;
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  opacity: 0.9;
 }
 
 .page-body {
-  min-height: calc(100vh - 60px - constant(safe-area-inset-top));
-  min-height: calc(100vh - 60px - env(safe-area-inset-top, 0px));
-  background: #f6f7fb;
-  padding: 12px 15px 24px;
+  background: transparent;
+  padding: 16px 14px 0;
   box-sizing: border-box;
 }
 
 .card {
-  background: #fff;
+  background: rgba(30, 21, 48, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 16px;
   padding: 18px 16px;
 }
@@ -275,58 +359,68 @@ const onNext = async () => {
   align-items: center;
   gap: 12px;
   padding-bottom: 14px;
-  border-bottom: 1px solid #f1f3f5;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   margin-bottom: 16px;
 }
 
 .coin-icon {
   font-size: 34px;
+  width: 34px;
+  height: 34px;
+  display: block;
+  flex-shrink: 0;
 }
 
 .coin-type {
   margin: 0;
   font-size: 16px;
   font-weight: 600;
-  color: #323233;
+  color: #fff;
 }
 
 .coin-sub {
   margin: 4px 0 0;
   font-size: 13px;
-  color: #969799;
+  color: rgba(255, 255, 255, 0.55);
 }
 
 .field .label {
-  margin: 0 0 10px;
+  margin: 0 0 8px;
   font-size: 13px;
-  color: #969799;
+  color: rgba(255, 255, 255, 0.65);
   line-height: 1.4;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+  padding-left: 4px;
 }
 
 .rate-pill {
-  color: #ee0a24;
+  color: rgb(196, 124, 255);
   font-size: 14px;
   font-weight: 600;
 }
 
 .input-box {
-  border: 1px solid #ebedf0;
-  border-radius: 10px;
-  background: #fff;
-  padding: 0 14px;
+  border: 1px solid rgba(160, 65, 237, 0.45);
+  border-radius: 25px;
+  background: rgb(34, 34, 34);
+  padding: 0 16px;
+  box-shadow: 0 0 0 1px rgba(160, 65, 237, 0.12), 0 0 14px rgba(160, 65, 237, 0.18);
 
   input {
     width: 100%;
-    height: 46px;
+    height: 50px;
     border: none;
     outline: none;
     font-size: 15px;
-    color: #323233;
+    color: #fff;
     background: transparent;
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.45);
+    }
   }
 }
 
@@ -342,35 +436,36 @@ const onNext = async () => {
 }
 
 .currency-suffix {
-  color: #ee0a24;
+  color: rgb(196, 124, 255);
   font-size: 16px;
   font-weight: 600;
 }
 
 .approx-line {
-  margin: 8px 2px 0;
+  margin: 8px 4px 0;
   font-size: 13px;
-  color: #646566;
+  color: rgba(255, 255, 255, 0.65);
 }
 
 .approx-line--net {
   margin-top: 4px;
-  color: #17ac74;
+  color: rgb(196, 124, 255);
 }
 
 .mini-hint {
-  margin: 12px 2px 0;
+  margin: 12px 4px 0;
   font-size: 12px;
-  color: #969799;
+  color: rgba(255, 255, 255, 0.5);
   line-height: 1.5;
 }
 
+/* 提示卡 — 暗紫主题，去掉橙色暖色 */
 .tips-card {
-  margin-top: 12px;
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 138, 0, 0.35);
-  background: linear-gradient(180deg, rgba(255, 245, 230, 0.75) 0%, rgba(255, 250, 242, 0.95) 100%);
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(160, 65, 237, 0.28);
+  background: rgba(160, 65, 237, 0.06);
 }
 
 .tips-row {
@@ -378,8 +473,8 @@ const onNext = async () => {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  padding: 6px 0;
-  border-bottom: 1px dashed rgba(255, 138, 0, 0.25);
+  padding: 8px 0;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
 }
 
 .tips-row:last-of-type {
@@ -393,7 +488,7 @@ const onNext = async () => {
   min-width: 74px;
   flex-shrink: 0;
   font-size: 12px;
-  color: #8d6a3f;
+  color: rgba(255, 255, 255, 0.65);
 }
 
 .tips-value {
@@ -403,14 +498,14 @@ const onNext = async () => {
   gap: 4px;
   font-size: 12px;
   font-weight: 600;
-  color: #323233;
+  color: #fff;
   text-align: right;
   flex: 1;
   min-width: 0;
 }
 
 .tips-value--warn {
-  color: #ee0a24;
+  color: #ff435d;
 }
 
 .tips-value--stack {
@@ -423,7 +518,7 @@ const onNext = async () => {
   display: grid;
   grid-template-columns: 28px auto;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   min-height: 16px;
   width: 100%;
   justify-content: end;
@@ -431,36 +526,36 @@ const onNext = async () => {
 }
 
 .tips-desc {
-  margin: 8px 0 0;
+  margin: 10px 0 0;
   font-size: 12px;
-  line-height: 1.45;
-  color: #7a7f87;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.55);
 }
 
 .tips-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #ff8a00;
+  background: rgb(196, 124, 255);
 }
 
 .tips-dot--warn {
-  background: #ee0a24;
+  background: #ff435d;
 }
 
 .tips-chip {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
+  width: 32px;
   box-sizing: border-box;
   font-size: 10px;
   line-height: 1;
   padding: 3px 5px;
   border-radius: 999px;
-  color: #8d6a3f;
-  background: rgba(255, 138, 0, 0.16);
-  border: 1px solid rgba(255, 138, 0, 0.28);
+  color: rgb(196, 124, 255);
+  background: rgba(160, 65, 237, 0.14);
+  border: 1px solid rgba(160, 65, 237, 0.35);
 }
 
 .tips-sep {
@@ -468,20 +563,26 @@ const onNext = async () => {
 }
 
 .btn-wrap {
-  margin-top: 16px;
+  margin-top: 22px;
 }
 
-.btn p {
-  margin: 0;
-  text-align: center;
-  padding: 14px 0;
-  font-size: 16px;
-  border-radius: 999px;
+.btn {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  p {
+    margin: 0;
+    text-align: center;
+    padding: 14px 0;
+    font-size: 15px;
+    border-radius: 999px;
+  }
 }
 
 .btn--primary p {
   color: #fff;
-  background: #05101a;
   font-weight: 500;
+  background: linear-gradient(-43deg, rgb(127, 43, 218) 0%, rgb(163, 67, 238) 100%);
+  box-shadow: 0 4px 12px rgba(127, 43, 218, 0.35);
 }
 </style>

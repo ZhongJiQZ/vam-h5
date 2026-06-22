@@ -44,7 +44,6 @@ onMounted(async () => {
         <img :src="iconBack" alt="" class="help-header__back-icon" />
       </button>
       <h1 class="help-header__title">{{ _t18('help_center') }}</h1>
-      <span class="help-header__spacer" aria-hidden="true"></span>
     </header>
 
     <main class="help-main">
@@ -89,20 +88,22 @@ onMounted(async () => {
 .help-header {
   position: relative;
   z-index: 2;
-  display: grid;
-  grid-template-columns: 40px 1fr 40px;
-  align-items: center;
-  min-height: 26px;
-  padding: 0 12px;
-}
-
-.help-header__back {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  margin-left: -9px;
+  min-height: 44px;
+  padding: calc(14px + env(safe-area-inset-top)) 18px 6px;
+}
+
+.help-header__back {
+  position: absolute;
+  left: 12px;
+  top: calc(14px + env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
   padding: 0;
   border: none;
   background: transparent;
@@ -111,27 +112,20 @@ onMounted(async () => {
 
 .help-header__back-icon {
   display: block;
-  width: 12px;
-  height: 22px;
+  width: 10px;
+  height: 18px;
   object-fit: contain;
   opacity: 0.9;
 }
 
 .help-header__title {
-  grid-column: 2;
   margin: 0;
-  text-align: center;
   font-family: 'PingFang SC', sans-serif;
   font-size: 17px;
   font-weight: 600;
   line-height: 1.2;
   color: #fff;
-}
-
-.help-header__spacer {
-  grid-column: 3;
-  width: 40px;
-  height: 40px;
+  text-align: center;
 }
 
 .help-main {

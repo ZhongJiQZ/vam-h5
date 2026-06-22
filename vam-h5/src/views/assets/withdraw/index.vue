@@ -1,24 +1,30 @@
 <!-- 提现 -->
 <template>
   <div class="page-withdraw">
-    <DarkHeaderBar
-      :title="_t18('withdraw', ['latcoin'])"
-      right=""
-      :border_bottom="true"
-    />
-    <div class="card">
+    <header class="wd-header">
+      <button type="button" class="wd-header__back" aria-label="back" @click="_back()">
+        <img :src="iconBack" alt="" class="wd-header__back-icon" />
+      </button>
+      <h1 class="wd-header__title">{{ _t18('withdraw', ['latcoin']) }}</h1>
+      <button type="button" class="wd-header__action" aria-label="service" @click="goService">
+        <img :src="iconService" alt="" class="wd-header__action-icon" />
+      </button>
+    </header>
+
+    <main class="wd-main">
       <List :data="coinList" />
-    </div>
+    </main>
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
-import { _t18 } from '@/utils/public'
-import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
+import { _t18, _back, filterCoin2 } from '@/utils/public'
+import { dispatchCustomEvent } from '@/utils'
 import List from './withdraw-list.vue'
-import { filterCoin2 } from '@/utils/public'
 import { useMainStore } from '@/store/index.js'
+import iconBack from '@/assets/images/gxpex/trade/icon-back.svg'
+import iconService from '@/assets/images/gxpex/home/icon-service.svg'
 
 const mainStore = useMainStore()
 
@@ -48,22 +54,86 @@ const coinList = computed(() => {
   })
   return list
 })
+
+const goService = () => dispatchCustomEvent('event_serviceChange')
 </script>
 
 <style lang="scss" scoped>
 .page-withdraw {
   min-height: 100vh;
-  background: #05101a;
-  padding-bottom: constant(safe-area-inset-bottom);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: #0a0610;
+  color: #f5f3f8;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0));
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'PingFang SC', sans-serif;
 }
 
-.card {
-  min-height: calc(100vh - 60px - constant(safe-area-inset-top));
-  min-height: calc(100vh - 60px - env(safe-area-inset-top, 0px));
-  background: #fff;
-  
-  padding: 20px 15px 28px;
-  box-sizing: border-box;
+/* GXPEX 同款顶栏 */
+.wd-header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: calc(14px + env(safe-area-inset-top)) 18px 6px;
+}
+
+.wd-header__back {
+  position: absolute;
+  left: 12px;
+  top: calc(14px + env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.wd-header__back-icon {
+  display: block;
+  width: 10px;
+  height: 18px;
+  object-fit: contain;
+  opacity: 0.9;
+}
+
+.wd-header__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #fff;
+  text-align: center;
+}
+
+.wd-header__action {
+  position: absolute;
+  right: 12px;
+  top: calc(14px + env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.wd-header__action-icon {
+  display: block;
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  opacity: 0.9;
+}
+
+.wd-main {
+  padding: 16px 14px 0;
 }
 </style>

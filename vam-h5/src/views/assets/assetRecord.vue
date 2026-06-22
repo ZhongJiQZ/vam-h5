@@ -1,16 +1,22 @@
 <!-- src/views/assets/assetRecord.vue -->
 <template>
   <div class="asset-record">
-    <div class="asset-record__tabs-wrap">
+    <header class="ar-header">
+      <button type="button" class="ar-header__back" aria-label="back" @click="_back()">
+        <img :src="iconBack" alt="" class="ar-header__back-icon" />
+      </button>
+      <h1 class="ar-header__title">{{ _t18('center_asset_flow') }}</h1>
+      <div class="ar-header__actions">
+        <AssetsShortcuts />
+      </div>
+    </header>
+
+    <div class="ar-tabs-wrap">
       <van-tabs
         shrink
         v-model:active="tabActive"
-        class="asset-record__tabs"
-        title-inactive-color="#92a4b0"
-        title-active-color="#e8f1f6"
-        color="#008710"
-        line-width="20"
-        line-height="3"
+        class="ar-tabs"
+        :line-width="0"
         @click-tab="clickInnerTab"
       >
         <van-tab
@@ -22,44 +28,31 @@
       </van-tabs>
     </div>
 
-    <div class="asset-record__sheet-outer">
-      <div class="asset-record__sheet">
-        <div class="asset-record__sheet-bg" aria-hidden="true" />
-        <div class="asset-record__panel">
-          <div class="asset-record__head">
-            <p class="asset-record__title">{{ _t18('center_asset_flow') }}</p>
-            <div class="asset-record__shortcuts">
-              <AssetsShortcuts />
-            </div>
-          </div>
-
-          <div class="asset-record__flow">
-            <flowMiningComponent v-show="tabActive === 'flow_mining'" />
-            <flowInvestComponent v-show="tabActive === 'flow_invest'" />
-            <flowDepositComponent v-show="tabActive === 'flow_deposit'" />
-            <flowWithdrawComponent v-show="tabActive === 'flow_withdraw'" />
-          </div>
-        </div>
-      </div>
+    <div class="ar-panel">
+      <flowMiningComponent v-if="tabActive === 'flow_mining'" />
+      <flowInvestComponent v-if="tabActive === 'flow_invest'" />
+      <flowDepositComponent v-if="tabActive === 'flow_deposit'" />
+      <flowWithdrawComponent v-if="tabActive === 'flow_withdraw'" />
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
-import { _t18 } from '@/utils/public'
+import { _t18, _back } from '@/utils/public'
 import flowMiningComponent from './components/flowMiningComponent.vue'
 import flowInvestComponent from './components/flowInvestComponent.vue'
 import flowDepositComponent from './components/flowDepositComponent.vue'
 import flowWithdrawComponent from './components/flowWithdrawComponent.vue'
 import AssetsShortcuts from './components/AssetsShortcuts.vue'
+import iconBack from '@/assets/images/gxpex/trade/icon-back.svg'
 
 const tabInnerList = computed(() => {
   const list = [
     { name: 'flow_mining', keyStr: 'flow_mining', sort: 10 },
     { name: 'flow_invest', keyStr: 'flow_invest', sort: 20 },
     { name: 'flow_deposit', keyStr: 'flow_deposit', sort: 30 },
-    { name: 'flow_withdraw', keyStr: 'flow_withdraw', sort: 40 },
+    { name: 'flow_withdraw', keyStr: 'flow_withdraw', sort: 40 }
   ]
   list.forEach((item) => {
     item.keyStr = _t18(item.keyStr, ['latcoin'])
@@ -79,142 +72,128 @@ const clickInnerTab = (e) => {
 </script>
 
 <style lang="scss" scoped>
-$ar-top-bg: #05101a;
-$ar-tab-inactive: #92a4b0;
-$ar-tab-active: #e8f1f6;
-$ar-accent: #008710;
-
 .asset-record {
+  position: relative;
   min-height: 100vh;
-  background: #ffffff;
+  background: #0a0610;
+  color: #f5f3f8;
   padding-bottom: env(safe-area-inset-bottom, 0);
   overflow-x: hidden;
-  overflow-y: visible;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'PingFang SC', sans-serif;
 }
 
-.asset-record__tabs-wrap {
+/* GXPEX 同款顶栏（back 左 / 标题居中 / shortcuts 右） */
+.ar-header {
   position: relative;
   z-index: 2;
-  background: $ar-top-bg;
-  padding-top: 8px;
-  padding-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: calc(14px + env(safe-area-inset-top)) 18px 6px;
 }
 
-.asset-record__sheet-outer {
-  background: $ar-top-bg;
-  overflow: visible;
-}
-
-.asset-record__sheet {
-  position: relative;
-  z-index: 0;
-  min-height: calc(100vh - 64px);
-  
-  background: #ffffff;
-  overflow: visible;
-}
-
-.asset-record__sheet-bg {
+.ar-header__back {
   position: absolute;
-  top: -20px;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 0;
-  border-radius: 24px 24px 0 0;
-  box-shadow: 0 -8px 32px rgba(5, 16, 26, 0.18);
-  pointer-events: none;
-}
-
-.asset-record__panel {
-  position: relative;
-  z-index: 1;
+  left: 12px;
+  top: calc(14px + env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
   background: transparent;
+  cursor: pointer;
 }
 
-.asset-record__tabs {
+.ar-header__back-icon {
+  display: block;
+  width: 10px;
+  height: 18px;
+  object-fit: contain;
+  opacity: 0.9;
+}
+
+.ar-header__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #fff;
+  text-align: center;
+}
+
+.ar-header__actions {
+  position: absolute;
+  right: 12px;
+  top: calc(14px + env(safe-area-inset-top));
+  height: 32px;
+  display: flex;
+  align-items: center;
+}
+
+/* 顶部 pill chip tab — 跟 /orderCenter 同款 */
+.ar-tabs-wrap {
+  padding: 8px 14px 12px;
+}
+
+.ar-tabs {
   :deep(.van-tabs__wrap) {
-    height: 48px;
-    border-bottom: none;
+    height: 38px;
     background: transparent !important;
+    border-bottom: none;
   }
 
   :deep(.van-tabs__nav) {
     background: transparent !important;
-    padding-left: 8px;
-    padding-right: 8px;
+    padding: 0;
+    gap: 8px;
   }
 
   :deep(.van-tab) {
     flex: none;
-    padding: 0 10px;
-    font-size: 15px;
+    height: 32px;
+    padding: 0 14px;
+    margin: 0;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 13px;
+    transition: background 0.18s ease, border-color 0.18s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   :deep(.van-tab__text) {
-    font-weight: 400;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.65);
+    transition: color 0.18s ease;
+  }
+
+  :deep(.van-tab--active) {
+    background: linear-gradient(-43deg, rgb(127, 43, 218) 0%, rgb(163, 67, 238) 100%) !important;
+    border-color: transparent !important;
+    box-shadow: 0 4px 12px rgba(127, 43, 218, 0.32);
   }
 
   :deep(.van-tab--active .van-tab__text) {
+    color: #fff;
     font-weight: 600;
-    color: $ar-tab-active !important;
-  }
-
-  :deep(.van-tab:not(.van-tab--active) .van-tab__text) {
-    color: $ar-tab-inactive !important;
   }
 
   :deep(.van-tabs__line) {
     display: none !important;
   }
-
-  :deep(.van-tab--shrink) {
-    margin-right: 8px;
-  }
 }
 
-.asset-record__head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 20px 15px 8px;
-}
-
-.asset-record__title {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: $ar-accent;
-}
-
-.asset-record__shortcuts {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.asset-record__shortcut {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  border: none;
-  background: transparent;
-  flex-shrink: 0;
-  cursor: pointer;
-}
-
-.asset-record__shortcut-img {
-  width: 24px;
-  height: 24px;
-  display: block;
-  object-fit: contain;
-}
-
-.asset-record__flow {
+/* 内容区 — 透明 */
+.ar-panel {
+  position: relative;
+  z-index: 1;
+  padding: 8px 14px 0;
   min-height: 200px;
 }
 </style>

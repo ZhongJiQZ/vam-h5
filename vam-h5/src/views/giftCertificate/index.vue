@@ -1,23 +1,23 @@
-<!-- 充值领金 · 体验券活动 -->
+<!-- 充值领金 · 体验券活动 (GXPEX 暗紫主题) -->
 <template>
   <div class="gift-cert-page">
-    <HeaderBar
-      :current-name="t('gift_cert_title')"
-      :border_bottom="false"
-      :is-center="true"
-      :bg-color="'var(--gift-page-bg, #eef1f6)'"
-    >
-      <template #footer>
-        <button
-          type="button"
-          class="header-gift-wrap"
-          :aria-label="t('gift_cert_my_codes_open')"
-          @click.stop="openMyCodesPopup"
-        >
-          <van-icon name="gift-o" class="header-gift" size="22" />
-        </button>
-      </template>
-    </HeaderBar>
+    <div class="bg-glow bg-glow--1"></div>
+    <div class="bg-glow bg-glow--2"></div>
+
+    <header class="gc-header">
+      <button type="button" class="gc-header__back" aria-label="back" @click="_back()">
+        <img :src="iconBack" alt="" class="gc-header__back-icon" />
+      </button>
+      <h1 class="gc-header__title">{{ t('gift_cert_title') }}</h1>
+      <button
+        type="button"
+        class="gc-header__action"
+        aria-label="service"
+        @click.stop="goService"
+      >
+        <img :src="iconService" alt="" class="gc-header__action-icon" />
+      </button>
+    </header>
 
     <van-popup
       v-model:show="myCodesPopupVisible"
@@ -75,50 +75,47 @@
     <div class="body">
       <p v-if="batchesLoaded && !batches.length" class="empty-hint">{{ t('gift_cert_empty_activity') }}</p>
 
-      <div v-if="primaryBatch" class="batch-pill">
-        <span class="batch-pill-label">{{ t('gift_cert_current_activity') }}</span>
-        <span class="batch-pill-name">{{ primaryBatch.name || t('gift_cert_voucher_name_fallback') }}</span>
+      <!-- Hero: 整张 icon-gift-hero 图占满整行作 banner；标题文字垂直居中叠在图左侧 -->
+      <div class="hero-banner">
+        <img :src="iconGiftHero" alt="" class="hero-banner__img" />
+        <div class="hero-text">
+          <span class="hero-label">{{ t('gift_cert_current_activity') }}</span>
+          <h2 class="hero-name">{{ t('gift_cert_voucher_name_fallback') }}</h2>
+        </div>
       </div>
 
-      <div class="card code-card">
-        <div class="code-row">
+      <!-- Claim 输入 + 进度 -->
+      <div class="claim-card">
+        <div class="claim-row">
           <van-field
             v-model="voucherCode"
-            class="code-input"
+            class="claim-input"
             :border="false"
             :placeholder="t('gift_cert_placeholder_code')"
             clearable
           />
-          <div class="code-btns">
-            <van-button
-              type="primary"
-              size="small"
-              class="btn-action"
-              :class="{ 'btn-action--allocate': !hasVoucherCode }"
-              :plain="!hasVoucherCode"
-              :loading="actionLoading"
-              :disabled="actionDisabled"
-              @click="onAction"
-            >
-              {{ actionBtnText }}
-            </van-button>
-          </div>
+          <van-button
+            type="primary"
+            size="small"
+            class="claim-btn"
+            :loading="actionLoading"
+            :disabled="actionDisabled"
+            @click="onAction"
+          >
+            {{ actionBtnText }}
+          </van-button>
         </div>
         <div class="progress-wrap">
-          <div class="progress-label-row">
-            <span class="progress-caption">{{ t('gift_cert_progress_recharged', progressTextParams) }}</span>
-          </div>
+          <span class="progress-caption">{{ t('gift_cert_progress_recharged', progressTextParams) }}</span>
           <div class="progress-track">
             <div class="progress-fill" :style="{ width: progressPercent + '%' }" />
           </div>
         </div>
       </div>
 
-      <div class="card feed-card">
-        <div class="feed-heading">
-          <span class="feed-heading-dot" />
-          <span class="feed-heading-text">{{ t('gift_cert_section_live') }}</span>
-        </div>
+      <!-- Latest Records -->
+      <h3 class="section-title">{{ t('gift_cert_section_live') }}</h3>
+      <div class="feed-card">
         <div class="feed-window">
           <div
             v-if="feedLines.length"
@@ -134,20 +131,19 @@
         </div>
       </div>
 
-      <div class="card rules-card">
-        <section class="rule-block">
-          <h3>{{ t('gift_cert_rule_participate_title') }}</h3>
-          <p>{{ t('gift_cert_rule_participate_body', { hint: conditionHint }) }}</p>
-        </section>
-        <section class="rule-block">
-          <h3>{{ t('gift_cert_rule_guide_title') }}</h3>
-          <p>{{ t('gift_cert_rule_guide_body') }}</p>
-        </section>
-        <section class="rule-block rule-block--last">
-          <h3>{{ t('gift_cert_rule_trial_title') }}</h3>
-          <p>{{ t('gift_cert_rule_trial_body') }}</p>
-        </section>
-      </div>
+      <!-- Rules -->
+      <section class="rule-block">
+        <h3 class="rule-title">{{ t('gift_cert_rule_participate_title') }}</h3>
+        <p class="rule-body">{{ t('gift_cert_rule_participate_body', { hint: conditionHint }) }}</p>
+      </section>
+      <section class="rule-block">
+        <h3 class="rule-title">{{ t('gift_cert_rule_guide_title') }}</h3>
+        <p class="rule-body">{{ t('gift_cert_rule_guide_body') }}</p>
+      </section>
+      <section class="rule-block">
+        <h3 class="rule-title">{{ t('gift_cert_rule_trial_title') }}</h3>
+        <p class="rule-body">{{ t('gift_cert_rule_trial_body') }}</p>
+      </section>
     </div>
   </div>
 </template>
@@ -158,6 +154,13 @@ import { useI18n } from 'vue-i18n'
 import { showToast } from 'vant'
 import { useUserStore } from '@/store/user/index'
 import { useCopy } from '@/hook/useCopy'
+import { _back } from '@/utils/public'
+import { dispatchCustomEvent } from '@/utils'
+import iconBack from '@/assets/images/gxpex/trade/icon-back.svg'
+import iconService from '@/assets/images/gxpex/home/icon-service.svg'
+import iconGiftHero from '@/assets/images/gxpex/gift/icon-gift-hero.png'
+
+const goService = () => dispatchCustomEvent('event_serviceChange')
 import {
   giftAllocate,
   giftBatchList,
@@ -601,61 +604,394 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 .gift-cert-page {
-  --gift-page-bg: #e8ecf2;
-  --gift-card: #ffffff;
-  --gift-text: #1a1d24;
-  --gift-muted: #6b7280;
-  --gift-accent: #2563eb;
-  --gift-accent-soft: #eff6ff;
-  --gift-warm: #ea580c;
+  position: relative;
   min-height: 100vh;
-  background: linear-gradient(180deg, var(--gift-page-bg) 0%, #f2f4f8 42%, #eef1f6 100%);
+  background: #0a0610;
+  color: #f5f3f8;
   padding-bottom: calc(24px + env(safe-area-inset-bottom, 0));
+  overflow-x: hidden;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
-/* HeaderBar 右侧槽位默认未 flex，礼包会贴在标题侧；强制靠右与原先一致 */
-.gift-cert-page :deep(header .right) {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  min-width: 0;
+.bg-glow {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, #a642ec 0%, #802bda 60%, transparent 100%);
+  filter: blur(60px);
+  opacity: 0.18;
+  pointer-events: none;
+  z-index: 0;
+
+  &--1 {
+    top: -60px;
+    right: -50px;
+    width: 240px;
+    height: 240px;
+  }
+  &--2 {
+    top: 300px;
+    left: -100px;
+    width: 220px;
+    height: 220px;
+  }
 }
 
-.header-gift-wrap {
+/* Header */
+.gc-header {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4px;
-  margin: 0;
+  min-height: 44px;
+  padding: calc(14px + env(safe-area-inset-top)) 18px 6px;
+}
+
+.gc-header__back {
+  position: absolute;
+  left: 12px;
+  top: calc(14px + env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
   border: none;
   background: transparent;
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
 }
-.header-gift { color: #f59e0b; filter: drop-shadow(0 1px 2px rgba(245, 158, 11, 0.25)); }
+
+.gc-header__back-icon {
+  display: block;
+  width: 10px;
+  height: 18px;
+  object-fit: contain;
+  opacity: 0.9;
+}
+
+.gc-header__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #fff;
+  text-align: center;
+}
+
+.gc-header__action {
+  position: absolute;
+  right: 12px;
+  top: calc(14px + env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.gc-header__action-icon {
+  display: block;
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+/* Body */
+.body {
+  position: relative;
+  z-index: 1;
+  padding: 12px 14px 0;
+  max-width: var(--ex-max-width, 100%);
+  margin: 0 auto;
+}
+
+.empty-hint {
+  text-align: center;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.55);
+  padding: 20px 12px;
+  line-height: 1.5;
+}
+
+/* Hero card */
+/* Hero banner — 图片占满整行，从 body padding 里 bleed 出去到屏幕两边 */
+.hero-banner {
+  position: relative;
+  margin: 0 -14px 18px;
+}
+
+.hero-banner__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  position: relative;
+  z-index: 0;
+}
+
+.hero-text {
+  position: absolute;
+  top: 50%;
+  left: 26px;
+  transform: translateY(-50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 55%;
+  pointer-events: none;
+}
+
+.hero-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  letter-spacing: 0.04em;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.hero-name {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.15;
+  white-space: pre-line;
+  word-break: break-word;
+  color: #fff;
+  background: linear-gradient(135deg, #fff 0%, #fff 35%, rgb(196, 124, 255) 70%, rgb(160, 65, 237) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+
+/* Claim 卡 — 一个卡片里包邀请码 + 进度，叠在 hero 图底部，紫色荧光描边在卡上 */
+.claim-card {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 14px 14px 18px;
+  margin-top: -30px;
+  margin-bottom: 22px;
+  border-radius: 16px;
+  background: rgba(30, 21, 48, 0.92);
+  border: 1px solid rgba(160, 65, 237, 0.45);
+  /* 卡片整体的紫色淡淡荧光描边 */
+  box-shadow:
+    0 0 0 1px rgba(160, 65, 237, 0.15),
+    0 0 24px rgba(160, 65, 237, 0.28),
+    0 8px 24px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+}
+
+.claim-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 6px 6px 6px 16px;
+  border-radius: 999px;
+  background: rgb(34, 34, 34);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.claim-card :deep(.claim-input) {
+  flex: 1;
+  padding: 0;
+  background: transparent;
+  margin: 0;
+  border: none;
+
+  .van-cell {
+    background: transparent;
+    padding: 0;
+  }
+
+  .van-field__body {
+    background: transparent;
+  }
+
+  .van-field__control {
+    font-size: 14px;
+    color: #fff;
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.45);
+    }
+  }
+}
+
+.claim-card :deep(.claim-btn) {
+  flex-shrink: 0;
+  min-width: 80px;
+  height: 36px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(-43deg, rgb(127, 43, 218) 0%, rgb(163, 67, 238) 100%);
+  box-shadow: 0 4px 12px rgba(127, 43, 218, 0.35);
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+
+  &.van-button--disabled {
+    opacity: 0.55;
+  }
+
+  .van-button__text {
+    color: #fff;
+  }
+}
+
+.progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 6px;
+}
+
+.progress-caption {
+  flex-shrink: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.progress-track {
+  flex: 1;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgb(127, 43, 218) 0%, rgb(196, 124, 255) 100%);
+  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 10px rgba(160, 65, 237, 0.55);
+}
+
+/* Section title */
+.section-title {
+  margin: 0 0 12px;
+  padding: 0 2px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* Latest Records feed */
+.feed-card {
+  margin-bottom: 22px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: rgba(30, 21, 48, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.feed-window {
+  height: 132px;
+  overflow: hidden;
+  mask-image: linear-gradient(180deg, transparent 0, #000 14%, #000 86%, transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 14%, #000 86%, transparent 100%);
+}
+
+.feed-marquee {
+  height: 100%;
+  overflow: hidden;
+}
+
+.feed-track {
+  animation: feed-scroll linear infinite;
+  animation-duration: var(--feed-duration, 24s);
+}
+
+.feed-line {
+  margin: 0;
+  padding: 6px 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.75);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.feed-line:last-child {
+  border-bottom: none;
+}
+
+.feed-empty {
+  padding: 28px 0;
+  text-align: center;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+@keyframes feed-scroll {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}
+
+/* Rules sections */
+.rule-block {
+  margin-bottom: 20px;
+}
+
+.rule-title {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 0.01em;
+}
+
+.rule-body {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* My Codes popup — 适配暗紫主题 */
 .gift-my-codes-popup-root {
   width: 86vw;
   max-width: 340px;
   background: transparent;
 }
+
 .my-codes-sheet {
-  background: #fff;
+  background: rgba(30, 21, 48, 0.96);
+  border: 1px solid rgba(160, 65, 237, 0.25);
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 16px 48px rgba(15, 23, 42, 0.18);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55);
 }
+
 .my-codes-head {
   position: relative;
   padding: 18px 44px 14px;
   text-align: center;
-  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
+
 .my-codes-title {
   font-size: 17px;
   font-weight: 600;
-  color: #dc2626;
+  color: #fff;
   letter-spacing: 0.02em;
 }
+
 .my-codes-close {
   position: absolute;
   right: 10px;
@@ -668,45 +1004,51 @@ onMounted(async () => {
   justify-content: center;
   border: none;
   background: transparent;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.7);
   padding: 0;
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
 }
+
 .my-codes-body {
   max-height: min(52vh, 360px);
   overflow-y: auto;
   padding: 12px 14px 16px;
 }
+
 .my-codes-loading {
   display: flex;
   justify-content: center;
   padding: 32px 0;
-  color: var(--gift-accent);
+  color: rgb(160, 65, 237);
 }
+
 .my-codes-empty {
   text-align: center;
   font-size: 14px;
-  color: var(--gift-muted);
+  color: rgba(255, 255, 255, 0.5);
   padding: 28px 8px;
   margin: 0;
 }
+
 .my-codes-list {
   list-style: none;
   margin: 0;
   padding: 0;
 }
+
 .my-codes-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
   padding: 14px 0;
-  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
+
 .my-codes-row:last-child {
   border-bottom: none;
 }
+
 .my-codes-cell {
   flex: 1;
   min-width: 0;
@@ -714,6 +1056,7 @@ onMounted(async () => {
   flex-direction: column;
   gap: 6px;
 }
+
 .my-codes-status {
   align-self: flex-start;
   font-size: 11px;
@@ -723,25 +1066,30 @@ onMounted(async () => {
   border-radius: 999px;
   line-height: 1.35;
 }
+
 .my-codes-status--unused {
-  color: #047857;
-  background: rgba(16, 185, 129, 0.14);
+  color: #5fd5a4;
+  background: rgba(95, 213, 164, 0.15);
 }
+
 .my-codes-status--used {
-  color: #6b7280;
-  background: rgba(107, 114, 128, 0.12);
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.1);
 }
+
 .my-codes-code {
   font-size: 13px;
   font-weight: 500;
-  color: #111827;
+  color: #fff;
   word-break: break-all;
   line-height: 1.4;
 }
+
 .my-codes-row--inactive .my-codes-code {
-  color: #9ca3af;
+  color: rgba(255, 255, 255, 0.4);
   opacity: 0.85;
 }
+
 .my-codes-copy-btn {
   flex-shrink: 0;
   height: 32px;
@@ -749,88 +1097,15 @@ onMounted(async () => {
   font-size: 13px;
   font-weight: 500;
   border-radius: 8px;
-  border-color: #2563eb;
-  color: #2563eb;
+  border: 1px solid rgba(160, 65, 237, 0.55);
+  background: transparent;
+  color: rgb(196, 124, 255);
 }
-.my-codes-copy-btn--inactive {
-  border-color: #d1d5db !important;
-  color: #9ca3af !important;
-  background: #f9fafb !important;
-  opacity: 0.9;
-}
-:deep(.placeholder) { background: var(--gift-page-bg) !important; }
-.body { padding: 14px 16px 0; max-width: var(--ex-max-width, 100%); margin: 0 auto; }
-.empty-hint { text-align: center; font-size: 14px; color: var(--gift-muted); padding: 20px 12px; line-height: 1.5; }
-.batch-pill {
-  display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 10px;
-  padding: 12px 14px; margin-bottom: 12px; background: var(--gift-card); border-radius: 14px;
-  border: 1px solid rgba(37, 99, 235, 0.08); box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
-}
-.batch-pill-label { font-size: 13px; font-weight: 500; color: var(--gift-muted); }
-.batch-pill-name { font-size: 15px; font-weight: 600; color: var(--gift-text); letter-spacing: 0.02em; }
-.card {
-  background: var(--gift-card); border-radius: 16px; padding: 16px; margin-bottom: 14px;
-  border: 1px solid rgba(15, 23, 42, 0.06); box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-}
-.code-card .code-row { display: flex; align-items: stretch; gap: 12px; }
-.code-card :deep(.code-input) {
-  flex: 1;
-  padding: 6px 12px;
-  background: var(--gift-accent-soft);
-  border-radius: 12px;
-  margin: 0;
-  border: 1px solid rgba(37, 99, 235, 0.12);
 
-  .van-field__control {
-    font-size: 14px;
-    color: var(--gift-text);
-  }
+.my-codes-copy-btn--inactive {
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: rgba(255, 255, 255, 0.4) !important;
+  background: transparent !important;
+  opacity: 0.85;
 }
-.code-card .code-btns { display: flex; flex-direction: column; gap: 8px; justify-content: center; flex-shrink: 0; }
-.code-card .code-btns .van-button { min-width: 76px; height: 38px; border-radius: 10px; font-size: 13px; font-weight: 600; }
-.code-card .btn-action {
-  background: linear-gradient(145deg, #3b82f6 0%, #2563eb 100%); border: none;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
-}
-.code-card .btn-action--allocate { color: var(--gift-accent); border-color: rgba(37, 99, 235, 0.45); background: #fff; box-shadow: none; }
-.code-card .progress-wrap { margin-top: 18px; }
-.code-card .progress-label-row { margin-bottom: 10px; }
-.code-card .progress-caption { font-size: 13px; line-height: 1.45; color: var(--gift-muted); }
-.code-card .progress-track { height: 10px; border-radius: 999px; background: #e5e7eb; overflow: hidden; }
-.code-card .progress-fill {
-  height: 100%; border-radius: 999px;
-  background: linear-gradient(90deg, #3b82f6, #60a5fa, #93c5fd);
-  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 0 12px rgba(59, 130, 246, 0.45);
-}
-.feed-card { padding-bottom: 14px; }
-.feed-card .feed-heading { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
-.feed-card .feed-heading-dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: linear-gradient(135deg, #f97316, #ea580c);
-  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
-}
-.feed-card .feed-heading-text { font-size: 15px; font-weight: 600; color: var(--gift-text); }
-.feed-card .feed-window {
-  height: 148px; overflow: hidden; border-radius: 12px;
-  background: linear-gradient(180deg, #fffbeb 0%, #fef3c7 100%);
-  border: 1px solid rgba(234, 88, 12, 0.15); padding: 8px 12px;
-}
-.feed-card .feed-empty { padding: 32px 0; text-align: center; font-size: 13px; color: var(--gift-muted); }
-.feed-card .feed-marquee {
-  height: 100%; overflow: hidden;
-  mask-image: linear-gradient(180deg, transparent, #000 12%, #000 88%, transparent);
-}
-.feed-card .feed-track { animation: feed-scroll linear infinite; animation-duration: var(--feed-duration, 24s); }
-.feed-card .feed-line {
-  font-size: 13px; line-height: 1.55; padding: 8px 0; color: var(--gift-warm);
-  border-bottom: 1px dashed rgba(234, 88, 12, 0.22);
-}
-.feed-card .feed-line:last-child { border-bottom: none; }
-@keyframes feed-scroll { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
-.rules-card { padding: 18px 16px 20px; border: 1px solid rgba(15, 23, 42, 0.05); box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04); }
-.rule-block { margin-bottom: 20px; padding-left: 12px; border-left: 3px solid var(--gift-accent); margin-left: 2px; }
-.rule-block--last { margin-bottom: 0; }
-.rule-block h3 { font-size: 14px; font-weight: 600; color: var(--gift-text); margin: 0 0 10px 0; letter-spacing: 0.02em; }
-.rule-block p { font-size: 13px; line-height: 1.7; color: var(--gift-muted); margin: 0; }
 </style>

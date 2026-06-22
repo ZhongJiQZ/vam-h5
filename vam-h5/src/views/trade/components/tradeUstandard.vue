@@ -663,15 +663,20 @@ const showSidePopup = () => {
   }
 }
 
-/* 操作按钮 — 2×2 grid，长文本省略，11px 紧凑 */
+/* 操作按钮 — 2×2 grid，长文本省略，11px 紧凑
+   minmax(0, 1fr) 强制 track 下限 = 0：避免长文本 (如 "Adjust margin") 把列撑宽
+   让上下两行 4 个按钮严格等宽 */
 .u-trade-wrap :deep(.hisToryList .bottomList) {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 8px;
   margin-top: 10px;
   padding-top: 10px;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   .itemBotton {
+    /* 抵消 EntrustOrderItem scoped 里给非最后一个按钮加的 margin-right: 5px，
+       否则 grid 第 1/2/3 个按钮可见宽度比第 4 个少 5px，看着不齐 */
+    margin: 0 !important;
     height: 30px;
     padding: 0 10px;
     background: rgba(161, 60, 255, 0.12);

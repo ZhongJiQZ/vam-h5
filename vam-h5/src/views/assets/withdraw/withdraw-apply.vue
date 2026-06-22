@@ -1,7 +1,15 @@
 <!-- 提现申请 -->
 <template>
   <div class="page-withdraw-apply">
-    <DarkHeaderBar :title="currentName" right="withdrawOrder" :border_bottom="true" />
+    <header class="wa-header">
+      <button type="button" class="wa-header__back" aria-label="back" @click="_back()">
+        <img :src="iconBack" alt="" class="wa-header__back-icon" />
+      </button>
+      <h1 class="wa-header__title">{{ currentName }}</h1>
+      <button type="button" class="wa-header__action" aria-label="order" @click="goWithdrawOrder">
+        <img :src="iconRechargeOrder" alt="" class="wa-header__action-icon" />
+      </button>
+    </header>
 
     <van-action-sheet v-model:show="showSheet" :closeable="false"
       style="max-width: var(--ex-max-width); left: 50%; translate: -50%">
@@ -35,7 +43,11 @@
             <p class="bank-name">{{ curBank?.bankName }}</p>
             <p class="card-line fw-num">
               {{ hideBank(curBank?.cardNumber || '') }}
-              <van-icon name="arrow" class="bank-chevron" />
+              <span class="bank-chevron" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="9 6 15 12 9 18" />
+                </svg>
+              </span>
             </p>
           </div>
         </div>
@@ -76,7 +88,16 @@
           <div class="field-box field-box--split">
             <input v-model="password" class="field-input" :type="showk ? 'text' : 'password'"
               :placeholder="_t18('withdraw_input')" />
-            <svg-load :name="showk ? 'yanjin-k' : 'yanjin-g'" class="eye-icon" @click.stop="showk = !showk" />
+            <span class="eye-icon" @click.stop="showk = !showk" aria-hidden="true">
+              <svg v-if="showk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+              <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                <line x1="1" y1="1" x2="23" y2="23" />
+              </svg>
+            </span>
           </div>
         </div>
 
@@ -94,7 +115,13 @@
           <div class="tip-line">
             <div class="tip-text">
               {{ route.query.icon == 'card' ? _t18('withdraw_tip_card') : _t18('withdraw_tip_coin') }}
-              <van-icon @click="showTipDialog()" name="question-o" color="var(--ex-primary-color)" />
+              <span class="tip-q" @click="showTipDialog()" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                  <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+              </span>
             </div>
             <!-- <div class="tip-service-row">
               <span class="tip-service" @click="dispatchCustomEvent('event_serviceChange')">{{ _t18('custorm_service') }}</span>
@@ -128,14 +155,15 @@ import {
   saveCacheAddress,
   withdrawSubmit
 } from '@/api/account.js'
-import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import ButtonBar from '@/components/common/ButtonBar/index.vue'
+import iconBack from '@/assets/images/gxpex/trade/icon-back.svg'
+import iconRechargeOrder from '@/assets/images/gxpex/loan/icon-history.svg'
 import { priceFormat } from '@/utils/decimal.js'
 import { showToast, showDialog } from 'vant'
 import { useUserStore } from '@/store/user/index'
 import { useMainStore } from '@/store'
 import { storeToRefs } from 'pinia'
-import { _t18, _getConfig, _numberWithCommas } from '@/utils/public'
+import { _t18, _back, _getConfig, _numberWithCommas } from '@/utils/public'
 import { useToast } from '@/hook/useToast'
 import { filterCoin2 } from '@/utils/public'
 import {
@@ -175,11 +203,14 @@ const selectSheet = (item) => {
 
 const showTipDialog = () => {
   showDialog({
-  title: t('kind_tips'),
-  message: route.query.icon == 'card' ? t('withdraw_tip_content_card') : t('withdraw_tip_content_coin'),
-}).then(() => {
-  // on close
-});
+    title: t('kind_tips'),
+    message: route.query.icon == 'card' ? t('withdraw_tip_content_card') : t('withdraw_tip_content_coin'),
+    className: 'wa-tip-dialog',
+    confirmButtonText: t('btnConfirm', ['bitmake']) || t('utils.confirm'),
+    width: '320px'
+  }).then(() => {
+    // on close
+  })
 }
 
 const balanceCoinLabel = computed(() => {
@@ -495,43 +526,110 @@ onMounted(() => {
     getAddress()
   }
 })
+
+const goWithdrawOrder = () => router.push('/withdraw-order')
 </script>
 
 <style lang="scss" scoped>
 .page-withdraw-apply {
   min-height: 100vh;
-  background: #05101a;
-  padding-bottom: constant(safe-area-inset-bottom);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: #0a0610;
+  color: #f5f3f8;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0));
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'PingFang SC', sans-serif;
+}
+
+/* GXPEX 同款顶栏 */
+.wa-header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: calc(14px + env(safe-area-inset-top)) 18px 6px;
+}
+
+.wa-header__back {
+  position: absolute;
+  left: 12px;
+  top: calc(14px + env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.wa-header__back-icon {
+  display: block;
+  width: 10px;
+  height: 18px;
+  object-fit: contain;
+  opacity: 0.9;
+}
+
+.wa-header__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #fff;
+  text-align: center;
+}
+
+.wa-header__action {
+  position: absolute;
+  right: 12px;
+  top: calc(14px + env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.wa-header__action-icon {
+  display: block;
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  opacity: 0.9;
 }
 
 .page-body {
-  background: #f6f7fb;
-  // border-radius: 20px 20px 0 0;
-  padding: 12px 15px;
-  padding-bottom: calc(24px + constant(safe-area-inset-bottom));
-  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  background: transparent;
+  padding: 16px 14px 0;
   box-sizing: border-box;
-  min-height: calc(100vh - 60px - constant(safe-area-inset-top));
-  min-height: calc(100vh - 60px - env(safe-area-inset-top, 0px));
 }
 
 .card {
-  background: #fff;
+  background: rgba(30, 21, 48, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 16px;
   padding: 18px 16px;
-  margin-bottom: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  margin-bottom: 14px;
+  box-shadow: none;
 }
 
 .card-asset {
   .currency-row {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     padding-bottom: 18px;
-    border-bottom: 1px solid #eeeeee;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     margin-bottom: 20px;
+    text-align: center;
   }
 
   .currency-row--bank {
@@ -542,25 +640,30 @@ onMounted(() => {
   .coin-icon {
     flex-shrink: 0;
     font-size: 40px;
+    width: 40px;
+    height: 40px;
+    display: block;
   }
 
   .currency-main {
     display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 8px;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
     min-width: 0;
   }
 
   .coin-code {
     font-size: 18px;
     font-weight: 700;
-    color: #323233;
+    color: #fff;
+    line-height: 1.2;
   }
 
   .coin-label {
-    font-size: 13px;
-    color: #969799;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.55);
+    line-height: 1.2;
   }
 
   .bank-preview {
@@ -572,13 +675,13 @@ onMounted(() => {
     margin: 0 0 6px;
     font-size: 15px;
     font-weight: 500;
-    color: #323233;
+    color: #fff;
   }
 
   .card-line {
     margin: 0;
     font-size: 15px;
-    color: #323233;
+    color: rgba(255, 255, 255, 0.85);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -586,9 +689,19 @@ onMounted(() => {
   }
 
   .bank-chevron {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    color: rgba(255, 255, 255, 0.4);
     flex-shrink: 0;
-    color: #c8c9cc;
-    font-size: 16px;
+
+    svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
   }
 
   .balance-row {
@@ -603,47 +716,55 @@ onMounted(() => {
     margin: 0;
     font-size: 32px;
     font-weight: 700;
-    color: #323233;
+    color: #fff;
     line-height: 1.15;
     letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #fff 0%, #fff 60%, rgb(196, 124, 255) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
   .balance-unit-pill {
     font-size: 13px;
     font-weight: 500;
-    color: #646566;
-    padding: 4px 10px;
+    color: rgb(196, 124, 255);
+    padding: 4px 12px;
     border-radius: 999px;
-    background: #f0f2f5;
+    background: rgba(160, 65, 237, 0.14);
+    border: 1px solid rgba(160, 65, 237, 0.35);
     line-height: 1.2;
   }
 }
 
 .card-form {
   .field {
-    margin-bottom: 20px;
+    margin-bottom: 18px;
   }
 
   .field-label {
     font-size: 13px;
-    color: #969799;
-    margin-bottom: 10px;
-    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.65);
+    margin: 0 0 8px;
+    padding-left: 4px;
+    line-height: 1.3;
   }
 
   .field-box {
     display: flex;
     align-items: center;
-    border: 1px solid #eeeeee;
-    border-radius: 10px;
-    padding: 0 14px;
+    gap: 10px;
+    border: 1px solid rgba(160, 65, 237, 0.45);
+    border-radius: 25px;
+    padding: 0 16px;
     min-height: 50px;
-    background: #fff;
+    background: rgb(34, 34, 34);
+    box-shadow: 0 0 0 1px rgba(160, 65, 237, 0.12), 0 0 14px rgba(160, 65, 237, 0.18);
     box-sizing: border-box;
   }
 
   .field-box--split {
-    padding-right: 12px;
+    padding-right: 8px;
   }
 
   .field-input {
@@ -653,67 +774,75 @@ onMounted(() => {
     border: none;
     background: transparent;
     font-size: 15px;
-    color: #323233;
+    color: #fff;
     outline: none;
+    padding: 0;
 
     &::placeholder {
-      color: #c8c9cc;
+      color: rgba(255, 255, 255, 0.45);
     }
   }
 
   .link-all {
     flex-shrink: 0;
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--ex-primary-color);
-    padding: 8px 0 8px 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: linear-gradient(-43deg, rgb(127, 43, 218) 0%, rgb(163, 67, 238) 100%);
+    box-shadow: 0 4px 10px rgba(127, 43, 218, 0.32);
+    cursor: pointer;
     -webkit-tap-highlight-color: transparent;
   }
 
   .fiat-hints {
-    margin: -8px 0 12px;
-    padding: 0 2px;
+    margin: -8px 4px 14px;
   }
 
-  .fiat-rate-line {
-    margin: 0 0 8px;
-    font-size: 13px;
-    color: #646566;
-    line-height: 1.5;
-  }
-
+  .fiat-rate-line,
   .fiat-fee-line {
-    margin: 0 0 8px;
+    margin: 0 0 6px;
     font-size: 13px;
-    color: #646566;
+    color: rgba(255, 255, 255, 0.65);
     line-height: 1.5;
   }
 
   .fiat-estimate {
-    margin: 0;
+    margin: 4px 0 0;
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
     gap: 6px;
     font-size: 13px;
-    color: #323233;
     line-height: 1.5;
   }
 
   .fiat-est-label {
-    color: #969799;
+    color: rgba(255, 255, 255, 0.55);
   }
 
   .fiat-est-val {
     font-weight: 600;
-    color: #323233;
+    color: rgb(196, 124, 255);
   }
 
   .eye-icon {
-    flex-shrink: 0;
-    font-size: 22px;
-    padding: 8px 0 8px 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    color: rgb(196, 124, 255);
+    cursor: pointer;
     -webkit-tap-highlight-color: transparent;
+    flex-shrink: 0;
+
+    svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
   }
 }
 
@@ -722,11 +851,11 @@ onMounted(() => {
   padding-top: 4px;
 
   .tips-card {
-    margin-bottom: 10px;
-    padding: 10px 12px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 138, 0, 0.35);
-    background: linear-gradient(180deg, rgba(255, 245, 230, 0.75) 0%, rgba(255, 250, 242, 0.95) 100%);
+    margin-bottom: 12px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(160, 65, 237, 0.28);
+    background: rgba(160, 65, 237, 0.06);
   }
 
   .tips-row {
@@ -734,8 +863,8 @@ onMounted(() => {
     align-items: center;
     justify-content: space-between;
     gap: 10px;
-    padding: 6px 0;
-    border-bottom: 1px dashed rgba(255, 138, 0, 0.25);
+    padding: 8px 0;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
   }
 
   .tips-row:last-child {
@@ -744,100 +873,234 @@ onMounted(() => {
 
   .tips-label {
     font-size: 12px;
-    color: #8d6a3f;
+    color: rgba(255, 255, 255, 0.65);
   }
 
   .tips-value {
     font-size: 12px;
-    color: #323233;
+    color: #fff;
     text-align: right;
     font-weight: 600;
   }
 
   .tips-value--warn {
-    color: #ee0a24;
+    color: #ff435d;
   }
 
   .tip-line {
     font-size: 13px;
-    color: #969799;
+    color: rgba(255, 255, 255, 0.55);
     line-height: 1.55;
     margin-bottom: 10px;
     text-align: center;
-  }
 
-  .tip-service-row {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
-    margin-top: 6px;
+    gap: 6px;
+    flex-wrap: wrap;
   }
 
-  .tip-service {
-    color: var(--ex-primary-color);
-    font-weight: 500;
-    text-decoration: underline;
-    text-underline-offset: 2px;
+  .tip-q {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    color: rgb(196, 124, 255);
+    cursor: pointer;
+
+    svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
   }
 }
 
 .btn-wrap {
-  margin-top: 8px;
-  padding: 0 2px;
+  margin: 22px 2px 0;
+  cursor: pointer;
 }
 
-.page-withdraw-apply :deep(.btn-wrap > div) {
+.page-withdraw-apply :deep(.btn-wrap .btn1),
+.page-withdraw-apply :deep(.btn-wrap .btn2) {
+  background: linear-gradient(-43deg, rgb(127, 43, 218) 0%, rgb(163, 67, 238) 100%) !important;
+  border: none !important;
   border-radius: 999px !important;
-  background: #05101a !important;
-  border-color: #05101a !important;
-  color: #fff !important;
+  height: 48px !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 15px !important;
   font-weight: 500 !important;
-  padding: 14px 0 !important;
+  color: #fff !important;
+  box-shadow: 0 4px 12px rgba(127, 43, 218, 0.35) !important;
 }
 
+/* 银行卡选择 action-sheet (teleport 到 body，scoped 触不到内部，需要全局 deep 覆盖) */
 .sheet-box {
-  padding: 0 15px 30px;
-  max-height: 300px;
+  padding: 0 15px 24px;
+  max-height: 360px;
   overflow: auto;
+  background: #1a1325;
+  color: #f5f3f8;
 }
 
 .sheet-title {
   font-size: 17px;
-  padding: 24px 0 16px;
+  padding: 20px 0 14px;
   text-align: center;
-  color: #323233;
+  color: #fff;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  margin: 0 -15px 14px;
 }
 
 .sheet-row {
   display: flex;
   align-items: center;
-  padding: 14px 12px;
-  border-radius: 10px;
-  background: #f6f7fb;
+  padding: 14px 14px;
+  border-radius: 12px;
+  background: rgba(30, 21, 48, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   margin-bottom: 10px;
+  cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+
+  &:active {
+    background: rgba(160, 65, 237, 0.12);
+  }
 
   .sheet-coin {
     font-size: 24px;
+    width: 24px;
+    height: 24px;
     margin-right: 12px;
     flex-shrink: 0;
+    display: block;
   }
 
   .sheet-bank-name {
     margin: 0 0 6px;
     font-size: 14px;
-    color: #323233;
+    color: #fff;
+    font-weight: 500;
   }
 
   .sheet-coin-tag {
-    color: #969799;
+    color: rgba(255, 255, 255, 0.55);
+    font-weight: 400;
   }
 
   .sheet-card-num {
     margin: 0;
-    font-size: 16px;
-    color: #323233;
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.85);
+    letter-spacing: 0.5px;
   }
+}
+</style>
+
+<!-- van-action-sheet teleport 到 body，scoped 触不到外壳，全局覆盖暗色 -->
+<style lang="scss">
+.page-withdraw-apply ~ .van-action-sheet,
+.page-withdraw-apply + .van-action-sheet,
+body > .van-overlay + .van-action-sheet,
+.van-action-sheet:has(.sheet-box) {
+  background: #1a1325 !important;
+}
+
+/* 提现提示 dialog (showDialog 走 vant 默认 teleport 到 body，必须全局 + className 限定) */
+.wa-tip-dialog.van-dialog {
+  background: transparent !important;
+  border-radius: 18px !important;
+  overflow: hidden !important;
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(160, 65, 237, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
+}
+
+.wa-tip-dialog .van-dialog__header {
+  padding: 22px 20px 8px;
+  background:
+    radial-gradient(120% 110% at 100% 0%, rgba(160, 65, 237, 0.28) 0%, rgba(160, 65, 237, 0) 60%),
+    linear-gradient(155deg, rgba(60, 26, 110, 0.65) 0%, rgba(30, 21, 48, 0.95) 60%);
+  color: #fff !important;
+  font-size: 17px !important;
+  font-weight: 600 !important;
+  text-align: center;
+  letter-spacing: 0.01em;
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+}
+
+.wa-tip-dialog .van-dialog__content {
+  padding: 8px 22px 22px;
+  background:
+    linear-gradient(155deg, rgba(60, 26, 110, 0.55) 0%, rgba(30, 21, 48, 0.92) 60%);
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+}
+
+.wa-tip-dialog .van-dialog__message {
+  color: rgba(255, 255, 255, 0.82) !important;
+  font-size: 13px !important;
+  line-height: 1.65 !important;
+  text-align: left !important;
+  padding: 0 !important;
+  word-break: break-word;
+}
+
+.wa-tip-dialog .van-dialog__footer {
+  background: rgba(30, 21, 48, 0.92);
+  border-top: none !important;
+  padding: 12px 16px;
+  display: flex;
+  gap: 10px;
+}
+
+/* van 用 ::before / ::after 加 hairline 顶部细线，全部干掉 */
+.wa-tip-dialog .van-dialog__footer::before,
+.wa-tip-dialog .van-dialog__footer::after,
+.wa-tip-dialog .van-hairline--top::after,
+.wa-tip-dialog .van-hairline--top-bottom::after {
+  display: none !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+.wa-tip-dialog .van-dialog__confirm,
+.wa-tip-dialog .van-dialog__cancel {
+  flex: 1;
+  height: 44px !important;
+  border-radius: 999px !important;
+  border: none !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: #fff !important;
+  background: linear-gradient(-43deg, rgb(127, 43, 218) 0%, rgb(163, 67, 238) 100%) !important;
+  box-shadow: 0 4px 12px rgba(127, 43, 218, 0.32) !important;
+}
+
+.wa-tip-dialog .van-dialog__cancel {
+  background: transparent !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+  box-shadow: none !important;
+}
+
+/* van 默认中间分隔竖线去掉 */
+.wa-tip-dialog .van-hairline--left::after {
+  display: none !important;
+}
+
+/* overlay 暗一点跟其他 vant 一致 */
+.wa-tip-dialog ~ .van-overlay,
+.van-overlay:has(+ .wa-tip-dialog),
+body > .van-overlay {
+  background: rgba(0, 0, 0, 0.6) !important;
 }
 </style>

@@ -91,19 +91,6 @@ onMounted(() => {
           <img :src="iconBack" alt="" class="staking-header__back-icon" />
         </button>
         <h1 class="staking-header__title">{{ _t18('defi_host_lockup') }}</h1>
-        <div class="staking-header__actions">
-          <button type="button" class="staking-header__action" aria-label="rules" @click="showPopup">
-            <img :src="iconService" alt="" />
-          </button>
-          <button
-            type="button"
-            class="staking-header__action staking-header__action--history"
-            aria-label="history"
-            @click="router.push('/pledge/pledgeOrder')"
-          >
-            <img :src="iconHistory" alt="" />
-          </button>
-        </div>
       </header>
 
       <div class="staking-summary">
@@ -204,20 +191,22 @@ onMounted(() => {
 .staking-header {
   position: relative;
   z-index: 2;
-  display: grid;
-  grid-template-columns: 40px 1fr auto;
-  align-items: center;
-  min-height: 26px;
-  padding: 0 12px;
-}
-
-.staking-header__back {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  margin-left: -9px;
+  min-height: 44px;
+  padding: calc(14px + env(safe-area-inset-top)) 18px 6px;
+}
+
+.staking-header__back {
+  position: absolute;
+  left: 12px;
+  top: calc(14px + env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
   padding: 0;
   border: none;
   background: transparent;
@@ -226,36 +215,37 @@ onMounted(() => {
 
 .staking-header__back-icon {
   display: block;
-  width: 12px;
-  height: 22px;
+  width: 10px;
+  height: 18px;
   object-fit: contain;
   opacity: 0.9;
 }
 
 .staking-header__title {
-  grid-column: 2;
   margin: 0;
-  text-align: center;
   font-family: 'PingFang SC', sans-serif;
   font-size: 17px;
   font-weight: 600;
   line-height: 1.2;
   color: #fff;
+  text-align: center;
 }
 
 .staking-header__actions {
-  grid-column: 3;
+  position: absolute;
+  right: 8px;
+  top: calc(14px + env(safe-area-inset-top));
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
 }
 
 .staking-header__action {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   padding: 0;
   border: none;
   background: transparent;

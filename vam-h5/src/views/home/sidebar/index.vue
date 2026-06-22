@@ -26,35 +26,8 @@
     </div>
 
     <div v-if="isSign && !userInfo.addressFlag" class="profile-sidebar-panel__logout">
-      <button type="button" class="profile-sidebar-panel__item" @click="exit">
-        <span class="profile-sidebar-panel__icon">
-          <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path
-              d="M12 4H6C4.9 4 4 4.9 4 6V26C4 27.1 4.9 28 6 28H12"
-              stroke="rgba(255,255,255,0.65)"
-              stroke-width="2"
-              stroke-linecap="round"
-              fill="none"
-            />
-            <path
-              d="M20 22L28 16L20 10"
-              stroke="rgba(255,255,255,0.65)"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              fill="none"
-            />
-            <path
-              d="M28 16H12"
-              stroke="rgba(255,255,255,0.65)"
-              stroke-width="2"
-              stroke-linecap="round"
-              fill="none"
-            />
-          </svg>
-        </span>
-        <span class="profile-sidebar-panel__label">{{ _t18('layout', ['aams']) }}</span>
-        <SidebarChevron />
+      <button type="button" class="profile-sidebar-panel__logout-btn" @click="exit">
+        {{ _t18('layout', ['aams']) }}
       </button>
     </div>
 

@@ -1,99 +1,83 @@
 <template>
   <div class="flow-deposit">
-  <Tab
-    :tabList="tabList"
-    :active="curIndex"
-    title-inactive-color="#7a8c99"
-    title-active-color="#1a1a1a"
-    indicator-color="#008710"
-    :line-width="20"
-    :line-height="3"
-    bold-active-tab
-    @change="changeIndex"
-  >
-    <template #tabContent>
+    <van-tabs
+      shrink
+      v-model:active="curIndex"
+      class="flow-deposit__status-tabs"
+      :line-width="0"
+      @click-tab="onClickStatusTab"
+    >
+      <van-tab v-for="(t, i) in tabList" :key="i" :title="t" :name="i" />
+    </van-tabs>
+
+    <div class="list-wrap">
       <van-pull-refresh
         v-model="refreshing"
-        @refresh="onRefresh"
+        :pulling-text="_t18('loading')"
+        :loosing-text="_t18('release_refresh') || _t18('loading')"
         :loading-text="_t18('loading')"
-        :loosing-text="_t18('release_refresh')"
+        :success-text="''"
+        @refresh="onRefresh"
       >
-        <van-loading v-if="showLoading" />
-
-        <div v-else>
-          <van-list
-            v-if="tabContentList.length > 0"
-            v-model:loading="loading"
-            :finished="finished"
-            :finished-text="_t18('no_more_data')"
-            :loading-text="_t18('loading')"
-            @load="onLoad"
-          >
-            <van-cell v-for="(item, index) in tabContentList" :key="item.id || index">
-              <!-- ✅ 你可以换成你自己的投资记录卡片组件 -->
-              <div class="card">
-                <div class="row">
-                  <div class="k">{{ _t18('assets.chainType') }}</div>
-                  <div class="v">{{ item.type || '-' }}</div>
-                </div> 
-
-                <div class="row">
-                  <div class="k">{{ _t18('assets.amount') }}</div>
-                  <div class="v">{{ formatRecordAmount(item) }}</div>
-                </div>
-
-                <div class="row">
-                  <div class="k">{{ _t18('assets.createTime') }}</div>
-                  <div class="v ff-num">{{ formatCreateTime(item) }}</div>
-                </div>
-
-                <div class="row">
-                  <div class="k">{{ _t18('assets.status') }}</div>
-                  <div class="v" v-if="item.status == 0">{{ _t18('recharge_waiting') }}</div>
-                  <div class="v" v-if="item.status == 1">{{ _t18('recharge_tab_success') }}</div>
-                  <div class="v" v-if="item.status == 2">{{ _t18('recharge_tab_error') }}</div>
-                </div> 
-                <!-- <div class="row">
-                  <div class="k">{{ _t18('assets.createTime') }}</div>
-                  <div class="v">{{ item.createTime || '-' }}</div>
-                </div> --> 
+        <van-list
+          v-model:loading="loading"
+          :finished="finished"
+          :finished-text="tabContentList.length ? (_t18('no_more_data') || _t18('utils.noMore')) : ''"
+          :loading-text="_t18('loading')"
+          :error-text="_t18('error') || ''"
+          @load="onLoad"
+        >
+          <template v-if="tabContentList.length">
+            <div class="card" v-for="(item, index) in tabContentList" :key="item.id || index">
+              <div class="kv">
+                <div class="k">{{ _t18('assets.chainType') }}</div>
+                <div class="v">{{ item.type || '-' }}</div>
               </div>
-            </van-cell>
-          </van-list>
 
-          <Nodata v-else />
-        </div>
+              <div class="kv">
+                <div class="k">{{ _t18('assets.amount') }}</div>
+                <div class="v v--profit">{{ formatRecordAmount(item) }}</div>
+              </div>
+
+              <div class="kv">
+                <div class="k">{{ _t18('assets.createTime') }}</div>
+                <div class="v ff-num">{{ formatCreateTime(item) }}</div>
+              </div>
+
+              <div class="kv">
+                <div class="k">{{ _t18('assets.status') }}</div>
+                <div class="v">
+                  <span class="status-chip" :class="statusChipClass(item.status)">
+                    {{ formatStatus(item.status) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </template>
+
+          <div v-else-if="!loading && !refreshing" class="fd-empty">
+            <img :src="iconEmpty" alt="" class="fd-empty__icon" />
+            <p class="fd-empty__text">{{ _t18('no_data') || _t18('utils.noData') }}</p>
+          </div>
+        </van-list>
       </van-pull-refresh>
-    </template>
-  </Tab>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-import Tab from '@/components/Tab/index.vue'
 import { _t18, _numberWithCommas } from '@/utils/public'
 import { formatLocalTime } from '@/utils/time'
-
-// ✅ 用你真实的投资记录接口替换这里
-// 例：import { getRecordList } from '@/api/assets'
 import { getRechargeList } from '@/api/account'
-
-// 如果你项目里 HeaderBar / Nodata 已经全局注册，这里可不 import
-import HeaderBar from '@/components/HeaderBar/index.vue'
-import Nodata from '@/components/Nodata/index.vue'
+import iconEmpty from '@/assets/images/gxpex/trade/icon-bjwu.png'
 
 const refreshing = ref(false)
-const showLoading = ref(true)
 const loading = ref(false)
 const finished = ref(false)
 
 const curIndex = ref(0)
 
-/**
- * tabs（照你充值记录：全部/审核/成功/失败）
- * 你如果投资记录状态不同，改这里文案即可
- */
 const tabList = computed(() => {
   return [
     _t18('recharge_tab_all', ['aams']),
@@ -132,10 +116,20 @@ const formatRecordAmount = (item) => {
   return `${fiatPrefix(item?.receiptCoin)} ${fiat}`
 }
 
+const formatStatus = (s) => {
+  if (String(s) === '0') return _t18('recharge_waiting')
+  if (String(s) === '1') return _t18('recharge_tab_success')
+  return _t18('recharge_tab_error')
+}
+
+const statusChipClass = (s) => {
+  if (String(s) === '0') return 'status-chip--progress'
+  if (String(s) === '1') return 'status-chip--done'
+  return 'status-chip--fail'
+}
+
 const buildParams = () => {
   let params = `pageNum=${pageNum.value}&pageSize=${pageSize.value}`
-
-  // curIndex=0 全部不传状态；其他传 status=curIndex-1
   if (curIndex.value != 0) {
     params = `status=${curIndex.value - 1}&pageNum=${pageNum.value}&pageSize=${pageSize.value}`
   }
@@ -144,30 +138,28 @@ const buildParams = () => {
 
 const getList = () => {
   const params = buildParams()
-
-  // ✅ 你换投资接口后，这里保持 res.code/res.rows/res.total 的结构即可
-  getRechargeList(params).then((res) => {
-    if (res.code == '200') {
-      setTimeout(() => {
-        if (showLoading.value) showLoading.value = false
-        if (refreshing.value) refreshing.value = false
-      }, 200)
-
-      loading.value = false
-      tabContentList.value = tabContentList.value.concat(res.rows || [])
-      total.value = res.total || 0
-
-      if (tabContentList.value.length >= total.value) {
+  getRechargeList(params)
+    .then((res) => {
+      if (res.code == '200') {
+        loading.value = false
+        refreshing.value = false
+        tabContentList.value = tabContentList.value.concat(res.rows || [])
+        total.value = res.total || 0
+        if (tabContentList.value.length >= total.value) {
+          finished.value = true
+        }
+        pageNum.value++
+      } else {
         finished.value = true
+        loading.value = false
+        refreshing.value = false
       }
-      pageNum.value++
-    } else {
+    })
+    .catch(() => {
       finished.value = true
       loading.value = false
-      showLoading.value = false
       refreshing.value = false
-    }
-  })
+    })
 }
 
 const onLoad = () => {
@@ -176,8 +168,6 @@ const onLoad = () => {
 }
 
 const onRefresh = () => {
-  refreshing.value = false
-  showLoading.value = true
   finished.value = false
   pageNum.value = 1
   loading.value = true
@@ -185,13 +175,12 @@ const onRefresh = () => {
   getList()
 }
 
-const changeIndex = (v) => {
-  curIndex.value = v
-  showLoading.value = true
+const onClickStatusTab = () => {
   tabContentList.value = []
   finished.value = false
   pageNum.value = 1
   loading.value = true
+  getList()
 }
 
 watch(
@@ -206,65 +195,153 @@ watch(
 <style scoped lang="scss">
 .flow-deposit {
   width: 100%;
-  background: #fff;
 }
 
-.flow-deposit :deep(.van-tabs__wrap) {
-  height: 44px;
-  border-bottom: 1px solid #eef0f3;
-  background: #fff !important;
+/* 状态子 tab — 跟 Mining/Invest 同款紫色短下划线 */
+.flow-deposit__status-tabs {
+  :deep(.van-tabs__wrap) {
+    height: 40px;
+    background: transparent !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  :deep(.van-tabs__nav) {
+    background: transparent !important;
+    padding: 0 4px;
+  }
+
+  :deep(.van-tab) {
+    flex: none;
+    padding: 0;
+    margin-right: 22px;
+    font-size: 13px;
+    background: transparent !important;
+    color: rgba(255, 255, 255, 0.55) !important;
+  }
+
+  :deep(.van-tab__text) {
+    font-weight: 500;
+  }
+
+  :deep(.van-tab--active .van-tab__text) {
+    color: #fff !important;
+    font-weight: 600;
+  }
+
+  :deep(.van-tab--active::after) {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 6px;
+    transform: translateX(-50%);
+    width: 18px;
+    height: 3px;
+    background: #a13cff;
+    border-radius: 2px;
+  }
+
+  :deep(.van-tabs__line) {
+    display: none !important;
+  }
 }
 
-.flow-deposit :deep(.van-tabs__nav) {
-  background: #fff !important;
-  padding-left: 8px;
-  padding-right: 8px;
+.list-wrap {
+  padding: 14px 4px 24px;
+  background: transparent;
 }
 
-.flow-deposit :deep(.van-tabs__line) {
-  display: none !important;
+:deep(.van-pull-refresh) {
+  background: transparent;
 }
 
-.flow-deposit :deep(.tabContent) {
-  border-top: none;
+:deep(.van-list__finished-text),
+:deep(.van-list__loading-text) {
+  color: rgba(255, 255, 255, 0.45);
 }
 
-.van-loading {
-  text-align: center;
-  padding: 30px;
-}
-
-.van-list {
-  min-height: calc(100vh - 60px - 44px);
-  padding: 12px 15px 24px;
-}
-
-:deep(.van-cell) {
-  background: transparent !important;
-  padding: 0 0 12px !important;
-}
-:deep(.van-cell::after) {
-  display: none;
-}
-
+/* 暗紫卡 */
 .card {
-  background: #f7f9fc;
+  background: #1a1626;
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 12px;
-  padding: 14px;
-  border: 1px solid rgba(5, 16, 26, 0.04);
+  padding: 12px 14px 10px;
+  margin-bottom: 12px;
 }
-.row {
+
+.kv {
   display: flex;
   justify-content: space-between;
-  padding: 8px 0;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  min-height: 24px;
 }
+
 .k {
-  color: #7a8c99;
-  font-size: 13px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  flex: 0 0 45%;
 }
+
 .v {
-  color: #1a1a1a;
   font-size: 13px;
+  color: #fff;
+  font-weight: 500;
   text-align: right;
+  flex: 1;
+  word-break: break-all;
+  font-variant-numeric: tabular-nums;
+}
+
+.v--profit {
+  color: #5fd5a4;
+  font-weight: 600;
+}
+
+/* status chip */
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 999px;
+  letter-spacing: 0.2px;
+}
+
+.status-chip--progress {
+  background: rgba(78, 166, 255, 0.16);
+  color: #4ea6ff;
+}
+
+.status-chip--done {
+  background: rgba(95, 213, 164, 0.16);
+  color: #5fd5a4;
+}
+
+.status-chip--fail {
+  background: rgba(255, 89, 104, 0.16);
+  color: #ff5968;
+}
+
+/* 空态 */
+.fd-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 64px 0 24px;
+}
+
+.fd-empty__icon {
+  display: block;
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+}
+
+.fd-empty__text {
+  margin: 10px 0 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.45);
 }
 </style>

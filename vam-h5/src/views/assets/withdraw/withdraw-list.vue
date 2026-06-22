@@ -11,10 +11,16 @@
         @click="toClick(item)"
       >
         <div class="left">
-          <svg-load :name="item.icon" class="coin"></svg-load>
+          <span class="coin-wrap" aria-hidden="true">
+            <svg-load :name="item.icon" class="coin"></svg-load>
+          </span>
           <span class="coin-name">{{ item.title }}</span>
         </div>
-        <van-icon name="arrow" class="chevron" />
+        <span class="chevron" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 6 15 12 9 18" />
+          </svg>
+        </span>
       </div>
     </div>
   </div>
@@ -98,49 +104,88 @@ const toClick = (item) => {
 }
 
 .section-title {
-  font-size: 14px;
-  color: #969799;
-  margin: 0 0 16px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0 0 10px;
+  padding-left: 4px;
   text-align: left;
   line-height: 1.4;
+}
+
+.list {
+  background: rgba(30, 21, 48, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 4px 16px;
 }
 
 .list-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
   padding: 14px 0;
-  min-height: 52px;
+  min-height: 56px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   box-sizing: border-box;
+  cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:active {
+    opacity: 0.7;
+  }
 }
 
 .left {
   display: flex;
   align-items: center;
+  gap: 12px;
   min-width: 0;
   flex: 1;
 }
 
-.coin {
+.coin-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
   flex-shrink: 0;
+}
+
+.coin {
   font-size: 32px;
-  margin-right: 14px;
+  width: 32px;
+  height: 32px;
+  display: block;
 }
 
 .coin-name {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 500;
-  color: #323233;
+  color: rgba(255, 255, 255, 0.92);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  color: rgba(255, 255, 255, 0.4);
   flex-shrink: 0;
-  color: #c8c9cc;
-  font-size: 16px;
-  margin-left: 8px;
+
+  svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
 }
 </style>

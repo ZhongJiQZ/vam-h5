@@ -309,20 +309,22 @@ const validateAddress = (type, addressVal) => {
 .bind-wallet-header {
   position: relative;
   z-index: 2;
-  display: grid;
-  grid-template-columns: 22px 1fr 22px;
-  align-items: center;
-  min-height: 26px;
-  padding: 0 12px;
-}
-
-.bind-wallet-header__back {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  margin-left: -9px;
+  min-height: 44px;
+  padding: calc(14px + env(safe-area-inset-top)) 18px 6px;
+}
+
+.bind-wallet-header__back {
+  position: absolute;
+  left: 12px;
+  top: calc(14px + env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
   padding: 0;
   border: none;
   background: transparent;
@@ -331,27 +333,24 @@ const validateAddress = (type, addressVal) => {
 
 .bind-wallet-header__back-icon {
   display: block;
-  width: 12px;
-  height: 22px;
+  width: 10px;
+  height: 18px;
   object-fit: contain;
   opacity: 0.9;
 }
 
 .bind-wallet-header__title {
-  grid-column: 2;
   margin: 0;
-  text-align: center;
   font-family: 'PingFang SC', sans-serif;
   font-size: 17px;
   font-weight: 600;
   line-height: 1.2;
   color: #fff;
+  text-align: center;
 }
 
 .bind-wallet-header__spacer {
-  grid-column: 3;
-  width: 22px;
-  height: 22px;
+  display: none;
 }
 
 .bind-wallet-main {
@@ -366,32 +365,33 @@ const validateAddress = (type, addressVal) => {
 .bind-wallet-card {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 20px 12px;
-  border-radius: 12px;
+  gap: 10px;
+  padding: 16px 14px;
+  border-radius: 14px;
   background: rgb(34, 28, 49);
 }
 
 .bind-wallet-card__label {
   margin: 0;
   font-family: 'Roboto', sans-serif;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 400;
   line-height: 1.4;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.7);
 
   &--sub {
-    margin-top: 4px;
+    margin-top: 6px;
   }
 }
 
 .bind-wallet-card__row {
   display: flex;
   align-items: center;
-  min-height: 40px;
-  padding: 5px 12px;
+  min-height: 48px;
+  padding: 8px 14px;
   border-radius: 25px;
   background: rgb(34, 34, 34);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .bind-wallet-card__row--chain {
@@ -473,7 +473,7 @@ const validateAddress = (type, addressVal) => {
   border: none;
   background: transparent;
   font-family: 'Roboto', sans-serif;
-  font-size: 18px;
+  font-size: 14px;
   line-height: 1.2;
   color: #fff;
   outline: none;

@@ -71,7 +71,8 @@ html {
   width: 100%;
   height: 100%;
   min-height: 100vh;
-  background: var(--ex-default-background-color);
+  /* 暗紫主题：iOS 橡皮筋 / 浏览器 overscroll 露出的不再是白色 */
+  background: #0a0610;
   color: var(--ex-default-font-color);
   font-family: Arial, sans-serif;
 }
@@ -91,6 +92,7 @@ div {
   margin: auto;
   overflow: hidden;
   max-width: var(--ex-max-width);
+  background: #0a0610;
   // box-shadow: 0px 0px 10px 3px rgba(0, 0, 0, 0.1);
 }
 

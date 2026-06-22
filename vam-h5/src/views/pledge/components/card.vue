@@ -91,10 +91,11 @@ const onBuy = () => {
 .staking-card {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 12px;
-  border-radius: 12px;
+  gap: 14px;
+  padding: 16px 16px 18px;
+  border-radius: 16px;
   background: rgb(34, 28, 49);
+  border: 1px solid rgba(255, 255, 255, 0.04);
   cursor: pointer;
 }
 
@@ -104,18 +105,20 @@ const onBuy = () => {
   justify-content: space-between;
   gap: 8px;
   min-height: 32px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .staking-card__coin {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   min-width: 0;
 }
 
 .staking-card__coin-icon {
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   display: block;
   flex-shrink: 0;
   object-fit: contain;
@@ -124,10 +127,11 @@ const onBuy = () => {
 
 .staking-card__symbol {
   font-family: 'Roboto', sans-serif;
-  font-size: 16px;
-  font-weight: 500;
+  font-size: 17px;
+  font-weight: 600;
   line-height: 1.2;
   color: #fff;
+  letter-spacing: 0.01em;
 }
 
 .staking-card__buy {
@@ -135,15 +139,16 @@ const onBuy = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 47px;
-  height: 24px;
-  padding: 0 10px;
+  min-width: 60px;
+  height: 30px;
+  padding: 0 14px;
   border: none;
   border-radius: 999px;
-  background: rgb(160, 65, 237);
+  background: linear-gradient(-43deg, rgb(127, 43, 218) 0%, rgb(163, 67, 238) 100%);
+  box-shadow: 0 4px 10px rgba(127, 43, 218, 0.32);
   font-family: 'Roboto', sans-serif;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 600;
   line-height: 1.2;
   color: #fff;
   cursor: pointer;
@@ -151,14 +156,14 @@ const onBuy = () => {
 
 .staking-card__body {
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
+  align-items: center;
+  gap: 14px;
 }
 
 .staking-card__art {
   flex-shrink: 0;
-  width: 75px;
-  height: 75px;
+  width: 80px;
+  height: 80px;
   object-fit: contain;
 }
 
@@ -167,7 +172,7 @@ const onBuy = () => {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 10px;
 }
 
 .staking-card__stat {
@@ -180,20 +185,20 @@ const onBuy = () => {
 .staking-card__stat-label {
   font-family: 'Roboto', sans-serif;
   font-size: 12px;
-  line-height: 1;
-  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.55);
 }
 
 .staking-card__stat-value {
   font-family: 'Roboto', sans-serif;
-  font-size: 15px;
-  font-weight: 500;
-  line-height: 1;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
   color: #fff;
   text-align: right;
 }
 
 .staking-card__stat-value--accent {
-  color: rgb(160, 65, 237);
+  color: rgb(196, 124, 255);
 }
 </style>

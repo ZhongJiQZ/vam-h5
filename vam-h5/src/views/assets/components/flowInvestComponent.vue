@@ -5,25 +5,27 @@
       shrink
       v-model:active="statusActive"
       class="flow-invest__status-tabs"
-      title-inactive-color="#7a8c99"
-      title-active-color="#1a1a1a"
-      color="#008710"
-      line-width="20"
-      line-height="3"
+      :line-width="0"
       @click-tab="onClickStatusTab"
     >
       <van-tab :title="_t18('records.total')" name="" />
-      <!-- <van-tab :title="_t18('records.inProgress')" name="0" />
-      <van-tab :title="_t18('records.completed')" name="1" />
-      <van-tab :title="_t18('records.redeemed')" name="2" /> -->
     </van-tabs>
 
     <div class="list-wrap">
-      <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
+      <van-pull-refresh
+        v-model="refreshing"
+        :pulling-text="_t18('loading')"
+        :loosing-text="_t18('release_refresh') || _t18('loading')"
+        :loading-text="_t18('loading')"
+        :success-text="''"
+        @refresh="onRefresh"
+      >
         <van-list
           v-model:loading="loading"
           :finished="finished"
-          :finished-text="_t18('utils.noMore') || '没有更多了'"
+          :finished-text="list.length ? (_t18('utils.noMore') || _t18('no_more_data')) : ''"
+          :loading-text="_t18('loading')"
+          :error-text="_t18('error') || ''"
           @load="onLoad"
         >
           <template v-if="list.length">
@@ -35,7 +37,7 @@
 
               <div class="kv">
                 <div class="k">{{ _t18('assets.dayProfitRate') }}</div>
-                <div class="v">{{ toNumber(row.avgRate) }}%</div>
+                <div class="v v--accent">{{ toNumber(row.avgRate) }}%</div>
               </div>
 
               <div class="kv">
@@ -52,7 +54,7 @@
 
               <div class="kv">
                 <div class="k">{{ _t18('financial_current_income') }}</div>
-                <div class="v">{{ formatAccumulaEarnDisplay(row) }}</div>
+                <div class="v v--profit">{{ formatAccumulaEarnDisplay(row) }}</div>
               </div>
 
               <div class="kv">
@@ -78,27 +80,19 @@
 
               <div class="kv">
                 <div class="k">{{ _t18('records.status') }}</div>
-                <div class="v">{{ formatStatus(row.status) }}</div>
+                <div class="v">
+                  <span class="status-chip" :class="statusChipClass(row.status)">
+                    {{ formatStatus(row.status) }}
+                  </span>
+                </div>
               </div>
-
-              <!-- <div class="actions">
-                <van-button
-                  v-if="String(row.status) === '0'"
-                  size="small"
-                  type="primary"
-                  class="btn"
-                  @click="onRedeem(row)"
-                >
-                  {{ _t18('records.redemption') }}
-                </van-button>
-              </div> -->
             </div>
           </template>
 
-          <van-empty
-            v-else-if="!loading && !refreshing"
-            :description="_t18('utils.noData') || '暂无数据'"
-          />
+          <div v-else-if="!loading && !refreshing" class="fi-empty">
+            <img :src="iconEmpty" alt="" class="fi-empty__icon" />
+            <p class="fi-empty__text">{{ _t18('utils.noData') || _t18('no_data') }}</p>
+          </div>
         </van-list>
       </van-pull-refresh>
     </div>
@@ -115,6 +109,7 @@ import { getRecordList } from '@/api/assets'
 import { redemption } from '@/api/pledge'
 import { useI18n } from 'vue-i18n'
 import { onMounted } from "vue";
+import iconEmpty from '@/assets/images/gxpex/trade/icon-bjwu.png'
 
 onMounted(() => {
   // 进页面直接拉第一页
@@ -166,6 +161,12 @@ const formatStatus = (s) => {
   if (String(s) === '0') return _t18('records.inProgress')
   if (String(s) === '1') return _t18('records.completed')
   return _t18('records.redeemed')
+}
+
+const statusChipClass = (s) => {
+  if (String(s) === '0') return 'status-chip--progress'
+  if (String(s) === '1') return 'status-chip--done'
+  return 'status-chip--redeemed'
 }
 
 const calcReceiptTime = (settlementType, days, createTime) => {
@@ -252,79 +253,157 @@ const onRedeem = async (row) => {
   width: 100%;
 }
 
+/* 状态子 tab — 跟 Mining Records 同款 */
 .flow-invest__status-tabs {
   :deep(.van-tabs__wrap) {
-    height: 44px;
-    border-bottom: 1px solid #eef0f3;
-    background: #fff !important;
+    height: 40px;
+    background: transparent !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   }
 
   :deep(.van-tabs__nav) {
-    background: #fff !important;
-    padding-left: 12px;
-    padding-right: 12px;
+    background: transparent !important;
+    padding: 0 4px;
   }
 
   :deep(.van-tab) {
     flex: none;
-    padding: 0 12px;
-    font-size: 14px;
+    padding: 0;
+    margin-right: 22px;
+    font-size: 13px;
+    background: transparent !important;
+    color: rgba(255, 255, 255, 0.55) !important;
   }
 
   :deep(.van-tab__text) {
-    font-weight: 400;
+    font-weight: 500;
   }
 
   :deep(.van-tab--active .van-tab__text) {
+    color: #fff !important;
     font-weight: 600;
+  }
+
+  :deep(.van-tab--active::after) {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 6px;
+    transform: translateX(-50%);
+    width: 18px;
+    height: 3px;
+    background: #a13cff;
+    border-radius: 2px;
   }
 
   :deep(.van-tabs__line) {
     display: none !important;
   }
-
-  :deep(.van-tab--shrink) {
-    margin-right: 4px;
-  }
 }
 
 .list-wrap {
-  padding: 12px 15px 24px;
-  background: #fff;
+  padding: 14px 4px 24px;
+  background: transparent;
 }
 
+:deep(.van-pull-refresh) {
+  background: transparent;
+}
+
+:deep(.van-list__finished-text),
+:deep(.van-list__loading-text) {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* 暗紫卡 */
 .card {
-  background: #f7f9fc;
+  background: #1a1626;
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 12px;
-  padding: 14px 14px 12px;
+  padding: 12px 14px 10px;
   margin-bottom: 12px;
-  border: 1px solid rgba(5, 16, 26, 0.04);
 }
 
 .kv {
   display: flex;
   justify-content: space-between;
-  padding: 8px 0;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  min-height: 24px;
 }
 
 .k {
-  font-size: 13px;
-  color: #7a8c99;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
   flex: 0 0 45%;
 }
 
 .v {
   font-size: 13px;
-  color: #1a1a1a;
+  color: #fff;
+  font-weight: 500;
   text-align: right;
   flex: 1;
   word-break: break-all;
+  font-variant-numeric: tabular-nums;
 }
 
-.actions {
+.v--accent {
+  color: rgb(196, 124, 255);
+  font-weight: 600;
+}
+
+.v--profit {
+  color: #5fd5a4;
+  font-weight: 600;
+}
+
+/* status chip */
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 999px;
+  letter-spacing: 0.2px;
+}
+
+.status-chip--progress {
+  background: rgba(78, 166, 255, 0.16);
+  color: #4ea6ff;
+}
+
+.status-chip--done {
+  background: rgba(95, 213, 164, 0.16);
+  color: #5fd5a4;
+}
+
+.status-chip--redeemed {
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* 空态 */
+.fi-empty {
   display: flex;
-  justify-content: flex-end;
-  margin-top: 10px;
+  flex-direction: column;
+  align-items: center;
+  padding: 64px 0 24px;
+}
+
+.fi-empty__icon {
+  display: block;
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+}
+
+.fi-empty__text {
+  margin: 10px 0 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.45);
 }
 </style>
 

@@ -1,15 +1,21 @@
 <template>
   <div class="order-center">
-    <div class="order-center__tabs-wrap">
+    <header class="oc-header">
+      <button type="button" class="oc-header__back" aria-label="back" @click="_back()">
+        <img :src="iconBack" alt="" class="oc-header__back-icon" />
+      </button>
+      <h1 class="oc-header__title">{{ _t18('center_order') }}</h1>
+      <div class="oc-header__actions">
+        <AssetsShortcuts />
+      </div>
+    </header>
+
+    <div class="oc-tabs-wrap">
       <van-tabs
         shrink
         v-model:active="tabActive"
-        class="order-center__tabs"
-        title-inactive-color="#92a4b0"
-        title-active-color="#e8f1f6"
-        color="#008710"
-        line-width="20"
-        line-height="3"
+        class="oc-tabs"
+        :line-width="0"
         @click-tab="clickInnerTab"
       >
         <van-tab
@@ -21,45 +27,28 @@
       </van-tabs>
     </div>
 
-    <div class="order-center__sheet-outer">
-      <div class="order-center__sheet">
-        <div class="order-center__sheet-bg" aria-hidden="true" />
-        <div class="order-center__panel">
-          <div class="order-center__head">
-            <p class="order-center__title">{{ _t18('center_order') }}</p>
-            <div class="order-center__shortcuts">
-              <AssetsShortcuts />
-            </div>
-          </div>
-
-          <div v-show="tabActive === 'order_second'">
-            <SecondContractEntrust />
-          </div>
-          <div v-show="tabActive === 'order_spot'">
-            <SpotEntrust />
-          </div>
-          <div v-show="tabActive === 'order_contract'">
-            <UstandardOrderList />
-          </div>
-        </div>
-      </div>
+    <div class="oc-panel">
+      <SecondContractEntrust v-if="tabActive === 'order_second'" />
+      <SpotEntrust v-if="tabActive === 'order_spot'" />
+      <UstandardOrderList v-if="tabActive === 'order_contract'" />
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
-import { _t18 } from '@/utils/public'
+import { _t18, _back } from '@/utils/public'
 import SecondContractEntrust from './components/orderCenter/SecondContractEntrust.vue'
 import SpotEntrust from './components/orderCenter/SpotEntrust.vue'
 import UstandardOrderList from './components/orderCenter/UstandardOrderList.vue'
 import AssetsShortcuts from './components/AssetsShortcuts.vue'
+import iconBack from '@/assets/images/gxpex/trade/icon-back.svg'
 
 const tabList = computed(() => {
   const list = [
     { name: 'order_second', keyStr: 'order_second', sort: 1 },
     { name: 'order_spot', keyStr: 'order_spot', sort: 2 },
-    { name: 'order_contract', keyStr: 'order_contract', sort: 3 },
+    { name: 'order_contract', keyStr: 'order_contract', sort: 3 }
   ]
   list.forEach((item) => {
     item.keyStr = _t18(item.keyStr, ['latcoin'])
@@ -79,138 +68,128 @@ const clickInnerTab = (e) => {
 </script>
 
 <style lang="scss" scoped>
-$oc-top-bg: #05101a;
-$oc-tab-inactive: #92a4b0;
-$oc-tab-active: #e8f1f6;
-$oc-accent: #008710;
-
 .order-center {
+  position: relative;
   min-height: 100vh;
-  background: #ffffff;
+  background: #0a0610;
+  color: #f5f3f8;
   padding-bottom: env(safe-area-inset-bottom, 0);
   overflow-x: hidden;
-  overflow-y: visible;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'PingFang SC', sans-serif;
 }
 
-.order-center__tabs-wrap {
+/* GXPEX 同款顶栏（back 左 / 标题居中 / shortcuts 右） */
+.oc-header {
   position: relative;
   z-index: 2;
-  background: $oc-top-bg;
-  padding-top: 8px;
-  padding-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: calc(14px + env(safe-area-inset-top)) 18px 6px;
 }
 
-.order-center__sheet-outer {
-  background: $oc-top-bg;
-  overflow: visible;
-}
-
-.order-center__sheet {
-  position: relative;
-  z-index: 0;
-  min-height: calc(100vh - 64px);
-  
-  background: #ffffff;
-  overflow: visible;
-}
-
-.order-center__sheet-bg {
+.oc-header__back {
   position: absolute;
-  top: -20px;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 0;
-  border-radius: 24px 24px 0 0;
-  box-shadow: 0 -8px 32px rgba(5, 16, 26, 0.18);
-  pointer-events: none;
-}
-
-.order-center__panel {
-  position: relative;
-  z-index: 1;
+  left: 12px;
+  top: calc(14px + env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
   background: transparent;
+  cursor: pointer;
 }
 
-.order-center__tabs {
+.oc-header__back-icon {
+  display: block;
+  width: 10px;
+  height: 18px;
+  object-fit: contain;
+  opacity: 0.9;
+}
+
+.oc-header__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #fff;
+  text-align: center;
+}
+
+.oc-header__actions {
+  position: absolute;
+  right: 12px;
+  top: calc(14px + env(safe-area-inset-top));
+  height: 32px;
+  display: flex;
+  align-items: center;
+}
+
+/* 顶部一级 tab — pill chip 风格（跟下面子 tab 的紫色短下划线形成视觉层级） */
+.oc-tabs-wrap {
+  padding: 8px 14px 12px;
+}
+
+.oc-tabs {
   :deep(.van-tabs__wrap) {
-    height: 48px;
-    border-bottom: none;
+    height: 38px;
     background: transparent !important;
+    border-bottom: none;
   }
 
   :deep(.van-tabs__nav) {
     background: transparent !important;
-    padding-left: 8px;
-    padding-right: 8px;
+    padding: 0;
+    gap: 8px;
   }
 
   :deep(.van-tab) {
     flex: none;
-    padding: 0 10px;
-    font-size: 15px;
+    height: 32px;
+    padding: 0 14px;
+    margin: 0;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 13px;
+    transition: background 0.18s ease, border-color 0.18s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   :deep(.van-tab__text) {
-    font-weight: 400;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.65);
+    transition: color 0.18s ease;
+  }
+
+  /* 选中态 — 紫渐变实心 pill + 白字 + 紫光投影 */
+  :deep(.van-tab--active) {
+    background: linear-gradient(-43deg, rgb(127, 43, 218) 0%, rgb(163, 67, 238) 100%) !important;
+    border-color: transparent !important;
+    box-shadow: 0 4px 12px rgba(127, 43, 218, 0.32);
   }
 
   :deep(.van-tab--active .van-tab__text) {
+    color: #fff;
     font-weight: 600;
-    color: $oc-tab-active !important;
-  }
-
-  :deep(.van-tab:not(.van-tab--active) .van-tab__text) {
-    color: $oc-tab-inactive !important;
   }
 
   :deep(.van-tabs__line) {
     display: none !important;
   }
-
-  :deep(.van-tab--shrink) {
-    margin-right: 8px;
-  }
 }
 
-.order-center__head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 20px 15px 12px;
-}
-
-.order-center__title {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: #008710;
-}
-
-.order-center__shortcuts {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.order-center__shortcut {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  border: none;
-  background: transparent;
-  flex-shrink: 0;
-  cursor: pointer;
-}
-
-.order-center__shortcut-img {
-  width: 24px;
-  height: 24px;
-  display: block;
-  object-fit: contain;
+/* 内容区 — 透明，子组件自带玻璃卡时直接显示 */
+.oc-panel {
+  position: relative;
+  z-index: 1;
+  padding: 8px 14px 0;
 }
 </style>

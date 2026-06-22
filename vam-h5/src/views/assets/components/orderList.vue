@@ -243,14 +243,18 @@ const toDetail = (data) => {
 }
 
 .order-list-root--card {
-  background: #f6f7fb !important;
-  border-radius: 12px;
+  background: rgba(30, 21, 48, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
   padding: 16px;
   margin-bottom: 0;
   box-sizing: border-box;
+  cursor: pointer;
 
   .title {
     margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 
     .left {
       min-width: 0;
@@ -260,7 +264,7 @@ const toDetail = (data) => {
     .txt {
       font-size: 16px;
       font-weight: 600;
-      color: #323233;
+      color: #fff;
     }
 
     .usdt {
@@ -269,39 +273,48 @@ const toDetail = (data) => {
     }
 
     .chevron {
-      color: #c8c9cc;
+      color: rgba(255, 255, 255, 0.4);
       font-size: 16px;
       flex-shrink: 0;
     }
   }
 
   .message > div {
-    padding: 10px 0;
+    padding: 8px 0;
 
     .left {
-      color: #969799;
-      font-size: 14px;
+      color: rgba(255, 255, 255, 0.55);
+      font-size: 13px;
+    }
+
+    .right {
+      color: #fff;
+    }
+
+    .fontBold {
+      color: #fff !important;
+      font-weight: 600;
     }
 
     .amount-highlight {
-      color: #ee0a24 !important;
+      color: rgb(196, 124, 255) !important;
       font-weight: 600;
     }
 
     .status-wait {
-      color: #1989fa !important;
+      color: #4ea6ff !important;
     }
 
     .status-ok {
-      color: #17ac74 !important;
+      color: #5fd5a4 !important;
     }
 
     .status-fail {
-      color: #ee0a24 !important;
+      color: #ff5968 !important;
     }
 
     .time-val {
-      color: #646566 !important;
+      color: rgba(255, 255, 255, 0.65) !important;
       font-weight: 400;
     }
   }
@@ -313,16 +326,16 @@ const toDetail = (data) => {
   }
 
   .remark-box {
-    border: 1px solid #ffd6dc;
-    background: #fff5f7;
-    border-radius: 10px;
+    border: 1px solid rgba(255, 67, 93, 0.32);
+    background: rgba(255, 67, 93, 0.08);
+    border-radius: 12px;
     padding: 10px 12px;
     box-sizing: border-box;
   }
 
   .remark-box__title {
     margin: 0 0 6px;
-    color: #ee0a24;
+    color: #ff5968;
     font-size: 12px;
     line-height: 1.2;
     font-weight: 600;
@@ -331,7 +344,7 @@ const toDetail = (data) => {
 
   .remark-box__content {
     margin: 0;
-    color: #646566;
+    color: rgba(255, 255, 255, 0.75);
     font-size: 13px;
     line-height: 1.45;
     text-align: left;
@@ -341,8 +354,9 @@ const toDetail = (data) => {
 }
 
 .order-list-root--card.order-list-root--card--elevated {
-  background: #fff !important;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  background: rgba(30, 21, 48, 0.85) !important;
+  border: 1px solid rgba(160, 65, 237, 0.18);
+  box-shadow: 0 8px 22px rgba(127, 43, 218, 0.12);
 
   .usdt {
     font-size: 32px;

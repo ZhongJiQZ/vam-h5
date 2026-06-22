@@ -72,26 +72,30 @@ const props = defineProps({
 }
 
 .userAmount--card {
-  padding: 20px 0 18px;
-  border-bottom: 1px solid #ebedf0;
+  padding: 24px 0 6px;
+  border-bottom: none;
 
   p {
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     font-size: 36px;
-    font-weight: 600;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
   }
 
   p.add {
-    color: #ee0a24;
+    color: #5fd5a4;
+    text-shadow: 0 4px 18px rgba(95, 213, 164, 0.18);
   }
 
   p.reduce {
-    color: #ee0a24;
+    color: #ff5968;
+    text-shadow: 0 4px 18px rgba(255, 89, 104, 0.18);
   }
 
   span {
-    font-size: 14px;
-    color: #969799;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.55);
   }
 }
 </style>

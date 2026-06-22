@@ -4,9 +4,7 @@
       <van-tabs
         shrink
         class="oc-spot-tabs"
-        color="#008710"
-        title-active-color="#000000"
-        title-inactive-color="#999999"
+        :line-width="0"
         @click-tab="clickTab"
       >
         <van-tab
@@ -29,19 +27,17 @@
                 </van-cell>
               </van-list>
             </div>
-  
-            <Nodata v-if="loading === false && (dataNewList?.length || 0) <= 0" />
+
+            <div v-if="loading === false && (dataNewList?.length || 0) <= 0" class="sp-empty">
+              <img :src="iconEmpty" alt="" class="sp-empty__icon" />
+              <p class="sp-empty__text">{{ _t18('no_data') }}</p>
+            </div>
           </div>
         </van-tab>
       </van-tabs>
-  
-      <!-- 右侧：眼睛 + 刷新 -->
+
+      <!-- 右侧：刷新 -->
       <div class="tab_right">
-        <!-- <svg-load
-          :name="showEye ? 'yanjin-k' : 'yanjin-g'"
-          class="entrustRImg"
-          @click="handelEye"
-        /> -->
         <svg-load name="shuaxin" class="entrustRImg" @click="refresh" />
       </div>
     </div>
@@ -56,6 +52,7 @@
   import EntrustOrderItem from '@/views/trade/components/bbTrading/content/EntrustOrderItem.vue'
   import { getOrderListCurrencyApi } from '@/api/trade/index'
   import { useUserStore } from '@/store/user/index'
+  import iconEmpty from '@/assets/images/gxpex/trade/icon-bjwu.png'
   
   const userStore = useUserStore()
   const $route = useRoute()
@@ -97,20 +94,20 @@
   const getOrderList = async (status) => {
     loading.value = true
     finished.value = false
-  
+
     const params = `isAsc=desc&orderByColumn=updateTime&status=${status}&pageSize=${pageSize.value}&pageNum=${pageNum.value}`
     const res = await getOrderListCurrencyApi(params)
-  
+
     if (res.code == '200') {
       loading.value = false
       res.rows && dataList.value.push(...res.rows)
-  
+
       filterEyes(getCurrentCoin())
-  
+
       total.value = res.total || 0
       if (dataList.value.length >= total.value) finished.value = true
       pageNum.value++
-  
+
       if (status == 0) tabList.value[0].num = total.value
       if (status == 1) tabList.value[1].num = total.value
     } else {
@@ -198,18 +195,48 @@
     position: relative;
   }
 
+  /* 子 tab — 跟 SecondContractEntrust 同款紫色短下划线 */
   .oc-spot-tabs {
     :deep(.van-tabs__wrap) {
-      border-bottom: 1px solid #ebebeb;
+      background: transparent !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     }
 
     :deep(.van-tabs__nav) {
-      padding-right: 80px;
-      background: #fff !important;
+      background: transparent !important;
+      padding: 0 4px;
+      padding-right: 60px;
+    }
+
+    :deep(.van-tab) {
+      flex: none;
+      padding: 0;
+      margin-right: 22px;
+      font-size: 13px;
+      font-weight: 500;
+      background: transparent !important;
+      color: rgba(255, 255, 255, 0.55) !important;
+    }
+
+    :deep(.van-tab__text) {
+      font-weight: 500;
     }
 
     :deep(.van-tab--active .van-tab__text) {
+      color: #fff !important;
       font-weight: 600;
+    }
+
+    :deep(.van-tab--active::after) {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: 6px;
+      transform: translateX(-50%);
+      width: 18px;
+      height: 3px;
+      background: #a13cff;
+      border-radius: 2px;
     }
 
     :deep(.van-tabs__line) {
@@ -217,24 +244,33 @@
     }
   }
 
+  /* 右侧刷新图标 */
   .tab_right {
     position: absolute;
-    top: 0;
-    right: 0;
-    background: #fff !important;
-    padding: 15px 5px;
+    top: 4px;
+    right: 4px;
+    background: transparent !important;
+    padding: 8px;
+    z-index: 5;
 
     .entrustRImg {
-      padding: 0 12px;
-      font-size: 12px;
-      margin-top: 10px;
-      color: #666;
+      width: 18px;
+      height: 18px;
+      opacity: 0.75;
+      cursor: pointer;
+      filter: brightness(0) invert(1);
+      transition: opacity 0.18s ease;
+    }
+
+    .entrustRImg:hover {
+      opacity: 1;
     }
   }
 
+  /* 列表容器 */
   .listBox {
-    padding: 10px 12px 0;
-    background: #fff;
+    padding: 12px 4px 0;
+    background: transparent;
     min-height: 200px;
   }
 
@@ -242,6 +278,27 @@
     background: transparent !important;
     padding: 0;
     border-bottom: none;
+  }
+
+  /* 空态 */
+  .sp-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 64px 0 24px;
+  }
+
+  .sp-empty__icon {
+    display: block;
+    width: 140px;
+    height: 140px;
+    object-fit: contain;
+  }
+
+  .sp-empty__text {
+    margin: 10px 0 0;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.45);
   }
   </style>
   

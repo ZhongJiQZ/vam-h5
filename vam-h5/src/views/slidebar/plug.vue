@@ -136,7 +136,10 @@
                 </span>
               </div>
             </article>
-            <Nodata v-if="teamList.length <= 0" />
+            <div v-if="teamList.length <= 0" class="referrals-empty">
+              <img :src="iconEmpty" alt="" class="referrals-empty__icon" />
+              <p class="referrals-empty__text">{{ _t18('no_data') }}</p>
+            </div>
           </template>
 
           <template v-if="!showLoading && showCommissionRecords">
@@ -168,7 +171,10 @@
                 </span>
               </div>
             </article>
-            <Nodata v-if="commissionRecordsList.length <= 0" />
+            <div v-if="commissionRecordsList.length <= 0" class="referrals-empty">
+              <img :src="iconEmpty" alt="" class="referrals-empty__icon" />
+              <p class="referrals-empty__text">{{ _t18('no_data') }}</p>
+            </div>
           </template>
         </div>
       </section>
@@ -199,6 +205,7 @@ import { useCopy } from '@/hook/useCopy'
 import iconBack from '@/assets/images/gxpex/trade/icon-back.svg'
 import iconService from '@/assets/images/gxpex/home/icon-service.svg'
 import iconCopy from '@/assets/images/gxpex/referrals/icon-copy.svg'
+import iconEmpty from '@/assets/images/gxpex/trade/icon-bjwu.png'
 import heroArt from '@/assets/images/gxpex/referrals/hero-art.png'
 import avatar1 from '@/assets/images/gxpex/referrals/avatar-1.jpg'
 import avatar2 from '@/assets/images/gxpex/referrals/avatar-2.jpg'
@@ -429,20 +436,22 @@ onMounted(() => {
 .referrals-header {
   position: relative;
   z-index: 2;
-  display: grid;
-  grid-template-columns: 40px 1fr 40px;
-  align-items: center;
-  min-height: 26px;
-  padding: 0 12px;
-}
-
-.referrals-header__back {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  margin-left: -9px;
+  min-height: 44px;
+  padding: calc(14px + env(safe-area-inset-top)) 18px 6px;
+}
+
+.referrals-header__back {
+  position: absolute;
+  left: 12px;
+  top: calc(14px + env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
   padding: 0;
   border: none;
   background: transparent;
@@ -451,31 +460,31 @@ onMounted(() => {
 
 .referrals-header__back-icon {
   display: block;
-  width: 12px;
-  height: 22px;
+  width: 10px;
+  height: 18px;
   object-fit: contain;
   opacity: 0.9;
 }
 
 .referrals-header__title {
-  grid-column: 2;
   margin: 0;
-  text-align: center;
   font-family: 'PingFang SC', sans-serif;
   font-size: 17px;
   font-weight: 600;
   line-height: 1.2;
   color: #fff;
+  text-align: center;
 }
 
 .referrals-header__action {
-  grid-column: 3;
+  position: absolute;
+  right: 12px;
+  top: calc(14px + env(safe-area-inset-top));
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  margin-right: -9px;
+  width: 32px;
+  height: 32px;
   padding: 0;
   border: none;
   background: transparent;
@@ -498,16 +507,20 @@ onMounted(() => {
   gap: 8px;
   width: 209px;
   max-width: calc(100% - 170px);
-  margin-top: 28px;
+  margin-top: 32px;
   padding: 0 12px 18px 22px;
 }
 
 .referrals-hero__title {
   margin: 0;
-  font-family: 'PingFang SC', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Inter', sans-serif;
   font-size: 22px;
   font-weight: 700;
   line-height: 1.18;
+  background: linear-gradient(135deg, #fff 0%, #fff 40%, rgb(196, 124, 255) 75%, rgb(160, 65, 237) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
   color: #fff;
 }
 
@@ -517,10 +530,11 @@ onMounted(() => {
 
 .referrals-hero__subtitle {
   margin: 0;
-  font-family: 'Roboto', sans-serif;
-  font-size: 12px;
-  line-height: 1.3;
-  color: rgba(255, 255, 255, 0.65);
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .referrals-main {
@@ -560,7 +574,7 @@ onMounted(() => {
 
 .referrals-invite__label {
   flex-shrink: 0;
-  font-family: 'Roboto', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Roboto', 'PingFang SC', sans-serif;
   font-size: 14px;
   line-height: 1.2;
   color: rgba(255, 255, 255, 0.65);
@@ -577,7 +591,7 @@ onMounted(() => {
 
 .referrals-invite__value {
   min-width: 0;
-  font-family: 'Roboto', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Roboto', 'PingFang SC', sans-serif;
   font-size: 14px;
   font-weight: 500;
   line-height: 1.2;
@@ -629,7 +643,7 @@ onMounted(() => {
 }
 
 .referrals-tier__value {
-  font-family: 'Roboto', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Roboto', 'PingFang SC', sans-serif;
   font-size: 16px;
   font-weight: 600;
   line-height: 1;
@@ -637,7 +651,7 @@ onMounted(() => {
 }
 
 .referrals-tier__label {
-  font-family: 'Roboto', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Roboto', 'PingFang SC', sans-serif;
   font-size: 12px;
   line-height: 1.2;
   color: rgba(255, 255, 255, 0.65);
@@ -662,14 +676,14 @@ onMounted(() => {
 }
 
 .referrals-summary__label {
-  font-family: 'Roboto', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Roboto', 'PingFang SC', sans-serif;
   font-size: 14px;
   line-height: 1.2;
   color: rgba(255, 255, 255, 0.65);
 }
 
 .referrals-summary__value {
-  font-family: 'Roboto', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Roboto', 'PingFang SC', sans-serif;
   font-size: 14px;
   font-weight: 500;
   line-height: 1.2;
@@ -686,7 +700,7 @@ onMounted(() => {
 
 .referrals-team__title {
   margin: 0;
-  font-family: 'Roboto', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Roboto', 'PingFang SC', sans-serif;
   font-size: 16px;
   font-weight: 600;
   line-height: 1.2;
@@ -713,7 +727,7 @@ onMounted(() => {
   border: none;
   background: transparent;
   padding: 0 0 6px;
-  font-family: 'Roboto', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Roboto', 'PingFang SC', sans-serif;
   font-size: 14px;
   line-height: 1.2;
   color: rgba(255, 255, 255, 0.5);
@@ -752,6 +766,26 @@ onMounted(() => {
   padding: 30px 0;
 }
 
+.referrals-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 0 56px;
+}
+
+.referrals-empty__icon {
+  display: block;
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+}
+
+.referrals-empty__text {
+  margin: 10px 0 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.45);
+}
+
 .referrals-member {
   display: flex;
   align-items: center;
@@ -786,7 +820,7 @@ onMounted(() => {
 }
 
 .referrals-member__uid {
-  font-family: 'Roboto', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Roboto', 'PingFang SC', sans-serif;
   font-size: 13px;
   font-weight: 500;
   line-height: 1.2;
@@ -816,14 +850,14 @@ onMounted(() => {
 }
 
 .referrals-member__label {
-  font-family: 'Roboto', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Roboto', 'PingFang SC', sans-serif;
   font-size: 11px;
   line-height: 1.2;
   color: rgba(255, 255, 255, 0.45);
 }
 
 .referrals-member__value {
-  font-family: 'Roboto', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Roboto', 'PingFang SC', sans-serif;
   font-size: 11px;
   font-weight: 500;
   line-height: 1.2;

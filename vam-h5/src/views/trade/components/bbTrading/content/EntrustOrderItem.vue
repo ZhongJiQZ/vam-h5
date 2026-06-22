@@ -123,14 +123,17 @@ const cancelOrder = async () => {
   color: var(--ex-font-color9) !important;
 }
 .hisToryList {
-  padding: 14px 15px 4px;
+  padding: 12px 14px 4px;
   margin-bottom: 10px;
-  background: #f5f6fa;
-  border-radius: 10px;
-  box-shadow: 0 1px 3px rgba(5, 16, 26, 0.06);
+  background: #1a1626;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  box-shadow: none;
 
   .header {
-    padding-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    margin-bottom: 8px;
     font-size: 14px;
     display: flex;
     align-items: center;
@@ -139,38 +142,44 @@ const cancelOrder = async () => {
     .headerLeft {
       display: flex;
       align-items: center;
+      gap: 10px;
       min-width: 0;
 
       .name {
         flex-shrink: 0;
-        padding: 4px 10px;
-        font-size: 12px;
+        padding: 3px 10px;
+        font-size: 11px;
         font-weight: 600;
         border-radius: 6px;
-        margin-right: 10px;
+        margin: 0;
         color: #fff !important;
-        background: #008710;
+        background: rgba(49, 196, 141, 0.18);
+        color: #31c48d !important;
+        letter-spacing: 0.2px;
       }
 
       .name2 {
-        background: #e85d75 !important;
+        background: rgba(255, 67, 93, 0.18) !important;
+        color: #ff435d !important;
       }
 
       .pair-name {
         font-size: 14px;
-        color: #333;
-        font-weight: 500;
+        color: #fff;
+        font-weight: 600;
       }
     }
 
     .headerRight {
       flex-shrink: 0;
-      padding: 4px 8px;
-      background: rgba(255, 255, 255, 0.06);
-      border-radius: 4px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      font-size: 12px;
-      color: var(--ex-font-color9);
+      padding: 4px 12px;
+      background: rgba(160, 65, 237, 0.12);
+      border-radius: 999px;
+      border: 1px solid rgba(160, 65, 237, 0.45);
+      font-size: 11px;
+      font-weight: 500;
+      color: #c47cff;
+      cursor: pointer;
     }
   }
 
@@ -179,17 +188,19 @@ const cancelOrder = async () => {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 12px;
-      color: #999;
-      padding-bottom: 12px;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.65) !important;
+      padding: 6px 0;
+      min-height: 24px;
 
       .numItem {
-        color: #333;
+        color: #fff !important;
         font-weight: 500;
+        font-variant-numeric: tabular-nums;
       }
 
       .numItemRed {
-        color: var(--ex-font-color15);
+        color: #ff435d !important;
       }
     }
   }

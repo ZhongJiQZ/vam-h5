@@ -130,7 +130,7 @@ const props = defineProps({
 }
 
 .content--card {
-  padding: 16px 0 0;
+  padding: 8px 0 0;
 
   .content1,
   .content2,
@@ -138,47 +138,55 @@ const props = defineProps({
     margin-bottom: 16px;
 
     .left {
-      color: #969799;
-      font-size: 14px;
+      color: rgba(255, 255, 255, 0.55);
+      font-size: 13px;
     }
 
     .right {
       font-size: 14px;
-      color: #323233;
+      color: #fff;
       text-align: right;
       max-width: 65%;
       word-break: break-word;
     }
 
     .st-wait {
-      color: #1989fa !important;
+      color: #4ea6ff !important;
+      font-weight: 500;
     }
 
     .st-ok {
-      color: #17ac74 !important;
+      color: #5fd5a4 !important;
+      font-weight: 500;
     }
 
     .st-fail {
-      color: #ee0a24 !important;
+      color: #ff5968 !important;
+      font-weight: 500;
     }
   }
 
   .content4,
   .content5 {
     margin-bottom: 16px;
+    padding: 4px 0 0;
 
     .top {
-      color: #969799;
-      font-size: 14px;
+      color: rgba(255, 255, 255, 0.55);
+      font-size: 13px;
       margin-bottom: 8px;
     }
 
     .bottom {
-      font-size: 14px;
-      color: #323233;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.85);
       line-height: 1.5;
       word-break: break-all;
     }
+  }
+
+  .content5 {
+    margin-bottom: 0;
   }
 }
 </style>

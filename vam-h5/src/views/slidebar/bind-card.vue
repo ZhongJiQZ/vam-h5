@@ -1,14 +1,21 @@
 <!-- 绑定银行卡 -->
 <template>
-  <div class="bind-card">
+  <div class="bind-card page-bind-card">
     <!-- 导航条 -->
 
-    <HeaderBar :currentName="_t18('sidebar_bank')" :cuttentRight="cuttentRight" :border_bottom="true" :backTo="'/'">
-    </HeaderBar>
+    <header class="bind-card-header">
+      <button type="button" class="bind-card-header__back" aria-label="back" @click="_back()">
+        <img :src="iconBack" alt="" class="bind-card-header__back-icon" />
+      </button>
+      <h1 class="bind-card-header__title">{{ _t18('sidebar_bank') }}</h1>
+      <button type="button" class="bind-card-header__action" aria-label="service" @click="goService">
+        <img :src="iconService" alt="" class="bind-card-header__action-icon" />
+      </button>
+    </header>
     <!--内容-->
     <van-overlay :show="showLoading" z-index="100" :custom-style="{ background: 'rgba(0, 0, 0, .6)' }">
       <div style="position: fixed; top: 30%; left: 50%; transform: translate(-50%, -50%)">
-        <van-loading vertical color="#17AC74">{{ _t18('loading') }}...</van-loading>
+        <van-loading vertical color="rgb(160, 65, 237)">{{ _t18('loading') }}...</van-loading>
       </div>
     </van-overlay>
     <div class="content">
@@ -20,7 +27,7 @@
           <BankItem :bankList="bankList"></BankItem>
         </div>
         <div v-else class="bindcard">
-          <img src="@/assets/defi/notbind.png" alt="" />
+          <img :src="iconEmpty" alt="" />
           <div class="bind-text">{{ _t18('Unbound_bank_card') }}</div>
         </div>
 
@@ -191,9 +198,14 @@ import { getBindCardList, bindCardSubmit } from '@/api/account.js'
 import ButtonBar from '@/components/common/ButtonBar/index.vue'
 import BankItem from './components/bank-item.vue'
 import { ref, reactive, onMounted, computed } from 'vue'
-import HeaderBar from '@/components/HeaderBar/index.vue'
 import { showToast } from 'vant'
-import { _t18, _toView } from '@/utils/public'
+import { _t18, _toView, _back } from '@/utils/public'
+import { dispatchCustomEvent } from '@/utils'
+import iconBack from '@/assets/images/gxpex/trade/icon-back.svg'
+import iconService from '@/assets/images/gxpex/home/icon-service.svg'
+import iconEmpty from '@/assets/images/gxpex/trade/icon-bjwu.png'
+
+const goService = () => dispatchCustomEvent('event_serviceChange')
 import { dict } from '@/api/common/index.js'
 import { useToast } from '@/hook/useToast'
 import { INDONESIA_BANK_OPTIONS } from '@/constants/indonesiaBanks'
@@ -335,33 +347,106 @@ const submit = () => {
 }
 </script>
 <style lang="scss" scoped>
+/* GXPEX 同款顶栏 */
+.bind-card-header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: calc(14px + env(safe-area-inset-top)) 18px 6px;
+}
+
+.bind-card-header__back {
+  position: absolute;
+  left: 12px;
+  top: calc(14px + env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.bind-card-header__back-icon {
+  display: block;
+  width: 10px;
+  height: 18px;
+  object-fit: contain;
+  opacity: 0.9;
+}
+
+.bind-card-header__title {
+  margin: 0;
+  font-family: 'PingFang SC', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #fff;
+  text-align: center;
+}
+
+.bind-card-header__action {
+  position: absolute;
+  right: 12px;
+  top: calc(14px + env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.bind-card-header__action-icon {
+  display: block;
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  opacity: 0.9;
+}
+
+/* GXPEX 暗紫主题 */
+.page-bind-card {
+  min-height: 100vh;
+  background: #0a0610;
+  color: #f5f3f8;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0));
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'PingFang SC', sans-serif;
+}
+
 .content {
-  padding: 12px 15px 24px;
-  min-height: calc(100vh - 60px - env(safe-area-inset-top, 0px));
-  background: linear-gradient(180deg, #f3f5fa 0%, #eef2f8 100%);
+  padding: 12px 14px 24px;
+  background: transparent;
   box-sizing: border-box;
 
   .section-head {
-    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-    border-radius: 14px;
-    padding: 14px;
-    margin-bottom: 12px;
-    border: 1px solid #edf0f5;
-    box-shadow: 0 6px 18px rgba(36, 58, 88, 0.06);
+    padding: 6px 4px 12px;
+    margin: 0;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
 
     h3 {
       margin: 0;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
-      color: #323233;
+      color: #fff;
+      letter-spacing: 0.01em;
     }
   }
 
   .section-head--form {
     margin-bottom: 0;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    box-shadow: none;
   }
 
   .tip {
@@ -369,123 +454,137 @@ const submit = () => {
   }
 
   .form {
-    padding: 6px 14px 16px;
-    background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
-    border-bottom-left-radius: 14px;
-    border-bottom-right-radius: 14px;
-    border: 1px solid #edf0f5;
-    border-top: 0;
-    box-shadow: 0 6px 18px rgba(36, 58, 88, 0.06);
+    padding: 4px 16px 18px;
+    background: rgba(30, 21, 48, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    box-shadow: none;
 
     .formInput {
       margin-top: 16px;
 
       .label {
-        color: var(--ex-default-font-color);
-        font-size: 14px;
-        margin: 0 0 10px;
+        color: rgba(255, 255, 255, 0.65);
+        font-size: 13px;
+        margin: 0 0 8px;
+        padding-left: 2px;
 
         .scl {
-          color: var(--ex-font-color19);
+          color: rgba(255, 255, 255, 0.4);
           padding-left: 5px;
         }
 
         .info {
           font-size: 12px;
-          color: var(--ex-tip-font-color);
+          color: #ff435d;
           padding-left: 5px;
         }
 
         .required {
-          color: var(--ex-default-font-color);
+          color: rgba(255, 255, 255, 0.85);
           padding-left: 2px;
         }
       }
 
       input {
         width: 100%;
-        height: 46px;
-        background: #fff;
-        border-radius: 10px;
-        border: 1px solid #ebedf0;
-        padding: 0 15px;
+        height: 48px;
+        background: rgb(34, 34, 34);
+        border-radius: 25px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 0 16px;
         font-size: 14px;
+        color: #fff;
         box-sizing: border-box;
         transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
         &::placeholder {
-          color: var(--ex-bindcard-input-font-color);
+          color: rgba(255, 255, 255, 0.45);
           font-size: 14px;
         }
 
         &:focus {
-          border-color: rgba(23, 172, 116, 0.45);
-          box-shadow: 0 0 0 3px rgba(23, 172, 116, 0.08);
+          border-color: rgba(160, 65, 237, 0.55);
+          box-shadow: 0 0 0 3px rgba(160, 65, 237, 0.12);
         }
       }
 
       :deep(.van-cell) {
-        border: 1px solid #ebedf0;
-        border-radius: 10px;
-        background: #fff;
-        min-height: 46px;
-        padding: 11px 12px !important;
-        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 25px;
+        background: rgb(34, 34, 34);
+        min-height: 48px;
+        padding: 12px 16px !important;
+        color: #fff;
+        transition: border-color 0.2s ease;
 
         &:active {
-          border-color: rgba(23, 172, 116, 0.45);
-          box-shadow: 0 0 0 3px rgba(23, 172, 116, 0.08);
+          border-color: rgba(160, 65, 237, 0.55);
         }
 
-        &::placeholder {
-          color: var(--ex-bindcard-input-font-color);
-          font-size: 14px;
+        .van-field__control {
+          color: #fff;
+        }
+
+        .van-field__control::placeholder {
+          color: rgba(255, 255, 255, 0.45);
         }
       }
     }
   }
 
-  // .btn {
-  //   font-size: 14px;
-  //   display: flex;
-  //   justify-content: center;
-  //   align-items: center;
-  //   height: 50px;
-  //  background: var(--ex-div-bgColor1)
-  //   border-radius: 3px;
-  //   color: var(--ex-font-color);
-  //   margin: 50px 0;
-  // }
   .btnBox {
-    margin-top: 18px;
+    margin-top: 22px;
   }
 }
 
+/* 提交 / 添加银行卡大按钮：紫渐变
+   ButtonBar 渲染的是 <div class="btn1"> (btnReverse=true 时)，不是 <button>，
+   且组件 scoped 用 !important 覆盖了 var(--ex-btn-*)，必须用相同的 !important 才能覆盖 */
+.btnBox :deep(.btn1),
+.btnBox :deep(.btn2) {
+  background: linear-gradient(-43deg, rgb(127, 43, 218) 0%, rgb(163, 67, 238) 100%) !important;
+  border: none !important;
+  border-radius: 999px !important;
+  height: 48px !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  color: #fff !important;
+  box-shadow: 0 4px 12px rgba(127, 43, 218, 0.35) !important;
+  letter-spacing: 0.02em;
+}
+
+/* 未绑卡 — 暗紫空态卡 */
 .bindcard {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
-  border-radius: 14px;
-  padding: 28px 16px 22px;
-  border: 1px solid #edf0f5;
-  box-shadow: 0 6px 18px rgba(36, 58, 88, 0.06);
+  background: rgba(30, 21, 48, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 32px 16px 24px;
+  box-shadow: none;
 
   img {
-    width: 120px;
-    height: 110px;
-    margin: 22px 0 18px;
+    width: 140px;
+    height: auto;
+    margin: 10px 0 14px;
+    opacity: 0.9;
   }
 
   .bind-text {
     font-size: 14px;
-    color: var(--ex-passive-font-color);
+    color: rgba(255, 255, 255, 0.55);
     text-align: center;
   }
 
   .btnBox {
     width: 100%;
-    margin-top: 30px;
+    margin-top: 26px;
   }
 
   // .add {
@@ -504,44 +603,47 @@ const submit = () => {
   // }
 }
 
+/* 银行选择 popup — 暗紫主题 */
 .bank-picker {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: #1a1325;
+  color: #f5f3f8;
 }
 
 .bank-picker__header {
-  padding: 14px 16px 12px;
+  padding: 16px 18px 12px;
   font-size: 16px;
   font-weight: 600;
-  color: var(--ex-default-font-color);
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid var(--ex-border-color1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .bank-picker__close {
   font-size: 22px;
   line-height: 1;
-  color: var(--ex-passive-font-color);
+  color: rgba(255, 255, 255, 0.55);
   padding: 0 2px;
+  cursor: pointer;
 }
 
 .bank-picker__search {
-  padding: 0 16px 10px;
+  padding: 10px 16px 10px;
   position: sticky;
   top: 0;
-  background: #fff;
+  background: #1a1325;
   z-index: 2;
 }
 
 .bank-picker__search-inner {
-  border: 1px solid var(--ex-bindcard-input-border-color);
-  background: var(--ex-bindcard-input-background-color);
-  border-radius: 8px;
-  padding: 0 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgb(34, 34, 34);
+  border-radius: 25px;
+  padding: 0 14px;
   height: 40px;
   display: flex;
   align-items: center;
@@ -555,22 +657,28 @@ const submit = () => {
     outline: none;
     box-sizing: border-box;
     font-size: 14px;
+    color: #fff;
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.45);
+    }
   }
 }
 
 .bank-picker__search-icon {
   font-size: 14px;
-  opacity: 0.7;
+  opacity: 0.6;
   flex-shrink: 0;
+  filter: grayscale(1) brightness(2);
 }
 
 .bank-picker__selected {
-  margin: 8px 2px 0;
+  margin: 10px 4px 0;
   font-size: 12px;
-  color: var(--ex-passive-font-color);
+  color: rgba(255, 255, 255, 0.55);
 
   .val {
-    color: var(--ex-default-font-color);
+    color: rgb(196, 124, 255);
     font-weight: 500;
   }
 }
@@ -582,15 +690,16 @@ const submit = () => {
 }
 
 .bank-picker__item {
-  padding: 12px 2px;
-  border-bottom: 1px solid var(--ex-border-color1);
+  padding: 14px 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   font-size: 14px;
-  color: var(--ex-default-font-color);
+  color: rgba(255, 255, 255, 0.85);
   line-height: 1.4;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+  cursor: pointer;
 }
 
 .bank-picker__item .txt {
@@ -598,18 +707,25 @@ const submit = () => {
 }
 
 .bank-picker__item .ok {
-  color: #17ac74;
+  color: rgb(160, 65, 237);
   font-weight: 700;
 }
 
 .bank-picker__item--active {
-  background: rgba(23, 172, 116, 0.06);
+  background: rgba(160, 65, 237, 0.08);
+  border-radius: 8px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.bank-picker__item--active .txt {
+  color: #fff;
 }
 
 .bank-picker__empty {
-  color: var(--ex-passive-font-color);
+  color: rgba(255, 255, 255, 0.45);
   text-align: center;
-  padding: 30px 0;
+  padding: 32px 0;
   font-size: 13px;
 }
 </style>

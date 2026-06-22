@@ -1,6 +1,5 @@
 <script setup>
-import { watch } from 'vue'
-import { reactive } from 'vue'
+import { ref, reactive, watch } from 'vue'
 import ButtonBar from '@/components/common/ButtonBar/index.vue'
 import { setFundPwd } from '@/api/user'
 import { showToast } from 'vant'
@@ -13,14 +12,7 @@ const form = reactive({
 const setVal = () => {
   form.pwd = !form.pwd
 }
-watch(
-  () => form.pwd,
-  (newValue, oldValue) => {
-    console.log(newValue, oldValue)
-  }
-)
 const emit = defineEmits(['setPwd'])
-// form.pwd.value = !form.pwd.value
 const success = ref(false)
 watch(success, (newValue) => {
   emit('setPwd', newValue)
@@ -31,17 +23,14 @@ const formData = ref({
 
 const submit = () => {
   if (formData.value.password == '') {
-    // showToast('请输入资金密码')
     _toast('Fund_password_noempty')
     return
   }
-  
-  setFundPwd(formData.value.password).then(res=>{
-    if(res.code=='200'){
-      // showToast('设置成功')
-    _toast('Fund_password_set_success')
+  setFundPwd(formData.value.password).then((res) => {
+    if (res.code == '200') {
+      _toast('Fund_password_set_success')
       success.value = true
-    }else{
+    } else {
       showToast(res.msg)
     }
   })
@@ -50,48 +39,80 @@ const submit = () => {
 <template>
   <div class="content">
     <div class="input">
-      <input :type="form.pwd ? 'text' : 'password'" v-model="formData.password" />
-      <svg-load :name="form.pwd ? 'openeyes' : 'closeeyse'" class="icon" @click="setVal"></svg-load>
+      <input
+        :type="form.pwd ? 'text' : 'password'"
+        v-model="formData.password"
+        :placeholder="_t18('login_please')"
+      />
+      <span class="icon" @click="setVal" aria-hidden="true">
+        <svg v-if="form.pwd" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+          <circle cx="12" cy="12" r="3" />
+        </svg>
+        <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+          <line x1="1" y1="1" x2="23" y2="23" />
+        </svg>
+      </span>
     </div>
     <div class="btnBox" @click="submit">
-      <ButtonBar :btnValue="_t18('btnConfirm',['bitmake'])" />
+      <ButtonBar :btnValue="_t18('btnConfirm', ['bitmake'])" />
     </div>
   </div>
 </template>
 <style lang="scss" scoped>
 .content {
   padding: 0;
+
   .input {
-    padding: 0 15px;
+    padding: 0 16px;
     width: 100%;
     height: 50px;
-    background: var(--ex-default-background-color);
-    border-radius: 3px;
-    border: 1px solid var(--ex-border-color1);
+    background: rgb(34, 34, 34);
+    border-radius: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    box-sizing: border-box;
+
     input {
       flex: 1;
       min-width: 0;
-      width: 100%;
       height: 100%;
-      display: flex;
-      align-items: center;
       padding: 0 12px 0 0;
       font-size: 14px;
-      color: var(--ex-default-font-color);
+      color: #fff;
       border: none;
       background: transparent;
+      outline: none;
+
+      &::placeholder {
+        color: rgba(255, 255, 255, 0.45);
+      }
     }
   }
+
   .icon {
-    font-size: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    color: rgb(196, 124, 255);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+
+    svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
   }
 
   .btnBox {
-    margin-top: 50px;
+    margin-top: 40px;
   }
 }
 </style>

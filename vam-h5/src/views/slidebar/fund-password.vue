@@ -1,23 +1,23 @@
 <script setup>
-import Success from './components/success.vue'
-import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import ButtonBar from '@/components/common/ButtonBar/index.vue'
 import SetForm from './components/fund-password/SetForm.vue'
 import ChangeForm from './components/fund-password/ChangeForm.vue'
-import lockIcon from '@/assets/images/lock.png'
 import { useUserStore } from '@/store/user/index'
 import { storeToRefs } from 'pinia'
 import { showToast } from 'vant'
-import { _t18 } from '@/utils/public'
+import { ref } from 'vue'
+import { _t18, _back } from '@/utils/public'
+import { dispatchCustomEvent } from '@/utils'
 import { useToast } from '@/hook/useToast'
+import iconBack from '@/assets/images/gxpex/trade/icon-back.svg'
+import iconService from '@/assets/images/gxpex/home/icon-service.svg'
+import iconLock from '@/assets/images/gxpex/security/icon-lock.png'
+
 const { _toast } = useToast()
 const userStore = useUserStore()
 userStore.getUserInfo()
-// 用户信息
 const { userInfo } = storeToRefs(userStore)
-// 用户是否设置过资金密码(userInfo.detail?.userTardPwd)
 
-// const notPwd = ref(true)
 const notPwd = ref(userInfo.value.detail?.userTardPwd)
 const success = ref(true)
 const changePwd = () => {
@@ -31,106 +31,172 @@ const setPwd = (v) => {
   userStore.getUserInfo()
 }
 const toCustorm = () => {
-  // showToast('请联系客服')
   _toast('custorm_service')
 }
+const goService = () => dispatchCustomEvent('event_serviceChange')
 </script>
 <template>
   <div class="page-fund-pwd">
-    <DarkHeaderBar
-      :title="notPwd ? _t18('Change_security_password') : _t18('sidebar_tardPwd', ['bitmake'])"
-      right="service"
-      :border_bottom="true"
-    />
-    <div class="card">
-      <div class="section-head">
-        <span class="section-title">{{
-          notPwd ? _t18('Change_security_password') : _t18('sidebar_tardPwd', ['bitmake'])
-        }}</span>
-        <img :src="lockIcon" alt="" class="lock-icon" />
+    <header class="fp-header">
+      <button type="button" class="fp-header__back" aria-label="back" @click="_back()">
+        <img :src="iconBack" alt="" class="fp-header__back-icon" />
+      </button>
+      <h1 class="fp-header__title">{{
+        notPwd ? _t18('Change_security_password') : _t18('sidebar_tardPwd', ['bitmake'])
+      }}</h1>
+      <button type="button" class="fp-header__action" aria-label="service" @click="goService">
+        <img :src="iconService" alt="" class="fp-header__action-icon" />
+      </button>
+    </header>
+
+    <main class="fp-main">
+      <SetForm v-if="!notPwd && success" @setPwd="setPwd" />
+      <ChangeForm v-if="notPwd && !success" @setPwd="setPwd" />
+
+      <!-- 已设置成功态 — 中间紫色大锁图 -->
+      <div v-if="notPwd && success" class="fp-success">
+        <img :src="iconLock" alt="" class="fp-success__icon" />
+        <p class="fp-success__text">{{ _t18('Fund_password_has_set') }}</p>
+        <div class="btnBox" @click="changePwd">
+          <ButtonBar :btnValue="_t18('Change_security_password')" />
+        </div>
+        <div class="forgot" @click="toCustorm">{{ _t18('forgot_security_code') }}?</div>
       </div>
-      <SetForm v-if="!notPwd && success" @setPwd="setPwd"></SetForm>
-      <ChangeForm v-if="notPwd && !success" @setPwd="setPwd"></ChangeForm>
-      <Success
-        v-if="notPwd && success"
-        :text="_t18('Fund_password_has_set')"
-        :imgUrl="'defi/fund.png'"
-        class="success"
-      >
-        <template #btn>
-          <div class="btnBox" @click="changePwd">
-            <ButtonBar :btnValue="_t18('Change_security_password')" />
-          </div>
-          <div class="forgot" @click="toCustorm">{{ _t18('forgot_security_code') }}?</div>
-        </template>
-      </Success>
-    </div>
+    </main>
   </div>
 </template>
 <style lang="scss" scoped>
 .page-fund-pwd {
   min-height: 100vh;
-  background: #05101a;
-  padding-bottom: constant(safe-area-inset-bottom);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: #0a0610;
+  color: #f5f3f8;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0));
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'PingFang SC', sans-serif;
 }
 
-.card {
-  min-height: calc(100vh - 60px - constant(safe-area-inset-top));
-  min-height: calc(100vh - 60px - env(safe-area-inset-top, 0px));
-  background: #fff;
-  
-  padding: 20px 15px 28px;
-  box-sizing: border-box;
-}
-
-.section-head {
+/* GXPEX 同款顶栏 */
+.fp-header {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 24px;
+  justify-content: center;
+  min-height: 44px;
+  padding: calc(14px + env(safe-area-inset-top)) 18px 6px;
 }
 
-.section-title {
-  font-size: 16px;
-  font-weight: 500;
-  color: #333;
+.fp-header__back {
+  position: absolute;
+  left: 12px;
+  top: calc(14px + env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
 }
 
-.lock-icon {
+.fp-header__back-icon {
+  display: block;
+  width: 10px;
+  height: 18px;
+  object-fit: contain;
+  opacity: 0.9;
+}
+
+.fp-header__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #fff;
+  text-align: center;
+}
+
+.fp-header__action {
+  position: absolute;
+  right: 12px;
+  top: calc(14px + env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.fp-header__action-icon {
+  display: block;
   width: 22px;
   height: 22px;
   object-fit: contain;
-  flex-shrink: 0;
+  opacity: 0.9;
 }
 
-.card :deep(.btnBox > div) {
+/* Body */
+.fp-main {
+  padding: 16px 14px 0;
+}
+
+/* 表单按钮：紫渐变胶囊 (ButtonBar 渲染 .btn1/.btn2) */
+.fp-main :deep(.btnBox .btn1),
+.fp-main :deep(.btnBox .btn2) {
+  background: linear-gradient(-43deg, rgb(127, 43, 218) 0%, rgb(163, 67, 238) 100%) !important;
+  border: none !important;
   border-radius: 999px !important;
-  background: #05101a !important;
-  border-color: #05101a !important;
+  height: 48px !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
   color: #fff !important;
+  box-shadow: 0 4px 12px rgba(127, 43, 218, 0.35) !important;
 }
 
-.success {
-  padding: 0;
+/* 已设置成功态 */
+.fp-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
-  :deep(img) {
-    margin: 32px 0 0 0;
+  padding: 24px 0 0;
+
+  &__icon {
+    display: block;
+    width: 140px;
+    height: 140px;
+    object-fit: contain;
+    margin: 24px 0 28px;
+    filter: drop-shadow(0 8px 24px rgba(160, 65, 237, 0.35));
   }
-  :deep(.text) {
+
+  &__text {
+    margin: 0 0 36px;
     font-size: 14px;
-    margin: 24px 0 40px 0;
-    color: var(--ex-font-color18);
+    color: rgba(255, 255, 255, 0.75);
+    text-align: center;
   }
+
   .btnBox {
     width: 100%;
     font-size: 14px;
   }
+
   .forgot {
-    margin-top: 24px;
+    margin-top: 20px;
     text-align: center;
     font-size: 14px;
-    color: #17ac74;
+    color: rgb(196, 124, 255);
+    cursor: pointer;
   }
 }
 </style>
