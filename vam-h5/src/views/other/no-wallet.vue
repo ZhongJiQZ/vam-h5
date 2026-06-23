@@ -4,7 +4,7 @@ import { getOrigin } from '@/utils/browser.js';
 
 const copyData = computed(() => {
   const origin = getOrigin()
-  if (!origin) return 'https://veloxam.com' //默认域名
+  if (!origin) return 'https://GXPEX.com' //默认域名
   return `${origin}/#/i&${code}`
 })
 

@@ -112,12 +112,12 @@ const finish = () => {
 </script>
 
 <style lang="scss" scoped>
-$veloxam-dark: #0c1017;
-$veloxam-green: #17ac74;
+$GXPEX-dark: #0c1017;
+$GXPEX-green: #17ac74;
 
 .forgot-page {
   min-height: 100vh;
-  background: $veloxam-dark;
+  background: $GXPEX-dark;
   display: flex;
   flex-direction: column;
   padding-bottom: env(safe-area-inset-bottom, 0);
@@ -219,7 +219,7 @@ $veloxam-green: #17ac74;
   }
 
   :deep(.formData > div > p) {
-    background: $veloxam-green !important;
+    background: $GXPEX-green !important;
     border-radius: 8px !important;
     padding: 6px 12px !important;
     color: #fff !important;
@@ -230,7 +230,7 @@ $veloxam-green: #17ac74;
 
   :deep(.van-count-down) {
     font-size: 14px;
-    color: $veloxam-green;
+    color: $GXPEX-green;
     padding: 0;
   }
 
@@ -243,7 +243,7 @@ $veloxam-green: #17ac74;
   :deep(.btnBox > div) {
     border-radius: 999px !important;
     padding: 15px 0 !important;
-    background: $veloxam-dark !important;
+    background: $GXPEX-dark !important;
     color: #fff !important;
     border: none !important;
     font-size: 16px;
@@ -263,7 +263,7 @@ $veloxam-green: #17ac74;
     color: #6b7280;
 
     span {
-      color: $veloxam-green !important;
+      color: $GXPEX-green !important;
       text-decoration: underline;
     }
   }
