@@ -1,15 +1,28 @@
- 
 <template>
-  <div class="columnFlex">
-    <!-- 编辑自选 -->
-    <HeaderBar :currentName="_t18('quote_edit')" :cuttentRight="cuttentRight" @linkTo="linkTo" />
+  <div class="edit-optional-page">
+    <div class="bg-glow bg-glow--1" aria-hidden="true"></div>
+    <div class="bg-glow bg-glow--2" aria-hidden="true"></div>
+
+    <header class="edit-optional-header">
+      <button type="button" class="edit-optional-header__back" aria-label="back" @click="_back()">
+        <img :src="iconBack" alt="" class="edit-optional-header__back-icon" />
+      </button>
+      <h1 class="edit-optional-header__title">{{ _t18('quote_edit') }}</h1>
+      <button type="button" class="edit-optional-header__action" @click="linkTo">
+        {{ _t18('quote_add') }}
+      </button>
+    </header>
+
     <div class="currencyList">
       <van-checkbox-group v-model="checked" shape="square" @change="change" ref="checkboxGroup">
-        <div class="itemEvery" v-for="(item, index) in currentCoinList" :key="index">
+        <div
+          v-for="(item, index) in currentCoinList"
+          :key="item.coinKey || index"
+          class="itemEvery"
+        >
           <div class="item">
-            <EditLeft :data="item"></EditLeft>
-            <CurrentcyNumVue :data="item"></CurrentcyNumVue>
-            <!-- <van-checkbox :name="`{id:${item.id},coin:${item.coin},icon:${item.logo}}`"> -->
+            <EditLeft :data="item" />
+            <CurrentcyNumVue :data="item" />
             <van-checkbox :name="item.coinKey">
               <template #icon="props">
                 <svg-load class="rightImg" :name="props.checked ? 'gou-x' : 'gou-w'" />
@@ -19,107 +32,80 @@
         </div>
       </van-checkbox-group>
     </div>
+
     <div class="placeholder"></div>
-    <div class="editCon">
-      <div class="left" @click="delList">
-        <svg-load :name="showDel ? 'sanchu16x18-x' : 'sanchu16x18-w'" class="chooseImg"></svg-load>
-        <!-- 删除 -->
-        <div :style="{ color: showDel ? '#17ac74' : '#bcbcbc', marginLeft: '10px' }">{{ _t18('quote_del') }}</div>
-      </div>
-      <div class="right">
-        <svg-load
-          :name="allFlag ? 'gou-x' : 'gou-w'"
-          class="chooseImg"
-          @click="checkAll"
-        ></svg-load>
-        <!-- <svg-load :name="allFlag?'gou-x':'gou-w'" class="chooseImg" @click="toggleAll"></svg-load> -->
-        <!-- 全选 -->
-        <div>{{ _t18('quote_all') }}</div>
-      </div>
-    </div>
+
+    <footer class="editCon">
+      <button type="button" class="editCon__left" :class="{ 'is-active': showDel }" @click="delList">
+        <svg-load :name="showDel ? 'sanchu16x18-x' : 'sanchu16x18-w'" class="chooseImg" />
+        <span>{{ _t18('quote_del') }}</span>
+      </button>
+      <button type="button" class="editCon__right" @click="checkAll">
+        <svg-load :name="allFlag ? 'gou-x' : 'gou-w'" class="chooseImg" />
+        <span>{{ _t18('quote_all') }}</span>
+      </button>
+    </footer>
   </div>
 </template>
 
 <script setup>
 import { computed, ref, onMounted, watch } from 'vue'
 import { showToast } from 'vant'
-import { _t18 } from '@/utils/public'
+import { _t18, _back } from '@/utils/public'
 import { toastApiMsg } from '@/utils/toastApiMsg'
 import { useToast } from '@/hook/useToast'
 import { useTradeStore } from '@/store/trade'
 import { useMainStore } from '@/store/index.js'
 import { getCollect, setCollectAdds, removeCollectRemoves } from '@/api/trade'
-
-import HeaderBar from '@/components/HeaderBar/index.vue'
 import EditLeft from '@/components/CurrencyList/editLeft.vue'
 import CurrentcyNumVue from '../components/optional/currentcyNum.vue'
+import iconBack from '@/assets/images/gxpex/trade/icon-back.svg'
 
 const { _toast } = useToast()
 
-// header 右侧按钮
-const cuttentRight = {
-  name: _t18('quote_add') // 添加
-}
-
-// store
 const mainStroe = useMainStore()
 mainStroe.setTradeStatus(Number(-1))
 const tradeStore = useTradeStore()
 
-// ✅ 所有币种（秒合约 + 现货 + 合约）并带来源 componentName
 const allCoinList = computed(() => {
   const withComponent = (list, componentName) =>
-    (list || []).map(item => {
+    (list || []).map((item) => {
       const coin = item.coin
       const coinKey = `${coin}|${componentName}`
       return {
         ...item,
         componentName,
-        coinKey,
+        coinKey
       }
     })
 
   return [
     ...withComponent(tradeStore.secondContractCoinList, 'SecondContract'),
     ...withComponent(tradeStore.spotCoinList, 'BBTrading'),
-    ...withComponent(tradeStore.contractCoinList, 'Ustandard'),
+    ...withComponent(tradeStore.contractCoinList, 'Ustandard')
   ]
 })
 
-
-// 页面币种（你如果后面要搜索，就在这里覆盖成 filterKeyWord 后的结果）
 const currentCoinList = ref([])
-
-// 复选框
-const checked = ref([])              // ['BTC', 'ETH'...]
+const checked = ref([])
 const checkboxGroup = ref(null)
 const allFlag = ref(false)
-
-// 删除按钮是否可用
 const showDel = ref(false)
-
-// 后端收藏列表（getCollect 返回）
 const collectList = ref([])
-
-// ✅ 提交新增：[{coin, icon}]
 const addList = ref([])
-
-// ✅ 删除用：'1,2,3'
 const ids = ref('')
 
-// -------- 获取收藏并设置默认勾选 --------
 const getCollectList = async () => {
   const res = await getCollect()
   if (res.code === 200 || res.code === '200') {
     collectList.value = Array.isArray(res.data) ? res.data : []
 
-    // 兼容：如果后端没回 coinKey，就前端拼一个
-    collectList.value = collectList.value.map(i => ({
+    collectList.value = collectList.value.map((i) => ({
       ...i,
-      coinKey: i.coinKey || `${i.coin}|${i.component_name || i.componentName || ''}`,
+      coinKey: i.coinKey || `${i.coin}|${i.component_name || i.componentName || ''}`
     }))
 
-    const collectKeySet = new Set(collectList.value.map(i => i.coinKey))
+    const collectKeySet = new Set(collectList.value.map((i) => i.coinKey))
 
     const temp = []
     currentCoinList.value.forEach((item) => {
@@ -129,15 +115,12 @@ const getCollectList = async () => {
   }
 }
 
-
-// -------- checkbox 变化：同步 addList / ids / showDel / allFlag --------
 const change = (e) => {
-  const arr = Array.isArray(e) ? e : Object.values(e) // arr = ['btc|SecondContract', ...]
+  const arr = Array.isArray(e) ? e : Object.values(e)
 
   showDel.value = arr.length > 0
 
-  // 1) addList：coinKey -> coin/icon/componentName
-  const mapKeyToItem = new Map(currentCoinList.value.map(i => [i.coinKey, i]))
+  const mapKeyToItem = new Map(currentCoinList.value.map((i) => [i.coinKey, i]))
   addList.value = arr
     .map((key) => {
       const itm = mapKeyToItem.get(key)
@@ -146,28 +129,23 @@ const change = (e) => {
         coin: itm.coin,
         icon: itm.logo,
         componentName: itm.componentName,
-        coinKey: itm.coinKey,
+        coinKey: itm.coinKey
       }
     })
     .filter(Boolean)
 
-  // 2) ids：coinKey -> collect表 id
-  const mapKeyToCollectId = new Map(collectList.value.map(i => [i.coinKey, i.id]))
-  const idArr = arr.map(key => mapKeyToCollectId.get(key)).filter(Boolean)
+  const mapKeyToCollectId = new Map(collectList.value.map((i) => [i.coinKey, i.id]))
+  const idArr = arr.map((key) => mapKeyToCollectId.get(key)).filter(Boolean)
   ids.value = idArr.join(',')
 
-  // 3) 全选状态
   allFlag.value = currentCoinList.value.length > 0 && arr.length === currentCoinList.value.length
 }
 
-
-// -------- 全选/反选 --------
 const checkAll = () => {
   allFlag.value = !allFlag.value
   checkboxGroup.value?.toggleAll(allFlag.value)
 }
 
-// -------- header 点击：提交新增 --------
 const linkTo = () => {
   setCollectAdds(addList.value).then((res) => {
     if (res.code === 200 || res.code === '200') {
@@ -183,14 +161,11 @@ const linkTo = () => {
 
 const delSubmitting = ref(false)
 
-// -------- 删除 --------
 const delList = () => {
-  // 没勾选 / 没有可删除 id 就不请求
   if (!showDel.value) return
   if (delSubmitting.value) return
   if (!ids.value) {
-    // 说明你勾选的 coin 并不是后端收藏表里已有的记录（或 collectList 还没拉到）
-    showToast(_t18('quote_del') + ' ' + _t18('fail') )
+    showToast(_t18('quote_del') + ' ' + _t18('fail'))
     return
   }
 
@@ -211,13 +186,11 @@ const delList = () => {
     })
 }
 
-// -------- 生命周期 --------
 onMounted(async () => {
   currentCoinList.value = allCoinList.value
   await getCollectList()
 })
 
-// ✅ 如果币种列表异步更新（getCoinList 后），自动刷新 currentCoinList & 默认勾选
 watch(
   allCoinList,
   async (list) => {
@@ -228,102 +201,235 @@ watch(
 )
 </script>
 
-
 <style lang="scss" scoped>
+.edit-optional-page {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #111111;
+  color: #f5f3f8;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'PingFang SC', sans-serif;
+  overflow-x: hidden;
+}
+
+.bg-glow {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, #a642ec 0%, #802bda 60%, transparent 100%);
+  filter: blur(60px);
+  opacity: 0.18;
+  pointer-events: none;
+  z-index: 0;
+
+  &--1 {
+    top: -80px;
+    right: -60px;
+    width: 260px;
+    height: 260px;
+  }
+
+  &--2 {
+    top: 200px;
+    left: -90px;
+    width: 240px;
+    height: 240px;
+  }
+}
+
+.edit-optional-header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: calc(14px + env(safe-area-inset-top)) 18px 6px;
+}
+
+.edit-optional-header__back {
+  position: absolute;
+  left: 12px;
+  top: calc(14px + env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.edit-optional-header__back-icon {
+  display: block;
+  width: 10px;
+  height: 18px;
+  object-fit: contain;
+  opacity: 0.9;
+}
+
+.edit-optional-header__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #fff;
+  text-align: center;
+}
+
+.edit-optional-header__action {
+  position: absolute;
+  right: 14px;
+  top: calc(14px + env(safe-area-inset-top));
+  padding: 4px 0;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgb(196, 124, 255);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
 .currencyList {
+  position: relative;
+  z-index: 1;
   flex: 1;
-  padding: 20px 15px 0;
+  padding: 12px 12px 0;
+  overflow: auto;
+
   .itemEvery {
-    padding-bottom: 30px;
+    margin-bottom: 12px;
+    padding: 14px 16px;
+    background: #221c31;
+    border-radius: 12px;
+
     .item {
       display: flex;
       align-items: center;
-      .van-checkbox {
-        padding: 2px 0;
-      }
-      .rightImg {
-        margin-left: 10px;
-        width: 18px;
-        height: 18px;
-      }
+      gap: 8px;
     }
-  }
-}
-.search {
-  margin: 20px 15px;
-  height: 50px;
-  background: var(--ex-default-background-color);
-  border-radius: 25px;
-  border: 1px solid var(--ex-border-color);
-  display: flex;
-  padding: 0 20px;
-  align-items: center;
-  justify-content: space-between;
-  .searchImg {
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;
-  }
-  .contain {
-    flex: 1;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 14px;
-    color: var(--ex-font-color6);
-    .inputSearch {
-      flex: 1;
+
+    :deep(.van-checkbox) {
+      flex-shrink: 0;
+      padding: 2px 0;
     }
-    input::-webkit-input-placeholder {
-      color: var(--ex-font-color5);
+
+    :deep(.van-checkbox__icon) {
+      height: auto;
+      line-height: 1;
     }
-    input::-moz-input-placeholder {
-      color: var(--ex-font-color5);
-    }
-    input::-ms-input-placeholder {
-      color: var(--ex-font-color5);
-    }
-    .over {
-      margin-left: 5px;
-      color: var(--ex-font-color9);
-    }
-  }
-}
-.placeholder {
-  height: 65px;
-}
-.editCon {
-  position: fixed;
-  width: 100%;
-  background-color: var(--ex-default-background-color);
-  bottom: 0;
-  z-index: 9;
-  border-top: 1px solid var(--ex-border-color);
-  height: 64px;
-  display: flex;
-  padding: 0 15px;
-  align-items: center;
-  font-size: 14px;
-  justify-content: space-between;
-  .left {
-    display: flex;
-    align-items: center;
-    color: var(--ex-font-color9);
-    .delectImg {
-      width: 16px;
-      height: 18px;
-      margin-right: 10px;
-    }
-  }
-  .right {
-    display: flex;
-    align-items: center;
-    color: var(--ex-default-font-color);
-    .chooseImg {
+
+    .rightImg {
       width: 18px;
       height: 18px;
-      margin-right: 12px;
     }
+  }
+}
+
+.currencyList :deep(.editLeft) {
+  flex: 1;
+  min-width: 0;
+
+  .leftImg {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: contain;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .leftNames {
+    font-size: 14px;
+    color: #fff;
+    font-weight: 500;
+  }
+}
+
+.currencyList :deep(.numList) {
+  flex-shrink: 0;
+  min-width: 72px;
+
+  .numTop {
+    font-size: 14px;
+    color: #fff;
+    font-weight: 500;
+  }
+
+  .numBot {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.55);
+
+    &.rise {
+      color: #2ebd85;
+    }
+
+    &.fall {
+      color: #f6465d;
+    }
+  }
+}
+
+.placeholder {
+  height: calc(72px + env(safe-area-inset-bottom, 0));
+  flex-shrink: 0;
+}
+
+.editCon {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9;
+  max-width: var(--ex-max-width);
+  margin: 0 auto;
+  background: #1a1325;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  min-height: 64px;
+  padding: 0 15px calc(10px + env(safe-area-inset-bottom, 0));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.editCon__left,
+.editCon__right {
+  display: flex;
+  align-items: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.editCon__left {
+  color: rgba(255, 255, 255, 0.45);
+
+  &.is-active {
+    color: rgb(196, 124, 255);
+  }
+
+  .chooseImg {
+    width: 16px;
+    height: 18px;
+    margin-right: 10px;
+  }
+}
+
+.editCon__right {
+  color: #fff;
+
+  .chooseImg {
+    width: 18px;
+    height: 18px;
+    margin-right: 12px;
   }
 }
 </style>
