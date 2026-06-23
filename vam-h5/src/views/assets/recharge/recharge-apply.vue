@@ -1,11 +1,15 @@
 <!-- 充值申请 -->
 <template>
   <div class="page-recharge-apply">
-    <DarkHeaderBar
-      :title="currentName"
-      right="rechargeOrder"
-      :border_bottom="true"
-    />
+    <header class="ra-header">
+      <button type="button" class="ra-header__back" aria-label="back" @click="_back()">
+        <img :src="iconBack" alt="" class="ra-header__back-icon" />
+      </button>
+      <h1 class="ra-header__title">{{ currentName }}</h1>
+      <button type="button" class="ra-header__action" aria-label="recharge-order" @click="goRechargeOrder">
+        <img :src="iconHistory" alt="" class="ra-header__action-icon" />
+      </button>
+    </header>
 
     <div class="page-body">
       <div v-if="!isBankRecharge" class="qr-section">
@@ -121,7 +125,8 @@
       round
       closeable
       :close-on-click-overlay="false"
-      class="status-popup"
+      class="recharge-apply-popup"
+      :style="popupShellStyle"
       @close="onPendingClose"
     >
       <div class="status-panel">
@@ -143,7 +148,8 @@
       v-model:show="showSuccessPopup"
       round
       :close-on-click-overlay="false"
-      class="status-popup status-popup--small"
+      class="recharge-apply-popup recharge-apply-popup--small"
+      :style="popupShellStyle"
     >
       <div class="status-panel status-panel--center">
         <div class="success-hero">
@@ -171,7 +177,8 @@
       v-model:show="showTimeoutPopup"
       round
       :close-on-click-overlay="false"
-      class="status-popup status-popup--small"
+      class="recharge-apply-popup recharge-apply-popup--small"
+      :style="popupShellStyle"
     >
       <div class="status-panel status-panel--center">
         <h3 class="status-title">{{ _t18('recharge_timeout_title') }}</h3>
@@ -187,12 +194,13 @@
 
 <script setup>
 import { getRechargeDetail, getRechargeList } from '@/api/account.js'
-import { _t18, _getConfig } from '@/utils/public'
+import { _t18, _getConfig, _back } from '@/utils/public'
 import { priceFormat } from '@/utils/decimal'
 import QRCode from '@/components/common/QRCode/index.vue'
 import Copy from '@/components/common/Copy/index.vue'
-import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import rechargeApplyBg from '@/assets/images/recharge-apply-bg.png'
+import iconBack from '@/assets/images/gxpex/trade/icon-back.svg'
+import iconHistory from '@/assets/images/gxpex/loan/icon-history.svg'
 import { useToast } from '@/hook/useToast'
 import { useCopy } from '@/hook/useCopy'
 import { useRouter, useRoute } from 'vue-router'
@@ -209,6 +217,15 @@ const route = useRoute()
 const router = useRouter()
 
 const currentName = `${_t18('recharge', ['latcoin'])} ${route.query.type}`
+
+const popupShellStyle = {
+  background: 'transparent',
+  overflow: 'visible'
+}
+
+const goRechargeOrder = () => {
+  router.push('/recharge-order')
+}
 
 const tipList = reactive([
   { content: _t18('recharge_tip1') },
@@ -413,18 +430,84 @@ onUnmounted(() => {
 <style lang="scss" scoped>
 .page-recharge-apply {
   min-height: 100vh;
-  background: #05101a;
-  padding-bottom: constant(safe-area-inset-bottom);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: #0a0610;
+  color: #f5f3f8;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0));
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'PingFang SC', sans-serif;
+}
+
+.ra-header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: calc(14px + env(safe-area-inset-top)) 18px 6px;
+}
+
+.ra-header__back {
+  position: absolute;
+  left: 12px;
+  top: calc(14px + env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.ra-header__back-icon {
+  display: block;
+  width: 10px;
+  height: 18px;
+  object-fit: contain;
+  opacity: 0.9;
+}
+
+.ra-header__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60vw;
+}
+
+.ra-header__action {
+  position: absolute;
+  right: 12px;
+  top: calc(14px + env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.ra-header__action-icon {
+  display: block;
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  opacity: 0.9;
 }
 
 .page-body {
-  min-height: calc(100vh - 60px - constant(safe-area-inset-top));
-  min-height: calc(100vh - 60px - env(safe-area-inset-top, 0px));
-  background: #f0f2f5;
-  
-  padding-bottom: 28px;
-  padding-top: 20px;
+  background: transparent;
+  padding: 16px 14px 28px;
   box-sizing: border-box;
 }
 
@@ -433,7 +516,7 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 28px 16px 100px;
+  padding: 20px 16px 88px;
   overflow: hidden;
 }
 
@@ -449,6 +532,7 @@ onUnmounted(() => {
   background-size: contain;
   pointer-events: none;
   z-index: 0;
+  opacity: 0.35;
 }
 
 .qr-frame {
@@ -456,10 +540,11 @@ onUnmounted(() => {
   z-index: 1;
   display: inline-block;
   padding: 8px;
-  border: 2px solid #17ac74;
-  border-radius: 10px;
+  border: 2px solid rgba(160, 65, 237, 0.65);
+  border-radius: 12px;
   background: #fff;
   box-sizing: content-box;
+  box-shadow: 0 8px 24px rgba(127, 43, 218, 0.25);
 }
 
 .page-recharge-apply :deep(.qr-frame .box .erweima) {
@@ -467,13 +552,14 @@ onUnmounted(() => {
 }
 
 .applyMes {
-  margin: -64px 15px 0;
+  margin: -52px 0 0;
   position: relative;
   z-index: 2;
-  background: #fff;
-  border-radius: 12px;
+  background: rgba(30, 21, 48, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
   padding: 20px 16px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 
   &--noqr {
     margin-top: 0;
@@ -489,7 +575,7 @@ onUnmounted(() => {
 
   .top {
     font-size: 13px;
-    color: #969799;
+    color: rgba(255, 255, 255, 0.55);
     margin: 0 0 10px;
     line-height: 1.4;
   }
@@ -497,12 +583,12 @@ onUnmounted(() => {
   .address .bottom {
     word-break: break-all;
     font-size: 15px;
-    color: #323233;
+    color: #fff;
   }
 
   .info-row .bottom {
     font-size: 15px;
-    color: #323233;
+    color: #fff;
     line-height: 1.45;
   }
 
@@ -513,53 +599,61 @@ onUnmounted(() => {
   .fee-line {
     margin: 0 0 8px;
     font-size: 13px;
-    color: #646566;
+    color: rgba(255, 255, 255, 0.65);
     line-height: 1.5;
   }
 }
 
 .btn-wrap {
-  padding: 20px 15px 0;
+  padding: 20px 0 0;
 }
 
 .btn {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
   p {
     margin: 0;
     text-align: center;
     padding: 14px 0;
-    font-size: 16px;
+    font-size: 15px;
     border-radius: 999px;
   }
 
   &--primary p {
     color: #fff;
-    background: #05101a;
     font-weight: 500;
+    background: linear-gradient(-43deg, rgb(127, 43, 218) 0%, rgb(163, 67, 238) 100%);
+    box-shadow: 0 4px 12px rgba(127, 43, 218, 0.35);
   }
 }
 
 .tip-list {
-  padding: 16px 15px 0;
-  font-size: 14px;
-  color: #646566;
-  line-height: 1.5;
+  padding: 16px 4px 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.55;
 
   .tip {
     margin-bottom: 12px;
   }
 }
 
-.status-popup {
+.recharge-apply-popup {
   width: calc(100vw - 56px);
   max-width: 360px;
 }
 
-.status-popup--small {
+.recharge-apply-popup--small {
   max-width: 320px;
 }
 
 .status-panel {
   padding: 18px 16px 20px;
+  background: rgb(34, 28, 49);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  color: #f5f3f8;
 }
 
 .status-panel--center {
@@ -570,7 +664,7 @@ onUnmounted(() => {
   margin: 0 0 14px;
   font-size: 20px;
   font-weight: 600;
-  color: #323233;
+  color: #fff;
 }
 
 .progress-wrap {
@@ -584,7 +678,7 @@ onUnmounted(() => {
   width: 88px;
   height: 88px;
   border-radius: 50%;
-  background: conic-gradient(#17ac74 var(--rate), #ececec 0);
+  background: conic-gradient(rgb(160, 65, 237) var(--rate), rgba(255, 255, 255, 0.12) 0);
   -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #000 calc(100% - 8px));
   mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #000 calc(100% - 8px));
 }
@@ -598,24 +692,24 @@ onUnmounted(() => {
   justify-content: center;
   font-size: 28px;
   font-weight: 700;
-  color: #323233;
+  color: #fff;
 }
 
 .status-sub {
   margin: 0 0 14px;
   text-align: center;
   font-size: 14px;
-  color: #646566;
+  color: rgba(255, 255, 255, 0.65);
 }
 
 .status-tipbox {
   margin-top: 14px;
   padding: 12px;
   border-radius: 10px;
-  border: 1px solid #ebedf0;
-  background: #fafafa;
+  border: 1px solid rgba(160, 65, 237, 0.28);
+  background: rgba(160, 65, 237, 0.08);
   font-size: 13px;
-  color: #646566;
+  color: rgba(255, 255, 255, 0.65);
   line-height: 1.6;
 }
 
@@ -624,14 +718,14 @@ onUnmounted(() => {
   height: 56px;
   margin: 0 auto 12px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #17ac74 0%, #24c484 100%);
+  background: linear-gradient(-43deg, rgb(127, 43, 218) 0%, rgb(163, 67, 238) 100%);
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 30px;
   font-weight: 700;
-  box-shadow: 0 8px 20px rgba(23, 172, 116, 0.28);
+  box-shadow: 0 8px 20px rgba(127, 43, 218, 0.35);
 }
 
 .status-btn {
@@ -641,9 +735,9 @@ onUnmounted(() => {
 .status-success-detail {
   margin: 0 0 8px;
   padding: 10px 12px;
-  border: 1px solid #ebedf0;
+  border: 1px solid rgba(160, 65, 237, 0.28);
   border-radius: 10px;
-  background: #fafafa;
+  background: rgba(160, 65, 237, 0.08);
 }
 
 .success-hero {
@@ -659,8 +753,8 @@ onUnmounted(() => {
 }
 
 .success-card {
-  border-color: #dff3e8;
-  background: linear-gradient(180deg, #f7fcf9 0%, #ffffff 100%);
+  border-color: rgba(160, 65, 237, 0.35);
+  background: rgba(160, 65, 237, 0.1);
 }
 
 .status-success-line {
@@ -668,7 +762,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: #646566;
+  color: rgba(255, 255, 255, 0.65);
   font-size: 13px;
 
   &:last-child {
@@ -677,16 +771,28 @@ onUnmounted(() => {
 
   span:last-child {
     font-weight: 600;
-    color: #323233;
+    color: #fff;
   }
 }
 
 .status-link {
   margin: 0 0 10px;
   text-align: center;
-  color: #17ac74;
+  color: rgb(196, 124, 255);
   font-weight: 600;
   text-decoration: underline;
   text-underline-offset: 2px;
+  cursor: pointer;
+}
+</style>
+
+<style lang="scss">
+.recharge-apply-popup.van-popup {
+  background: transparent !important;
+  overflow: visible;
+}
+
+.recharge-apply-popup .van-popup__close-icon {
+  color: rgba(255, 255, 255, 0.75);
 }
 </style>
