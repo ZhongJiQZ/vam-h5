@@ -40,7 +40,7 @@ const generateHtml = (html, envObj) => {
     .replace(
       '</head>',
       `
-      <meta property="og:image" content="/platform/${platform}/logo_144.png?${version}">
+      <meta property="og:image" content="https://h5.gxpex.bond/gxpenlogo.png?${version}">
       <meta property="og:title" content="${title}">
       <meta property="og:description" content="${description}">
 
