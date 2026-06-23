@@ -22,12 +22,12 @@
         <div class="card-body">
           <!-- 几何装饰背景 -->
           <svg class="geo-bg" viewBox="0 0 320 200" preserveAspectRatio="xMaxYMin slice" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="280" cy="20" r="90" fill="none" stroke="rgba(23,172,116,0.10)" stroke-width="28"/>
-            <circle cx="280" cy="20" r="140" fill="none" stroke="rgba(23,172,116,0.05)" stroke-width="20"/>
-            <circle cx="280" cy="20" r="190" fill="none" stroke="rgba(23,172,116,0.03)" stroke-width="16"/>
-            <line x1="0" y1="180" x2="120" y2="0" stroke="rgba(23,172,116,0.04)" stroke-width="1"/>
-            <line x1="40" y1="200" x2="160" y2="0" stroke="rgba(23,172,116,0.03)" stroke-width="1"/>
-            <line x1="80" y1="200" x2="200" y2="0" stroke="rgba(23,172,116,0.03)" stroke-width="1"/>
+            <circle cx="280" cy="20" r="90" fill="none" stroke="rgba(161,60,255,0.10)" stroke-width="28"/>
+            <circle cx="280" cy="20" r="140" fill="none" stroke="rgba(161,60,255,0.05)" stroke-width="20"/>
+            <circle cx="280" cy="20" r="190" fill="none" stroke="rgba(161,60,255,0.03)" stroke-width="16"/>
+            <line x1="0" y1="180" x2="120" y2="0" stroke="rgba(161,60,255,0.04)" stroke-width="1"/>
+            <line x1="40" y1="200" x2="160" y2="0" stroke="rgba(161,60,255,0.03)" stroke-width="1"/>
+            <line x1="80" y1="200" x2="200" y2="0" stroke="rgba(161,60,255,0.03)" stroke-width="1"/>
           </svg>
 
           <div class="card-top">
@@ -36,7 +36,7 @@
               <p class="big-rate" :class="rateClass">{{ rateStr }}%</p>
               <p class="rate-label">{{ _t18('copy_trade_share_rate_label') }}</p>
               <div class="strategy-tag">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#17ac74" stroke-width="2.5"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#a13cff" stroke-width="2.5"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
                 <span>{{ _t18('copy_trade_share_strategy') }}</span>
               </div>
             </div>
@@ -47,7 +47,7 @@
 
           <div class="card-kvs">
             <div class="card-kv">
-              <span class="kv-dot" style="background:#17ac74">
+              <span class="kv-dot" style="background:#a13cff">
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
               </span>
               <span class="kv-label">{{ _t18('copy_trade_amount') }}</span>
@@ -68,7 +68,7 @@
               <span class="kv-val">{{ formatCopyTradeExitTime(item) }}</span>
             </div>
             <div class="card-kv">
-              <span class="kv-dot" style="background:#17ac74">
+              <span class="kv-dot" style="background:#a13cff">
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
               </span>
               <span class="kv-label">{{ _t18('copy_trade_period_pnl') }}</span>
@@ -141,7 +141,7 @@ async function buildCanvas() {
     scale: 2,
     useCORS: true,
     allowTaint: true,
-    backgroundColor: '#ffffff'
+    backgroundColor: '#1a1626'
   })
 }
 
@@ -194,33 +194,38 @@ async function shareLink() {
 </script>
 
 <style lang="scss" scoped>
-$green: #17ac74;
+@use '../styles/theme.scss' as ct;
+
+:deep(.van-popup) {
+  @include ct.ct-popup-sheet;
+}
 
 .share-sheet {
   padding: 20px 16px 0;
   padding-bottom: calc(28px + env(safe-area-inset-bottom, 0));
 }
+
 .sheet-title {
   font-size: 17px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: ct.$ct-text-primary;
   margin: 0 0 14px;
 }
 
 .share-card {
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 12px 40px rgba(0,0,0,0.12);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 12px 40px rgba(127, 43, 218, 0.2);
 }
 
-/* 深色渐变 header */
 .card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 11px 14px;
-  background: linear-gradient(120deg, #061a0f 0%, #0e6640 55%, #17ac74 100%);
+  background: linear-gradient(120deg, #1a0a2e 0%, #3d1a6e 55%, #7f2bda 100%);
 }
+
 .card-logo {
   height: 26px;
   width: auto;
@@ -228,27 +233,33 @@ $green: #17ac74;
   object-fit: contain;
   object-position: left center;
 }
+
 .card-datetime {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 1px;
-  span { font-size: 10px; color: rgba(255,255,255,0.75); line-height: 1.3; }
+
+  span {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.75);
+    line-height: 1.3;
+  }
 }
 
-/* 主体 */
 .card-body {
-  background: linear-gradient(160deg, #f2fdf8 0%, #fff 45%);
+  background: linear-gradient(160deg, #1a1626 0%, #221c31 45%);
   padding: 14px 14px 10px;
   position: relative;
   overflow: hidden;
 }
 
-/* 几何 SVG 背景 */
 .geo-bg {
   position: absolute;
-  top: 0; right: 0;
-  width: 100%; height: 100%;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
 }
 
@@ -259,30 +270,54 @@ $green: #17ac74;
   margin-bottom: 12px;
   position: relative;
 }
-.card-left { flex: 1; min-width: 0; }
-.caption { font-size: 12px; color: #999; margin: 0 0 2px; }
+
+.card-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.caption {
+  font-size: 12px;
+  color: ct.$ct-text-secondary;
+  margin: 0 0 2px;
+}
+
 .big-rate {
   font-size: 40px;
   font-weight: 800;
   line-height: 1.1;
   margin: 0 0 2px;
   letter-spacing: -1px;
-  &.is-up { color: $green; }
-  &.is-down { color: #e8503a; }
+  color: ct.$ct-text-primary;
+
+  &.is-up {
+    @include ct.ct-is-up;
+  }
+
+  &.is-down {
+    @include ct.ct-is-down;
+  }
 }
-.rate-label { font-size: 12px; color: #aaa; margin: 0 0 10px; }
+
+.rate-label {
+  font-size: 12px;
+  color: ct.$ct-text-muted;
+  margin: 0 0 10px;
+}
+
 .strategy-tag {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background: rgba($green, 0.08);
-  border: 1px solid rgba($green, 0.2);
+  background: rgba(161, 60, 255, 0.12);
+  border: 1px solid rgba(161, 60, 255, 0.28);
   border-radius: 4px;
   padding: 3px 7px;
   font-size: 11px;
-  color: $green;
+  color: ct.$ct-purple-light;
   font-weight: 500;
 }
+
 .card-coin {
   width: 155px;
   height: 155px;
@@ -292,49 +327,71 @@ $green: #17ac74;
   margin-top: -18px;
   position: relative;
 }
+
 .card-sep {
   height: 1px;
-  background: linear-gradient(to right, transparent, #e0e0e0 20%, #e0e0e0 80%, transparent);
+  background: linear-gradient(to right, transparent, ct.$ct-divider 20%, ct.$ct-divider 80%, transparent);
   margin-bottom: 10px;
   position: relative;
 }
 
-/* KV 行 */
-.card-kvs { display: flex; flex-direction: column; gap: 7px; position: relative; }
+.card-kvs {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  position: relative;
+}
+
 .card-kv {
   display: flex;
   align-items: center;
   gap: 8px;
   font-size: 13px;
 }
+
 .kv-dot {
-  width: 20px; height: 20px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
 }
-.kv-label { color: #555; flex: 1; }
+
+.kv-label {
+  color: ct.$ct-text-secondary;
+  flex: 1;
+}
+
 .kv-val {
   font-weight: 500;
-  color: #1a1a1a;
-  &.is-up { color: $green; }
-  &.is-down { color: #e8503a; }
+  color: ct.$ct-text-primary;
+
+  &.is-up {
+    @include ct.ct-is-up;
+  }
+
+  &.is-down {
+    @include ct.ct-is-down;
+  }
 }
+
 .card-watermark {
   text-align: center;
   font-size: 9px;
-  color: #ccc;
+  color: ct.$ct-text-disabled;
   letter-spacing: 2.5px;
   margin: 12px 0 0;
   position: relative;
 }
 
-/* 操作栏：只保留两个按钮 */
 .action-bar {
   display: flex;
   gap: 12px;
   margin-top: 20px;
 }
+
 .action-btn {
   flex: 1;
   display: flex;
@@ -344,16 +401,22 @@ $green: #17ac74;
   height: 48px;
   border: none;
   border-radius: 12px;
-  background: linear-gradient(135deg, #17ac74, #0e9462);
-  color: #fff;
+  @include ct.ct-btn-primary;
   font-size: 14px;
   font-weight: 500;
-  box-shadow: 0 4px 14px rgba(23,172,116,0.35);
-  &:disabled { opacity: 0.7; }
+
+  &:disabled {
+    opacity: 0.7;
+  }
+
   &:nth-child(2) {
-    background: linear-gradient(135deg, #2c2c2c, #444);
-    box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+    background: linear-gradient(135deg, #2a1f3d, #3d2f55);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
   }
 }
-.action-icon { display: flex; align-items: center; }
+
+.action-icon {
+  display: flex;
+  align-items: center;
+}
 </style>

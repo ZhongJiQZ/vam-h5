@@ -1,13 +1,13 @@
 <!-- 机构信息 / 跟单首页 -->
 <template>
   <div class="inst-page">
-    <DarkHeaderBar :title="_t18('copy_trade_inst_title')" :border_bottom="true">
+    <CopyTradeHeader :title="_t18('copy_trade_inst_title')" :border-bottom="true">
       <template #right>
         <button type="button" class="header-info-btn" aria-label="info" @click="showInfo = true">
           <span class="header-info-icon">i</span>
         </button>
       </template>
-    </DarkHeaderBar>
+    </CopyTradeHeader>
 
     <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
       <div class="inst-body">
@@ -78,7 +78,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
+import CopyTradeHeader from './components/CopyTradeHeader.vue'
 import InstitutionSubscribeDialog from './components/InstitutionSubscribeDialog.vue'
 import CopyTradeDocumentDrawer from './components/CopyTradeDocumentDrawer.vue'
 import { getCopyTradeIntroDoc } from './documents'
@@ -235,11 +235,10 @@ onMounted(loadData)
 </script>
 
 <style lang="scss" scoped>
-$green: #17ac74;
+@use './styles/theme.scss' as ct;
 
 .inst-page {
-  min-height: 100vh;
-  background: #fff;
+  @include ct.ct-page-bg;
 }
 
 .header-info-btn {
@@ -256,7 +255,7 @@ $green: #17ac74;
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: $green;
+  background: linear-gradient(-43deg, ct.$ct-purple-dark, ct.$ct-purple-bright);
   color: #fff;
   font-size: 13px;
   font-weight: 700;
@@ -273,11 +272,12 @@ $green: #17ac74;
   height: 140px;
   border-radius: 12px;
   overflow: hidden;
-  background: #f0f2f5;
+  background: ct.$ct-card-bg;
+  border: 1px solid ct.$ct-border;
 
   &--placeholder {
-    border: 1px dashed #d1d5db;
-    background: linear-gradient(135deg, #f8f9fb 0%, #eef1f4 100%);
+    border: 1px dashed rgba(161, 60, 255, 0.3);
+    background: linear-gradient(135deg, rgba(161, 60, 255, 0.12), rgba(34, 28, 49, 0.8));
   }
 
   &__img {
@@ -293,11 +293,9 @@ $green: #17ac74;
 }
 
 .inst-card {
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
+  @include ct.ct-card;
   padding: 14px;
   margin-bottom: 12px;
-  background: #fff;
 
   &__head {
     display: flex;
@@ -317,7 +315,7 @@ $green: #17ac74;
     display: block;
 
     &--ph {
-      background: linear-gradient(135deg, #edf8f2, #d9f1e4);
+      @include ct.ct-avatar-ph;
     }
   }
 
@@ -330,7 +328,7 @@ $green: #17ac74;
     margin: 0 0 6px;
     font-size: 16px;
     font-weight: 700;
-    color: #111;
+    color: ct.$ct-text-primary;
     line-height: 1.25;
     word-break: break-word;
   }
@@ -338,11 +336,11 @@ $green: #17ac74;
   &__subs {
     margin: 0;
     font-size: 13px;
-    color: #6b7280;
+    color: ct.$ct-text-secondary;
   }
 
   &__rate {
-    color: #17ac74;
+    color: ct.$ct-up;
     font-weight: 600;
   }
 
@@ -358,22 +356,18 @@ $green: #17ac74;
     cursor: pointer;
 
     &--on {
-      background: $green;
-      color: #fff;
-      border-color: $green;
+      @include ct.ct-btn-primary;
     }
 
     &--off {
-      background: #fff;
-      color: #111;
-      border-color: #d1d5db;
+      @include ct.ct-btn-ghost;
     }
   }
 
   &__desc {
     margin: 12px 0 0;
     font-size: 13px;
-    color: #4b5563;
+    color: ct.$ct-text-secondary;
     line-height: 1.55;
     display: -webkit-box;
     -webkit-line-clamp: 4;
@@ -384,8 +378,7 @@ $green: #17ac74;
 
   &__desc-label {
     font-weight: 600;
-    color: #374151;
+    color: ct.$ct-text-primary;
   }
 }
-
 </style>

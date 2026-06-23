@@ -3,7 +3,7 @@
     :show="show"
     position="bottom"
     round
-    :overlay-style="{ background: 'rgba(0,0,0,0.5)' }"
+    :overlay-style="{ background: 'rgba(0,0,0,0.6)' }"
     @update:show="emit('update:show', $event)"
   >
     <div class="dialog-body">
@@ -43,17 +43,22 @@ const emit = defineEmits(['update:show', 'confirm'])
 </script>
 
 <style lang="scss" scoped>
-$green: #17ac74;
+@use '../styles/theme.scss' as ct;
+
+:deep(.van-popup) {
+  @include ct.ct-popup-sheet;
+}
 
 .dialog-body {
   padding: 28px 20px calc(24px + env(safe-area-inset-bottom, 0));
   text-align: center;
 }
+
 .dialog-icon {
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: $green;
+  @include ct.ct-btn-primary;
   margin: 0 auto 16px;
   display: flex;
   align-items: center;
@@ -62,58 +67,73 @@ $green: #17ac74;
   font-weight: 700;
   font-style: italic;
   color: #fff;
-  box-shadow: 0 6px 20px rgba(23, 172, 116, 0.4);
 }
+
 .dialog-title {
   font-size: 18px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: ct.$ct-text-primary;
   margin: 0 0 8px;
 }
+
 .dialog-desc {
   font-size: 13px;
-  color: #888;
+  color: ct.$ct-text-secondary;
   line-height: 1.6;
   margin: 0 0 20px;
 }
+
 .dialog-rows {
   text-align: left;
   margin-bottom: 24px;
-  border-top: 1px solid #f5f5f5;
+  border-top: 1px solid ct.$ct-divider;
 }
+
 .dialog-row {
   display: flex;
   justify-content: space-between;
   padding: 10px 0;
   font-size: 14px;
-  color: #333;
-  border-bottom: 1px solid #f5f5f5;
-  span:first-child { color: #888; }
-  .is-up { color: $green; }
-  .is-down { color: #e8503a; }
+  color: ct.$ct-text-primary;
+  border-bottom: 1px solid ct.$ct-divider;
+
+  span:first-child {
+    color: ct.$ct-text-secondary;
+  }
+
+  .is-up {
+    @include ct.ct-is-up;
+  }
+
+  .is-down {
+    @include ct.ct-is-down;
+  }
 }
+
 .dialog-actions {
   display: flex;
   gap: 12px;
 }
+
 .btn-cancel,
 .btn-confirm {
   flex: 1;
   height: 48px;
-  border-radius: 10px;
+  border-radius: 999px;
   font-size: 15px;
   font-weight: 500;
   border: none;
 }
+
 .btn-cancel {
-  background: #fff;
-  border: 1px solid #ddd;
-  color: #333;
+  @include ct.ct-btn-ghost;
 }
+
 .btn-confirm {
-  background: $green;
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(23, 172, 116, 0.35);
-  &:disabled { opacity: 0.6; }
+  @include ct.ct-btn-primary;
+
+  &:disabled {
+    opacity: 0.6;
+  }
 }
 </style>

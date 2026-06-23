@@ -1,7 +1,7 @@
 <!-- 机构策略列表 / 加入跟单 -->
 <template>
   <div class="strategies-page">
-    <DarkHeaderBar :title="t18('copy_trade_join_strategy')" :border_bottom="true" />
+    <CopyTradeHeader :title="t18('copy_trade_join_strategy')" :border-bottom="true" />
 
     <van-pull-refresh v-model="refreshing" @refresh="loadData">
       <div class="list">
@@ -49,7 +49,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
+import CopyTradeHeader from './components/CopyTradeHeader.vue'
 import { _t18 } from '@/utils/public'
 import { getCopyTradeInstitutionStrategyList } from '@/api/copyTrade'
 import {
@@ -116,11 +116,10 @@ onMounted(loadData)
 </script>
 
 <style lang="scss" scoped>
-$green: #17ac74;
+@use './styles/theme.scss' as ct;
 
 .strategies-page {
-  min-height: 100vh;
-  background: #fff;
+  @include ct.ct-page-bg;
 }
 
 .list {
@@ -128,8 +127,7 @@ $green: #17ac74;
 }
 
 .card {
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
+  @include ct.ct-card;
   padding: 14px;
   margin-bottom: 12px;
 
@@ -149,7 +147,7 @@ $green: #17ac74;
   flex-shrink: 0;
 
   &--ph {
-    background: #edf8f2;
+    @include ct.ct-avatar-ph;
   }
 }
 
@@ -162,6 +160,7 @@ $green: #17ac74;
   margin: 0 0 4px;
   font-size: 15px;
   font-weight: 700;
+  color: ct.$ct-text-primary;
 }
 
 .badge {
@@ -170,27 +169,19 @@ $green: #17ac74;
   border-radius: 4px;
   flex-shrink: 0;
 
-  &--on {
-    background: #edf8f2;
-    color: $green;
-  }
-
+  &--on,
   &--following {
-    background: #edf8f2;
-    color: $green;
+    @include ct.ct-badge-on;
   }
 
   &--off {
-    background: #f3f4f6;
-    color: #9ca3af;
+    @include ct.ct-badge-off;
   }
 }
 
 .kv {
-  display: flex;
-  justify-content: space-between;
+  @include ct.ct-kv-row;
   font-size: 13px;
-  color: #4b5563;
   margin-top: 6px;
 }
 </style>

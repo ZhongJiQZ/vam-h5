@@ -183,16 +183,12 @@ function recordPnlRate(record) {
 </script>
 
 <style lang="scss" scoped>
-$green: #17ac74;
-$red: #e8503a;
-$muted: #888;
+@use '../styles/theme.scss' as ct;
 
 .position-card {
-  background: #fff;
-  border-radius: 12px;
+  @include ct.ct-card;
   padding: 14px;
   margin-bottom: 12px;
-  border: 1px solid #f0f0f0;
 }
 
 .position-card__head {
@@ -206,7 +202,7 @@ $muted: #888;
   .pair {
     font-size: 15px;
     font-weight: 600;
-    color: #1a1a1a;
+    color: ct.$ct-text-primary;
     margin-right: 6px;
   }
 }
@@ -217,13 +213,11 @@ $muted: #888;
   border-radius: 4px;
 
   &--open {
-    background: rgba($green, 0.12);
-    color: $green;
+    @include ct.ct-badge-on;
   }
 
   &--closed {
-    background: #f2f2f2;
-    color: $muted;
+    @include ct.ct-badge-off;
   }
 }
 
@@ -240,18 +234,17 @@ $muted: #888;
   border-radius: 4px;
 
   &--long {
-    background: rgba($green, 0.12);
-    color: $green;
+    background: rgba(49, 196, 141, 0.15);
+    color: ct.$ct-up;
   }
 
   &--short {
-    background: rgba($red, 0.12);
-    color: $red;
+    background: rgba(255, 67, 93, 0.15);
+    color: ct.$ct-down;
   }
 
   &--muted {
-    background: #f5f5f5;
-    color: #666;
+    @include ct.ct-badge-off;
   }
 }
 
@@ -271,29 +264,29 @@ $muted: #888;
 .position-row__left {
   flex: 1;
   min-width: 0;
-  color: #1a1a1a;
+  color: ct.$ct-text-primary;
 
   &.is-up {
-    color: $green;
+    @include ct.ct-is-up;
   }
 
   &.is-down {
-    color: $red;
+    @include ct.ct-is-down;
   }
 }
 
 .position-row__right {
   flex-shrink: 0;
   text-align: right;
-  color: #1a1a1a;
+  color: ct.$ct-text-primary;
   font-size: 13px;
 
   &.is-up {
-    color: $green;
+    @include ct.ct-is-up;
   }
 
   &.is-down {
-    color: $red;
+    @include ct.ct-is-down;
   }
 }
 
@@ -324,19 +317,19 @@ $muted: #888;
 
   .label {
     font-size: 12px;
-    color: $muted;
+    color: ct.$ct-text-muted;
   }
 
   .value {
     font-size: 14px;
-    color: #1a1a1a;
+    color: ct.$ct-text-primary;
 
     &.is-up {
-      color: $green;
+      @include ct.ct-is-up;
     }
 
     &.is-down {
-      color: $red;
+      @include ct.ct-is-down;
     }
 
     &--time {

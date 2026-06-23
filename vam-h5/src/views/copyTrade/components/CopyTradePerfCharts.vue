@@ -9,8 +9,8 @@
       >
         <defs>
           <linearGradient :id="`${uid}-area`" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#17ac74" stop-opacity="0.35" />
-            <stop offset="100%" stop-color="#17ac74" stop-opacity="0.02" />
+            <stop offset="0%" stop-color="#a13cff" stop-opacity="0.35" />
+            <stop offset="100%" stop-color="#a13cff" stop-opacity="0.02" />
           </linearGradient>
         </defs>
         <polygon v-if="areaPath" :points="areaPath" :fill="`url(#${uid}-area)`" />
@@ -18,7 +18,7 @@
           v-if="linePath"
           :points="linePath"
           fill="none"
-          stroke="#16A34A"
+          stroke="#a13cff"
           stroke-width="2"
           vector-effect="non-scaling-stroke"
         />
@@ -41,7 +41,7 @@
           :width="b.w"
           :height="b.h"
           rx="2"
-          fill="#17ac74"
+          fill="#a13cff"
           opacity="0.85"
         />
       </svg>
@@ -54,7 +54,7 @@
     <!-- 币种偏好环形图 -->
     <div v-if="showCoin" class="donut-wrap">
       <svg class="donut-svg" viewBox="0 0 120 120">
-        <circle cx="60" cy="60" r="42" fill="#f3f4f6" />
+        <circle cx="60" cy="60" r="42" fill="rgba(255,255,255,0.06)" />
         <circle
           v-for="(s, i) in coinSlices"
           :key="i"
@@ -107,7 +107,7 @@ const width = 320
 const height = 140
 const barHeight = 120
 
-const DONUT_COLORS = ['#8fd9a8', '#17ac74', '#2dd4bf', '#60a5fa', '#3b82f6', '#9ca3af']
+const DONUT_COLORS = ['#c47cff', '#a13cff', '#7f2bda', '#60a5fa', '#a041ed', '#625d6d']
 
 const dailyPoints = computed(() => {
   return (props.dailySeries || []).map((row) => ({
@@ -210,12 +210,15 @@ function buildAreaPathFromPlot(plotPts, w, h) {
 </script>
 
 <style lang="scss" scoped>
+@use '../styles/theme.scss' as ct;
+
 .perf-charts {
   width: 100%;
 }
 
 .chart-box {
-  background: #fafbfc;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid ct.$ct-border;
   border-radius: 8px;
   padding: 12px 8px 4px;
   margin-bottom: 8px;
@@ -240,7 +243,7 @@ function buildAreaPathFromPlot(plotPts, w, h) {
   justify-content: space-between;
   padding: 4px 2px 0;
   font-size: 10px;
-  color: #9ca3af;
+  color: ct.$ct-text-muted;
 }
 
 .chart-label {
@@ -256,8 +259,8 @@ function buildAreaPathFromPlot(plotPts, w, h) {
   padding: 28px 0;
   text-align: center;
   font-size: 13px;
-  color: #9ca3af;
-  background: #fafbfc;
+  color: ct.$ct-text-muted;
+  background: rgba(255, 255, 255, 0.04);
   border-radius: 8px;
 }
 
@@ -298,11 +301,11 @@ function buildAreaPathFromPlot(plotPts, w, h) {
   .sym {
     flex: 1;
     font-weight: 600;
-    color: #374151;
+    color: ct.$ct-text-primary;
   }
 
   .pct {
-    color: #17ac74;
+    color: ct.$ct-purple-light;
     font-weight: 600;
   }
 }

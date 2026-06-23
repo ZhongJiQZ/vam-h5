@@ -3,7 +3,7 @@
     :show="show"
     position="bottom"
     round
-    :overlay-style="{ background: 'rgba(0,0,0,0.5)' }"
+    :overlay-style="{ background: 'rgba(0,0,0,0.6)' }"
     @update:show="emit('update:show', $event)"
     @open="onOpen"
   >
@@ -92,78 +92,97 @@ function handleConfirm() {
 </script>
 
 <style lang="scss" scoped>
-$green: #17ac74;
+@use '../styles/theme.scss' as ct;
+
+:deep(.van-popup) {
+  @include ct.ct-popup-sheet;
+}
 
 .dialog-body {
   padding: 24px 20px calc(24px + env(safe-area-inset-bottom, 0));
 }
+
 .dialog-title {
   font-size: 18px;
   font-weight: 600;
   margin: 0 0 8px;
   text-align: center;
+  color: ct.$ct-text-primary;
 }
+
 .dialog-name {
   text-align: center;
   font-size: 14px;
-  color: #333;
+  color: ct.$ct-text-secondary;
   margin: 0 0 6px;
 }
+
 .dialog-desc {
   font-size: 12px;
-  color: #888;
+  color: ct.$ct-text-muted;
   line-height: 1.5;
   margin: 0 0 20px;
   text-align: center;
 }
+
 .amount-head {
   display: flex;
   justify-content: space-between;
   font-size: 14px;
   margin-bottom: 10px;
+  color: ct.$ct-text-secondary;
+
   .max-btn {
-    color: $green;
+    color: ct.$ct-purple-light;
     font-size: 13px;
   }
 }
+
 .amount-input {
   width: 100%;
   border: none;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid ct.$ct-divider;
   font-size: 24px;
   padding: 8px 0;
   outline: none;
   box-sizing: border-box;
+  background: transparent;
+  color: ct.$ct-text-primary;
 }
+
 .balance-row {
   display: flex;
   justify-content: space-between;
   margin-top: 14px;
   font-size: 13px;
-  color: #666;
+  color: ct.$ct-text-secondary;
 }
+
 .dialog-actions {
   display: flex;
   gap: 12px;
   margin-top: 24px;
 }
+
 .btn-cancel,
 .btn-confirm {
   flex: 1;
   height: 48px;
-  border-radius: 10px;
+  border-radius: 999px;
   font-size: 15px;
   font-weight: 500;
   border: none;
 }
+
 .btn-cancel {
-  background: #fff;
-  border: 1px solid #ddd;
-  color: #333;
+  @include ct.ct-btn-ghost;
 }
+
 .btn-confirm {
-  background: $green;
-  color: #fff;
-  &:disabled { opacity: 0.6; }
+  @include ct.ct-btn-primary;
+
+  &:disabled {
+    opacity: 0.6;
+  }
 }
 </style>

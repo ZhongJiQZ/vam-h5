@@ -3,7 +3,7 @@
     :show="show"
     position="bottom"
     round
-    :overlay-style="{ background: 'rgba(0,0,0,0.5)' }"
+    :overlay-style="{ background: 'rgba(0,0,0,0.6)' }"
     :style="{ height: '78vh' }"
     @update:show="emit('update:show', $event)"
   >
@@ -50,13 +50,18 @@ function close() {
 </script>
 
 <style lang="scss" scoped>
-$green: #17ac74;
+@use '../styles/theme.scss' as ct;
+
+:deep(.van-popup) {
+  @include ct.ct-popup-sheet;
+}
 
 .doc-drawer {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: #fff;
+  background: ct.$ct-card-bg-alt;
+  color: ct.$ct-text-primary;
 }
 
 .doc-drawer__head {
@@ -65,7 +70,7 @@ $green: #17ac74;
   justify-content: space-between;
   gap: 12px;
   padding: 16px 15px 12px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid ct.$ct-divider;
   flex-shrink: 0;
 }
 
@@ -73,7 +78,7 @@ $green: #17ac74;
   margin: 0;
   font-size: 16px;
   font-weight: 700;
-  color: #111;
+  color: ct.$ct-text-primary;
   line-height: 1.4;
 }
 
@@ -82,7 +87,7 @@ $green: #17ac74;
   background: none;
   font-size: 24px;
   line-height: 1;
-  color: #9ca3af;
+  color: ct.$ct-text-muted;
   padding: 0 4px;
   cursor: pointer;
 }
@@ -96,7 +101,7 @@ $green: #17ac74;
 
 .doc-drawer__content {
   font-size: 14px;
-  color: #374151;
+  color: ct.$ct-text-secondary;
   line-height: 1.7;
   word-break: break-word;
 
@@ -110,14 +115,14 @@ $green: #17ac74;
   :deep(h4) {
     margin: 16px 0 8px;
     font-size: 15px;
-    color: #111;
+    color: ct.$ct-text-primary;
   }
 }
 
 .doc-drawer__empty {
   margin: 0;
   text-align: center;
-  color: #9ca3af;
+  color: ct.$ct-text-muted;
   font-size: 14px;
   padding: 40px 0;
 }
@@ -125,16 +130,15 @@ $green: #17ac74;
 .doc-drawer__foot {
   flex-shrink: 0;
   padding: 10px 15px calc(10px + env(safe-area-inset-bottom, 0px));
-  border-top: 1px solid #eee;
+  border-top: 1px solid ct.$ct-divider;
 }
 
 .doc-drawer__btn {
   width: 100%;
   height: 44px;
   border: none;
-  border-radius: 8px;
-  background: $green;
-  color: #fff;
+  border-radius: 999px;
+  @include ct.ct-btn-primary;
   font-size: 16px;
   font-weight: 600;
 }

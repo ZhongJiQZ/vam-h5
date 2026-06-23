@@ -1,6 +1,6 @@
 <!-- 加入策略 / 发起跟单 -->
 <script setup>
-import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
+import CopyTradeHeader from './components/CopyTradeHeader.vue'
 import InstitutionSubscribeDialog from './components/InstitutionSubscribeDialog.vue'
 import CopyTradeDocumentDrawer from './components/CopyTradeDocumentDrawer.vue'
 import { DIFF_ISFREEZE } from '@/config/index'
@@ -372,7 +372,7 @@ function submit() {
 
 <template>
   <div class="copy-submit-page">
-    <DarkHeaderBar :title="t18('copy_trade_join_strategy_page')" :border_bottom="true" />
+    <CopyTradeHeader :title="t18('copy_trade_join_strategy_page')" :border-bottom="true" />
     <van-loading v-if="pageLoading" class="page-loading" />
     <div v-else class="sheet">
       <!-- 机构/策略信息 -->
@@ -500,11 +500,10 @@ function submit() {
 </template>
 
 <style lang="scss" scoped>
-$green: #17ac74;
+@use './styles/theme.scss' as ct;
 
 .copy-submit-page {
-  min-height: 100vh;
-  background: #f6f7fa;
+  @include ct.ct-page-bg-deep;
   padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
 }
 
@@ -513,9 +512,7 @@ $green: #17ac74;
 }
 
 .card {
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
+  @include ct.ct-card-alt;
   padding: 16px;
   margin-bottom: 12px;
 }
@@ -534,7 +531,7 @@ $green: #17ac74;
     flex-shrink: 0;
 
     &--ph {
-      background: linear-gradient(135deg, #edf8f2, #d9f1e4);
+      @include ct.ct-avatar-ph;
     }
   }
 
@@ -547,7 +544,7 @@ $green: #17ac74;
     margin: 0 0 8px;
     font-size: 17px;
     font-weight: 700;
-    color: #111;
+    color: ct.$ct-text-primary;
   }
 
   &__tags {
@@ -562,7 +559,7 @@ $green: #17ac74;
   &__join {
     margin: 0;
     font-size: 12px;
-    color: #6b7280;
+    color: ct.$ct-text-secondary;
   }
 }
 
@@ -575,8 +572,8 @@ $green: #17ac74;
   line-height: 1.4;
 
   &--provider {
-    background: #fee2e2;
-    color: #dc2626;
+    background: rgba(255, 67, 93, 0.15);
+    color: ct.$ct-down;
   }
 
   &--subscribe {
@@ -585,13 +582,11 @@ $green: #17ac74;
   }
 
   &--on {
-    background: #edf8f2;
-    color: $green;
+    @include ct.ct-badge-on;
   }
 
   &--off {
-    background: #f3f4f6;
-    color: #6b7280;
+    @include ct.ct-badge-off;
   }
 }
 
@@ -599,21 +594,21 @@ $green: #17ac74;
   &__label {
     margin: 0 0 8px;
     font-size: 14px;
-    color: #374151;
+    color: ct.$ct-text-secondary;
   }
 
   &__value {
     margin: 0;
     font-size: 28px;
     font-weight: 700;
-    color: #111;
+    color: ct.$ct-text-primary;
     line-height: 1.2;
   }
 
   &__unit {
     font-size: 14px;
     font-weight: 600;
-    color: #6b7280;
+    color: ct.$ct-text-secondary;
     margin-left: 4px;
   }
 }
@@ -622,21 +617,20 @@ $green: #17ac74;
   &__label {
     margin: 0 0 12px;
     font-size: 14px;
-    color: #374151;
+    color: ct.$ct-text-secondary;
   }
 
   &__input-row {
     display: flex;
     align-items: center;
     gap: 8px;
-    border: 1px solid #e5e7eb;
+    @include ct.ct-input;
     border-radius: 8px;
     padding: 10px 12px;
-    background: #fafafa;
 
     &--error {
-      border-color: #ef4444;
-      background: #fef2f2;
+      border-color: ct.$ct-down;
+      background: rgba(255, 67, 93, 0.08);
     }
   }
 
@@ -647,19 +641,17 @@ $green: #17ac74;
     background: transparent;
     font-size: 22px;
     outline: none;
-    color: #111;
+    color: ct.$ct-text-primary;
   }
 
   &__unit {
     font-size: 14px;
-    color: #6b7280;
+    color: ct.$ct-text-secondary;
     flex-shrink: 0;
   }
 
   &__all {
-    border: 1px solid $green;
-    background: #fff;
-    color: $green;
+    @include ct.ct-btn-outline;
     font-size: 13px;
     font-weight: 600;
     padding: 4px 10px;
@@ -671,10 +663,10 @@ $green: #17ac74;
   &__hint {
     margin: 10px 0 0;
     font-size: 12px;
-    color: #9ca3af;
+    color: ct.$ct-text-muted;
 
     &--error {
-      color: #e8503a;
+      color: ct.$ct-down;
     }
   }
 }
@@ -683,13 +675,12 @@ $green: #17ac74;
   &__label {
     margin: 0 0 10px;
     font-size: 14px;
-    color: #374151;
+    color: ct.$ct-text-secondary;
   }
 
   &__input {
     width: 100%;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
+    @include ct.ct-input;
     padding: 10px 12px;
     font-size: 16px;
     outline: none;
@@ -702,12 +693,12 @@ $green: #17ac74;
     margin: 0 0 12px;
     font-size: 15px;
     font-weight: 700;
-    color: #111;
+    color: ct.$ct-text-primary;
   }
 }
 
 .fee-table {
-  border: 1px solid #e5e7eb;
+  border: 1px solid ct.$ct-border-light;
   border-radius: 8px;
   overflow: hidden;
 
@@ -718,7 +709,7 @@ $green: #17ac74;
     gap: 12px;
     padding: 12px 14px;
     font-size: 13px;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid ct.$ct-divider;
 
     &:last-child {
       border-bottom: none;
@@ -726,12 +717,12 @@ $green: #17ac74;
   }
 
   &__label {
-    color: #6b7280;
+    color: ct.$ct-text-secondary;
     flex-shrink: 0;
   }
 
   &__value {
-    color: #111;
+    color: ct.$ct-text-primary;
     text-align: right;
     word-break: break-word;
   }
@@ -751,8 +742,8 @@ $green: #17ac74;
     margin-top: 2px;
     flex-shrink: 0;
     --van-checkbox-size: 18px;
-    --van-checkbox-checked-icon-color: #{$green};
-    --van-checkbox-border-color: #d1d5db;
+    --van-checkbox-checked-icon-color: #{ct.$ct-purple};
+    --van-checkbox-border-color: rgba(255, 255, 255, 0.2);
   }
 
   :deep(.van-checkbox__label) {
@@ -762,7 +753,7 @@ $green: #17ac74;
 
   &__text {
     font-size: 13px;
-    color: #4b5563;
+    color: ct.$ct-text-secondary;
     line-height: 1.55;
   }
 
@@ -770,29 +761,22 @@ $green: #17ac74;
     border: none;
     background: none;
     padding: 0;
-    color: #2563eb;
+    color: ct.$ct-purple-light;
     font-size: 13px;
     cursor: pointer;
   }
 }
 
 .bottom-bar {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 10px 15px calc(10px + env(safe-area-inset-bottom, 0px));
-  background: #fff;
-  border-top: 1px solid #eee;
+  @include ct.ct-bottom-bar;
 }
 
 .submit-btn {
   width: 100%;
   height: 48px;
   border: none;
-  border-radius: 8px;
-  background: $green;
-  color: #fff;
+  border-radius: 999px;
+  @include ct.ct-btn-primary;
   font-size: 16px;
   font-weight: 600;
 

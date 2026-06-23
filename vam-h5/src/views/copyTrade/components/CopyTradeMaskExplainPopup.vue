@@ -46,11 +46,17 @@ const emit = defineEmits(['update:show'])
 </script>
 
 <style lang="scss" scoped>
+@use '../styles/theme.scss' as ct;
+
+:deep(.van-popup) {
+  @include ct.ct-popup-sheet;
+}
+
 .popup-explain {
   max-height: 70vh;
   padding: 48px 16px 24px;
   overflow-y: auto;
-  color: #374151;
+  color: ct.$ct-text-secondary;
   font-size: 13px;
   line-height: 1.6;
   position: relative;
@@ -67,17 +73,17 @@ const emit = defineEmits(['update:show'])
     left: 0;
     right: 0;
     padding: 16px 16px 12px;
-    background-color: #fff;
+    background-color: ct.$ct-card-bg-alt;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #f1f1f1;
+    border-bottom: 1px solid ct.$ct-divider;
     box-sizing: border-box;
 
     span {
       font-size: 18px;
       font-weight: 600;
-      color: #111827;
+      color: ct.$ct-text-primary;
     }
   }
 
@@ -86,12 +92,12 @@ const emit = defineEmits(['update:show'])
     font-size: 15px;
     font-weight: 600;
     line-height: 1.5;
-    color: #111827;
+    color: ct.$ct-text-primary;
   }
 
   &__intro {
     margin: 0 0 14px;
-    color: #4b5563;
+    color: ct.$ct-text-secondary;
   }
 
   &__section {
@@ -103,7 +109,7 @@ const emit = defineEmits(['update:show'])
 
     p {
       margin: 0;
-      color: #4b5563;
+      color: ct.$ct-text-secondary;
     }
   }
 
@@ -112,16 +118,15 @@ const emit = defineEmits(['update:show'])
     font-size: 13px;
     font-weight: 600;
     line-height: 1.5;
-    color: #111827;
+    color: ct.$ct-text-primary;
   }
 
   &__btn {
     width: 100%;
     height: 44px;
     border: none;
-    border-radius: 8px;
-    background: #16a34a;
-    color: #fff;
+    border-radius: 999px;
+    @include ct.ct-btn-primary;
     font-size: 16px;
     font-weight: 600;
   }

@@ -1,7 +1,7 @@
 <!-- 机构介绍 / 带单表现（原型 1.1 + 1.2） -->
 <template>
   <div class="inst-detail-page">
-    <DarkHeaderBar :title="t18('copy_trade_inst_intro_title')" :border_bottom="true" />
+    <CopyTradeHeader :title="t18('copy_trade_inst_intro_title')" :border-bottom="true" />
 
     <van-loading v-if="pageLoading" class="page-loading" />
     <template v-else-if="institutionId">
@@ -183,7 +183,7 @@
     <van-dialog
       v-model:show="showDescDialog"
       :title="descDialogTitle"
-      confirm-button-color="#17ac74"
+      confirm-button-color="#a13cff"
     >
       <p class="desc-dialog-text">{{ detail.description }}</p>
     </van-dialog>
@@ -194,7 +194,7 @@
 import { ref, computed, onMounted, watch, nextTick, defineAsyncComponent } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
+import CopyTradeHeader from './components/CopyTradeHeader.vue'
 const CopyTradePerfCharts = defineAsyncComponent(() => import('./components/CopyTradePerfCharts.vue'))
 import { _t18, _numberWithCommas } from '@/utils/public'
 import {
@@ -606,12 +606,10 @@ watch(
 </script>
 
 <style lang="scss" scoped>
-$green: #17ac74;
-$tab-active: #3d3d3d;
+@use './styles/theme.scss' as ct;
 
 .inst-detail-page {
-  min-height: 100vh;
-  background: #fff;
+  @include ct.ct-page-bg;
   padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
 }
 
@@ -638,7 +636,7 @@ $tab-active: #3d3d3d;
     flex-shrink: 0;
 
     &--ph {
-      background: linear-gradient(135deg, #edf8f2, #d9f1e4);
+      @include ct.ct-avatar-ph;
     }
   }
 
@@ -646,7 +644,7 @@ $tab-active: #3d3d3d;
     margin: 0 0 8px;
     font-size: 17px;
     font-weight: 700;
-    color: #111;
+    color: ct.$ct-text-primary;
   }
 
   &__tags {
@@ -659,13 +657,13 @@ $tab-active: #3d3d3d;
   &__join {
     margin: 0;
     font-size: 12px;
-    color: #6b7280;
+    color: ct.$ct-text-secondary;
   }
 
   &__desc {
     margin: 10px 0 0;
     font-size: 13px;
-    color: #4b5563;
+    color: ct.$ct-text-secondary;
     line-height: 1.55;
 
     &--fold {
@@ -685,7 +683,7 @@ $tab-active: #3d3d3d;
   padding: 8px 16px 16px;
   margin: 0;
   font-size: 14px;
-  color: #4b5563;
+  color: ct.$ct-text-secondary;
   line-height: 1.65;
   word-break: break-word;
   white-space: pre-wrap;
@@ -700,25 +698,23 @@ $tab-active: #3d3d3d;
   font-weight: 500;
 
   &--provider {
-    background: #fee2e2;
-    color: #dc2626;
+    background: rgba(255, 67, 93, 0.15);
+    color: ct.$ct-down;
   }
 
   &--on {
-    background: #edf8f2;
-    color: $green;
+    @include ct.ct-badge-on;
   }
 
   &--off {
-    background: #f3f4f6;
-    color: #6b7280;
+    @include ct.ct-badge-off;
   }
 }
 
 .desc-more {
   border: none;
   background: none;
-  color: $green;
+  color: ct.$ct-purple-light;
   font-size: 13px;
   padding: 0;
   margin-left: 4px;
@@ -731,7 +727,7 @@ $tab-active: #3d3d3d;
     margin: 0 0 10px;
     font-size: 14px;
     font-weight: 600;
-    color: #111;
+    color: ct.$ct-text-primary;
   }
 
   &__grid {
@@ -741,7 +737,7 @@ $tab-active: #3d3d3d;
   }
 
   &__cell {
-    background: #f8faf9;
+    @include ct.ct-card-alt;
     border-radius: 6px;
     padding: 10px 8px;
     text-align: center;
@@ -750,7 +746,7 @@ $tab-active: #3d3d3d;
   &__label {
     display: block;
     font-size: 11px;
-    color: #9ca3af;
+    color: ct.$ct-text-muted;
     margin-bottom: 4px;
     line-height: 1.3;
   }
@@ -758,33 +754,19 @@ $tab-active: #3d3d3d;
   &__val {
     font-size: 13px;
     font-weight: 700;
-    color: #111;
+    color: ct.$ct-text-primary;
   }
 }
 
 .seg-tabs {
-  display: flex;
+  @include ct.ct-seg-tabs;
   margin: 0 15px 12px;
-  background: #f3f4f6;
-  border-radius: 8px;
-  padding: 4px;
 }
 
 .seg-tab {
-  flex: 1;
-  border: none;
-  background: transparent;
+  @include ct.ct-seg-tab;
   padding: 10px 8px;
   font-size: 13px;
-  color: #6b7280;
-  border-radius: 6px;
-  transition: all 0.2s;
-
-  &.active {
-    background: $tab-active;
-    color: #fff;
-    font-weight: 600;
-  }
 }
 
 .perf-body {
@@ -797,7 +779,7 @@ $tab-active: #3d3d3d;
   gap: 8px;
   margin-bottom: 16px;
   padding-bottom: 12px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid ct.$ct-divider;
 }
 
 .summary-item {
@@ -805,7 +787,7 @@ $tab-active: #3d3d3d;
   min-width: 0;
 
   &--rate .summary-val {
-    color: $green;
+    color: ct.$ct-up;
     font-weight: 700;
   }
 }
@@ -813,14 +795,14 @@ $tab-active: #3d3d3d;
 .summary-label {
   display: block;
   font-size: 11px;
-  color: #9ca3af;
+  color: ct.$ct-text-muted;
   margin-bottom: 4px;
 }
 
 .summary-val {
   font-size: 13px;
   font-weight: 600;
-  color: #111;
+  color: ct.$ct-text-primary;
   word-break: break-all;
 }
 
@@ -835,69 +817,48 @@ $tab-active: #3d3d3d;
     margin: 0 0 6px;
     font-size: 14px;
     font-weight: 600;
-    color: #111;
+    color: ct.$ct-text-primary;
   }
 
   &__sub {
     margin: 0 0 10px;
     font-size: 12px;
-    color: #6b7280;
+    color: ct.$ct-text-secondary;
   }
 }
 
 .range-row {
-  display: flex;
-  gap: 0;
+  @include ct.ct-seg-tabs;
   margin-top: 10px;
-  background: #f3f4f6;
-  border-radius: 8px;
   padding: 3px;
 }
 
 .range-btn {
-  flex: 1;
-  border: none;
-  background: transparent;
-  border-radius: 6px;
+  @include ct.ct-seg-tab;
   padding: 8px 4px;
   font-size: 12px;
-  color: #6b7280;
-
-  &.active {
-    background: #fff;
-    color: #111;
-    font-weight: 600;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  }
 }
 
 .empty-hint {
   font-size: 13px;
-  color: #9ca3af;
+  color: ct.$ct-text-muted;
   text-align: center;
   padding: 16px 0;
 }
 
 .is-up {
-  color: $green;
+  @include ct.ct-is-up;
 }
 
 .bottom-bar {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 12px 15px calc(12px + env(safe-area-inset-bottom, 0px));
-  background: #fff;
-  border-top: 1px solid #eee;
+  @include ct.ct-bottom-bar;
 }
 
 .join-btn {
   width: 100%;
   border: none;
-  border-radius: 10px;
-  background: $green;
-  color: #fff;
+  border-radius: 999px;
+  @include ct.ct-btn-primary;
   font-size: 16px;
   font-weight: 600;
   padding: 14px;

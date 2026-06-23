@@ -1,7 +1,7 @@
 <!-- 我的跟单 -->
 <template>
   <div class="my-copy-page">
-    <DarkHeaderBar :title="_t18('copy_trade_my')" :border_bottom="false" />
+    <CopyTradeHeader :title="_t18('copy_trade_my')" />
 
     <div class="tabs">
       <button type="button" class="tab" :class="{ active: activeTab === 0 }" @click="switchTab(0)">
@@ -252,7 +252,7 @@
 <script setup>
 import { ref, computed, onMounted, watch, defineAsyncComponent } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
+import CopyTradeHeader from './components/CopyTradeHeader.vue'
 import AppendDialog from './components/AppendDialog.vue'
 // import PositionRecordCard from './components/PositionRecordCard.vue'
 const ShareDialog = defineAsyncComponent(() => import('./components/ShareDialog.vue'))
@@ -538,44 +538,26 @@ watch(
 </script>
 
 <style lang="scss" scoped>
-$green: #17ac74;
-$red: #e8503a;
-$muted: #888;
+@use './styles/theme.scss' as ct;
 
 .my-copy-page {
-  min-height: 100vh;
-  background: #f6f7fa;
+  @include ct.ct-page-bg;
   padding-bottom: env(safe-area-inset-bottom, 16px);
 }
 
 .tabs {
-  display: flex;
+  @include ct.ct-pill-tabs;
   margin: 12px 15px;
-  background: #fff;
-  border-radius: 8px;
-  padding: 4px;
 
   .tab {
-    flex: 1;
     height: 36px;
-    border: none;
-    border-radius: 6px;
-    background: transparent;
     font-size: 14px;
-    color: #666;
-
-    &.active {
-      background: #2c2c2c;
-      color: #fff;
-      font-weight: 500;
-    }
   }
 }
 
 .ended-summary {
+  @include ct.ct-summary-hero;
   margin: 0 15px 12px;
-  background: linear-gradient(135deg, #061a0f 0%, #0d5535 55%, #17ac74 100%);
-  border-radius: 12px;
   padding: 4px 16px;
   position: relative;
   overflow: hidden;
@@ -625,13 +607,13 @@ $muted: #888;
   }
 
   .is-up {
-    color: #4dffa8 !important;
+    color: ct.$ct-up !important;
   }
 
   .summary-actual {
     font-size: 17px;
     font-weight: 600;
-    color: #4dffa8 !important;
+    color: ct.$ct-up !important;
   }
 }
 
@@ -641,22 +623,11 @@ $muted: #888;
 
 .order-card,
 .ended-card {
-  background: #fff;
-  border-radius: 12px;
+  @include ct.ct-card;
   padding: 16px;
   margin-bottom: 0;
   cursor: pointer;
 }
-
-/*
-.records-outer {
-  margin-top: 12px;
-}
-
-.records-section+.records-section {
-  margin-top: 12px;
-}
-*/
 
 .order-card__head,
 .ended-card__head {
@@ -670,18 +641,18 @@ $muted: #888;
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: #eee;
+  @include ct.ct-avatar-ph;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 16px;
-  color: #666;
+  color: ct.$ct-text-secondary;
   flex-shrink: 0;
 
   &--img {
     display: block;
     object-fit: cover;
-    background: #f2f4f7;
+    background: ct.$ct-card-bg;
   }
 }
 
@@ -690,6 +661,7 @@ $muted: #888;
     font-size: 16px;
     font-weight: 600;
     margin: 0 0 6px;
+    color: ct.$ct-text-primary;
   }
 }
 
@@ -699,29 +671,21 @@ $muted: #888;
   border-radius: 4px;
 
   &--ongoing {
-    background: rgba($green, 0.12);
-    color: $green;
+    @include ct.ct-badge-on;
   }
 }
 
 .kv-list .kv {
-  display: flex;
-  justify-content: space-between;
+  @include ct.ct-kv-row;
   padding: 8px 0;
-  font-size: 14px;
-  color: #333;
-  border-bottom: 1px solid #f8f8f8;
-
-  span:first-child {
-    color: #888;
-  }
+  border-bottom: 1px solid ct.$ct-divider;
 
   .is-up {
-    color: $green;
+    @include ct.ct-is-up;
   }
 
   .is-down {
-    color: #e8503a;
+    @include ct.ct-is-down;
   }
 }
 
@@ -733,7 +697,7 @@ $muted: #888;
   display: flex;
   justify-content: space-between;
   font-size: 13px;
-  color: #6b7280;
+  color: ct.$ct-text-secondary;
   padding-bottom: 4px;
 }
 
@@ -745,95 +709,17 @@ $muted: #888;
   .ff-num {
     font-size: 18px;
     font-weight: 600;
-    color: #1a1a1a;
+    color: ct.$ct-text-primary;
 
     &.is-up {
-      color: $green;
+      @include ct.ct-is-up;
     }
 
     &.is-down {
-      color: #e8503a;
+      @include ct.ct-is-down;
     }
   }
 }
-
-/*
-.records-title-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-
-.records-title-left {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  min-width: 0;
-}
-
-.records-info-btn {
-  border: none;
-  background: none;
-  padding: 0;
-  line-height: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.records-info-icon {
-  width: 18px;
-  height: 18px;
-  display: block;
-}
-
-.records-title-row .records-title {
-  margin: 0;
-}
-
-.records-refresh-btn {
-  border: none;
-  background: none;
-  padding: 0;
-  line-height: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-
-  &:disabled {
-    opacity: 0.6;
-  }
-}
-
-.records-refresh-icon {
-  width: 24px;
-  height: 24px;
-  display: block;
-
-  &.is-spinning {
-    animation: copy-trade-refresh-spin 0.8s linear infinite;
-  }
-}
-
-@keyframes copy-trade-refresh-spin {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.records-title {
-  margin: 0 0 10px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #374151;
-}
-*/
 
 .card-actions {
   margin-top: 12px;
@@ -842,12 +728,10 @@ $muted: #888;
 .append-btn {
   width: 100%;
   height: 36px;
-  border: 1px solid $green;
   border-radius: 8px;
-  background: rgba($green, 0.08);
-  color: $green;
   font-size: 14px;
   font-weight: 500;
+  @include ct.ct-btn-outline;
 }
 
 .order-card,
@@ -855,7 +739,7 @@ $muted: #888;
   .detail-link {
     text-align: right;
     font-size: 13px;
-    color: $green;
+    color: ct.$ct-purple-light;
     margin: 8px 0 0;
   }
 }
@@ -866,6 +750,7 @@ $muted: #888;
     font-weight: 600;
     margin: 0;
     flex: 1;
+    color: ct.$ct-text-primary;
   }
 }
 
@@ -873,7 +758,7 @@ $muted: #888;
   background: none;
   border: none;
   padding: 4px;
-  color: #999;
+  color: ct.$ct-text-muted;
   display: flex;
   align-items: center;
   flex-shrink: 0;
@@ -898,93 +783,24 @@ $muted: #888;
 .position-row-item {
   flex: 1;
   min-width: 0;
-  color: #888;
+  color: ct.$ct-text-secondary;
 
   .position-row-value {
     font-weight: bold;
     margin-top: 4px;
+    color: ct.$ct-text-primary;
+
     &.is-up {
-      color: $green;
+      @include ct.ct-is-up;
     }
 
     &.is-down {
-      color: $red;
+      @include ct.ct-is-down;
     }
   }
-
 }
 
 .position-row__right {
   text-align: right;
 }
-
-/*
-.popup-explain {
-  max-height: 70vh;
-  padding: 48px 16px 24px;
-  overflow-y: auto;
-  color: #374151;
-  font-size: 13px;
-  line-height: 1.6;
-
-  // position: relative;
-  scrollbar-width: none;
-  &::-webkit-scrollbar {
-    display: none;
-  }
-
-  &__header {
-    width: 100%;
-    position: absolute;
-    top: 0;
-    right: 0;
-    padding: 16px 16px 0;
-    text-align: right;
-    background-color: #fff;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #f1f1f1;
-    span{
-      font-size: 18px;      
-      font-weight: 600;
-      color: #111827;
-    }
-  }
-
-  &__title {
-    margin: 6px 0 12px;
-    font-size: 15px;
-    font-weight: 600;
-    line-height: 1.5;
-    color: #111827;
-  }
-
-  &__intro {
-    margin: 0 0 14px;
-    color: #4b5563;
-  }
-
-  &__section {
-    margin-bottom: 14px;
-
-    &--conclusion {
-      margin-bottom: 0;
-    }
-
-    p {
-      margin: 0;
-      color: #4b5563;
-    }
-  }
-
-  &__subtitle {
-    margin: 0 0 6px;
-    font-size: 13px;
-    font-weight: 600;
-    line-height: 1.5;
-    color: #111827;
-  }
-}
-*/
 </style>

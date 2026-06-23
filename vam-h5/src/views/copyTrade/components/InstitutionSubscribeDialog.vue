@@ -3,6 +3,8 @@
     :show="show"
     round
     class="inst-sub-popup"
+    :style="popupStyle"
+    :overlay-style="{ background: 'rgba(0,0,0,0.6)' }"
     :close-on-click-overlay="false"
     @update:show="emit('update:show', $event)"
     @open="onOpen"
@@ -78,6 +80,13 @@ const t18 = (key, platform = []) => _t18(key, platform, i18n)
 
 const secretKey = ref('')
 
+const popupStyle = {
+  background: 'transparent',
+  width: 'calc(100% - 48px)',
+  maxWidth: '340px',
+  overflow: 'visible'
+}
+
 const locked = computed(() => {
   const id = institutionRowId(props.item)
   return id ? isInstitutionSecretLocked(id) : false
@@ -113,17 +122,17 @@ watch(
 </script>
 
 <style lang="scss" scoped>
-$green: #17ac74;
-
-:deep(.inst-sub-popup) {
-  width: calc(100% - 48px);
-  max-width: 340px;
-  border-radius: 16px;
-}
+@use '../styles/theme.scss' as ct;
 
 .sub-dialog {
   padding: 28px 20px 20px;
   text-align: center;
+  color: ct.$ct-text-primary;
+  background: ct.$ct-card-bg-alt;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  box-sizing: border-box;
+  overflow: hidden;
 
   &__avatar-wrap {
     display: flex;
@@ -136,9 +145,10 @@ $green: #17ac74;
     height: 72px;
     border-radius: 50%;
     object-fit: cover;
+    display: block;
 
     &--ph {
-      background: linear-gradient(135deg, #edf8f2, #d9f1e4);
+      @include ct.ct-avatar-ph;
     }
   }
 
@@ -146,14 +156,14 @@ $green: #17ac74;
     margin: 0 0 12px;
     font-size: 18px;
     font-weight: 700;
-    color: #111;
+    color: ct.$ct-text-primary;
     line-height: 1.3;
   }
 
   &__hint {
     margin: 0 0 16px;
     font-size: 13px;
-    color: #6b7280;
+    color: ct.$ct-text-secondary;
     line-height: 1.5;
     text-align: left;
   }
@@ -161,23 +171,21 @@ $green: #17ac74;
   &__input {
     width: 100%;
     box-sizing: border-box;
-    border: 1px solid #e5e7eb;
+    @include ct.ct-input;
     border-radius: 10px;
     padding: 12px 14px;
     font-size: 15px;
-    background: #fafafa;
     margin-bottom: 10px;
 
     &:disabled {
       opacity: 0.6;
-      background: #f3f4f6;
     }
   }
 
   &__warn {
     margin: 0 0 8px;
     font-size: 12px;
-    color: #9ca3af;
+    color: ct.$ct-text-muted;
     line-height: 1.45;
     text-align: left;
   }
@@ -185,7 +193,7 @@ $green: #17ac74;
   &__locked {
     margin: 0 0 12px;
     font-size: 12px;
-    color: #dc2626;
+    color: ct.$ct-down;
     text-align: left;
   }
 
@@ -199,13 +207,13 @@ $green: #17ac74;
   &__btn {
     width: 100%;
     padding: 14px;
-    border-radius: 10px;
+    border-radius: 999px;
     font-size: 16px;
     font-weight: 600;
     border: 1px solid transparent;
 
     &--primary {
-      background: $green;
+      @include ct.ct-btn-primary;
       color: #fff;
 
       &:disabled {
@@ -214,16 +222,14 @@ $green: #17ac74;
     }
 
     &--ghost {
-      background: #fff;
-      color: #111;
-      border-color: #d1d5db;
+      @include ct.ct-btn-ghost;
     }
   }
 
   &__footer {
     margin: 16px 0 0;
     font-size: 12px;
-    color: #9ca3af;
+    color: ct.$ct-text-muted;
     line-height: 1.45;
   }
 }

@@ -1,7 +1,7 @@
 <!-- 跟单详情 -->
 <template>
   <div class="copy-detail-page">
-    <DarkHeaderBar :title="_t18('copy_trade_detail_title')" :border_bottom="true" />
+    <CopyTradeHeader :title="_t18('copy_trade_detail_title')" :border-bottom="true" />
 
     <div class="tabs">
       <button
@@ -188,7 +188,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
+import CopyTradeHeader from './components/CopyTradeHeader.vue'
 import PositionRecordCard from './components/PositionRecordCard.vue'
 import StopConfirmDialog from './components/StopConfirmDialog.vue'
 import AppendDialog from './components/AppendDialog.vue'
@@ -395,97 +395,94 @@ watch(
 </script>
 
 <style lang="scss" scoped>
-$green: #17ac74;
+@use './styles/theme.scss' as ct;
 
 .copy-detail-page {
-  min-height: 100vh;
-  background: #f6f7fa;
+  @include ct.ct-page-bg;
   padding-bottom: 80px;
 }
+
 .tabs {
-  display: flex;
+  @include ct.ct-pill-tabs;
   margin: 12px 15px 0;
-  background: #fff;
-  border-radius: 8px;
-  padding: 4px;
+
   .tab {
-    flex: 1;
     height: 36px;
-    border: none;
-    border-radius: 6px;
-    background: transparent;
     font-size: 14px;
-    color: #666;
-    &.active {
-      background: #2c2c2c;
-      color: #fff;
-      font-weight: 500;
-    }
   }
 }
+
 .page-loading {
   display: flex;
   justify-content: center;
   padding: 48px;
 }
+
 .order-block {
   margin-bottom: 8px;
 }
+
 .summary-card {
+  @include ct.ct-card;
   margin: 12px 15px;
-  background: #fff;
-  border-radius: 12px;
   padding: 16px;
+
   &__head {
     display: flex;
     gap: 12px;
     align-items: center;
     margin-bottom: 14px;
   }
+
   .avatar {
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    background: #eee;
+    @include ct.ct-avatar-ph;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 18px;
-    color: #666;
+    color: ct.$ct-text-secondary;
     flex-shrink: 0;
+
     &--img {
       display: block;
       object-fit: cover;
-      background: #f2f4f7;
+      background: ct.$ct-card-bg;
     }
   }
+
   .name {
     font-size: 16px;
     font-weight: 600;
     margin: 0 0 6px;
+    color: ct.$ct-text-primary;
   }
+
   .badge {
     font-size: 11px;
     padding: 2px 8px;
     border-radius: 4px;
+
     &--ongoing {
-      background: rgba($green, 0.12);
-      color: $green;
+      @include ct.ct-badge-on;
     }
+
     &--settled {
-      background: #f2f2f2;
-      color: #888;
+      @include ct.ct-badge-off;
     }
   }
 }
+
 .kv-list .kv {
-  display: flex;
-  justify-content: space-between;
+  @include ct.ct-kv-row;
   padding: 8px 0;
-  font-size: 14px;
-  border-bottom: 1px solid #f8f8f8;
-  span:first-child { color: #888; }
-  &.kv--no-border { border-bottom: none; }
+  border-bottom: 1px solid ct.$ct-divider;
+
+  &.kv--no-border {
+    border-bottom: none;
+  }
 }
 
 .section-title-row {
@@ -518,6 +515,7 @@ $green: #17ac74;
   height: 18px;
   display: block;
 }
+
 .section-refresh-btn {
   width: 32px;
   height: 32px;
@@ -527,64 +525,94 @@ $green: #17ac74;
   display: flex;
   align-items: center;
   justify-content: center;
+
   &:disabled {
     opacity: 0.55;
   }
 }
+
 .section-refresh-icon {
   width: 20px;
   height: 20px;
   display: block;
+
   &.is-spinning {
     animation: copy-trade-refresh-spin 0.8s linear infinite;
   }
 }
+
 @keyframes copy-trade-refresh-spin {
   to {
     transform: rotate(360deg);
   }
 }
+
 .pnl-row {
   display: flex;
   justify-content: space-between;
   padding: 6px 0 4px;
+
   .ff-num {
     font-size: 18px;
     font-weight: 600;
-    color: #1a1a1a;
-    &.is-up { color: $green; }
-    &.is-down { color: #e8503a; }
+    color: ct.$ct-text-primary;
+
+    &.is-up {
+      @include ct.ct-is-up;
+    }
+
+    &.is-down {
+      @include ct.ct-is-down;
+    }
   }
 }
+
 .pnl-actual {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-top: 10px;
   padding-top: 10px;
-  border-top: 1px dashed #eee;
-  .label { font-size: 14px; color: #888; }
+  border-top: 1px dashed ct.$ct-divider;
+
+  .label {
+    font-size: 14px;
+    color: ct.$ct-text-secondary;
+  }
+
   .ff-num {
     font-size: 20px;
     font-weight: 700;
-    &.is-up { color: $green; }
-    &.is-down { color: #e8503a; }
+
+    &.is-up {
+      @include ct.ct-is-up;
+    }
+
+    &.is-down {
+      @include ct.ct-is-down;
+    }
   }
 }
+
 .records-wrap {
   margin-top: 4px;
 }
+
 .records-section {
   padding: 0 15px;
+
   & + .records-section {
     margin-top: 12px;
   }
 }
+
 .section-title {
   font-size: 15px;
   font-weight: 600;
   margin: 0;
+  color: ct.$ct-text-primary;
 }
+
 .action-bar {
   position: fixed;
   left: 15px;
@@ -595,21 +623,21 @@ $green: #17ac74;
   display: flex;
   gap: 10px;
 }
+
 .append-btn,
 .stop-btn {
   flex: 1;
   height: 48px;
-  border-radius: 8px;
+  border-radius: 999px;
   font-size: 16px;
   border: none;
 }
+
 .append-btn {
-  background: #fff;
-  border: 1px solid $green;
-  color: $green;
+  @include ct.ct-btn-outline;
 }
+
 .stop-btn {
-  background: $green;
-  color: #fff;
+  @include ct.ct-btn-primary;
 }
 </style>

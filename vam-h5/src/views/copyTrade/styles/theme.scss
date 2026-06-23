@@ -1,0 +1,177 @@
+// GXPEX 暗紫主题 — 跟单模块共享样式
+$ct-purple: #a13cff;
+$ct-purple-light: rgb(196, 124, 255);
+$ct-purple-mid: #a041ed;
+$ct-purple-dark: rgb(127, 43, 218);
+$ct-purple-bright: rgb(163, 67, 238);
+$ct-page-bg: #111111;
+$ct-page-bg-deep: #0a0610;
+$ct-card-bg: rgb(34, 28, 49);
+$ct-card-bg-alt: #1a1626;
+$ct-panel-bg: #211b32;
+$ct-input-bg: #181326;
+$ct-text-primary: #f5f3f8;
+$ct-text-secondary: rgba(255, 255, 255, 0.55);
+$ct-text-muted: rgba(255, 255, 255, 0.45);
+$ct-text-disabled: #625d6d;
+$ct-border: rgba(255, 255, 255, 0.06);
+$ct-border-light: rgba(255, 255, 255, 0.08);
+$ct-divider: rgba(255, 255, 255, 0.09);
+$ct-up: #31c48d;
+$ct-down: #ff435d;
+$ct-accent: $ct-purple;
+
+@mixin ct-page-bg {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse 140px 140px at -5% 35%, rgba(128, 43, 218, 0.55), transparent 70%),
+    radial-gradient(ellipse 160px 160px at 105% 15%, rgba(128, 43, 218, 0.45), transparent 70%),
+    radial-gradient(ellipse 130px 130px at 90% 75%, rgba(128, 43, 218, 0.35), transparent 70%),
+    $ct-page-bg;
+  color: $ct-text-primary;
+}
+
+@mixin ct-page-bg-deep {
+  min-height: 100vh;
+  background: $ct-page-bg-deep;
+  color: $ct-text-primary;
+}
+
+@mixin ct-card {
+  background: $ct-card-bg;
+  border: 1px solid $ct-border;
+  border-radius: 12px;
+}
+
+@mixin ct-card-alt {
+  background: $ct-card-bg-alt;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+}
+
+@mixin ct-btn-primary {
+  border: none;
+  background: linear-gradient(-43deg, $ct-purple-dark 0%, $ct-purple-bright 100%);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(127, 43, 218, 0.35);
+}
+
+@mixin ct-btn-outline {
+  border: 1px solid rgba(161, 60, 255, 0.45);
+  background: rgba(161, 60, 255, 0.1);
+  color: $ct-purple-light;
+}
+
+@mixin ct-btn-ghost {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: transparent;
+  color: $ct-text-primary;
+}
+
+@mixin ct-seg-tabs {
+  display: flex;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 4px;
+}
+
+@mixin ct-seg-tab {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: $ct-text-secondary;
+  border-radius: 6px;
+  transition: all 0.2s;
+
+  &.active {
+    background: rgba(161, 60, 255, 0.22);
+    color: #fff;
+    font-weight: 600;
+  }
+}
+
+@mixin ct-pill-tabs {
+  display: flex;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 4px;
+
+  .tab {
+    flex: 1;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: $ct-text-secondary;
+
+    &.active {
+      background: rgba(161, 60, 255, 0.22);
+      color: #fff;
+      font-weight: 500;
+    }
+  }
+}
+
+@mixin ct-kv-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: $ct-text-primary;
+
+  span:first-child {
+    color: $ct-text-secondary;
+  }
+}
+
+@mixin ct-bottom-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 12px 15px calc(12px + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(180deg, rgba(10, 6, 16, 0) 0%, rgba(10, 6, 16, 0.95) 30%, $ct-page-bg-deep 100%);
+  border-top: 1px solid $ct-border-light;
+}
+
+@mixin ct-popup-sheet {
+  background: $ct-card-bg-alt;
+  color: $ct-text-primary;
+}
+
+@mixin ct-input {
+  background: $ct-input-bg;
+  border: 1px solid $ct-border-light;
+  border-radius: 8px;
+  color: $ct-text-primary;
+
+  &::placeholder {
+    color: $ct-text-disabled;
+  }
+}
+
+@mixin ct-avatar-ph {
+  background: linear-gradient(135deg, rgba(161, 60, 255, 0.25), rgba(127, 43, 218, 0.12));
+}
+
+@mixin ct-badge-on {
+  background: rgba(161, 60, 255, 0.18);
+  color: $ct-purple-light;
+}
+
+@mixin ct-badge-off {
+  background: rgba(255, 255, 255, 0.08);
+  color: $ct-text-secondary;
+}
+
+@mixin ct-summary-hero {
+  background: linear-gradient(135deg, #1a0a2e 0%, #3d1a6e 55%, #7f2bda 100%);
+  border-radius: 12px;
+  border: 1px solid rgba(161, 60, 255, 0.25);
+}
+
+@mixin ct-is-up {
+  color: $ct-up;
+}
+
+@mixin ct-is-down {
+  color: $ct-down;
+}
