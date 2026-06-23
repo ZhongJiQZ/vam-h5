@@ -28,6 +28,7 @@ export default {
     rules: "Rules",
     finance: "Finance",
     trialVoucher: "Trial voucher",
+    copyTrade: "Copy Trade",
   },
   bottomNav: {
     nav1: "Spot Prices",
