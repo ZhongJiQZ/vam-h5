@@ -218,6 +218,9 @@ import {
   canManualExitCopyTrade
 } from './utils'
 import { showToast } from 'vant'
+import { useTradeStore } from '@/store/trade/index'
+
+const tradeStore = useTradeStore()
 
 const route = useRoute()
 const i18n = useI18n()
@@ -307,6 +310,7 @@ async function refreshOrderFromList() {
 
   sectionRefreshing.value = true
   try {
+    await tradeStore.getCoinList()
     const res = await getCopyTradeDetail(route.query.id, activeTab.value)
     if (res?.code == 200) {
       const parsed = normalizeCopyTradeDetailResponse(res)
@@ -380,6 +384,7 @@ async function confirmStop() {
 
 onMounted(() => {
   activeTab.value = resolveDetailTab(route.query)
+  tradeStore.getCoinList()
   loadDetail()
 })
 

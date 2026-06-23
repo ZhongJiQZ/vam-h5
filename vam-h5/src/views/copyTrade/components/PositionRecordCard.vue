@@ -135,11 +135,18 @@ const coin = computed(() => {
 })
 
 const liveCloseText = computed(() => {
-  if (props.masked) return MASK
   if (props.closed) return '--'
   const key = coin.value
-  if (!key) return '--'
-  return tradeStore.allCoinPriceInfo[key]?.close ?? '--'
+  let price = key ? tradeStore.allCoinPriceInfo[key]?.close : null
+  if (price == null || price === '') {
+    price =
+      props.record?.closePrice ??
+      props.record?.markPrice ??
+      props.record?.currentPrice ??
+      props.record?.lastPrice
+  }
+  if (price == null || price === '') return '--'
+  return priceFormat(price, 4)
 })
 
 const displayStatus = computed(() => {
