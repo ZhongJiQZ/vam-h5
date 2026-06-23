@@ -39,19 +39,15 @@
         <span class="board-cell__label">{{ _t18('copy_trade_position_size_usdt') }}</span>
         <span class="board-cell__value ff-num">{{ positionSizeUsdtText }}</span>
       </div>
-      <div class="board-cell">
+      <div class="board-cell board-cell--right">
         <span class="board-cell__label">{{ _t18('copy_trade_margin') }} (USDT)</span>
         <span class="board-cell__value ff-num">{{ record.margin ?? '--' }}</span>
-      </div>
-      <div class="board-cell board-cell--right">
-        <span class="board-cell__label">{{ _t18('copy_trade_margin_ratio') }}</span>
-        <span class="board-cell__value ff-num">{{ marginRatioText }}</span>
       </div>
       <div class="board-cell">
         <span class="board-cell__label">{{ _t18('copy_trade_open_price') }} (USDT)</span>
         <span class="board-cell__value ff-num">{{ priceFormat(record.openPrice, 4) }}</span>
       </div>
-      <div class="board-cell">
+      <div class="board-cell board-cell--right">
         <span class="board-cell__label">
           {{ closed ? _t18('copy_trade_close_price') : _t18('copy_trade_mark_price') }} (USDT)
         </span>
@@ -59,7 +55,7 @@
           {{ closed ? (masked ? MASK : priceFormat(record.closePrice, 4)) : liveCloseText }}
         </span>
       </div>
-      <div class="board-cell board-cell--right">
+      <div class="board-cell">
         <span class="board-cell__label">{{ _t18('copy_trade_open_time') }}</span>
         <span class="board-cell__value board-cell__value--time">{{ openTimeText }}</span>
       </div>
@@ -170,18 +166,6 @@ const positionSizeUsdtText = computed(() => {
   const price = referencePriceNum.value ?? Number(props.record?.openPrice)
   if (!Number.isFinite(num) || !Number.isFinite(price) || price <= 0) return '--'
   return priceFormat(_mul(num, price), 2)
-})
-
-const marginRatioText = computed(() => {
-  const margin = Number(props.record?.margin)
-  const num = Number(props.record?.openNum)
-  const price = referencePriceNum.value ?? Number(props.record?.openPrice)
-  if (!Number.isFinite(margin) || !Number.isFinite(num) || !Number.isFinite(price) || price <= 0) {
-    return '--'
-  }
-  const notional = _mul(num, price)
-  if (!notional || Number(notional) <= 0) return '--'
-  return `${priceFormat(_mul(_div(margin, notional), 100), 2)}%`
 })
 
 const displayStatus = computed(() => {
@@ -357,8 +341,8 @@ $muted: #8b95a5;
 
 .board-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 12px;
 }
 
 .board-cell {
