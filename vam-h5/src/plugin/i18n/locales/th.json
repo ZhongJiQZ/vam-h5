@@ -1503,5 +1503,16 @@
   "copy_trade_mask_explain_s3_content": "กลยุทธ์ Alpha ผลตอบแทนสูงมีความจุในการดำเนินการจำกัด การลดความละเอียดอ่อนของข้อมูลสกัดกั้นพฤติกรรม 'free-riding/copycatting' ภายนอกที่ผิดกฎหมายได้อย่างมีประสิทธิภาพ ป้องกันช่องทางจับคู่คำสั่งที่จำกัดไม่ให้แออัดด้วยทุนที่ไม่เกี่ยวข้อง และรับประกันสิทธิการดำเนินการพิเศษและจุดเข้าราคาที่ดีที่สุดสำหรับสมาชิก premium หลัก",
   "copy_trade_mask_explain_conclusion_title": "สรุปการบริหารความเสี่ยง:",
   "copy_trade_mask_explain_conclusion_content": "การลดความละเอียดอ่อนของข้อมูลเป็นเครื่องมือป้องกันที่จำเป็นต้องใช้เพื่อกรอง noise รายวัน ลดการบิดเบือนที่เป็นอันตราย และรักษาผลตอบแทนสุทธิสุดท้ายของผู้ติดตาม ข้อมูลธุรกรรมทั้งหมดจะเปิดเผยอย่างละเอียดครบถ้วนทันทีหลัง liquidation ของพอซิชัน เพื่อรับประกันความถูกต้อง การปฏิบัติตาม และการตรวจสอบได้อย่างสมบูรณ์",
-  "copy_trade_explain_got_it": "เข้าใจแล้ว"
+  "copy_trade_explain_got_it": "เข้าใจแล้ว",
+  "copy_trade_perp": "Perpetual",
+  "copy_trade_roi": "ROI",
+  "copy_trade_position_size_usdt": "ขนาดสถานะ (USDT)",
+  "copy_trade_mark_price": "ราคา Mark",
+  "copy_trade_margin_ratio": "อัตรามาร์จิ้น",
+  "copy_trade_liq_price": "ราคาชำระบัญชี",
+  "copy_trade_closed_pnl": "กำไรขาดทุนช่วง",
+  "copy_trade_strategy_period": "ช่วงกลยุทธ์",
+  "copy_trade_follow_period": "ช่วงคัดลอก",
+  "copy_trade_records_title": "บันทึกคัดลอก",
+  "copy_trade_position": "สถานะ"
 }

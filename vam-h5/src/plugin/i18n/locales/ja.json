@@ -1503,5 +1503,16 @@
   "copy_trade_mask_explain_s3_content": "高収益Alpha戦略には限られた執行キャパシティがあります。データ脱敏化は違法な外部の'フリーライド/模倣'行為を効果的に遮断し、限られた注文マッチングチャネルが無関係な資本で混雑するのを防ぎ、コアプレミアム会員の優先執行権と最適なエントリー価格を確保します。",
   "copy_trade_mask_explain_conclusion_title": "リスク管理のまとめ：",
   "copy_trade_mask_explain_conclusion_content": "データ脱敏化は、日中ノイズを除外し、悪意のある操作を中和し、フォロワーの最終純利益を保護するために不可欠な防御手段です。すべての取引データは、ポジション清算（Liquidation）後直ちに詳細かつ全面的に開示され、真正性、コンプライアンス、および完全な監査可能性を保証します。",
-  "copy_trade_explain_got_it": "了解しました"
+  "copy_trade_explain_got_it": "了解しました",
+  "copy_trade_perp": "無期限",
+  "copy_trade_roi": "ROI",
+  "copy_trade_position_size_usdt": "ポジション(USDT)",
+  "copy_trade_mark_price": "マーク価格",
+  "copy_trade_margin_ratio": "証拠金率",
+  "copy_trade_liq_price": "清算価格",
+  "copy_trade_closed_pnl": "期間損益",
+  "copy_trade_strategy_period": "戦略期間",
+  "copy_trade_follow_period": "コピー期間",
+  "copy_trade_records_title": "コピー記録",
+  "copy_trade_position": "ポジション"
 }

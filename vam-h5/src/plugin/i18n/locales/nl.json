@@ -1500,5 +1500,16 @@
   "copy_trade_mask_explain_s3_content": "Hoogrenderende Alpha-strategieën hebben een eindige uitvoeringscapaciteit. Datadesensibilisering onderschept effectief illegaal extern 'free-riding/copycatting'-gedrag, voorkomt dat beperkte ordermatchingkanalen verstopt raken door niet-gerelateerd kapitaal en waarborgt preferentiële uitvoeringsrechten en optimale instappunten voor kern premium-leden.",
   "copy_trade_mask_explain_conclusion_title": "Samenvatting risicobeheer:",
   "copy_trade_mask_explain_conclusion_content": "Datadesensibilisering is een ononderhandelbaar verdedigingsinstrument dat nodig is om intraday-ruis te filteren, kwaadwillige manipulatie te neutraliseren en de uiteindelijke netto-opbrengsten voor onze volgers te beschermen. Alle transactiedata worden onmiddellijk na positieliquidatie gedetailleerd en volledig openbaar gemaakt om authenticiteit, naleving en absolute auditability te garanderen.",
-  "copy_trade_explain_got_it": "Begrepen"
+  "copy_trade_explain_got_it": "Begrepen",
+  "copy_trade_perp": "Perp",
+  "copy_trade_roi": "ROI",
+  "copy_trade_position_size_usdt": "Grootte (USDT)",
+  "copy_trade_mark_price": "Markprijs",
+  "copy_trade_margin_ratio": "Margeverhouding",
+  "copy_trade_liq_price": "Liquidatieprijs",
+  "copy_trade_closed_pnl": "Periode PnL",
+  "copy_trade_strategy_period": "Strategieperiode",
+  "copy_trade_follow_period": "Copy-periode",
+  "copy_trade_records_title": "Copy-geschiedenis",
+  "copy_trade_position": "Positie"
 }

@@ -1511,5 +1511,16 @@
   "copy_trade_mask_explain_s3_content": "高收益策略的容量（Capacity）是有限的。數據脫敏能有效攔截外部黑產的「免費抄單」行為，避免有限的訂單撮合通道被無關資金擠占，從而保障核心會員的優先成交權與最優質的開倉點位。",
   "copy_trade_mask_explain_conclusion_title": "風控結論：",
   "copy_trade_mask_explain_conclusion_content": "數據脫敏是為了屏蔽盤中噪音、對沖惡意操縱、保障跟隨者最終淨值的必要防禦手段。所有交易數據將在平倉（Liquidation）後進行穿透式全量披露，確保結果的真實、合規與可追溯。",
-  "copy_trade_explain_got_it": "我知道了"
+  "copy_trade_explain_got_it": "我知道了",
+  "copy_trade_perp": "永續",
+  "copy_trade_roi": "收益率",
+  "copy_trade_position_size_usdt": "倉位(USDT)",
+  "copy_trade_mark_price": "標記價格",
+  "copy_trade_margin_ratio": "保證金率",
+  "copy_trade_liq_price": "強平價",
+  "copy_trade_closed_pnl": "週期盈虧",
+  "copy_trade_strategy_period": "策略週期",
+  "copy_trade_follow_period": "跟單週期",
+  "copy_trade_records_title": "跟單記錄",
+  "copy_trade_position": "倉位"
 }

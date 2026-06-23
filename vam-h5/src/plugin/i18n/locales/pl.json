@@ -1499,5 +1499,16 @@
   "copy_trade_mask_explain_s3_content": "Strategie Alpha o wysokiej rentowności posiadają ograniczoną pojemność wykonawczą. Desensytyzacja danych skutecznie przechwytuje nielegalne zewnętrzne zachowania 'free-riding/copycatting', zapobiegając zatykaniu się ograniczonych kanałów dopasowywania zleceń przez niepowiązany kapitał, zapewniając preferencyjne prawa wykonania i optymalne punkty wejścia dla kluczowych członków premium.",
   "copy_trade_mask_explain_conclusion_title": "Podsumowanie zarządzania ryzykiem:",
   "copy_trade_mask_explain_conclusion_content": "Desensytyzacja danych jest niezbędnym narzędziem obronnym wymaganym do filtrowania szumu intraday, neutralizacji złośliwej manipulacji i ochrony końcowych zysków netto naszych obserwujących. Wszystkie dane transakcyjne zostaną szczegółowo i w pełni ujawnione natychmiast po likwidacji pozycji, aby zagwarantować autentyczność, zgodność i absolutną audytowalność.",
-  "copy_trade_explain_got_it": "Rozumiem"
+  "copy_trade_explain_got_it": "Rozumiem",
+  "copy_trade_perp": "Perp",
+  "copy_trade_roi": "ROI",
+  "copy_trade_position_size_usdt": "Rozmiar (USDT)",
+  "copy_trade_mark_price": "Cena mark",
+  "copy_trade_margin_ratio": "Wskaźnik marży",
+  "copy_trade_liq_price": "Cena likwidacji",
+  "copy_trade_closed_pnl": "PnL okresu",
+  "copy_trade_strategy_period": "Okres strategii",
+  "copy_trade_follow_period": "Okres kopiowania",
+  "copy_trade_records_title": "Historia copy",
+  "copy_trade_position": "Pozycja"
 }

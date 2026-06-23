@@ -1501,5 +1501,16 @@
   "copy_trade_mask_explain_s3_content": "تمتلك استراتيجيات Alpha عالية العائد سعة تنفيذ محدودة. يعترض إخفاء الهوية بفعالية سلوكيات 'free-riding/copycatting' الخارجية غير المشروعة، ويمنع ازدحام قنوات مطابقة الأوامر المحدودة برأس مال غير ذي صلة، وبالتالي يضمن حقوق التنفيذ التفضيلية ونقاط دخول السعر المثلى للأعضاء الأساسيين المميزين.",
   "copy_trade_mask_explain_conclusion_title": "ملخص إدارة المخاطر:",
   "copy_trade_mask_explain_conclusion_content": "إخفاء الهوية أداة دفاعية لا غنى عنها لتصفية ضوضاء اليوم، تحييد التلاعب الخبيث، والحفاظ على العوائد الصافية النهائية لمتابعينا. ستخضع جميع بيانات المعاملات للإفصاح التفصيلي الكامل فور تصفية المركز لضمان الأصالة والامتثال وقابلية التدقيق المطلقة.",
-  "copy_trade_explain_got_it": "فهمت"
+  "copy_trade_explain_got_it": "فهمت",
+  "copy_trade_perp": "دائم",
+  "copy_trade_roi": "ROI",
+  "copy_trade_position_size_usdt": "حجم المركز (USDT)",
+  "copy_trade_mark_price": "سعر العلامة",
+  "copy_trade_margin_ratio": "نسبة الهامش",
+  "copy_trade_liq_price": "سعر التصفية",
+  "copy_trade_closed_pnl": "ربح/خسارة الفترة",
+  "copy_trade_strategy_period": "فترة الاستراتيجية",
+  "copy_trade_follow_period": "فترة النسخ",
+  "copy_trade_records_title": "سجل النسخ",
+  "copy_trade_position": "المركز"
 }

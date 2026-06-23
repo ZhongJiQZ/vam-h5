@@ -1403,8 +1403,8 @@
   "copy_trade_mark_price": "标记价格",
   "copy_trade_margin_ratio": "保证金率",
   "copy_trade_liq_price": "强平价",
-  "copy_trade_open_price": "入场价",
-  "copy_trade_close_price": "出场价",
+  "copy_trade_open_price": "开仓价",
+  "copy_trade_close_price": "平仓价",
   "copy_trade_open_count": "仓位大小",
   "copy_trade_pnl_usdt": "盈亏(USDT)",
   "copy_trade_pnl_label": "盈亏",
@@ -1520,5 +1520,9 @@
   "copy_trade_mask_explain_s3_content": "高收益策略的容量（Capacity）是有限的。数据脱敏能有效拦截外部黑产的“免费抄单”行为，避免有限的订单撮合通道被无关资金挤占，从而保障核心会员的优先成交权与最优质的开仓点位。",
   "copy_trade_mask_explain_conclusion_title": "风控结论：",
   "copy_trade_mask_explain_conclusion_content": "数据脱敏是为了屏蔽盘中噪音、对冲恶意操纵、保障跟随者最终净值的必要防御手段。所有交易数据将在平仓（Liquidation）后进行穿透式全量披露，确保结果的真实、合规与可追溯。",
-  "copy_trade_explain_got_it": "我知道了"
+  "copy_trade_explain_got_it": "我知道了",
+  "copy_trade_closed_pnl": "周期盈亏",
+  "copy_trade_strategy_period": "策略周期",
+  "copy_trade_follow_period": "跟单周期",
+  "copy_trade_position": "仓位"
 }

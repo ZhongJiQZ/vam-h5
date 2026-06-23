@@ -1503,5 +1503,16 @@
   "copy_trade_mask_explain_s3_content": "Hochrentable Alpha-Strategien verfügen über begrenzte Ausführungskapazität. Datendesensibilisierung fängt effektiv illegales externes 'Free-Riding/Copycatting' ab, verhindert die Überlastung begrenzter Order-Matching-Kanäle durch nicht zusammenhängendes Kapital und sichert bevorzugte Ausführungsrechte und optimale Einstiegspunkte für Kern-Premium-Mitglieder.",
   "copy_trade_mask_explain_conclusion_title": "Zusammenfassung des Risikomanagements:",
   "copy_trade_mask_explain_conclusion_content": "Datendesensibilisierung ist ein unverzichtbares Abwehrinstrument, um Intraday-Rauschen herauszufiltern, bösartige Manipulation zu neutralisieren und die endgültigen Nettoerträge unserer Follower zu schützen. Alle Transaktionsdaten werden unmittelbar nach Positionsliquidation granular und vollständig offengelegt, um Authentizität, Compliance und absolute Auditierbarkeit zu gewährleisten.",
-  "copy_trade_explain_got_it": "Verstanden"
+  "copy_trade_explain_got_it": "Verstanden",
+  "copy_trade_perp": "Perp",
+  "copy_trade_roi": "ROI",
+  "copy_trade_position_size_usdt": "Positionsgröße (USDT)",
+  "copy_trade_mark_price": "Markpreis",
+  "copy_trade_margin_ratio": "Margin Ratio",
+  "copy_trade_liq_price": "Liquidationspreis",
+  "copy_trade_closed_pnl": "Perioden-PnL",
+  "copy_trade_strategy_period": "Strategiezeitraum",
+  "copy_trade_follow_period": "Copy-Zeitraum",
+  "copy_trade_records_title": "Copy-Verlauf",
+  "copy_trade_position": "Position"
 }

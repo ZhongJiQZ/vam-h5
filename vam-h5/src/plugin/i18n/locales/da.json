@@ -1501,5 +1501,16 @@
   "copy_trade_mask_explain_s3_content": "Højtydende Alpha-strategier har begrænset eksekveringskapacitet. Datadesensibilisering afværger effektivt ulovlig ekstern 'free-riding/copycatting'-adfærd, forhindrer at begrænsede ordermatchingskanaler overbelastes af urelateret kapital og sikrer dermed fortrinsret til eksekvering og optimale indgangspunkter for kerne premium-medlemmer.",
   "copy_trade_mask_explain_conclusion_title": "Opsummering af risikostyring:",
   "copy_trade_mask_explain_conclusion_content": "Datadesensibilisering er et ufravigeligt forsvarsværktøj, der er nødvendigt for at filtrere intradags-støj, neutralisere ondsindet manipulation og bevare de endelige nettoafkast for vores følgere. Alle transaktionsdata vil gennemgå detaljeret fuld offentliggørelse umiddelbart efter positionslikvidation for at garantere ægthed, overholdelse og absolut revisionssporbarhed.",
-  "copy_trade_explain_got_it": "Forstået"
+  "copy_trade_explain_got_it": "Forstået",
+  "copy_trade_perp": "Perp",
+  "copy_trade_roi": "ROI",
+  "copy_trade_position_size_usdt": "Størrelse (USDT)",
+  "copy_trade_mark_price": "Markpris",
+  "copy_trade_margin_ratio": "Marginforhold",
+  "copy_trade_liq_price": "Likvidationspris",
+  "copy_trade_closed_pnl": "Periode PnL",
+  "copy_trade_strategy_period": "Strategiperiode",
+  "copy_trade_follow_period": "Kopi-periode",
+  "copy_trade_records_title": "Kopi-historik",
+  "copy_trade_position": "Position"
 }

@@ -5,18 +5,18 @@
 
     <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
       <div v-if="institutionSummary" class="ended-summary">
-<!--        <div class="kv">-->
-<!--          <span>{{ _t18('copy_trade_subscribe_time') }}</span>-->
-<!--          <span>{{ institutionSummary.firstTime || '&#45;&#45;' }}</span>-->
-<!--        </div>-->
+        <div class="kv">
+          <span>{{ _t18('copy_trade_subscribe_time') }}</span>
+          <span>{{ institutionSummary.firstTime || '--' }}</span>
+        </div>
 <!--        <div class="kv">-->
 <!--          <span>{{ _t18('copy_trade_days') }}</span>-->
 <!--          <span>{{ institutionSummary.days }}{{ _t18('copy_trade_day_unit') }}</span>-->
 <!--        </div>-->
-<!--        <div class="kv">-->
-<!--          <span>{{ _t18('copy_trade_times') }}</span>-->
-<!--          <span>{{ institutionSummary.count }}{{ _t18('copy_trade_times_unit') }}</span>-->
-<!--        </div>-->
+        <div class="kv">
+          <span>{{ _t18('copy_trade_times') }}</span>
+          <span>{{ institutionSummary.count }}{{ _t18('copy_trade_times_unit') }}</span>
+        </div>
         <div class="kv">
           <span>{{ _t18('copy_trade_total_profit') }}</span>
           <span class="ff-num is-up">{{ institutionSummary.totalProfit }} USDT</span>
@@ -25,14 +25,14 @@
           <span>{{ _t18('copy_trade_total_profit_rate') }}</span>
           <span class="ff-num is-up">{{ institutionSummary.totalRate }}%</span>
         </div>
-        <div class="kv">
-          <span>{{ _t18('copy_trade_service_fee') }}</span>
-          <span class="ff-num">{{ institutionSummary.tradeFee }}</span>
-        </div>
-        <div class="kv">
-          <span>{{ _t18('copy_trade_inst_profit_share') }}</span>
-          <span class="ff-num">{{ institutionSummary.profitShareAmt }}</span>
-        </div>
+<!--        <div class="kv">-->
+<!--          <span>{{ _t18('copy_trade_service_fee') }}</span>-->
+<!--          <span class="ff-num">{{ institutionSummary.tradeFee }}</span>-->
+<!--        </div>-->
+<!--        <div class="kv">-->
+<!--          <span>{{ _t18('copy_trade_inst_profit_share') }}</span>-->
+<!--          <span class="ff-num">{{ institutionSummary.profitShareAmt }}</span>-->
+<!--        </div>-->
         <div class="kv kv--no-border">
           <span>{{ _t18('copy_trade_actual_profit') }}</span>
           <span class="ff-num is-up summary-actual">{{ institutionSummary.netProfit }}</span>
@@ -87,19 +87,15 @@
                   <span class="kv__label">{{ _t18('copy_trade_strategy_start_time') }}</span>
                   <span class="kv__value">{{ formatCopyTradeStrategyStartTime(item) }}</span>
                 </div>
-                <div class="kv">
+                <div v-if="!isCopyTradeOrderEnded(item)" class="kv">
                   <span class="kv__label">{{ _t18('copy_trade_strategy_end_time') }}</span>
                   <span class="kv__value">{{ formatCopyTradeStrategyEndTime(item) }}</span>
                 </div>
-                <div class="kv">
-                  <span class="kv__label">{{ _t18('copy_trade_join_time') }}</span>
-                  <span class="kv__value">{{ formatCopyTradeJoinTime(item) }}</span>
-                </div>
-                <div v-if="isCopyTradeOrderEnded(item)" class="kv">
+                <div v-if="isCopyTradeOrderEnded(item)" class="kv kv--last">
                   <span class="kv__label">{{ _t18('copy_trade_exit_time') }}</span>
                   <span class="kv__value">{{ formatCopyTradeExitTime(item) }}</span>
                 </div>
-                <div class="kv" :class="{ 'kv--last': isCopyTradeOrderEnded(item) }">
+                <div v-if="!isCopyTradeOrderEnded(item)" class="kv">
                   <span class="kv__label">{{ _t18('copy_trade_current_symbol') }}</span>
                   <span class="kv__value">{{ copyTradePositionSymbol(item, t18) }}</span>
                 </div>
@@ -122,15 +118,6 @@
                   <span class="pnl-hero__label">{{ _t18('copy_trade_roi') }}</span>
                   <span class="ff-num pnl-hero__value" :class="pnlClass(orderPnl(item))">{{ orderPnlRate(item) }}%</span>
                 </div>
-              </div>
-              <div
-                v-if="isCopyTradeOrderEnded(item) && (item.params?.netProfit != null || item.netProfit != null)"
-                class="net-row"
-              >
-                <span class="net-row__label">{{ _t18('copy_trade_net_profit') }}</span>
-                <span class="ff-num net-row__value" :class="pnlClass(item.params?.netProfit ?? item.netProfit)">
-                  {{ formatPnl(item.params?.netProfit ?? item.netProfit) }} USDT
-                </span>
               </div>
 
               <div
@@ -174,7 +161,6 @@ import {
   copyTradeTradeCount,
   formatCopyTradeStrategyStartTime,
   formatCopyTradeStrategyEndTime,
-  formatCopyTradeJoinTime,
   formatCopyTradeExitTime,
   copyTradeHasAmount,
   normalizeCopyTradeListResponse,
@@ -192,6 +178,26 @@ import {
   calcPnlRate
 } from './utils'
 import dayjs from '@/plugin/dayjs/index'
+import 'dayjs/locale/zh-cn'
+import 'dayjs/locale/zh-tw'
+import 'dayjs/locale/en'
+import 'dayjs/locale/id'
+import 'dayjs/locale/ja'
+import 'dayjs/locale/ko'
+import 'dayjs/locale/vi'
+import 'dayjs/locale/th'
+import 'dayjs/locale/fr'
+import 'dayjs/locale/de'
+import 'dayjs/locale/es'
+import 'dayjs/locale/pt'
+import 'dayjs/locale/it'
+import 'dayjs/locale/ru'
+import 'dayjs/locale/ar'
+import 'dayjs/locale/tr'
+import 'dayjs/locale/pl'
+import 'dayjs/locale/nl'
+import 'dayjs/locale/da'
+import 'dayjs/locale/hi'
 import { showToast } from 'vant'
 import { useI18n } from 'vue-i18n'
 
@@ -224,12 +230,50 @@ function orderPnlRate(item) {
   return copyTradeOrderDisplayPnlRate(item)
 }
 
+const DAYJS_LOCALE_MAP = {
+  zh: 'zh-cn',
+  tw: 'zh-tw',
+  en: 'en',
+  id: 'id',
+  ja: 'ja',
+  ko: 'ko',
+  vi: 'vi',
+  th: 'th',
+  fr: 'fr',
+  de: 'de',
+  es: 'es',
+  pt: 'pt',
+  it: 'it',
+  ru: 'ru',
+  ar: 'ar',
+  tr: 'tr',
+  pl: 'pl',
+  nl: 'nl',
+  da: 'da',
+  hi: 'hi',
+  af: 'en',
+  iw: 'en',
+  pk: 'en'
+}
+
+function resolveDayjsLocale() {
+  const raw = String(i18n.locale.value || 'en').toLowerCase()
+  if (raw.includes('tw')) return 'zh-tw'
+  if (raw.startsWith('zh')) return 'zh-cn'
+  const base = raw.split('-')[0]
+  return DAYJS_LOCALE_MAP[base] || 'en'
+}
+
 function formatGroupDateLabel(group) {
   if (!group || group.date === 'unknown') return group?.dateLabel || ''
   const d = dayjs(group.date)
   if (!d.isValid()) return group.dateLabel
-  const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
-  return `${d.format('YYYY.MM.DD')} ${weekdays[d.day()]}`
+  const locale = resolveDayjsLocale()
+  const lang = String(i18n.locale.value || 'en').toLowerCase().split('-')[0]
+  if (lang === 'zh' || lang === 'tw') {
+    return d.locale(locale).format('M月D日 ddd')
+  }
+  return d.locale(locale).format('YYYY.MM.DD ddd')
 }
 
 const institutionSummary = computed(() => {

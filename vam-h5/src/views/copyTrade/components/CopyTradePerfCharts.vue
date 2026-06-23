@@ -53,22 +53,24 @@
 
     <!-- 币种偏好环形图 -->
     <div v-if="showCoin" class="donut-wrap">
-      <svg class="donut-svg" viewBox="0 0 120 120">
-        <circle cx="60" cy="60" r="42" fill="#f3f4f6" />
-        <circle
-          v-for="(s, i) in coinSlices"
-          :key="i"
-          cx="60"
-          cy="60"
-          r="34"
-          fill="transparent"
-          :stroke="s.color"
-          stroke-width="14"
-          :stroke-dasharray="s.dash"
-          :stroke-dashoffset="s.offset"
-          transform="rotate(-90 60 60)"
-        />
-      </svg>
+      <div class="donut-chart">
+        <svg class="donut-svg" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="42" fill="#f3f4f6" />
+          <circle
+            v-for="(s, i) in coinSlices"
+            :key="i"
+            cx="60"
+            cy="60"
+            r="34"
+            fill="transparent"
+            :stroke="s.color"
+            stroke-width="14"
+            :stroke-dasharray="s.dash"
+            :stroke-dashoffset="s.offset"
+            transform="rotate(-90 60 60)"
+          />
+        </svg>
+      </div>
       <ul class="donut-legend">
         <li v-for="(c, i) in coinSlices" :key="'c' + i">
           <i class="dot" :style="{ background: c.color }" />
@@ -264,14 +266,24 @@ function buildAreaPathFromPlot(plotPts, w, h) {
 .donut-wrap {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 8px 0;
+  gap: 20px;
+  padding: 14px 12px;
+  background: #fafbfc;
+  border-radius: 8px;
+}
+
+.donut-chart {
+  flex-shrink: 0;
+  width: 108px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .donut-svg {
-  width: 120px;
-  height: 120px;
-  flex-shrink: 0;
+  width: 108px;
+  height: 108px;
+  display: block;
 }
 
 .donut-legend {
@@ -279,13 +291,20 @@ function buildAreaPathFromPlot(plotPts, w, h) {
   margin: 0;
   padding: 0;
   flex: 1;
+  min-width: 0;
 
   li {
-    display: flex;
+    display: grid;
+    grid-template-columns: 8px minmax(0, 1fr) auto;
     align-items: center;
-    gap: 8px;
-    font-size: 13px;
-    margin-bottom: 8px;
+    column-gap: 10px;
+    row-gap: 0;
+    min-height: 28px;
+    padding: 4px 0;
+
+    &:not(:last-child) {
+      margin-bottom: 2px;
+    }
   }
 
   .dot {
@@ -296,14 +315,24 @@ function buildAreaPathFromPlot(plotPts, w, h) {
   }
 
   .sym {
-    flex: 1;
+    font-size: 13px;
     font-weight: 600;
     color: #374151;
+    line-height: 1.3;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .pct {
+    font-size: 13px;
     color: #17ac74;
     font-weight: 600;
+    line-height: 1.3;
+    text-align: right;
+    white-space: nowrap;
+    padding-left: 8px;
   }
 }
 </style>

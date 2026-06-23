@@ -1511,5 +1511,16 @@
   "copy_trade_mask_explain_s3_content": "Strategi dengan imbal hasil tinggi memiliki kapasitas kuota yang terbatas. Desensitisasi data berfungsi efektif untuk memblokir tindakan 'penyalinan sinyal gratis' oleh pihak luar yang tidak sah, memastikan bahwa saluran pencocokan order yang terbatas tidak dipadati oleh modal yang tidak relevan, demi mengamankan hak eksekusi prioritas dan titik harga entri terbaik bagi anggota inti.",
   "copy_trade_mask_explain_conclusion_title": "Kesimpulan Manajemen Risiko:",
   "copy_trade_mask_explain_conclusion_content": "Desensitisasi data bukanlah operasi yang tidak transparan, melainkan metode pertahanan wajib untuk meredam gangguan pasar (noise), menangkal manipulasi sistematis, dan mengamankan profitabilitas bersih pengguna akhir. Semua data transaksi akan dibuka secara penuh dan transparan segera setelah posisi ditutup (likuidasi) untuk menjamin keaslian, kepatuhan, dan akuntabilitas yang dapat dilacak.",
-  "copy_trade_explain_got_it": "Mengerti"
+  "copy_trade_explain_got_it": "Mengerti",
+  "copy_trade_perp": "Perpetual",
+  "copy_trade_roi": "ROI",
+  "copy_trade_position_size_usdt": "Ukuran Posisi (USDT)",
+  "copy_trade_mark_price": "Harga Mark",
+  "copy_trade_margin_ratio": "Rasio Margin",
+  "copy_trade_liq_price": "Harga Likuidasi",
+  "copy_trade_closed_pnl": "PnL Periode",
+  "copy_trade_strategy_period": "Periode Strategi",
+  "copy_trade_follow_period": "Periode Copy Trade",
+  "copy_trade_records_title": "Riwayat Copy Trade",
+  "copy_trade_position": "Posisi"
 }

@@ -1499,5 +1499,16 @@
   "copy_trade_mask_explain_s3_content": "Yüksek getirili Alpha stratejileri sınırlı yürütme kapasitesine sahiptir. Veri duyarsızlaştırma, yasadışı harici 'free-riding/copycatting' davranışlarını etkili biçimde engeller, sınırlı emir eşleştirme kanallarının ilgisiz sermaye ile tıkanmasını önler ve çekirdek premium üyeler için tercihli yürütme hakları ile optimal giriş noktalarını güvence altına alır.",
   "copy_trade_mask_explain_conclusion_title": "Risk yönetimi özeti:",
   "copy_trade_mask_explain_conclusion_content": "Veri duyarsızlaştırma, gün içi gürültüyü filtrelemek, kötü niyetli manipülasyonu nötralize etmek ve takipçilerimizin nihai net getirilerini korumak için vazgeçilmez bir savunma aracıdır. Tüm işlem verileri, pozisyon likidasyonundan hemen sonra ayrıntılı ve tam kapsamlı olarak açıklanacak; böylece özgünlük, uyumluluk ve mutlak denetlenebilirlik garanti edilecektir.",
-  "copy_trade_explain_got_it": "Anladım"
+  "copy_trade_explain_got_it": "Anladım",
+  "copy_trade_perp": "Süresiz",
+  "copy_trade_roi": "ROI",
+  "copy_trade_position_size_usdt": "Pozisyon (USDT)",
+  "copy_trade_mark_price": "Mark Fiyatı",
+  "copy_trade_margin_ratio": "Marjin Oranı",
+  "copy_trade_liq_price": "Likidasyon Fiyatı",
+  "copy_trade_closed_pnl": "Dönem PnL",
+  "copy_trade_strategy_period": "Strateji Dönemi",
+  "copy_trade_follow_period": "Kopya Dönemi",
+  "copy_trade_records_title": "Kopya kayıtları",
+  "copy_trade_position": "Pozisyon"
 }

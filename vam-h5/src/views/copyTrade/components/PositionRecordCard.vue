@@ -2,7 +2,8 @@
   <div class="position-card">
     <div class="board-head">
       <div class="board-head__left">
-        <div class="board-coin" aria-hidden="true">{{ coinInitial }}</div>
+        <img v-if="coinLogo" :src="coinLogo" class="board-coin board-coin--img" alt="" />
+        <div v-else class="board-coin" aria-hidden="true">{{ coinInitial }}</div>
         <span class="board-pair">{{ displayPairCompact }}</span>
         <span class="board-tag">{{ _t18('copy_trade_perp') }}</span>
         <template v-if="masked">
@@ -36,34 +37,37 @@
 
     <div class="board-grid">
       <div class="board-cell">
-        <span class="board-cell__label">{{ _t18('copy_trade_position_size_usdt') }}</span>
+        <span class="board-cell__label">{{ _t18('copy_trade_position') }}</span>
         <span class="board-cell__value ff-num">{{ positionSizeUsdtText }}</span>
       </div>
       <div class="board-cell board-cell--right">
-        <span class="board-cell__label">{{ _t18('copy_trade_margin') }} (USDT)</span>
+        <span class="board-cell__label">{{ _t18('copy_trade_margin') }}</span>
         <span class="board-cell__value ff-num">{{ record.margin ?? '--' }}</span>
       </div>
       <div class="board-cell">
-        <span class="board-cell__label">{{ _t18('copy_trade_open_price') }} (USDT)</span>
+        <span class="board-cell__label">{{ _t18('copy_trade_open_price') }}</span>
         <span class="board-cell__value ff-num">{{ priceFormat(record.openPrice, 4) }}</span>
       </div>
       <div class="board-cell board-cell--right">
-        <span class="board-cell__label">
-          {{ closed ? _t18('copy_trade_close_price') : _t18('copy_trade_mark_price') }} (USDT)
-        </span>
-        <span class="board-cell__value ff-num">
-          {{ closed ? (masked ? MASK : priceFormat(record.closePrice, 4)) : liveCloseText }}
-        </span>
-      </div>
-      <div class="board-cell">
         <span class="board-cell__label">{{ _t18('copy_trade_open_time') }}</span>
         <span class="board-cell__value board-cell__value--time">{{ openTimeText }}</span>
       </div>
-    </div>
-
-    <div v-if="closed" class="board-meta">
-      <span class="board-meta__label">{{ _t18('copy_trade_close_time') }}</span>
-      <span class="board-meta__value">{{ closeTimeText }}</span>
+      <template v-if="closed">
+        <div class="board-cell">
+          <span class="board-cell__label">{{ _t18('copy_trade_close_price') }}</span>
+          <span class="board-cell__value ff-num">{{ masked ? MASK : priceFormat(record.closePrice, 4) }}</span>
+        </div>
+        <div class="board-cell board-cell--right">
+          <span class="board-cell__label">{{ _t18('copy_trade_close_time') }}</span>
+          <span class="board-cell__value board-cell__value--time">{{ closeTimeText }}</span>
+        </div>
+      </template>
+      <template v-else>
+        <div class="board-cell">
+          <span class="board-cell__label">{{ _t18('copy_trade_mark_price') }}</span>
+          <span class="board-cell__value ff-num">{{ liveCloseText }}</span>
+        </div>
+      </template>
     </div>
   </div>
 </template>
@@ -115,7 +119,7 @@ const coin = computed(() => {
   let key = String(raw).trim()
   if (!key) return ''
   if (key.includes('/')) key = key.split('/')[0]
-  if (key.includes('USDT')) key = key.replace('/USDT', '').replace('USDT', '')
+  key = key.replace(/USDT/gi, '').replace(/[-_]/g, '')
   return key.toLowerCase()
 })
 
@@ -123,6 +127,22 @@ const coinInitial = computed(() => {
   const key = coin.value
   if (!key) return '?'
   return key.charAt(0).toUpperCase()
+})
+
+const coinLogo = computed(() => {
+  const key = coin.value
+  if (!key) return ''
+  const lists = [
+    ...tradeStore.contractCoinList,
+    ...tradeStore.secondContractCoinList,
+    ...tradeStore.spotCoinList
+  ]
+  const matched = lists.find((item) => {
+    const coinKey = String(item?.coin || '').toLowerCase()
+    const symbolKey = String(item?.symbol || '').toLowerCase()
+    return coinKey === key || symbolKey === key || symbolKey === `${key}usdt`
+  })
+  return matched?.logo || ''
 })
 
 const openTimeText = computed(() => props.record?.openTime || '--')
@@ -253,6 +273,13 @@ $muted: #8b95a5;
   justify-content: center;
   flex-shrink: 0;
   box-shadow: 0 2px 6px rgba(23, 172, 116, 0.25);
+
+  &--img {
+    display: block;
+    object-fit: cover;
+    background: #f3f4f6;
+    box-shadow: none;
+  }
 }
 
 .board-pair {
@@ -383,28 +410,5 @@ $muted: #8b95a5;
   &.is-down {
     color: $red;
   }
-}
-
-.board-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid #f2f4f7;
-}
-
-.board-meta__label {
-  flex-shrink: 0;
-  font-size: 12px;
-  color: $muted;
-}
-
-.board-meta__value {
-  font-size: 12px;
-  color: #374151;
-  text-align: right;
-  line-height: 1.35;
 }
 </style>

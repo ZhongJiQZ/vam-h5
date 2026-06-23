@@ -90,15 +90,15 @@
       <div v-else class="perf-body">
         <!-- 入驻时间 / 带单天数 / 总收益率 -->
         <div class="summary-row">
-          <div class="summary-item">
+          <div class="summary-item summary-item--left">
             <span class="summary-label">{{ t18('copy_trade_join_time_label') }}</span>
             <span class="summary-val">{{ summaryJoinTime }}</span>
           </div>
-          <div class="summary-item">
+          <div class="summary-item summary-item--center">
             <span class="summary-label">{{ tradingDaysLabel }}</span>
             <span class="summary-val">{{ summaryTradingDays }}{{ t18('copy_trade_day_unit') }}</span>
           </div>
-          <div class="summary-item summary-item--rate">
+          <div class="summary-item summary-item--right summary-item--rate">
             <span class="summary-label">{{ t18('copy_trade_total_profit_rate') }}</span>
             <span class="summary-val ff-num is-up">{{ formatSignedRate(summaryTotalRate) }}%</span>
           </div>
@@ -792,8 +792,8 @@ $tab-active: #3d3d3d;
 }
 
 .summary-row {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
   margin-bottom: 16px;
   padding-bottom: 12px;
@@ -801,8 +801,25 @@ $tab-active: #3d3d3d;
 }
 
 .summary-item {
-  flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  &--left {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  &--center {
+    align-items: center;
+    text-align: center;
+  }
+
+  &--right {
+    align-items: flex-end;
+    text-align: right;
+  }
 
   &--rate .summary-val {
     color: $green;
@@ -814,7 +831,7 @@ $tab-active: #3d3d3d;
   display: block;
   font-size: 11px;
   color: #9ca3af;
-  margin-bottom: 4px;
+  line-height: 1.3;
 }
 
 .summary-val {
