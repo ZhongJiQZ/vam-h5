@@ -1,14 +1,16 @@
 <!-- 编辑银行卡 -->
 <template>
-  <div class="bind-card">
-    <!-- 导航条 -->
-    <HeaderBar
-        :currentName="_t18('Bank_edit')"
-        :cuttentRight="cuttentRight"
-        :border_bottom="true"
-        @icon-delete="onDeleteBank"
-    ></HeaderBar>
-    <!--内容-->
+  <div class="bind-card page-edit-bank">
+    <header class="bind-card-header">
+      <button type="button" class="bind-card-header__back" aria-label="back" @click="_back()">
+        <img :src="iconBack" alt="" class="bind-card-header__back-icon" />
+      </button>
+      <h1 class="bind-card-header__title">{{ _t18('Bank_edit') }}</h1>
+      <button type="button" class="bind-card-header__action" aria-label="delete" @click="onDeleteBank">
+        <svg-load name="sanchu24x24" class="bind-card-header__delete-icon" />
+      </button>
+    </header>
+
     <div class="content">
       <div class="section-head section-head--form">
         <h3>{{ _t18('Bank_edit') }}</h3>
@@ -16,35 +18,30 @@
       <div class="form">
         <div class="formInput">
           <p class="label">{{ _t18('advanced_name') }}</p>
-          <!-- <input
-            :placeholder="_t18('login_please')"
-            v-model="formData.userName"
-            class="form-input"
-          /> -->
           <input
-              :placeholder="_t18('login_please')"
-              v-model="bindUserName"
-              class="form-input"
+            :placeholder="_t18('login_please')"
+            v-model="bindUserName"
+            class="form-input"
           />
         </div>
         <div class="formInput">
           <p
-              class="label"
-              v-if="['trustwallet', 'coinmarketcap', 'kabit', 'etfinex', 'ebc'].includes(_getConfig('_APP_ENV'))"
+            class="label"
+            v-if="['trustwallet', 'coinmarketcap', 'kabit', 'etfinex', 'ebc'].includes(_getConfig('_APP_ENV'))"
           >
             {{ _t18('bank_account') }}
           </p>
           <p class="label" v-else>{{ _t18('Bank_card_number') }}</p>
           <input
-              :placeholder="_t18('login_please')"
-              v-model="formData.cardNumber"
-              class="form-input"
+            :placeholder="_t18('login_please')"
+            v-model="formData.cardNumber"
+            class="form-input"
           />
         </div>
         <div class="formInput">
           <p
-              class="label"
-              v-if="['trustwallet', 'coinmarketcap', 'kabit', 'etfinex', 'ebc'].includes(_getConfig('_APP_ENV'))"
+            class="label"
+            v-if="['trustwallet', 'coinmarketcap', 'kabit', 'etfinex', 'ebc'].includes(_getConfig('_APP_ENV'))"
           >
             {{ _t18('bank_name') }}
           </p>
@@ -62,39 +59,43 @@
         </div>
         <div class="formInput" v-if="formData.bankBranch">
           <p
-              class="label"
-              v-if="['trustwallet', 'coinmarketcap', 'kabit', 'etfinex', 'ebc'].includes(_getConfig('_APP_ENV'))"
+            class="label"
+            v-if="['trustwallet', 'coinmarketcap', 'kabit', 'etfinex', 'ebc'].includes(_getConfig('_APP_ENV'))"
           >
             {{ _t18('branch_namee') }}
           </p>
           <p class="label" v-else>{{ _t18('branch_name') }}</p>
           <input
-              :placeholder="_t18('login_please')"
-              v-model="formData.bankBranch"
-              class="form-input"
+            :placeholder="_t18('login_please')"
+            v-model="formData.bankBranch"
+            class="form-input"
           />
         </div>
-        <!-- HFM2 币种选择-->
-        <div class="formInput" v-if="['HFM2','dev'].includes(_getConfig('_APP_ENV'))">
+        <div class="formInput" v-if="['HFM2', 'dev'].includes(_getConfig('_APP_ENV'))">
           <p class="label">
             {{ _t18('recharge_coin') }}
           </p>
           <van-field
-              class="form-input"
-              is-link
-              readonly
-              v-model="formData.coin"
-              :placeholder="_t18('recharge_coin')"
-              @click="showCoinPicker = true"
+            class="form-input"
+            is-link
+            readonly
+            v-model="formData.coin"
+            :placeholder="_t18('recharge_coin')"
+            @click="showCoinPicker = true"
           />
-          <van-action-sheet v-model:show="showCoinPicker" :actions="bankCoinList" @select="onBankCoinConfirm"/>
+          <van-action-sheet
+            v-model:show="showCoinPicker"
+            class="assets-picker-sheet"
+            :actions="bankCoinList"
+            @select="onBankCoinConfirm"
+          />
         </div>
-
       </div>
       <div class="btnBox" @click="submit">
-        <ButtonBar :btnValue="_t18('Bank_save')"/>
+        <ButtonBar :btnValue="_t18('Bank_save')" />
       </div>
     </div>
+
     <van-popup
       v-model:show="showBankPicker"
       position="bottom"
@@ -133,49 +134,44 @@
     </van-popup>
   </div>
 </template>
+
 <script setup>
-import HeaderBar from '@/components/HeaderBar/index.vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import ButtonBar from '@/components/common/ButtonBar/index.vue'
-import {showConfirmDialog, showToast} from 'vant'
-import {reactive, onMounted} from 'vue'
-import {useRoute, useRouter} from 'vue-router'
-import {delBindCard, updateBindCard} from '@/api/account'
-import {_toView, _t18} from '@/utils/public'
-import {useToast} from '@/hook/useToast'
-import {useUserStore} from '@/store/user/index'
-import {dict} from '@/api/common/index.js'
-import {storeToRefs} from 'pinia'
+import { showConfirmDialog, showToast } from 'vant'
+import { useRoute, useRouter } from 'vue-router'
+import { delBindCard, updateBindCard } from '@/api/account'
+import { _back, _t18, _getConfig } from '@/utils/public'
+import { useToast } from '@/hook/useToast'
+import { useUserStore } from '@/store/user/index'
+import { dict } from '@/api/common/index.js'
+import { storeToRefs } from 'pinia'
 import { INDONESIA_BANK_OPTIONS } from '@/constants/indonesiaBanks'
+import iconBack from '@/assets/images/gxpex/trade/icon-back.svg'
+import '@/views/assets/styles/picker-sheet.scss'
 
 const userStore = useUserStore()
-// userStore.getUserInfo()
-// 用户信息
-const {userInfo} = storeToRefs(userStore)
-const {_toast, _showName} = useToast()
+const { userInfo } = storeToRefs(userStore)
+const { _toast, _showName } = useToast()
 const Route = useRoute()
 const Router = useRouter()
-// const formData = reactive({
-//   bankAddress: '美国花旗银行',
-//   bankBranch: '华盛顿支行',
-//   bankName: '储蓄卡',
-//   cardNumber: '78910',
-//   id: 6,
-//   userName: '张三'
-// })
+
 const formData = reactive(JSON.parse(decodeURI(Route.query.data)))
 const bindUserName = ref(formData.userName || userInfo.value.user?.loginName)
-const cuttentRight = {iconRight: [{iconName: 'sanchu24x24', clickTo: 'del'}]}
 const showBankPicker = ref(false)
 const bankKeyword = ref('')
+
 const filteredBankOptions = computed(() => {
   const kw = bankKeyword.value.toUpperCase()
   if (!kw) return INDONESIA_BANK_OPTIONS
   return INDONESIA_BANK_OPTIONS.filter((n) => n.includes(kw))
 })
+
 const selectBankName = (name) => {
   formData.bankName = name
   showBankPicker.value = false
 }
+
 const onDeleteBank = async () => {
   if (formData.id == null || formData.id === '') {
     return
@@ -184,7 +180,8 @@ const onDeleteBank = async () => {
     await showConfirmDialog({
       message: _showName('Bank_delete'),
       confirmButtonText: _showName('btnConfirm'),
-      cancelButtonText: _showName('cancel')
+      cancelButtonText: _showName('cancel'),
+      confirmButtonColor: '#a13cff'
     })
     const res = await delBindCard(formData.id)
     if (res.code == '200') {
@@ -196,38 +193,36 @@ const onDeleteBank = async () => {
       showToast(res.msg || '')
     }
   } catch (e) {
-    console.log(e)
-    // 用户取消确认框，或请求被拦截器处理
+    // 用户取消确认框
   }
 }
 
-
-// 币种列表
 const bankCoinList = ref([])
 const showCoinPicker = ref(false)
+
 const getBankCoinList = () => {
   dict('t_bank_coin').then((res) => {
     if (res.code == '200' && res.data.length) {
-      bankCoinList.value = res.data.map((item) => {
-        return {...item, name: item.dictValue.toUpperCase(),}
-      })
+      bankCoinList.value = res.data.map((item) => ({
+        ...item,
+        name: item.dictValue.toUpperCase()
+      }))
     }
   })
 }
-//币种选择
+
 const onBankCoinConfirm = (item) => {
   formData.coin = item.name
-  showCoinPicker.value = false;
+  showCoinPicker.value = false
 }
 
 onMounted(() => {
   getBankCoinList()
 })
+
 const submit = () => {
-  console.log(formData)
   updateBindCard(formData).then((res) => {
     if (res.code == '200') {
-      // showToast('修改成功！')
       _toast('Bank_update_success')
       setTimeout(() => {
         Router.push('/bind-card')
@@ -238,167 +233,231 @@ const submit = () => {
   })
 }
 </script>
+
 <style lang="scss" scoped>
-* {
-  font-size: 16px;
-  color: var(--ex-default-font-color);
+.bind-card-header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: calc(14px + env(safe-area-inset-top)) 18px 6px;
 }
 
-.header {
+.bind-card-header__back {
+  position: absolute;
+  left: 12px;
+  top: calc(14px + env(safe-area-inset-top));
   display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
 
-  .title {
-    margin-left: 10px;
-  }
+.bind-card-header__back-icon {
+  display: block;
+  width: 10px;
+  height: 18px;
+  object-fit: contain;
+  opacity: 0.9;
+}
+
+.bind-card-header__title {
+  margin: 0;
+  font-family: 'PingFang SC', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #fff;
+  text-align: center;
+}
+
+.bind-card-header__action {
+  position: absolute;
+  right: 12px;
+  top: calc(14px + env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.bind-card-header__delete-icon {
+  font-size: 22px;
+  opacity: 0.85;
+}
+
+.page-edit-bank {
+  min-height: 100vh;
+  background: #0a0610;
+  color: #f5f3f8;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0));
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'PingFang SC', sans-serif;
 }
 
 .content {
-  padding: 12px 15px 24px;
-  min-height: calc(100vh - 60px - env(safe-area-inset-top, 0px));
-  background: linear-gradient(180deg, #f3f5fa 0%, #eef2f8 100%);
+  padding: 12px 14px 24px;
+  background: transparent;
   box-sizing: border-box;
 
   .section-head {
-    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-    border-radius: 14px 14px 0 0;
-    padding: 14px;
-    border: 1px solid #edf0f5;
-    border-bottom: 0;
-    box-shadow: 0 6px 18px rgba(36, 58, 88, 0.06);
+    padding: 6px 4px 12px;
+    margin: 0;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
 
     h3 {
       margin: 0;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
-      color: #323233;
+      color: #fff;
+      letter-spacing: 0.01em;
     }
   }
 
-  .tip {
-    font-size: 12px;
-    color: var(--ex-font-color3);
-    margin-bottom: 30px;
+  .section-head--form {
+    margin-bottom: 0;
   }
 
   .form {
-    padding: 6px 14px 16px;
-    background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
-    border-bottom-left-radius: 14px;
-    border-bottom-right-radius: 14px;
-    border: 1px solid #edf0f5;
-    border-top: 0;
-    box-shadow: 0 6px 18px rgba(36, 58, 88, 0.06);
+    padding: 4px 16px 18px;
+    background: rgba(30, 21, 48, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    box-shadow: none;
 
     .formInput {
-      margin-top: 20px;
+      margin-top: 16px;
 
       .label {
-        color: var(--ex-default-font-color);
-        font-size: 14px;
-        margin: 0 0 10px;
-
-        .scl {
-          color: var(--ex-font-color11);
-          padding-left: 5px;
-        }
-
-        .required {
-          color: var(--ex-default-font-color);
-          padding-left: 2px;
-        }
+        color: rgba(255, 255, 255, 0.65);
+        font-size: 13px;
+        margin: 0 0 8px;
+        padding-left: 2px;
       }
 
       input {
         width: 100%;
-        height: 46px;
-        background: #fff;
-        border-radius: 10px;
-        border: 1px solid #ebedf0;
-        padding: 0 15px;
+        height: 48px;
+        background: rgb(34, 34, 34);
+        border-radius: 25px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 0 16px;
         font-size: 14px;
+        color: #fff;
         box-sizing: border-box;
         transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
         &::placeholder {
-          color: var(--ex-font-color5);
+          color: rgba(255, 255, 255, 0.45);
           font-size: 14px;
         }
 
         &:focus {
-          border-color: rgba(23, 172, 116, 0.45);
-          box-shadow: 0 0 0 3px rgba(23, 172, 116, 0.08);
+          border-color: rgba(160, 65, 237, 0.55);
+          box-shadow: 0 0 0 3px rgba(160, 65, 237, 0.12);
         }
       }
 
       :deep(.van-cell) {
-        border: 1px solid #ebedf0;
-        border-radius: 10px;
-        background: #fff;
-        min-height: 46px;
-        padding: 11px 12px !important;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 25px;
+        background: rgb(34, 34, 34);
+        min-height: 48px;
+        padding: 12px 16px !important;
+        color: #fff;
+        transition: border-color 0.2s ease;
 
-        &::placeholder {
-          color: var(--ex-bindcard-input-font-color);
-          font-size: 14px;
+        &:active {
+          border-color: rgba(160, 65, 237, 0.55);
+        }
+
+        .van-field__control {
+          color: #fff;
+        }
+
+        .van-field__control::placeholder {
+          color: rgba(255, 255, 255, 0.45);
         }
       }
     }
   }
 
-  // .btn {
-  //   font-size: 14px;
-  //   display: flex;
-  //   justify-content: center;
-  //   align-items: center;
-  //   height: 50px;
-  //  background: var(--ex-div-bgColor1)
-  //   border-radius: 3px;
-  //   color: var(--ex-font-color);
-  //   margin: 50px 0;
-  // }
   .btnBox {
-    margin-top: 18px;
+    margin-top: 22px;
   }
+}
+
+.btnBox :deep(.btn1),
+.btnBox :deep(.btn2) {
+  background: linear-gradient(-43deg, rgb(127, 43, 218) 0%, rgb(163, 67, 238) 100%) !important;
+  border: none !important;
+  border-radius: 999px !important;
+  height: 48px !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  color: #fff !important;
+  box-shadow: 0 4px 12px rgba(127, 43, 218, 0.35) !important;
+  letter-spacing: 0.02em;
 }
 
 .bank-picker {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: #1a1325;
+  color: #f5f3f8;
 }
 
 .bank-picker__header {
-  padding: 14px 16px 12px;
+  padding: 16px 18px 12px;
   font-size: 16px;
   font-weight: 600;
-  color: var(--ex-default-font-color);
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid var(--ex-border-color1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .bank-picker__close {
   font-size: 22px;
   line-height: 1;
-  color: var(--ex-passive-font-color);
+  color: rgba(255, 255, 255, 0.55);
   padding: 0 2px;
+  cursor: pointer;
 }
 
 .bank-picker__search {
-  padding: 0 16px 10px;
+  padding: 10px 16px;
   position: sticky;
   top: 0;
-  background: #fff;
+  background: #1a1325;
   z-index: 2;
 }
 
 .bank-picker__search-inner {
-  border: 1px solid var(--ex-bindcard-input-border-color);
-  background: var(--ex-bindcard-input-background-color);
-  border-radius: 8px;
-  padding: 0 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgb(34, 34, 34);
+  border-radius: 25px;
+  padding: 0 14px;
   height: 40px;
   display: flex;
   align-items: center;
@@ -412,22 +471,28 @@ const submit = () => {
     outline: none;
     box-sizing: border-box;
     font-size: 14px;
+    color: #fff;
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.45);
+    }
   }
 }
 
 .bank-picker__search-icon {
   font-size: 14px;
-  opacity: 0.7;
+  opacity: 0.6;
   flex-shrink: 0;
+  filter: grayscale(1) brightness(2);
 }
 
 .bank-picker__selected {
-  margin: 8px 2px 0;
+  margin: 10px 4px 0;
   font-size: 12px;
-  color: var(--ex-passive-font-color);
+  color: rgba(255, 255, 255, 0.55);
 
   .val {
-    color: var(--ex-default-font-color);
+    color: rgb(196, 124, 255);
     font-weight: 500;
   }
 }
@@ -439,15 +504,16 @@ const submit = () => {
 }
 
 .bank-picker__item {
-  padding: 12px 2px;
-  border-bottom: 1px solid var(--ex-border-color1);
+  padding: 14px 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   font-size: 14px;
-  color: var(--ex-default-font-color);
+  color: rgba(255, 255, 255, 0.85);
   line-height: 1.4;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+  cursor: pointer;
 }
 
 .bank-picker__item .txt {
@@ -455,18 +521,25 @@ const submit = () => {
 }
 
 .bank-picker__item .ok {
-  color: #17ac74;
+  color: rgb(160, 65, 237);
   font-weight: 700;
 }
 
 .bank-picker__item--active {
-  background: rgba(23, 172, 116, 0.06);
+  background: rgba(160, 65, 237, 0.08);
+  border-radius: 8px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.bank-picker__item--active .txt {
+  color: #fff;
 }
 
 .bank-picker__empty {
-  color: var(--ex-passive-font-color);
+  color: rgba(255, 255, 255, 0.45);
   text-align: center;
-  padding: 30px 0;
+  padding: 32px 0;
   font-size: 13px;
 }
 </style>
