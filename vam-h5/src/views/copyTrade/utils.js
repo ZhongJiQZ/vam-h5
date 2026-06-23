@@ -447,19 +447,16 @@ export function copyTradeShouldShowWaitBuy(item) {
   return copyTradeTradeCount(item) <= 0
 }
 
-/** 当前持仓展示（等待买入 → 等待机构买入） */
+/** 当前持仓展示：统一为 USDT-M（不展示具体币种）；等待买入时展示等待文案 */
 export function copyTradePositionSymbol(item, translate) {
   if (copyTradeShouldShowWaitBuy(item)) {
     return formatWaitBuyPositionLabel(translate)
   }
-  const running = copyTradeRunningSymbol(item)
-  if (!running) return '--'
-  const trimmed = String(running).trim()
-  if (isWaitBuyPositionStatus(trimmed)) {
-    return formatWaitBuyPositionLabel(translate)
+  if (typeof translate === 'function') {
+    const label = translate('copy_trade_usdt_contract')
+    if (label && label !== 'copy_trade_usdt_contract') return label
   }
-  if (/[\u4e00-\u9fff]/.test(trimmed)) return trimmed
-  return trimmed.toUpperCase()
+  return 'USDT-M'
 }
 
 function pickCopyTradeMillis(item, key) {
