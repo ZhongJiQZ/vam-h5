@@ -1,5 +1,5 @@
 <template>
-  <div class="order-card">
+  <article class="order-card">
     <div class="title">
       <div class="left">
         <img :src="pledgeCoinIcon" alt="" class="pledge-coin-icon" />
@@ -9,53 +9,46 @@
       </div>
     </div>
     <div class="message">
-      <!-- 投资金额 -->
       <div>
         <p class="left">{{ _t18('pledge_investment_amount') }}</p>
         <p class="right fontBold ff-num">{{ priceFormat(dataValue.amount) }}</p>
       </div>
-      <!-- 状态 -->
       <div>
         <p class="left">{{ _t18('recharge_status') }}</p>
         <p class="right status0" v-if="status == 0">{{ _t18('pledge_in_progress') }}</p>
         <p class="right status1" v-if="status == 1">{{ _t18('pledge_completed') }}</p>
         <p class="right status2" v-if="status == 2">{{ _t18('pledge_redeem_ok') }}</p>
       </div>
-      <!-- 日收益率 -->
       <div>
         <p class="left">{{ _t18('host_dailyrateof_return') }}</p>
         <p class="right fontBold ff-num">{{ dataValue.minOdds }}%~{{ dataValue.maxOdds }}%</p>
       </div>
-      <!-- 周期 -->
       <div>
         <p class="left">{{ _t18('pledge_cycle') }}</p>
         <p class="right fontBold ff-num">{{ dataValue.days }}({{ _t18('pledge_day') }})</p>
       </div>
-      <!--PNL-->
       <div>
         <p class="left">{{ _t18('assets.PNL') }}</p>
         <p class="right fontBold ff-num">{{ dataValue.accumulaEarn }}(USDT)</p>
       </div>
-      <!-- 开始日期 -->
       <div>
         <p class="left">{{ _t18('pledge_start_date') }}</p>
         <p class="right ff-num">{{ formatLocalTime(dataValue.params?.createTime) }}</p>
       </div>
-      <!-- 结束日期 -->
       <div>
         <p class="left">{{ _t18('pledge_end_date') }}</p>
         <p class="right ff-num">{{ formatLocalTime(dataValue.params?.endTime) }}</p>
       </div>
-      <!-- 赎回 -->
       <div v-if="status == 0 && !DIFF_HIDE_REDEEM.includes(_getConfig('_APP_ENV'))">
-        <div class="btn" @click="submit">{{ _t18('host.redeem', ['aams']) }}</div>
+        <button type="button" class="btn" @click="submit">{{ _t18('host.redeem', ['aams']) }}</button>
       </div>
     </div>
-  </div>
+  </article>
 </template>
 
 <script setup>
-import { formatLocalTime } from "@/utils/time";
+import { computed } from 'vue'
+import { formatLocalTime } from '@/utils/time'
 import { DIFF_HIDE_REDEEM } from '@/config/index'
 import { priceFormat } from '@/utils/decimal.js'
 import { redemption, redempNewtion } from '@/api/pledge/index'
@@ -63,47 +56,34 @@ import { _t18 } from '@/utils/public'
 import pledgeCoinIcon from '@/assets/images/Frame 981370.png'
 import { useToast } from '@/hook/useToast'
 import { showToast } from 'vant'
+
 const { _toast } = useToast()
 const props = defineProps({
   data: {
     type: Object,
-    default: {}
+    default: () => ({})
   }
 })
 const emit = defineEmits(['getList'])
-const dataValue = computed(() => {
-  return props.data
-})
-const status = computed(() => {
-  return props.data.status
-})
+const dataValue = computed(() => props.data)
+const status = computed(() => props.data.status)
+
 const submit = () => {
-  let params = { id: props.data.id }
-  console.log(params)
+  const params = { id: props.data.id }
+  const onSuccess = (res) => {
+    if (res.code == '200') {
+      _toast('transfer_success')
+      setTimeout(() => {
+        emit('getList')
+      }, 500)
+    } else {
+      showToast(res.msg)
+    }
+  }
   if (['trustwallet'].includes(__config._APP_ENV)) {
-    redempNewtion(params).then((res) => {
-      if (res.code == '200') {
-        status.value = 2
-        _toast('transfer_success')
-        setTimeout(() => {
-          emit('getList')
-        }, 500)
-      } else {
-        showToast(res.msg)
-      }
-    })
+    redempNewtion(params).then(onSuccess)
   } else {
-    redemption(params).then((res) => {
-      if (res.code == '200') {
-        status.value = 2
-        _toast('transfer_success')
-        setTimeout(() => {
-          emit('getList')
-        }, 500)
-      } else {
-        showToast(res.msg)
-      }
-    })
+    redemption(params).then(onSuccess)
   }
 }
 </script>
@@ -111,10 +91,12 @@ const submit = () => {
 <style lang="scss" scoped>
 .order-card {
   font-size: 14px;
-  color: #1a1a1a;
-  background: #f5f6fa;
+  color: #f5f3f8;
+  background: rgb(34, 28, 49);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 12px;
   padding: 18px 16px 16px;
+  margin-bottom: 12px;
   box-sizing: border-box;
 }
 
@@ -123,12 +105,16 @@ const submit = () => {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+
   .left {
     display: flex;
     align-items: center;
     font-size: 16px;
     font-weight: 600;
-    color: #1a1a1a;
+    color: #fff;
+
     .pledge-coin-icon {
       width: 26px;
       height: 26px;
@@ -141,27 +127,43 @@ const submit = () => {
 
 .message {
   & > div {
-    padding: 14px 0;
+    padding: 12px 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+
+    &:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
     .left {
-      color: #888888;
+      color: rgba(255, 255, 255, 0.55);
+      flex-shrink: 0;
     }
+
     .right {
-      color: #1a1a1a;
+      color: #fff;
+      text-align: right;
+      word-break: break-all;
     }
+
     .fontBold {
       font-weight: 600;
     }
+
     .status0 {
-      color: #2b7fff;
+      color: rgb(196, 124, 255);
     }
+
     .status1 {
-      color: #17ac74;
+      color: #31c48d;
     }
+
     .status2 {
-      color: #1a1a1a;
+      color: rgba(255, 255, 255, 0.65);
     }
   }
 }
@@ -172,10 +174,14 @@ const submit = () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #05101a;
+  border: none;
+  background: linear-gradient(-43deg, rgb(127, 43, 218) 0%, rgb(163, 67, 238) 100%);
+  box-shadow: 0 4px 12px rgba(127, 43, 218, 0.32);
   color: #fff;
-  border-radius: 8px;
+  border-radius: 999px;
   font-size: 15px;
   font-weight: 500;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 </style>

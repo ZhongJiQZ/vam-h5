@@ -1,9 +1,9 @@
 <script setup>
-import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
+import { reactive, ref, computed } from 'vue'
 import { DIFF_ISFREEZE } from '@/config/index'
 import { useFreeze } from '@/hook/useFreeze'
 const { _isFreeze } = useFreeze()
-import { _t18 } from '@/utils/public'
+import { _t18, _back } from '@/utils/public'
 import { pledgeSubmit } from '@/api/pledge/index'
 import { priceFormat } from '@/utils/decimal.js'
 import { useUserStore } from '@/store/user/index'
@@ -11,37 +11,34 @@ import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
 import { showToast } from 'vant'
 import { useToast } from '@/hook/useToast'
+import iconBack from '@/assets/images/gxpex/trade/icon-back.svg'
+
 const { _toast } = useToast()
 
 const route = useRoute()
 const router = useRouter()
 const data = reactive(JSON.parse(decodeURI(route.query.data)))
-/**
- * 账户信息
- */
+
 const userStore = useUserStore()
 const { asset } = storeToRefs(userStore)
 const amount = computed(() => {
-  // let data = 999
-  let data = asset.value.filter((item, index) => {
-    return item.type == '1' && item.symbol == 'usdt'
-  })[0].availableAmount
-  return data
+  const row = asset.value.filter((item) => item.type == '1' && item.symbol == 'usdt')[0]
+  return row?.availableAmount ?? 0
 })
 const maxAmount = ref('')
-let maxNum = () => {
+
+const maxNum = () => {
   maxAmount.value = amount.value
 }
+
 const submitForm = () => {
-  let params = { planId: data.id, amount: maxAmount.value }
+  const params = { planId: data.id, amount: maxAmount.value }
   if (maxAmount.value == '' || maxAmount.value > data.limitMax || maxAmount.value < data.limitMin) {
-    // showToast('购买金额有误')
     _toast('pledge_buy_error')
     return
   }
   pledgeSubmit(params).then((res) => {
     if (res.code == '200') {
-      // showToast(res.msg)购买成功
       _toast('Purchase_successful')
       setTimeout(() => {
         router.push('/pledge/pledgeOrder')
@@ -51,6 +48,7 @@ const submitForm = () => {
     }
   })
 }
+
 const submit = () => {
   if (DIFF_ISFREEZE.includes(__config._APP_ENV)) {
     if (_isFreeze(DIFF_ISFREEZE)) {
@@ -61,10 +59,17 @@ const submit = () => {
   }
 }
 </script>
+
 <template>
   <div class="pledge-detail-page">
-    <DarkHeaderBar :title="_t18('host.detail')" :border_bottom="true" />
-    <div class="sheet">
+    <header class="pledge-detail-header">
+      <button type="button" class="pledge-detail-header__back" aria-label="back" @click="_back()">
+        <img :src="iconBack" alt="" class="pledge-detail-header__back-icon" />
+      </button>
+      <h1 class="pledge-detail-header__title">{{ _t18('host.detail') }}</h1>
+    </header>
+
+    <main class="pledge-detail-main">
       <section class="detail-card">
         <div class="jine">
           <div class="jine-top">
@@ -92,7 +97,7 @@ const submit = () => {
           </div>
           <div class="shouyi-col">
             <p class="shouyi-label">{{ _t18('host_dailyrateof_return') }}</p>
-            <p class="shouyi-value ff-num">{{ data.minOdds }}%~{{ data.maxOdds }}%</p>
+            <p class="shouyi-value ff-num shouyi-value--accent">{{ data.minOdds }}%~{{ data.maxOdds }}%</p>
           </div>
           <div class="shouyi-col">
             <p class="shouyi-label">{{ _t18('pledge_cycle') }}({{ _t18('pledge_day') }})</p>
@@ -118,36 +123,78 @@ const submit = () => {
       <button type="button" class="detail-btn" @click="submit">
         {{ _t18('btnConfirm', ['bitmake']) }}
       </button>
-    </div>
+    </main>
   </div>
 </template>
+
 <style lang="scss" scoped>
-/* 圆角与布局对齐 recharge-detail / recharge-order */
 .pledge-detail-page {
   min-height: 100vh;
-  background: #05101a;
-  padding-bottom: constant(safe-area-inset-bottom);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background:
+    radial-gradient(ellipse 140px 140px at -5% 35%, rgba(128, 43, 218, 0.55), transparent 70%),
+    radial-gradient(ellipse 160px 160px at 105% 15%, rgba(128, 43, 218, 0.45), transparent 70%),
+    radial-gradient(ellipse 130px 130px at 90% 75%, rgba(128, 43, 218, 0.35), transparent 70%),
+    #111111;
+  color: #f5f3f8;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0));
   box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'PingFang SC', sans-serif;
 }
 
-.sheet {
-  min-height: calc(100vh - 60px - constant(safe-area-inset-top));
-  min-height: calc(100vh - 60px - env(safe-area-inset-top, 0px));
-  background: #f5f6fa;
-  
-  padding: 20px 15px 28px;
+.pledge-detail-header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: calc(14px + env(safe-area-inset-top)) 18px 6px;
+}
+
+.pledge-detail-header__back {
+  position: absolute;
+  left: 12px;
+  top: calc(14px + env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.pledge-detail-header__back-icon {
+  display: block;
+  width: 10px;
+  height: 18px;
+  object-fit: contain;
+  opacity: 0.9;
+}
+
+.pledge-detail-header__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #fff;
+  text-align: center;
+}
+
+.pledge-detail-main {
+  padding: 12px 15px 28px;
   box-sizing: border-box;
-  overflow: hidden;
 }
 
 .detail-card {
-  background: #fff;
-  border-radius: 12px;
+  background: rgb(34, 28, 49);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
   padding: 18px 16px;
   margin-bottom: 12px;
   box-sizing: border-box;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
 }
 
 .jine-top {
@@ -158,16 +205,17 @@ const submit = () => {
 
 .jine-label {
   font-size: 14px;
-  color: #888888;
+  color: rgba(255, 255, 255, 0.55);
+
   span {
-    color: #888888;
+    color: rgba(255, 255, 255, 0.45);
   }
 }
 
 .jine-deposit {
   margin: 0;
   font-size: 14px;
-  color: #17ac74;
+  color: rgb(196, 124, 255);
   font-weight: 500;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -179,8 +227,8 @@ const submit = () => {
   justify-content: space-between;
   margin-top: 14px;
   padding: 12px 14px;
-  background: #f5f6fa;
-  border: 1px solid #e5e6eb;
+  background: #181326;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   box-sizing: border-box;
 }
@@ -192,19 +240,18 @@ const submit = () => {
   outline: none;
   background: transparent;
   font-size: 16px;
-  color: #1a1a1a;
+  color: #fff;
 }
 
 .ipt-input::placeholder {
-  color: #b0b0b0;
+  color: #625d6d;
 }
 
 .ipt-max {
-  margin: 0;
-  margin-left: 12px;
+  margin: 0 0 0 12px;
   flex-shrink: 0;
   font-size: 14px;
-  color: #17ac74;
+  color: rgb(196, 124, 255);
   font-weight: 500;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -214,7 +261,7 @@ const submit = () => {
   display: flex;
   margin-top: 20px;
   padding-top: 20px;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .shouyi-col {
@@ -238,14 +285,18 @@ const submit = () => {
 .shouyi-label {
   margin: 0 0 10px;
   font-size: 13px;
-  color: #888888;
+  color: rgba(255, 255, 255, 0.55);
 }
 
 .shouyi-value {
   margin: 0;
   font-size: 15px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: #fff;
+
+  &--accent {
+    color: rgb(196, 124, 255);
+  }
 }
 
 .balance-row {
@@ -260,18 +311,18 @@ const submit = () => {
 }
 
 .balance-row + .balance-row {
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .balance-label {
   font-size: 14px;
-  color: #888888;
+  color: rgba(255, 255, 255, 0.55);
 }
 
 .balance-value {
   font-size: 14px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: #fff;
 }
 
 .detail-btn {
@@ -280,7 +331,8 @@ const submit = () => {
   padding: 14px 16px;
   border: none;
   border-radius: 999px;
-  background: #05101a;
+  background: linear-gradient(-43deg, rgb(127, 43, 218) 0%, rgb(163, 67, 238) 100%);
+  box-shadow: 0 4px 12px rgba(127, 43, 218, 0.35);
   color: #fff;
   font-size: 16px;
   font-weight: 500;
