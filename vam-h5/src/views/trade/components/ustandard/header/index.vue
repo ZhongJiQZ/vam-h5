@@ -56,7 +56,6 @@ const coinPriceInfo = computed(() => {
 })
 const emits = defineEmits(['showSidePopup'])
 
-// TODO: 跟单页面路由后续填入
 const onCopyTrade = () => {
   router.push('/copy-trade')
 }

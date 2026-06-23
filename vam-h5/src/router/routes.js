@@ -11,6 +11,7 @@ import Help from './module/help'
 import Nft from './module/nft'
 import other from './module/other'
 import subscription from './module/subscription'
+import CopyTrade from './module/copyTrade'
 export default [
   // 首页
   {
@@ -44,6 +45,7 @@ export default [
   ...Nft, // nft
   ...other, // 其他
   ...subscription, //申购
+  ...CopyTrade, //跟单
   ...Assets,
   //行情
   {
