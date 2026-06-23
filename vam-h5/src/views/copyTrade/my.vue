@@ -57,14 +57,9 @@
                 <div v-else class="avatar">{{ (item.strategyName || '?')[0] }}</div>
                 <div class="head-info">
                   <p class="name">{{ item.strategyName }}</p>
-                  <div class="head-meta">
-                    <span class="badge" :class="copyTradeOrderBadgeClass(item)">
-                      {{ copyTradeOrderStatusText(item, t18) }}
-                    </span>
-                    <span v-if="copyTradeHasAmount(item)" class="head-amount fw-num">
-                      {{ priceFormat(item.amount) }} USDT
-                    </span>
-                  </div>
+                  <span class="badge" :class="copyTradeOrderBadgeClass(item)">
+                    {{ copyTradeOrderStatusText(item, t18) }}
+                  </span>
                 </div>
                 <button
                   v-if="isCopyTradeOrderEnded(item)"
@@ -83,85 +78,59 @@
                 </button>
               </div>
 
-              <div class="timeline-list">
-                <div class="timeline-item">
-                  <span class="timeline-item__label">{{ _t18('copy_trade_strategy_period') }}</span>
-                  <div class="timeline-item__track">
-                    <div class="timeline-node">
-                      <span class="timeline-node__time fw-num">{{ cardTimeParts(formatCopyTradeStrategyStartTime(item)).time }}</span>
-                      <span class="timeline-node__dot"></span>
-                      <span class="timeline-node__date">{{ cardTimeParts(formatCopyTradeStrategyStartTime(item)).date }}</span>
-                    </div>
-                    <div class="timeline-item__line" aria-hidden="true"></div>
-                    <div class="timeline-node timeline-node--end">
-                      <span class="timeline-node__time fw-num">{{ cardTimeParts(formatCopyTradeStrategyEndTime(item)).time }}</span>
-                      <span class="timeline-node__dot"></span>
-                      <span class="timeline-node__date">{{ cardTimeParts(formatCopyTradeStrategyEndTime(item)).date }}</span>
-                    </div>
-                  </div>
+              <div class="kv-list">
+                <div v-if="copyTradeHasAmount(item)" class="kv">
+                  <span class="kv__label">{{ _t18('copy_trade_amount') }}</span>
+                  <span class="kv__value ff-num">{{ priceFormat(item.amount) }} USDT</span>
                 </div>
-                <div class="timeline-item">
-                  <span class="timeline-item__label">{{ _t18('copy_trade_follow_period') }}</span>
-                  <div class="timeline-item__track">
-                    <div class="timeline-node">
-                      <span class="timeline-node__time fw-num">{{ cardTimeParts(formatCopyTradeJoinTime(item)).time }}</span>
-                      <span class="timeline-node__dot"></span>
-                      <span class="timeline-node__date">{{ cardTimeParts(formatCopyTradeJoinTime(item)).date }}</span>
-                    </div>
-                    <div class="timeline-item__line" aria-hidden="true"></div>
-                    <div class="timeline-node timeline-node--end">
-                      <template v-if="isCopyTradeOrderEnded(item)">
-                        <span class="timeline-node__time fw-num">{{ cardTimeParts(formatCopyTradeExitTime(item)).time }}</span>
-                        <span class="timeline-node__dot"></span>
-                        <span class="timeline-node__date">{{ cardTimeParts(formatCopyTradeExitTime(item)).date }}</span>
-                      </template>
-                      <template v-else>
-                        <span class="timeline-node__status">{{ _t18('copy_trade_position_holding') }}</span>
-                        <span class="timeline-node__dot timeline-node__dot--live"></span>
-                      </template>
-                    </div>
-                  </div>
+                <div class="kv">
+                  <span class="kv__label">{{ _t18('copy_trade_strategy_start_time') }}</span>
+                  <span class="kv__value">{{ formatCopyTradeStrategyStartTime(item) }}</span>
+                </div>
+                <div class="kv">
+                  <span class="kv__label">{{ _t18('copy_trade_strategy_end_time') }}</span>
+                  <span class="kv__value">{{ formatCopyTradeStrategyEndTime(item) }}</span>
+                </div>
+                <div class="kv">
+                  <span class="kv__label">{{ _t18('copy_trade_join_time') }}</span>
+                  <span class="kv__value">{{ formatCopyTradeJoinTime(item) }}</span>
+                </div>
+                <div v-if="isCopyTradeOrderEnded(item)" class="kv">
+                  <span class="kv__label">{{ _t18('copy_trade_exit_time') }}</span>
+                  <span class="kv__value">{{ formatCopyTradeExitTime(item) }}</span>
+                </div>
+                <div class="kv" :class="{ 'kv--last': isCopyTradeOrderEnded(item) }">
+                  <span class="kv__label">{{ _t18('copy_trade_current_symbol') }}</span>
+                  <span class="kv__value">{{ copyTradePositionSymbol(item, t18) }}</span>
+                </div>
+                <div v-if="!isCopyTradeOrderEnded(item)" class="kv kv--last">
+                  <span class="kv__label">{{ _t18('copy_trade_today_trades') }}</span>
+                  <span class="kv__value ff-num">{{ copyTradeTradeCount(item) }}</span>
                 </div>
               </div>
 
-              <div v-if="!isCopyTradeOrderEnded(item)" class="ongoing-meta">
-                <span class="ongoing-meta__tag">{{ copyTradePositionSymbol(item, t18) }}</span>
-                <span class="ongoing-meta__trades">
-                  {{ _t18('copy_trade_today_trades') }}
-                  <em class="fw-num">{{ copyTradeTradeCount(item) }}</em>
-                </span>
-              </div>
-
-              <div
-                class="result-panel"
-                :class="{
-                  'result-panel--up': pnlClass(orderPnl(item)) === 'is-up',
-                  'result-panel--down': pnlClass(orderPnl(item)) === 'is-down'
-                }"
-              >
-                <div class="result-panel__main">
-                  <div class="result-metric">
-                    <span class="result-metric__label">
-                      {{ isCopyTradeOrderEnded(item) ? _t18('copy_trade_closed_pnl') : _t18('copy_trade_pnl_usdt') }}
-                    </span>
-                    <span class="fw-num result-metric__value" :class="pnlClass(orderPnl(item))">
-                      {{ formatPnl(orderPnl(item)) }} USDT
-                    </span>
-                  </div>
-                  <div class="result-metric result-metric--right">
-                    <span class="result-metric__label">{{ _t18('copy_trade_roi') }}</span>
-                    <span class="fw-num result-metric__value" :class="pnlClass(orderPnl(item))">{{ orderPnlRate(item) }}%</span>
-                  </div>
-                </div>
-                <div
-                  v-if="isCopyTradeOrderEnded(item) && (item.params?.netProfit != null || item.netProfit != null)"
-                  class="result-panel__net"
-                >
-                  <span>{{ _t18('copy_trade_net_profit') }}</span>
-                  <span class="fw-num" :class="pnlClass(item.params?.netProfit ?? item.netProfit)">
-                    {{ formatPnl(item.params?.netProfit ?? item.netProfit) }} USDT
+              <div class="pnl-hero">
+                <div class="pnl-hero__metric">
+                  <span class="pnl-hero__label">
+                    {{ isCopyTradeOrderEnded(item) ? _t18('copy_trade_period_pnl') : _t18('copy_trade_pnl_usdt') }}
+                  </span>
+                  <span class="ff-num pnl-hero__value" :class="pnlClass(orderPnl(item))">
+                    {{ formatPnl(orderPnl(item)) }} USDT
                   </span>
                 </div>
+                <div class="pnl-hero__metric pnl-hero__metric--right">
+                  <span class="pnl-hero__label">{{ _t18('copy_trade_roi') }}</span>
+                  <span class="ff-num pnl-hero__value" :class="pnlClass(orderPnl(item))">{{ orderPnlRate(item) }}%</span>
+                </div>
+              </div>
+              <div
+                v-if="isCopyTradeOrderEnded(item) && (item.params?.netProfit != null || item.netProfit != null)"
+                class="net-row"
+              >
+                <span class="net-row__label">{{ _t18('copy_trade_net_profit') }}</span>
+                <span class="ff-num net-row__value" :class="pnlClass(item.params?.netProfit ?? item.netProfit)">
+                  {{ formatPnl(item.params?.netProfit ?? item.netProfit) }} USDT
+                </span>
               </div>
 
               <div
@@ -260,18 +229,7 @@ function formatGroupDateLabel(group) {
   const d = dayjs(group.date)
   if (!d.isValid()) return group.dateLabel
   const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
-  return `${d.format('M月D日')} ${weekdays[d.day()]}`
-}
-
-function cardTimeParts(text) {
-  if (!text || text === '--') return { date: '--', time: '' }
-  const s = String(text).trim()
-  const d = dayjs(s)
-  if (d.isValid()) {
-    return { date: d.format('M/D'), time: d.format('HH:mm') }
-  }
-  const [date, time] = s.split(/\s+/)
-  return { date: date || s, time: time || '' }
+  return `${d.format('YYYY.MM.DD')} ${weekdays[d.day()]}`
 }
 
 const institutionSummary = computed(() => {
@@ -568,33 +526,33 @@ $muted: #888;
   border-radius: 16px;
   padding: 16px;
   cursor: pointer;
-  box-shadow: 0 2px 16px rgba(15, 23, 42, 0.05);
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.06);
 }
 
 .strategy-card__head {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #f2f4f7;
 }
 
 .avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: #f3f4f6;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #eee;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 16px;
-  font-weight: 600;
-  color: #6b7280;
+  color: #666;
   flex-shrink: 0;
 
   &--img {
     display: block;
     object-fit: cover;
-    border-radius: 12px;
     background: #f2f4f7;
   }
 }
@@ -604,32 +562,19 @@ $muted: #888;
   min-width: 0;
 
   .name {
-    font-size: 16px;
-    font-weight: 600;
+    font-size: 15px;
+    font-weight: 700;
     color: #111827;
     margin: 0 0 8px;
     line-height: 1.35;
   }
 }
 
-.head-meta {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.head-amount {
-  font-size: 13px;
-  font-weight: 600;
-  color: #374151;
-}
-
 .badge {
   display: inline-block;
   font-size: 11px;
   line-height: 1;
-  padding: 4px 9px;
+  padding: 5px 10px;
   border-radius: 999px;
   font-weight: 500;
 
@@ -640,190 +585,56 @@ $muted: #888;
 
   &--settled {
     background: #f3f4f6;
-    color: #9ca3af;
+    color: $muted;
   }
 }
 
-.timeline-list {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #f0f2f5;
-}
-
-.timeline-item {
+.kv-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
-
-  &__label {
-    font-size: 12px;
-    font-weight: 500;
-    color: #6b7280;
-  }
-
-  &__track {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: center;
-    gap: 0;
-  }
-
-  &__line {
-    width: 100%;
-    min-width: 48px;
-    height: 2px;
-    margin: 0 4px;
-    margin-top: 14px;
-    border-radius: 999px;
-    background: linear-gradient(90deg, #e5e7eb 0%, rgba($green, 0.35) 100%);
-    position: relative;
-
-    &::after {
-      content: '';
-      position: absolute;
-      right: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 0;
-      height: 0;
-      border-top: 4px solid transparent;
-      border-bottom: 4px solid transparent;
-      border-left: 5px solid rgba($green, 0.45);
-    }
-  }
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #f8fafc;
 }
 
-.timeline-node {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 6px;
-  min-width: 0;
-
-  &--end {
-    align-items: flex-end;
-    text-align: right;
-  }
-
-  &__time {
-    font-size: 15px;
-    font-weight: 600;
-    color: #111827;
-    line-height: 1.1;
-  }
-
-  &__dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #fff;
-    border: 2px solid #d1d5db;
-    box-shadow: 0 0 0 3px #fff;
-
-    &--live {
-      border-color: $green;
-      background: $green;
-      box-shadow: 0 0 0 3px rgba($green, 0.15);
-    }
-  }
-
-  &__date {
-    font-size: 11px;
-    color: #9ca3af;
-    line-height: 1.2;
-  }
-
-  &__status {
-    font-size: 12px;
-    font-weight: 500;
-    color: $green;
-    line-height: 1.2;
-    margin-bottom: 2px;
-  }
-}
-
-.ongoing-meta {
+.kv-list .kv {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 0 16px;
-  border-bottom: 1px solid #f0f2f5;
+  align-items: flex-start;
+  gap: 16px;
+  font-size: 13px;
+  line-height: 1.4;
 
-  &__tag {
-    font-size: 12px;
-    color: #374151;
-    padding: 4px 10px;
-    border-radius: 6px;
-    background: #f9fafb;
-    border: 1px solid #eef0f3;
-  }
-
-  &__trades {
-    font-size: 12px;
-    color: #9ca3af;
-
-    em {
-      font-style: normal;
-      font-size: 14px;
-      font-weight: 600;
-      color: #111827;
-      margin-left: 4px;
-    }
+  &--last {
+    margin-bottom: 0;
   }
 }
 
-.result-panel {
-  margin-top: 16px;
+.kv__label {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: #8b95a5;
+}
+
+.kv__value {
+  text-align: right;
+  font-size: 13px;
+  font-weight: 500;
+  color: #111827;
+  word-break: break-word;
+}
+
+.pnl-hero {
+  display: flex;
+  gap: 16px;
+  margin-top: 12px;
+  padding: 12px 14px;
   border-radius: 12px;
-  overflow: hidden;
-  background: #fafbfc;
-  border: 1px solid #f0f2f5;
-
-  &--up {
-    background: linear-gradient(180deg, rgba($green, 0.06) 0%, #fafbfc 100%);
-    border-color: rgba($green, 0.12);
-  }
-
-  &--down {
-    background: linear-gradient(180deg, rgba($red, 0.05) 0%, #fafbfc 100%);
-    border-color: rgba($red, 0.1);
-  }
-
-  &__main {
-    display: flex;
-    gap: 16px;
-    padding: 14px 16px;
-  }
-
-  &__net {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 16px;
-    border-top: 1px solid rgba(0, 0, 0, 0.04);
-    font-size: 13px;
-    color: #6b7280;
-
-    .fw-num {
-      font-weight: 600;
-      color: #111827;
-
-      &.is-up {
-        color: $green;
-      }
-
-      &.is-down {
-        color: $red;
-      }
-    }
-  }
+  background: #f8fafc;
 }
 
-.result-metric {
+.pnl-hero__metric {
   flex: 1;
   min-width: 0;
   display: flex;
@@ -834,25 +645,46 @@ $muted: #888;
     align-items: flex-end;
     text-align: right;
   }
+}
+
+.pnl-hero__label {
+  font-size: 12px;
+  color: #8b95a5;
+}
+
+.pnl-hero__value {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #111827;
+
+  &.is-up {
+    color: $green;
+  }
+
+  &.is-down {
+    color: #e8503a;
+  }
+}
+
+.net-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid #f2f4f7;
+  font-size: 13px;
 
   &__label {
-    font-size: 12px;
-    color: #9ca3af;
+    color: #8b95a5;
   }
 
   &__value {
-    font-size: 22px;
     font-weight: 600;
-    line-height: 1.15;
-    color: #111827;
-
-    &.is-up {
-      color: $green;
-    }
-
-    &.is-down {
-      color: $red;
-    }
   }
 }
 
@@ -874,14 +706,15 @@ $muted: #888;
 .card-footer {
   display: flex;
   justify-content: flex-end;
-  margin-top: 14px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #f2f4f7;
 }
 
 .detail-link {
   font-size: 13px;
   font-weight: 500;
-  color: #9ca3af;
-  letter-spacing: 0.01em;
+  color: $green;
 }
 
 .share-btn {
