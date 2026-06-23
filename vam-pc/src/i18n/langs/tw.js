@@ -79,7 +79,7 @@ export default {
     sendCodeSuccess: "驗證碼發送成功",
   },
   login: {
-    title: " 歡迎登錄Veloxam",
+    title: " 歡迎登錄GXPEX",
     accountLogin: "賬號登錄",
     emailLogin: "郵箱登錄",
     phoneLogin: "手機登錄",
@@ -90,7 +90,7 @@ export default {
     loginSuccess: "登錄成功",
   },
   regis: {
-    title: "註冊Veloxam賬號",
+    title: "註冊GXPEX賬號",
     accountRegis: "賬號註冊",
     emailRegis: "郵箱註冊",
     phoneRegis: "手機註冊",
@@ -176,7 +176,7 @@ export default {
     quickRecharge: "快速充值",
     onlineCustomer: "在線客服",
     customerTip1:
-      "請認準Telegram Veloxam 官方客服，核對Telegram用戶名，其他人員請找官方客服人員確認，謹防上當受騙",
+      "請認準Telegram GXPEX 官方客服，核對Telegram用戶名，其他人員請找官方客服人員確認，謹防上當受騙",
     customerTip2: "如需開台，聯繫以下推廣客服：",
   },
   quotes: {
@@ -342,8 +342,8 @@ export default {
     Equivalent: "折合",
     accountDeposit: "帳戶入金",
     accountDepositTip: "支持多種入金方式，您可以選擇最適合您的入金方式",
-    rechargeTip: "將其他帳戶中的加密貨幣存入Veloxam的帳戶，便利輕鬆",
-    withdrawTip: "將Veloxam帳戶中的加密貨幣提現到其他帳戶，便利輕鬆",
+    rechargeTip: "將其他帳戶中的加密貨幣存入GXPEX的帳戶，便利輕鬆",
+    withdrawTip: "將GXPEX帳戶中的加密貨幣提現到其他帳戶，便利輕鬆",
     transfer: "劃轉",
     transferTip: "便攜安全地接收其他幣安帳戶轉幣。",
     coinTypeList: "幣種列表",
@@ -459,8 +459,8 @@ export default {
     accountDepositTip: "支持多種入金方式，您可以選擇最適合您的入金方式",
     recharge: "充值",
     withdraw: "提現",
-    rechargeTip: "將其他賬戶中的加密貨幣存入Veloxam的賬戶，便利輕松",
-    withdrawTip: "將Veloxam賬戶中的加密貨幣提現到其他賬戶，便利輕松",
+    rechargeTip: "將其他賬戶中的加密貨幣存入GXPEX的賬戶，便利輕松",
+    withdrawTip: "將GXPEX賬戶中的加密貨幣提現到其他賬戶，便利輕松",
     transfer: "劃轉",
     transferTip: "便攜安全地接收其他幣安賬戶轉幣。",
     annoTitle: "公告",

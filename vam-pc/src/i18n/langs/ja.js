@@ -77,7 +77,7 @@ export default {
     sendCodeSuccess: "認証コード送信成功",
   },
   login: {
-    title: "Veloxamへようこそ",
+    title: "GXPEXへようこそ",
     accountLogin: "アカウントログイン",
     emailLogin: "メールログイン",
     phoneLogin: "電話ログイン",
@@ -88,7 +88,7 @@ export default {
     loginSuccess: "ログイン成功",
   },
   regis: {
-    title: "Veloxamアカウント登録",
+    title: "GXPEXアカウント登録",
     accountRegis: "アカウント登録",
     emailRegis: "メール登録",
     phoneRegis: "電話登録",
@@ -344,9 +344,9 @@ export default {
     accountDepositTip:
       "さまざまな入金方法をサポートしています。お好みの入金方法を選択できます。",
     rechargeTip:
-      "他のアカウントから暗号通貨をVeloxamアカウントに入金し、便利に行えます。",
+      "他のアカウントから暗号通貨をGXPEXアカウントに入金し、便利に行えます。",
     withdrawTip:
-      "Veloxamアカウントの暗号通貨を他のアカウントに引き出し、便利に行えます。",
+      "GXPEXアカウントの暗号通貨を他のアカウントに引き出し、便利に行えます。",
     transfer: "転送",
     transferTip:
       "他のBinanceアカウントから安全にコインを受け取ることができます。",
@@ -457,9 +457,9 @@ export default {
     recharge: "再充電",
     withdraw: "引き出し",
     rechargeTip:
-      "他のアカウントからVeloxamアカウントに暗号通貨を入金する、便利で簡単な方法",
+      "他のアカウントからGXPEXアカウントに暗号通貨を入金する、便利で簡単な方法",
     withdrawTip:
-      "Veloxamアカウントから暗号通貨を他のアカウントに引き出す、便利で簡単な方法",
+      "GXPEXアカウントから暗号通貨を他のアカウントに引き出す、便利で簡単な方法",
     transfer: "転送",
     transferTip: "他のBinanceアカウントから安全にコインを受け取る",
     annoTitle: "お知らせ",

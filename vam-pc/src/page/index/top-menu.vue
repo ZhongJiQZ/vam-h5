@@ -5,7 +5,7 @@
       @click="$router.push({ path: '/' })"
       v-if="navType == 'default'"
     >
-      <img src="../../assets/image/logo.jpg" alt="" />
+      <img src="../../assets/image/gxpenlogo.png" alt="GXPEX" />
     </div>
     <!-- <div class="menu-list" v-if="navType == 'default'">
       <div class="menu-item-box" v-for="item in menu" :key="item.id">
@@ -1380,7 +1380,8 @@ export default {
     align-items: center;
 
     img {
-      width: 35px;
+      height: 40px;
+      width: auto;
     }
   }
 

@@ -77,3 +77,4 @@ export default {
 export const _APP_ENV = process.env.VUE_APP_ENV || "";  // 举例：pc / h5 / xxx
 export const PLATFORM_12HOURFORMAT = false;
 export const DEFAULT_LANGUAGE = "en"; // 你 setupI18n 里用到
+export const PLATFORM_NAME = "GXPEX";

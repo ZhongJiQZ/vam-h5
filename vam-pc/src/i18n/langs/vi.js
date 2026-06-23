@@ -74,7 +74,7 @@ export default {
     sendCodeSuccess: "Gửi mã xác nhận thành công",
   },
   login: {
-    title: "Chào mừng đăng nhập vào Veloxam",
+    title: "Chào mừng đăng nhập vào GXPEX",
     accountLogin: "Đăng nhập tài khoản",
     emailLogin: "Đăng nhập email",
     phoneLogin: "Đăng nhập điện thoại",
@@ -85,7 +85,7 @@ export default {
     loginSuccess: "Đăng nhập thành công",
   },
   regis: {
-    title: "Đăng ký tài khoản Veloxam",
+    title: "Đăng ký tài khoản GXPEX",
     accountRegis: "Đăng ký tài khoản",
     emailRegis: "Đăng ký email",
     phoneRegis: "Đăng ký điện thoại",
@@ -174,7 +174,7 @@ export default {
     quickRecharge: "Nạp tiền nhanh chóng",
     onlineCustomer: "Dịch vụ khách hàng trực tuyến",
     customerTip1:
-      "Vui lòng nhận diện dịch vụ khách hàng chính thức của Telegram của Veloxam, xác minh tên người dùng Telegram, vui lòng liên hệ với nhân viên dịch vụ khách hàng chính thức để xác nhận, tránh bị lừa đảo",
+      "Vui lòng nhận diện dịch vụ khách hàng chính thức của Telegram của GXPEX, xác minh tên người dùng Telegram, vui lòng liên hệ với nhân viên dịch vụ khách hàng chính thức để xác nhận, tránh bị lừa đảo",
     customerTip2:
       "Nếu cần mở kênh, vui lòng liên hệ với các nhân viên dịch vụ khách hàng dưới đây:",
   },
@@ -342,9 +342,9 @@ export default {
     accountDepositTip:
       "Hỗ trợ nhiều phương thức nạp tiền, bạn có thể chọn phương thức phù hợp nhất",
     rechargeTip:
-      "Chuyển tiền điện tử từ tài khoản khác vào tài khoản Veloxam, tiện lợi và dễ dàng",
+      "Chuyển tiền điện tử từ tài khoản khác vào tài khoản GXPEX, tiện lợi và dễ dàng",
     withdrawTip:
-      "Rút tiền điện tử từ tài khoản Veloxam sang tài khoản khác, tiện lợi và dễ dàng",
+      "Rút tiền điện tử từ tài khoản GXPEX sang tài khoản khác, tiện lợi và dễ dàng",
     transfer: "Chuyển khoản",
     transferTip:
       "Nhận tiền từ các tài khoản Binance khác một cách tiện lợi và an toàn.",
@@ -455,9 +455,9 @@ export default {
     recharge: "Nạp tiền",
     withdraw: "Rút tiền",
     rechargeTip:
-      "Chuyển tiền điện tử từ tài khoản khác vào tài khoản Veloxam, tiện lợi và dễ dàng",
+      "Chuyển tiền điện tử từ tài khoản khác vào tài khoản GXPEX, tiện lợi và dễ dàng",
     withdrawTip:
-      "Rút tiền điện tử từ tài khoản Veloxam vào tài khoản khác, tiện lợi và dễ dàng",
+      "Rút tiền điện tử từ tài khoản GXPEX vào tài khoản khác, tiện lợi và dễ dàng",
     transfer: "Chuyển khoản",
     transferTip:
       "An toàn và tiện lợi nhận tiền chuyển từ tài khoản Binance khác",

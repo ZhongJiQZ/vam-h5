@@ -364,7 +364,7 @@ export default {
           // 布尔值显示商品是否具有以日为单位的历史数据
           // has_daily: true,
           // 交易所名称
-          exchange: "Veloxam",
+          exchange: "GXPEX",
           //设置是否支持周月线
           description: this.coinInfo.symbolUpperCase,
           //设置价格精度  100表示保留两位小数   1000三位   10000四位
@@ -596,7 +596,7 @@ export default {
         // 布尔值显示商品是否具有以日为单位的历史数据
         // has_daily: true,
         // 交易所名称
-        exchange: "Veloxam",
+        exchange: "GXPEX",
         //设置是否支持周月线
         description: this.coinInfo.symbolUpperCase,
         //设置价格精度  100表示保留两位小数   1000三位   10000四位

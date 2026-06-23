@@ -76,7 +76,7 @@ export default {
     sendCodeSuccess: "Verification code sent successfully",
   },
   login: {
-    title: "Welcome to Veloxam",
+    title: "Welcome to GXPEX",
     accountLogin: "Account",
     emailLogin: "Email",
     phoneLogin: "Phone",
@@ -87,7 +87,7 @@ export default {
     loginSuccess: "Login Success",
   },
   regis: {
-    title: "Register Veloxam Account",
+    title: "Register GXPEX Account",
     accountRegis: "Account",
     emailRegis: "Email",
     phoneRegis: "Phone",
@@ -177,7 +177,7 @@ export default {
     quickRecharge: "Instant Deposit",
     onlineCustomer: "Live Chat",
     customerTip1:
-      "Please identify the official customer service of Telegram Veloxam, verify the Telegram username, and contact the official customer service personnel. Beware of fraud.",
+      "Please identify the official customer service of Telegram GXPEX, verify the Telegram username, and contact the official customer service personnel. Beware of fraud.",
     customerTip2:
       "For account opening, contact the following promotion customer service:",
   },
@@ -345,9 +345,9 @@ export default {
     accountDepositTip:
       "Supports various deposit methods. Choose the one that suits you best.",
     rechargeTip:
-      "Deposit cryptocurrency from other accounts into your Veloxam account, conveniently and easily.",
+      "Deposit cryptocurrency from other accounts into your GXPEX account, conveniently and easily.",
     withdrawTip:
-      "Withdraw cryptocurrency from your Veloxam account to other accounts, conveniently and easily.",
+      "Withdraw cryptocurrency from your GXPEX account to other accounts, conveniently and easily.",
     transfer: "Transfer",
     transferTip:
       "Receive cryptocurrency transfers from other Binance accounts securely and conveniently.",
@@ -466,9 +466,9 @@ export default {
     recharge: "Deposit",
     withdraw: "Withdraw",
     rechargeTip:
-      "Deposit cryptocurrency from other accounts into your Veloxam account easily and conveniently.",
+      "Deposit cryptocurrency from other accounts into your GXPEX account easily and conveniently.",
     withdrawTip:
-      "Withdraw cryptocurrency from your Veloxam account to other accounts easily and conveniently.",
+      "Withdraw cryptocurrency from your GXPEX account to other accounts easily and conveniently.",
     transfer: "Transfer",
     transferTip: "Receive cryptocurrency securely from other Binance accounts.",
     annoTitle:"Announcement",

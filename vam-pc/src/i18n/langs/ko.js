@@ -73,7 +73,7 @@ export default {
     sendCodeSuccess: "인증 코드 전송 성공",
   },
   login: {
-    title: " 환영합니다. Veloxam에 로그인",
+    title: " 환영합니다. GXPEX에 로그인",
     accountLogin: "계정 로그인",
     emailLogin: "이메일 로그인",
     phoneLogin: "휴대폰 로그인",
@@ -84,7 +84,7 @@ export default {
     loginSuccess: "로그인 성공",
   },
   regis: {
-    title: "Veloxam 계정 등록",
+    title: "GXPEX 계정 등록",
     accountRegis: "계정 등록",
     emailRegis: "이메일 등록",
     phoneRegis: "휴대폰 등록",
@@ -338,8 +338,8 @@ export default {
     accountDeposit: "계정 입금",
     accountDepositTip:
       "여러 입금 방식을 지원하며 가장 적합한 방법을 선택할 수 있습니다.",
-    rechargeTip: "다른 계정의 암호화폐를 Veloxam 계정으로 입금하십시오.",
-    withdrawTip: "Veloxam 계정의 암호화폐를 다른 계정으로 출금하십시오.",
+    rechargeTip: "다른 계정의 암호화폐를 GXPEX 계정으로 입금하십시오.",
+    withdrawTip: "GXPEX 계정의 암호화폐를 다른 계정으로 출금하십시오.",
     transfer: "이체",
     transferTip: "휴대폰 안전하게 다른 Binance 계정에서 코인을 받으십시오.",
     coinTypeList: "코인 종류 목록",
@@ -449,9 +449,9 @@ export default {
     recharge: "충전",
     withdraw: "인출",
     rechargeTip:
-      "다른 계정에서 암호화폐를 Veloxam 계정에 입금하여 편리하게",
+      "다른 계정에서 암호화폐를 GXPEX 계정에 입금하여 편리하게",
     withdrawTip:
-      "Veloxam 계정의 암호화폐를 다른 계정에 인출하여 편리하게",
+      "GXPEX 계정의 암호화폐를 다른 계정에 인출하여 편리하게",
     transfer: "이체",
     transferTip: "휴대폰 안전하게 다른 바이낸스 계정에서 돈을 받다.",
     annoTitle: "공지",

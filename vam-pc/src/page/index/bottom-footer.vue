@@ -3,8 +3,7 @@
     <div class="footer-wrap">
       <div class="wrap-logo flex-colum-between">
         <div class="logo-img flex-start">
-          <img src="../../assets/image/logo.jpg" alt="" />
-          <span class="num_Bold">Veloxam</span>
+          <img src="../../assets/image/gxpenlogo.png" alt="GXPEX" />
         </div>
         <!-- <div class="logo-lang" @click="openSetLangFun">
           <span>{{ languageName }}</span>
@@ -334,12 +333,8 @@ export default {
 
   .logo-img {
     img {
-      width: 44px;
-    }
-
-    span {
-      font-size: 28px;
-      color: #536fff;
+      height: 48px;
+      width: auto;
     }
   }
 

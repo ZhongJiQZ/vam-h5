@@ -78,7 +78,7 @@ export default {
   },
 
   login: {
-    title: "Selamat datang di Veloxam",
+    title: "Selamat datang di GXPEX",
     accountLogin: "Akun",
     emailLogin: "Email",
     phoneLogin: "Telepon",
@@ -90,7 +90,7 @@ export default {
   },
 
   regis: {
-    title: "Daftarkan Akun Veloxam",
+    title: "Daftarkan Akun GXPEX",
     accountRegis: "Akun",
     emailRegis: "Email",
     phoneRegis: "Telepon",
@@ -185,7 +185,7 @@ export default {
     quickRecharge: "Deposit cepat",
     onlineCustomer: "Layanan pelanggan online",
     customerTip1:
-      "Harap kenali layanan pelanggan resmi Telegram Veloxam, verifikasi username Telegram, dan hubungi staf resmi. Waspada penipuan.",
+      "Harap kenali layanan pelanggan resmi Telegram GXPEX, verifikasi username Telegram, dan hubungi staf resmi. Waspada penipuan.",
     customerTip2: "Untuk pembukaan akun, hubungi layanan pelanggan promosi berikut:",
   },
 
@@ -361,9 +361,9 @@ export default {
     accountDepositTip:
       "Mendukung berbagai metode deposit. Pilih yang paling cocok untuk Anda.",
     rechargeTip:
-      "Deposit kripto dari akun lain ke akun Veloxam Anda, praktis dan mudah.",
+      "Deposit kripto dari akun lain ke akun GXPEX Anda, praktis dan mudah.",
     withdrawTip:
-      "Tarik kripto dari akun Veloxam Anda ke akun lain, praktis dan mudah.",
+      "Tarik kripto dari akun GXPEX Anda ke akun lain, praktis dan mudah.",
     transfer: "Transfer",
     transferTip:
       "Terima transfer kripto dari akun Binance lain dengan aman dan nyaman.",
@@ -483,9 +483,9 @@ export default {
     recharge: "Deposit",
     withdraw: "Penarikan",
     rechargeTip:
-      "Deposit kripto dari akun lain ke akun Veloxam Anda dengan mudah dan nyaman.",
+      "Deposit kripto dari akun lain ke akun GXPEX Anda dengan mudah dan nyaman.",
     withdrawTip:
-      "Tarik kripto dari akun Veloxam Anda ke akun lain dengan mudah dan nyaman.",
+      "Tarik kripto dari akun GXPEX Anda ke akun lain dengan mudah dan nyaman.",
     transfer: "Transfer",
     transferTip: "Terima kripto secara aman dari akun Binance lain.",
     annoTitle: "Pengumuman",

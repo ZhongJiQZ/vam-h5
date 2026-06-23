@@ -72,7 +72,7 @@
                 <img :src="require('@/assets/image/qrcode.png')" alt="" />
               </div>
               <div class="textBox flex-colum-around">
-                <p>Veloxam App</p>
+                <p>GXPEX App</p>
                 <p>IOS & Android {{ $t("user.scanDownloadStri") }}</p>
               </div>
             </div>

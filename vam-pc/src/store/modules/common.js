@@ -6,10 +6,16 @@ import { getPlatFormConfigApi } from "@/api/common";
 import { getUserRechageNewApi } from "@/api/assets";
 import { analysisFunction } from "@/util/util";
 import { normalizeRechargeAddressFromApi } from "@/util/rechargeAddress";
+import gxpenlogo from "@/assets/image/gxpenlogo.png";
+
+const defaultLogo = {
+  daytime: gxpenlogo,
+  night: gxpenlogo,
+};
 
 const common = {
   state: {
-    logo: getStore({ name: "logo" }) || {},
+    logo: getStore({ name: "logo" }) || defaultLogo,
     language: getStore({ name: "language" }) || "en",
     languageName: getStore({ name: "languageName" }) || "English",
     defaultLang: getStore({ name: "defaultLang" }) || "en",

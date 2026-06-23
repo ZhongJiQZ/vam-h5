@@ -78,7 +78,7 @@ export default {
   },
 
   login: {
-    title: "Veloxam میں خوش آمدید",
+    title: "GXPEX میں خوش آمدید",
     accountLogin: "اکاؤنٹ",
     emailLogin: "ای میل",
     phoneLogin: "فون",
@@ -90,7 +90,7 @@ export default {
   },
 
   regis: {
-    title: "Veloxam اکاؤنٹ رجسٹر کریں",
+    title: "GXPEX اکاؤنٹ رجسٹر کریں",
     accountRegis: "اکاؤنٹ",
     emailRegis: "ای میل",
     phoneRegis: "فون",
@@ -185,7 +185,7 @@ export default {
     quickRecharge: "فوری ریچارج",
     onlineCustomer: "آن لائن کسٹمر سروس",
     customerTip1:
-      "براہِ کرم Telegram Veloxam کی آفیشل کسٹمر سروس کی شناخت کریں، Telegram یوزرنیم کی تصدیق کریں اور آفیشل اسٹاف سے رابطہ کریں۔ فراڈ سے بچیں۔",
+      "براہِ کرم Telegram GXPEX کی آفیشل کسٹمر سروس کی شناخت کریں، Telegram یوزرنیم کی تصدیق کریں اور آفیشل اسٹاف سے رابطہ کریں۔ فراڈ سے بچیں۔",
     customerTip2: "اکاؤنٹ کھلوانے کے لیے درج ذیل پروموشن کسٹمر سروس سے رابطہ کریں:",
   },
 
@@ -359,8 +359,8 @@ export default {
     Equivalent: "برابر",
     accountDeposit: "اکاؤنٹ ڈپازٹ",
     accountDepositTip: "متعدد ڈپازٹ طریقے سپورٹ کرتا ہے۔ اپنے لیے بہترین منتخب کریں۔",
-    rechargeTip: "دوسرے اکاؤنٹس سے اپنے Veloxam اکاؤنٹ میں کرپٹو ڈپازٹ کریں، آسان اور سہل۔",
-    withdrawTip: "اپنے Veloxam اکاؤنٹ سے دوسرے اکاؤنٹس میں کرپٹو وِڈرا کریں، آسان اور سہل۔",
+    rechargeTip: "دوسرے اکاؤنٹس سے اپنے GXPEX اکاؤنٹ میں کرپٹو ڈپازٹ کریں، آسان اور سہل۔",
+    withdrawTip: "اپنے GXPEX اکاؤنٹ سے دوسرے اکاؤنٹس میں کرپٹو وِڈرا کریں، آسان اور سہل۔",
     transfer: "ٹرانسفر",
     transferTip: "دوسرے Binance اکاؤنٹس سے کرپٹو محفوظ اور آسانی سے وصول کریں۔",
     coinTypeList: "کوائن کی اقسام کی فہرست",
@@ -477,8 +477,8 @@ export default {
     accountDepositTip: "متعدد ڈپازٹ طریقے سپورٹ کرتا ہے۔ اپنے لیے بہترین منتخب کریں۔",
     recharge: "ریچارج",
     withdraw: "وِڈرا",
-    rechargeTip: "اپنے Veloxam اکاؤنٹ میں دوسرے اکاؤنٹس سے کرپٹو آسانی سے ڈپازٹ کریں۔",
-    withdrawTip: "اپنے Veloxam اکاؤنٹ سے دوسرے اکاؤنٹس میں کرپٹو آسانی سے وِڈرا کریں۔",
+    rechargeTip: "اپنے GXPEX اکاؤنٹ میں دوسرے اکاؤنٹس سے کرپٹو آسانی سے ڈپازٹ کریں۔",
+    withdrawTip: "اپنے GXPEX اکاؤنٹ سے دوسرے اکاؤنٹس میں کرپٹو آسانی سے وِڈرا کریں۔",
     transfer: "ٹرانسفر",
     transferTip: "دوسرے Binance اکاؤنٹس سے کرپٹو محفوظ طریقے سے وصول کریں۔",
     annoTitle: "اعلان",

@@ -76,7 +76,7 @@ export default {
     sendCodeSuccess: "Kodas išsiųstas sėkmingai",
   },
   login: {
-    title: " Sveiki prisijungę prie Veloxam",
+    title: " Sveiki prisijungę prie GXPEX",
     accountLogin: "Prisijungimas prie sąskaitos",
     emailLogin: "El. pašto prisijungimas",
     phoneLogin: "Telefono prisijungimas",
@@ -87,7 +87,7 @@ export default {
     loginSuccess: "Prisijungimas sėkmingas",
   },
   regis: {
-    title: "Registruokitės Veloxam paskyrą",
+    title: "Registruokitės GXPEX paskyrą",
     accountRegis: "Paskyros registracija",
     emailRegis: "El. pašto registracija",
     phoneRegis: "Telefono registracija",
@@ -176,7 +176,7 @@ export default {
     quickRecharge: "Greitas įkrovimas",
     onlineCustomer: "Internetinis klientų aptarnavimas",
     customerTip1:
-      "Pripažinkite „Telegram“ Veloxam“ technologijos oficialius klientų aptarnavimo specialistus, patikrinkite „Telegram“ vartotojo vardą, kadangi kiti asmenys turėtų patikrinti oficialius klientų aptarnavimo specialistus, kad vengtų apgavimo",
+      "Pripažinkite „Telegram“ GXPEX“ technologijos oficialius klientų aptarnavimo specialistus, patikrinkite „Telegram“ vartotojo vardą, kadangi kiti asmenys turėtų patikrinti oficialius klientų aptarnavimo specialistus, kad vengtų apgavimo",
     customerTip2:
       "Jei jums reikia atidaryti, susisiekite su šiais klientų aptarnavimo specialistais:",
   },
@@ -344,9 +344,9 @@ export default {
     accountDepositTip:
       "Palaikomi įvairūs indėlių būdai. Pasirinkite jums tinkamiausią būdą.",
     rechargeTip:
-      "Pervedžia kriptovaliutą iš kitos sąskaitos į Veloxam sąskaitą, patogiai ir lengvai.",
+      "Pervedžia kriptovaliutą iš kitos sąskaitos į GXPEX sąskaitą, patogiai ir lengvai.",
     withdrawTip:
-      "Iš Veloxam sąskaitos išimkite kriptovaliutą į kitą sąskaitą, patogiai ir lengvai.",
+      "Iš GXPEX sąskaitos išimkite kriptovaliutą į kitą sąskaitą, patogiai ir lengvai.",
     transfer: "Pervedimas",
     transferTip:
       "Saugiai priimkite kitų Binance sąskaitų perleistą kriptovaliutą.",
@@ -457,9 +457,9 @@ export default {
     recharge: "Įkrauti",
     withdraw: "Išsiimti",
     rechargeTip:
-      "Įskaityti kriptovaliutą iš kitų sąskaitų į Veloxam sąskaitą.",
+      "Įskaityti kriptovaliutą iš kitų sąskaitų į GXPEX sąskaitą.",
     withdrawTip:
-      "Išsiimti kriptovaliutą iš Veloxam sąskaitos į kitas sąskaitas.",
+      "Išsiimti kriptovaliutą iš GXPEX sąskaitos į kitas sąskaitas.",
     transfer: "Perkelti",
     transferTip: "Saugiai priimkite kitų Binance sąskaitų perkėlimą.",
     annoTitle: "Pranešimai",

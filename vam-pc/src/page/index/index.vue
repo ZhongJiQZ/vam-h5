@@ -51,7 +51,7 @@ import { getStore } from "@/util/store";
 import { calcDate } from "@/util/date";
 import { validatenull } from "@/util/validate";
 import { getDataApi } from "@/api/system";
-import website from "@/config/index";
+import website, { PLATFORM_NAME } from "@/config/index";
 import mqtt from "@/mixins/mqtt";
 import { getCurrentDateFun } from "@/util/util";
 import {
@@ -137,7 +137,7 @@ export default {
   },
   watch: {
     $route(to, from) {
-      document.title = `Veloxam - Veloxam `;
+      document.title = PLATFORM_NAME;
     },
     isLogin(newVal) {
       // if (newVal) {

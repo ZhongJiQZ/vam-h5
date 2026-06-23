@@ -74,7 +74,7 @@ export default {
       sendCodeSuccess: "Code envoyé avec succès",
     },
     login: {
-      title: "Bienvenue sur Veloxam",
+      title: "Bienvenue sur GXPEX",
       accountLogin: "Connexion au compte",
       emailLogin: "Connexion par email",
       phoneLogin: "Connexion par téléphone",
@@ -85,7 +85,7 @@ export default {
       loginSuccess: "Connexion réussie",
     },
     regis: {
-      title: "Inscription au compte Veloxam",
+      title: "Inscription au compte GXPEX",
       accountRegis: "Inscription au compte",
       emailRegis: "Inscription par email",
       phoneRegis: "Inscription par téléphone",
@@ -175,7 +175,7 @@ export default {
       quickRecharge: "Recharge rapide",
       onlineCustomer: "Service client en ligne",
       customerTip1:
-        "Veuillez vérifier auprès du service client officiel de Telegram Veloxam en confirmant le nom d'utilisateur Telegram. Pour toute autre personne, veuillez contacter le personnel du service client officiel pour confirmation, afin d'éviter toute escroquerie",
+        "Veuillez vérifier auprès du service client officiel de Telegram GXPEX en confirmant le nom d'utilisateur Telegram. Pour toute autre personne, veuillez contacter le personnel du service client officiel pour confirmation, afin d'éviter toute escroquerie",
       customerTip2:
         "Pour ouvrir un compte, contactez le service clientèle promotionnel suivant :",
     },
@@ -344,9 +344,9 @@ export default {
       accountDepositTip:
         "Prise en charge de plusieurs méthodes de dépôt, choisissez celle qui vous convient le mieux",
       rechargeTip:
-        "Transférez facilement de la crypto-monnaie d'un autre compte vers votre compte Veloxam",
+        "Transférez facilement de la crypto-monnaie d'un autre compte vers votre compte GXPEX",
       withdrawTip:
-        "Retirez facilement de la crypto-monnaie de votre compte Veloxam vers un autre compte",
+        "Retirez facilement de la crypto-monnaie de votre compte GXPEX vers un autre compte",
       transfer: "Transfert",
       transferTip:
         "Recevez en toute sécurité des transferts depuis d'autres comptes Binance.",
@@ -457,9 +457,9 @@ export default {
       recharge: "Recharger",
       withdraw: "Retirer",
       rechargeTip:
-        "Transférer des crypto-monnaies d'un autre compte vers le compte Veloxam, facilement et rapidement",
+        "Transférer des crypto-monnaies d'un autre compte vers le compte GXPEX, facilement et rapidement",
       withdrawTip:
-        "Retirer des crypto-monnaies du compte Veloxam vers un autre compte, facilement et rapidement",
+        "Retirer des crypto-monnaies du compte GXPEX vers un autre compte, facilement et rapidement",
       transfer: "Transférer",
       transferTip:
         "Recevoir en toute sécurité des transferts depuis d'autres comptes Binance",

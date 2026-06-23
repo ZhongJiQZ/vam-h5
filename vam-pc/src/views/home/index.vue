@@ -11,7 +11,7 @@
         <div class="b-left flex-start">
           <div class="banner-title title-color">
             <p>{{ $t("home.welcUse") }}</p>
-            <p class="logo_color">Veloxam - Veloxam </p>
+            <p class="logo_color">GXPEX</p>
             <p>{{ $t("home.platform") }}</p>
           </div>
           <div class="banner-register" v-if="isLogin">
@@ -266,10 +266,10 @@
       </div>
     </div>
 
-    <!-- Veloxam精选 -->
+    <!-- GXPEX精选 -->
     <!-- <div class="selected_box container_box flex-colum-around">
       <div class="title">
-        <p class="a1 num_Bold">Veloxam{{ $t("home.selected") }}</p>
+        <p class="a1 num_Bold">GXPEX{{ $t("home.selected") }}</p>
         <p class="help">{{ $t("home.helpEarnMoney") }}</p>
       </div>
       <div class="content flex-between">
@@ -1462,7 +1462,7 @@ export default {
   }
 }
 
-//Veloxam精选
+//GXPEX精选
 .selected_box {
   margin-top: 70px;
   height: 553px;
