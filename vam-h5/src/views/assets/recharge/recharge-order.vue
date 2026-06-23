@@ -1,16 +1,21 @@
 <template>
   <div class="page-recharge-order">
-    <DarkHeaderBar :title="headerTitle" :border_bottom="true" />
+    <header class="ro-header">
+      <button type="button" class="ro-header__back" aria-label="back" @click="_back()">
+        <img :src="iconBack" alt="" class="ro-header__back-icon" />
+      </button>
+      <h1 class="ro-header__title">{{ headerTitle }}</h1>
+    </header>
 
-    <div class="sheet">
+    <div class="ro-sheet">
       <Tab
         :tab-list="tabList"
         :active="curIndex"
-        title-inactive-color="#969799"
-        title-active-color="#323233"
-        indicator-color="#17ac74"
-        :line-width="28"
-        :line-height="4"
+        title-inactive-color="rgba(255, 255, 255, 0.55)"
+        title-active-color="#ffffff"
+        indicator-color="#a13cff"
+        :line-width="18"
+        :line-height="3"
         :bold-active-tab="true"
         class="recharge-tab"
         @change="changeIndex"
@@ -22,25 +27,28 @@
             :loosing-text="_t18('release_refresh')"
             @refresh="onRefresh"
           >
-            <van-loading v-if="showLoading" />
+            <van-loading v-if="showLoading" color="rgb(160, 65, 237)" />
             <div v-else class="list-wrap">
               <van-list
                 v-if="tabContentList.length > 0"
                 v-model:loading="loading"
                 :finished="finished"
-                :finished-text="_t18(`no_more_data`)"
-                :loading-text="_t18(`loading`)"
+                :finished-text="_t18('no_more_data')"
+                :loading-text="_t18('loading')"
                 @load="onLoad"
               >
                 <div
                   v-for="(item, index) in tabContentList"
-                  :key="index"
+                  :key="item.id ?? index"
                   class="list-row"
                 >
                   <OrderList :data="item" card-layout />
                 </div>
               </van-list>
-              <Nodata v-else />
+              <div v-else class="ro-empty">
+                <img :src="iconEmpty" alt="" class="ro-empty__icon" />
+                <p class="ro-empty__text">{{ _t18('no_data') }}</p>
+              </div>
             </div>
           </van-pull-refresh>
         </template>
@@ -50,12 +58,14 @@
 </template>
 
 <script setup>
+import { ref, computed, watch } from 'vue'
 import { getRechargeList } from '@/api/account'
-import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import Tab from '@/components/Tab/index.vue'
 import OrderList from '../components/orderList.vue'
-import { _t18 } from '@/utils/public'
+import { _t18, _back } from '@/utils/public'
 import { useRoute } from 'vue-router'
+import iconBack from '@/assets/images/gxpex/trade/icon-back.svg'
+import iconEmpty from '@/assets/images/gxpex/trade/icon-bjwu.png'
 
 const route = useRoute()
 
@@ -152,43 +162,113 @@ watch(
 <style lang="scss" scoped>
 .page-recharge-order {
   min-height: 100vh;
-  background: #05101a;
-  padding-bottom: constant(safe-area-inset-bottom);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: #0a0610;
+  color: #f5f3f8;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0));
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'PingFang SC', sans-serif;
 }
 
-.sheet {
-  min-height: calc(100vh - 60px - constant(safe-area-inset-top));
-  min-height: calc(100vh - 60px - env(safe-area-inset-top, 0px));
-  background: #fff;
-  
+.ro-header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: calc(14px + env(safe-area-inset-top)) 18px 6px;
+}
+
+.ro-header__back {
+  position: absolute;
+  left: 12px;
+  top: calc(14px + env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.ro-header__back-icon {
+  display: block;
+  width: 10px;
+  height: 18px;
+  object-fit: contain;
+  opacity: 0.9;
+}
+
+.ro-header__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
   overflow: hidden;
-  box-sizing: border-box;
+  text-overflow: ellipsis;
+  max-width: 72vw;
 }
 
-.page-recharge-order :deep(.recharge-tab .van-tabs__nav) {
-  background: #fff !important;
+.ro-sheet {
+  background: transparent;
+  box-sizing: border-box;
 }
 
 .page-recharge-order :deep(.recharge-tab .van-tabs__wrap) {
-  border-bottom: 1px solid #ebedf0;
+  background: transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.page-recharge-order :deep(.recharge-tab .van-tabs__nav) {
+  background: transparent !important;
 }
 
 .page-recharge-order :deep(.recharge-tab .van-tab) {
-  font-size: 15px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.55) !important;
+  background: transparent !important;
+}
+
+.page-recharge-order :deep(.recharge-tab .van-tab--active) {
+  color: #fff !important;
+  font-weight: 600;
+}
+
+.page-recharge-order :deep(.recharge-tab .van-tabs__line) {
+  background: #a13cff !important;
+  width: 18px !important;
+  height: 3px !important;
+  border-radius: 2px;
+  bottom: 16px;
 }
 
 .page-recharge-order :deep(.recharge-tab .tabContent) {
-  background: #fff;
+  background: transparent;
   border-top: none;
-  min-height: calc(100vh - 60px - 48px - constant(safe-area-inset-top));
-  min-height: calc(100vh - 60px - 48px - env(safe-area-inset-top, 0px));
-  padding: 12px 0 24px;
+  padding: 14px 0 24px;
   box-sizing: border-box;
 }
 
+.page-recharge-order :deep(.van-pull-refresh) {
+  background: transparent;
+}
+
+.page-recharge-order :deep(.van-pull-refresh__head) {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.page-recharge-order :deep(.van-list__finished-text),
+.page-recharge-order :deep(.van-list__loading-text) {
+  color: rgba(255, 255, 255, 0.45);
+}
+
 .list-wrap {
-  padding: 0 15px;
+  padding: 0 14px;
 }
 
 .list-row {
@@ -202,5 +282,25 @@ watch(
 .van-loading {
   text-align: center;
   padding: 30px;
+}
+
+.ro-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 64px 0 24px;
+}
+
+.ro-empty__icon {
+  display: block;
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+}
+
+.ro-empty__text {
+  margin: 10px 0 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.45);
 }
 </style>
