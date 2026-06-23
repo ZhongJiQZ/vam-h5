@@ -1,26 +1,7 @@
 <!-- 跟单详情 -->
 <template>
   <div class="copy-detail-page">
-    <DarkHeaderBar :title="_t18('copy_trade_detail_title')" :border_bottom="true" />
-
-    <div class="tabs">
-      <button
-        type="button"
-        class="tab"
-        :class="{ active: activeTab === 0 }"
-        @click="switchTab(0)"
-      >
-        {{ _t18('copy_trade_tab_ongoing') }}
-      </button>
-      <button
-        type="button"
-        class="tab"
-        :class="{ active: activeTab === 1 }"
-        @click="switchTab(1)"
-      >
-        {{ _t18('copy_trade_tab_ended') }}
-      </button>
-    </div>
+    <DarkHeaderBar :title="pageTitle" :border_bottom="true" />
 
     <van-loading v-if="pageLoading" class="page-loading" />
     <template v-else-if="orders.length">
@@ -53,11 +34,11 @@
               <span>{{ _t18('copy_trade_join_time') }}</span>
               <span>{{ formatCopyTradeJoinTime(order) }}</span>
             </div>
-            <div v-if="order.status === 1" class="kv">
+            <div v-if="isCopyTradeOrderEnded(order)" class="kv">
               <span>{{ _t18('copy_trade_exit_time') }}</span>
               <span>{{ formatCopyTradeExitTime(order) }}</span>
             </div>
-            <div v-if="order.status === 0" class="kv">
+            <div v-if="!isCopyTradeOrderEnded(order)" class="kv">
               <span>{{ _t18('copy_trade_current_symbol') }}</span>
               <span>{{ copyTradePositionSymbol(order, t18) }}</span>
             </div>
@@ -65,9 +46,9 @@
               <span>{{ _t18('copy_trade_today_trades') }}</span>
               <span class="ff-num">{{ copyTradeTradeCount(order) }}</span>
             </div>
-            <div v-if="order.status === 1" class="kv">
+            <div v-if="isCopyTradeOrderEnded(order)" class="kv">
               <span>{{ _t18('copy_trade_exit_method') }}</span>
-              <span>{{ order.exitTypeText }}</span>
+              <span>{{ order.exitTypeText || '--' }}</span>
             </div>
             <div class="kv">
               <span>{{ _t18('copy_trade_profit_share_rate') }}</span>
@@ -77,37 +58,30 @@
               <span>{{ _t18('copy_trade_trade_fee') }}</span>
               <span class="ff-num">{{ priceFormat(order.tradeFee ?? 0, 2) }} USDT</span>
             </div>
-            <div class="kv">
+            <div class="kv" :class="{ 'kv--no-border': !isCopyTradeOrderEnded(order) }">
               <span>{{ _t18('copy_trade_profit_share_amt') }}</span>
               <span class="ff-num">{{ priceFormat(order.profitShareAmt ?? 0, 2) }} USDT</span>
             </div>
-            <template v-if="order.status === 1">
-              <div class="kv kv--no-border">
-                <span>{{ _t18('copy_trade_period_pnl') }}</span>
-                <span>{{ _t18('copy_trade_pnl_rate') }}</span>
-              </div>
-            </template>
+            <div v-if="isCopyTradeOrderEnded(order)" class="kv kv--no-border">
+              <span>{{ _t18('copy_trade_period_pnl') }}</span>
+              <span>{{ _t18('copy_trade_pnl_rate') }}</span>
+            </div>
           </div>
-          <template v-if="order.status === 1">
-            <div class="pnl-row">
-              <span class="ff-num" :class="pnlClass(orderProfit(order))">{{ formatPnl(orderProfit(order)) }} USDT</span>
-              <span class="ff-num" :class="pnlClass(orderProfit(order))">{{ orderPnlRate(order) }}%</span>
-            </div>
-            <div class="pnl-actual">
-              <span class="label">{{ _t18('copy_trade_net_profit') }}</span>
-              <span class="ff-num" :class="pnlClass(orderNetProfit(order))">{{ formatPnl(orderNetProfit(order)) }} USDT</span>
-            </div>
-          </template>
+          <div v-if="isCopyTradeOrderEnded(order)" class="pnl-row">
+            <span class="ff-num" :class="pnlClass(orderProfit(order))">{{ formatPnl(orderProfit(order)) }} USDT</span>
+            <span class="ff-num" :class="pnlClass(orderProfit(order))">{{ orderPnlRate(order) }}%</span>
+          </div>
+          <div v-if="isCopyTradeOrderEnded(order)" class="pnl-actual">
+            <span class="label">{{ _t18('copy_trade_net_profit') }}</span>
+            <span class="ff-num" :class="pnlClass(orderNetProfit(order))">{{ formatPnl(orderNetProfit(order)) }} USDT</span>
+          </div>
         </div>
 
-        <div
-          v-if="activeTab === 0 || (activeTab === 1 && order._recordGroups?.closed?.length)"
-          class="records-wrap"
-        >
-          <div v-if="activeTab === 0" class="records-section">
+        <div v-if="shouldShowRecordsSection(order)" class="records-wrap">
+          <div class="records-section">
             <div class="section-title-row">
               <div class="section-title-left">
-                <h3 class="section-title">{{ _t18('copy_trade_position_holding') }}</h3>
+                <h3 class="section-title">{{ _t18('copy_trade_records_title') }}</h3>
                 <button type="button" class="section-info-btn" @click.stop="showExplain = true">
                   <img src="@/assets/images/Frame 10711.png" alt="" class="section-info-icon" />
                 </button>
@@ -126,31 +100,36 @@
                 />
               </button>
             </div>
-            <PositionRecordCard
-              v-for="(rec, idx) in order._recordGroups?.holding || []"
-              :key="rec.orderNo || `h-${idx}`"
-              :record="rec"
-              :parent-symbol="copyTradeRunningSymbol(order)"
-              masked
-              :closed="false"
-            />
-          </div>
-          <div v-if="activeTab === 1 && order._recordGroups?.closed?.length" class="records-section">
-            <h3 class="section-title">{{ _t18('copy_trade_history_positions') }}</h3>
-            <PositionRecordCard
-              v-for="(rec, idx) in order._recordGroups.closed"
-              :key="rec.orderNo || `c-${idx}`"
-              :record="rec"
-              :parent-symbol="copyTradeRunningSymbol(order)"
-              :masked="false"
-              closed
-            />
+
+            <template v-if="order._recordGroups?.holding?.length">
+              <h4 class="subsection-title">{{ _t18('copy_trade_position_holding') }}</h4>
+              <PositionRecordCard
+                v-for="(rec, idx) in order._recordGroups.holding"
+                :key="rec.orderNo || `h-${idx}`"
+                :record="rec"
+                :parent-symbol="copyTradeRunningSymbol(order)"
+                masked
+                :closed="false"
+              />
+            </template>
+
+            <template v-if="order._recordGroups?.closed?.length">
+              <h4 class="subsection-title subsection-title--history">{{ _t18('copy_trade_history_positions') }}</h4>
+              <PositionRecordCard
+                v-for="(rec, idx) in order._recordGroups.closed"
+                :key="rec.orderNo || `c-${idx}`"
+                :record="rec"
+                :parent-symbol="copyTradeRunningSymbol(order)"
+                :masked="false"
+                closed
+              />
+            </template>
           </div>
         </div>
       </div>
 
       <div
-        v-if="activeTab === 0 && primaryOrder.id && primaryOrder.status === 0 && (!isCopyTradeStrategyEnded(primaryOrder) || canManualExitCopyTrade(primaryOrder))"
+        v-if="primaryOrder.id && !isCopyTradeOrderEnded(primaryOrder) && (!isCopyTradeStrategyEnded(primaryOrder) || canManualExitCopyTrade(primaryOrder))"
         class="action-bar"
       >
         <button v-if="!isCopyTradeStrategyEnded(primaryOrder)" type="button" class="append-btn" @click="openAppend">
@@ -185,7 +164,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
@@ -210,11 +189,12 @@ import {
   formatCopyTradeStrategyEndTime,
   formatCopyTradeJoinTime,
   formatCopyTradeExitTime,
-  normalizeCopyTradeDetailResponse,
-  attachCopyTradeOrderViewModelForDetailTab,
+  mergeCopyTradeDetailResponses,
   copyTradeOrderBadgeClass,
   copyTradeOrderStatusText,
   isCopyTradeStrategyEnded,
+  isCopyTradeOrderEnded,
+  copyTradeOrderDisplayPnl,
   canManualExitCopyTrade
 } from './utils'
 import { showToast } from 'vant'
@@ -226,13 +206,6 @@ const route = useRoute()
 const i18n = useI18n()
 const t18 = (key, platform = []) => _t18(key, platform, i18n)
 
-function resolveDetailTab(query = {}) {
-  const raw = query.status ?? query.tab
-  const tab = Number(raw)
-  return tab === 1 ? 1 : 0
-}
-
-const activeTab = ref(resolveDetailTab(route.query))
 const meta = ref({})
 const orders = ref([])
 const pageLoading = ref(true)
@@ -254,9 +227,18 @@ const primaryOrder = computed(() => {
   return orders.value[0] || {}
 })
 
+const pageTitle = computed(() => {
+  const name = String(
+    primaryOrder.value?.strategyName || meta.value?.strategy?.strategyName || meta.value?.strategyName || ''
+  ).trim()
+  if (!name) return t18('copy_trade_detail_title')
+  const suffix = t18('copy_trade_detail_suffix')
+  const tail = suffix && suffix !== 'copy_trade_detail_suffix' ? suffix : '详情'
+  return `${name}${tail}`
+})
+
 function orderProfit(order) {
-  if (order?.status === 1) return order.actualProfit
-  return copyTradeNetProfit(order)
+  return copyTradeOrderDisplayPnl(order)
 }
 
 function orderNetProfit(order) {
@@ -264,7 +246,9 @@ function orderNetProfit(order) {
 }
 
 function orderPnlRate(order) {
-  if (order?.status === 1) return calcPnlRate(orderProfit(order), order.amount)
+  if (isCopyTradeOrderEnded(order)) {
+    return calcPnlRate(orderProfit(order), order.amount)
+  }
   return copyTradePnlRate(order)
 }
 
@@ -272,30 +256,30 @@ function profitShareRateText(rate) {
   return formatProfitShareRate(rate, t18('copy_trade_profit_share_rate_none'))
 }
 
-function mapOrdersForActiveTab(orders) {
-  return (Array.isArray(orders) ? orders : []).map((order) =>
-    attachCopyTradeOrderViewModelForDetailTab(order, activeTab.value)
-  )
+function shouldShowRecordsSection(order) {
+  if (!order) return false
+  const holding = order._recordGroups?.holding?.length
+  const closed = order._recordGroups?.closed?.length
+  if (holding || closed) return true
+  return !isCopyTradeOrderEnded(order)
 }
 
-function switchTab(tab) {
-  if (activeTab.value === tab) return
-  activeTab.value = tab
-  loadDetail()
+async function fetchDetailMerged() {
+  const id = route.query.id
+  if (!id) return { meta: {}, orders: [] }
+  const [res0, res1] = await Promise.all([getCopyTradeDetail(id, 0), getCopyTradeDetail(id, 1)])
+  return mergeCopyTradeDetailResponses(
+    res0?.code == 200 ? res0 : null,
+    res1?.code == 200 ? res1 : null
+  )
 }
 
 async function loadDetail() {
   pageLoading.value = true
   try {
-    const res = await getCopyTradeDetail(route.query.id, activeTab.value)
-    if (res?.code == 200) {
-      const parsed = normalizeCopyTradeDetailResponse(res)
-      meta.value = parsed.meta
-      orders.value = mapOrdersForActiveTab(parsed.orders)
-    } else {
-      meta.value = {}
-      orders.value = []
-    }
+    const merged = await fetchDetailMerged()
+    meta.value = merged.meta
+    orders.value = merged.orders
   } catch (e) {
     meta.value = {}
     orders.value = []
@@ -311,12 +295,9 @@ async function refreshOrderFromList() {
   sectionRefreshing.value = true
   try {
     await tradeStore.getCoinList()
-    const res = await getCopyTradeDetail(route.query.id, activeTab.value)
-    if (res?.code == 200) {
-      const parsed = normalizeCopyTradeDetailResponse(res)
-      meta.value = parsed.meta
-      orders.value = mapOrdersForActiveTab(parsed.orders)
-    }
+    const merged = await fetchDetailMerged()
+    meta.value = merged.meta
+    orders.value = merged.orders
   } catch (e) {
     void e
   } finally {
@@ -383,20 +364,9 @@ async function confirmStop() {
 }
 
 onMounted(() => {
-  activeTab.value = resolveDetailTab(route.query)
   tradeStore.getCoinList()
   loadDetail()
 })
-
-watch(
-  () => route.query.status,
-  () => {
-    const tab = resolveDetailTab(route.query)
-    if (activeTab.value === tab) return
-    activeTab.value = tab
-    loadDetail()
-  }
-)
 </script>
 
 <style lang="scss" scoped>
@@ -406,27 +376,6 @@ $green: #17ac74;
   min-height: 100vh;
   background: #f6f7fa;
   padding-bottom: 80px;
-}
-.tabs {
-  display: flex;
-  margin: 12px 15px 0;
-  background: #fff;
-  border-radius: 8px;
-  padding: 4px;
-  .tab {
-    flex: 1;
-    height: 36px;
-    border: none;
-    border-radius: 6px;
-    background: transparent;
-    font-size: 14px;
-    color: #666;
-    &.active {
-      background: #2c2c2c;
-      color: #fff;
-      font-weight: 500;
-    }
-  }
 }
 .page-loading {
   display: flex;
@@ -549,6 +498,16 @@ $green: #17ac74;
     transform: rotate(360deg);
   }
 }
+.subsection-title {
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+
+  &--history {
+    margin-top: 4px;
+  }
+}
 .pnl-row {
   display: flex;
   justify-content: space-between;
@@ -581,9 +540,6 @@ $green: #17ac74;
 }
 .records-section {
   padding: 0 15px;
-  & + .records-section {
-    margin-top: 12px;
-  }
 }
 .section-title {
   font-size: 15px;

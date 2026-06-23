@@ -836,6 +836,59 @@ export function attachCopyTradeOrderViewModelForDetailTab(order, tab) {
   return attachCopyTradeOrderViewModel({ ...order, records })
 }
 
+function copyTradeRecordMergeKey(record) {
+  if (!record) return ''
+  return String(record.orderNo ?? record.id ?? `${record.symbol}-${record.openTimeMillis}`)
+}
+
+/** 合并详情两次请求（status=0 持仓 + status=1 历史）的子单 */
+export function mergeCopyTradeDetailRecords(recordsA = [], recordsB = []) {
+  const seen = new Set()
+  const merged = []
+  const push = (raw) => {
+    const rec = normalizeCopyTradeRecord(raw)
+    if (!rec) return
+    const key = copyTradeRecordMergeKey(rec)
+    if (key && seen.has(key)) return
+    if (key) seen.add(key)
+    merged.push(rec)
+  }
+  recordsA.forEach(push)
+  recordsB.forEach(push)
+  return merged
+}
+
+function extractCopyTradeDetailRawRecords(res) {
+  const payload = res?.data
+  if (!payload || typeof payload !== 'object') return []
+  if (Array.isArray(payload.records)) return payload.records
+  if (Array.isArray(payload.order?.records)) return payload.order.records
+  if (Array.isArray(payload.id != null ? payload.records : null)) return payload.records
+  return []
+}
+
+/** 详情页：合并 status=0/1 两次接口，持仓与历史子单同屏展示 */
+export function mergeCopyTradeDetailResponses(res0, res1) {
+  const parsed0 = res0 ? normalizeCopyTradeDetailResponse(res0) : { meta: {}, orders: [] }
+  const parsed1 = res1 ? normalizeCopyTradeDetailResponse(res1) : { meta: {}, orders: [] }
+  const base0 = parsed0.orders[0]
+  const base1 = parsed1.orders[0]
+  const base = base0 || base1
+  if (!base) {
+    return { meta: parsed0.meta || parsed1.meta || {}, orders: [] }
+  }
+
+  const records = mergeCopyTradeDetailRecords(
+    extractCopyTradeDetailRawRecords(res0),
+    extractCopyTradeDetailRawRecords(res1)
+  )
+  const { _recordGroups, _battle, records: _drop, ...orderRest } = base
+  return {
+    meta: { ...parsed1.meta, ...parsed0.meta },
+    orders: [attachCopyTradeOrderViewModel({ ...orderRest, records })]
+  }
+}
+
 /** 列表/详情行视图模型：预计算子单分组，避免模板重复遍历 */
 export function attachCopyTradeOrderViewModel(order) {
   if (!order || typeof order !== 'object') return order
@@ -883,6 +936,84 @@ export function formatCopyTradeStrategyTimeRange(item, fmt = 'YYYY-MM-DD HH:mm')
   if (start === '--') return end
   if (end === '--') return start
   return `${start} ~ ${end}`
+}
+
+/** 主单是否已结束（status=1 或策略场次已结束） */
+export function isCopyTradeOrderEnded(item) {
+  if (!item) return false
+  return item.status === 1 || isCopyTradeStrategyEnded(item)
+}
+
+/** 列表页展示盈亏：进行中用 netProfit，已结束用结算盈亏 */
+export function copyTradeOrderDisplayPnl(item) {
+  if (!item) return 0
+  if (isCopyTradeOrderEnded(item)) {
+    const n = Number(
+      item.params?.totalSettledProfit ?? item.actualProfit ?? item.params?.netProfit ?? item.netProfit
+    )
+    return Number.isFinite(n) ? n : 0
+  }
+  return copyTradeNetProfit(item)
+}
+
+export function copyTradeOrderDisplayPnlRate(item) {
+  return calcPnlRate(copyTradeOrderDisplayPnl(item), item?.amount)
+}
+
+/** 列表分组日期：优先策略开始日，其次加入日 */
+export function resolveCopyTradeListGroupDateRaw(item) {
+  if (!item) return ''
+  const ms = pickCopyTradeMillis(item, 'strategyStartTimeMillis')
+  if (ms != null) return ms
+  const strategyTime = pickCopyTradeTimeField(item, 'strategyStartTime')
+  if (strategyTime != null) return strategyTime
+  const execute = item?.executeStartTime ?? item?.strategy?.executeStartTime
+  if (execute != null) return execute
+  return resolveCopyTradeJoinRaw(item)
+}
+
+export function resolveCopyTradeListGroupDateKey(item) {
+  const raw = resolveCopyTradeListGroupDateRaw(item)
+  if (!raw) return 'unknown'
+  const label = formatCopyTradeDisplayDate(raw, 'YYYY-MM-DD')
+  return label !== '--' ? label : 'unknown'
+}
+
+/** 我的跟单列表：按策略日期分组（新日期在前） */
+export function groupCopyTradeOrdersByDate(orders = [], translate) {
+  const map = new Map()
+  ;(Array.isArray(orders) ? orders : []).forEach((item) => {
+    const key = resolveCopyTradeListGroupDateKey(item)
+    if (!map.has(key)) map.set(key, [])
+    map.get(key).push(item)
+  })
+
+  const unknownLabel =
+    typeof translate === 'function'
+      ? (() => {
+          const t = translate('copy_trade_date_unknown')
+          return t && t !== 'copy_trade_date_unknown' ? t : '日期待定'
+        })()
+      : '日期待定'
+
+  const keys = [...map.keys()].sort((a, b) => {
+    if (a === 'unknown') return 1
+    if (b === 'unknown') return -1
+    return dayjs(b).valueOf() - dayjs(a).valueOf()
+  })
+
+  return keys.map((date) => ({
+    date,
+    dateLabel: date === 'unknown' ? unknownLabel : date,
+    items: map.get(date).sort((a, b) => {
+      const aEnded = isCopyTradeOrderEnded(a) ? 1 : 0
+      const bEnded = isCopyTradeOrderEnded(b) ? 1 : 0
+      if (aEnded !== bEnded) return aEnded - bEnded
+      const ta = dayjs(resolveCopyTradeJoinRaw(b)).valueOf()
+      const tb = dayjs(resolveCopyTradeJoinRaw(a)).valueOf()
+      return (Number.isFinite(ta) ? ta : 0) - (Number.isFinite(tb) ? tb : 0)
+    })
+  }))
 }
 
 /** 机构分润比例展示，0 表示不分润 */
