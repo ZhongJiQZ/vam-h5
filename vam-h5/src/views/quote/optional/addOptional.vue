@@ -1,115 +1,116 @@
 <template>
-  <!-- <HeaderBar :currentName="`添加自选`" :cuttentRight="$route.query.flag=='edit'?cuttentRight:{}" /> -->
-  <HeaderBar :currentName=" _t18(`quote_addOwn`) " />
-  <div class="search">
-    <svg-load name="sousuo-h" class="searchImg"></svg-load>
-    <div class="contain">
-      <input
-        type="text"
-        v-model.trim="searchValue"
-        class="inputSearch"
-        :placeholder="_t18(`quote_search`)"
-        @input="overBtn"
-      />
-      <!-- 完成 -->
-      <div class="over" @click="overBtn">{{_t18(`quote_finish`)}}</div>
-    </div>
-  </div>
-  <div class="currencyList">
-    <div class="itemEvery" v-for="(item, index) in currentCoinList" :key="index" @click="linkTo(item)">
-      <div class="item">
-        <LeftItem :data="item"></LeftItem>
-        <CurrentcyNumVue :data="item"></CurrentcyNumVue>
-        <svg-load @click.stop="handelCollect(item)"
-          :name="item.isCollect===1 ? 'tianjia18x16-x' : 'tianjia18x16-w'"
-          class="rightImg"
-        ></svg-load>
+  <div class="add-optional-page">
+    <div class="bg-glow bg-glow--1" aria-hidden="true"></div>
+    <div class="bg-glow bg-glow--2" aria-hidden="true"></div>
+
+    <header class="add-optional-header">
+      <button type="button" class="add-optional-header__back" aria-label="back" @click="_back()">
+        <img :src="iconBack" alt="" class="add-optional-header__back-icon" />
+      </button>
+      <h1 class="add-optional-header__title">{{ _t18('quote_addOwn') }}</h1>
+    </header>
+
+    <div class="search">
+      <img :src="iconSearch" alt="" class="searchImg" />
+      <div class="contain">
+        <input
+          type="text"
+          v-model.trim="searchValue"
+          class="inputSearch"
+          :placeholder="_t18('quote_search')"
+          @input="overBtn"
+        />
+        <button type="button" class="over" @click="overBtn">{{ _t18('quote_finish') }}</button>
       </div>
     </div>
-  </div>
-  
-  <van-overlay
-      :show="show"
-      z-index="100"
-      :custom-style="{ background: 'rgba(0, 0, 0, .6)' }"
-    >
-      <div style="position: fixed; top: 30%; left: 50%; transform: translate(-50%, -50%)">
-        <van-loading vertical color="#17AC74">{{ _t18('loading') }}...</van-loading>
+
+    <div class="currencyList">
+      <div
+        v-for="(item, index) in currentCoinList"
+        :key="item.coinKey || index"
+        class="itemEvery"
+        @click="linkTo(item)"
+      >
+        <div class="item">
+          <LeftItem :data="item" />
+          <CurrentcyNumVue :data="item" />
+          <button
+            type="button"
+            class="collect-btn"
+            aria-label="toggle collect"
+            @click.stop="handelCollect(item)"
+          >
+            <svg-load
+              :name="item.isCollect === 1 ? 'tianjia18x16-x' : 'tianjia18x16-w'"
+              class="rightImg"
+            />
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <van-overlay :show="show" z-index="100" :custom-style="{ background: 'rgba(0, 0, 0, .6)' }">
+      <div class="loading-wrap">
+        <van-loading vertical color="rgb(160, 65, 237)">{{ _t18('loading') }}...</van-loading>
       </div>
     </van-overlay>
+  </div>
 </template>
 
 <script setup>
 import { computed, ref, onMounted, watch } from 'vue'
-import { showLoadingToast, closeToast, showToast, Loading } from 'vant'
+import { setCollect, removeCollect } from '@/api/trade'
 import { toastApiMsg } from '@/utils/toastApiMsg'
-
-
-import { setCollect, removeCollect,getCollect } from '@/api/trade'
-import HeaderBar from '@/components/HeaderBar/index.vue'
 import LeftItem from '@/components/CurrencyList/left.vue'
 import CurrentcyNumVue from '../components/optional/currentcyNum.vue'
 import { filterKeyWord } from '@/utils/filters'
 import { useTradeStore } from '@/store/trade'
-import { _t18 } from '@/utils/public'
-const show=ref(false)
-const cuttentRight = { name: '保存' }
+import { _t18, _back } from '@/utils/public'
+import { useMainStore } from '@/store/index.js'
+import { useRouter } from 'vue-router'
+import iconBack from '@/assets/images/gxpex/trade/icon-back.svg'
+import iconSearch from '@/assets/images/gxpex/quote/icon-search.svg'
+
+const show = ref(false)
 const tradeStore = useTradeStore()
- 
-// ✅ 所有币种（秒合约 + 现货 + 合约）并带来源 componentName
+const mainStroe = useMainStore()
+const $router = useRouter()
+
 const allCoinList = computed(() => {
   const withComponent = (list, componentName) =>
-    (list || []).map(item => ({
+    (list || []).map((item) => ({
       ...item,
       componentName,
-      coinKey: `${item.coin}|${componentName}`,
+      coinKey: `${item.coin}|${componentName}`
     }))
 
   return [
     ...withComponent(tradeStore.secondContractCoinList, 'SecondContract'),
     ...withComponent(tradeStore.spotCoinList, 'BBTrading'),
-    ...withComponent(tradeStore.contractCoinList, 'Ustandard'),
+    ...withComponent(tradeStore.contractCoinList, 'Ustandard')
   ]
 })
 
-
-const searchValue = ref('') // 搜索 
+const searchValue = ref('')
 const currentCoinList = ref([])
 
 const overBtn = () => {
   const list = filterKeyWord(allCoinList.value, searchValue.value) || []
-  currentCoinList.value = list.map(x => ({
+  currentCoinList.value = list.map((x) => ({
     ...x,
-    coinKey: x.coinKey || `${x.coin}|${x.componentName}`,
+    coinKey: x.coinKey || `${x.coin}|${x.componentName}`
   }))
 }
 
-
-const collectList = ref()
 onMounted(() => {
-  // currentCoinList.value = tradeStore.secondContractCoinList
   currentCoinList.value = allCoinList.value
-  
 })
-/**
- * 跳转秒合约
- *  */
-import { useMainStore } from '@/store/index.js'
-import { useRouter,useRoute } from 'vue-router'
-const mainStroe = useMainStore()
+
 mainStroe.setTradeStatus(Number(-1))
-const $router = useRouter()
-const $route = useRoute()
-const emit = defineEmits(['linkTo'])
+
 const linkTo = (item) => {
   $router.push(`/trade?symbol=${item.coin}`)
-  emit('linkTo', item.coin, Number(0))
 }
-// const linkTo = (item) => {
-//   $router.push(`/trade?symbol=${item.coin}&component=${item.componentName}`)
-//   emit('linkTo', item.coinKey, Number(0)) // 或 emit 你需要的格式
-// }
-
 
 const handelCollect = (item) => {
   show.value = true
@@ -117,7 +118,7 @@ const handelCollect = (item) => {
   const params = {
     coin: item?.coin,
     componentName: item?.componentName,
-    coinKey: item?.coinKey,   // ✅ 新增
+    coinKey: item?.coinKey
   }
 
   if (item.isCollect === 2) {
@@ -125,7 +126,9 @@ const handelCollect = (item) => {
     setCollect(params).then((res) => {
       if (res.code == '200') {
         tradeStore.getCoinList()
-        setTimeout(() => { show.value = false }, 500)
+        setTimeout(() => {
+          show.value = false
+        }, 500)
       } else {
         show.value = false
         toastApiMsg(res.msg)
@@ -135,7 +138,9 @@ const handelCollect = (item) => {
     removeCollect(params).then((res) => {
       if (res.code == '200') {
         tradeStore.getCoinList()
-        setTimeout(() => { show.value = false }, 500)
+        setTimeout(() => {
+          show.value = false
+        }, 500)
       } else {
         show.value = false
         toastApiMsg(res.msg)
@@ -144,76 +149,242 @@ const handelCollect = (item) => {
   }
 }
 
-
 watch(
   allCoinList,
   (list) => {
     const filtered = filterKeyWord(list, searchValue.value) || []
-    currentCoinList.value = filtered.map(x => ({
+    currentCoinList.value = filtered.map((x) => ({
       ...x,
-      coinKey: x.coinKey || `${x.coin}|${x.componentName}`,
+      coinKey: x.coinKey || `${x.coin}|${x.componentName}`
     }))
   },
   { immediate: true }
 )
-
-
-
 </script>
+
 <style lang="scss" scoped>
-.currencyList {
-  padding: 0 15px;
-  .itemEvery {
-    padding-bottom: 30px;
-    .item {
-      display: flex;
-      align-items: center;
-      .rightImg {
-        margin-left: 10px;
-        width: 16px;
-        height: 16px;
-      }
-    }
+.add-optional-page {
+  position: relative;
+  min-height: 100vh;
+  background: #111111;
+  color: #f5f3f8;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0));
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'PingFang SC', sans-serif;
+  overflow-x: hidden;
+}
+
+.bg-glow {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, #a642ec 0%, #802bda 60%, transparent 100%);
+  filter: blur(60px);
+  opacity: 0.18;
+  pointer-events: none;
+  z-index: 0;
+
+  &--1 {
+    top: -80px;
+    right: -60px;
+    width: 260px;
+    height: 260px;
+  }
+
+  &--2 {
+    top: 200px;
+    left: -90px;
+    width: 240px;
+    height: 240px;
   }
 }
-.search {
-  margin: 20px 15px;
-  height: 40px;
-  background: var(--ex-default-background-color);
-  border-radius: 25px;
-  border: 1px solid var( --ex-border-color);
+
+.add-optional-header {
+  position: relative;
+  z-index: 2;
   display: flex;
-  padding: 0 20px;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  min-height: 44px;
+  padding: calc(14px + env(safe-area-inset-top)) 18px 6px;
+}
+
+.add-optional-header__back {
+  position: absolute;
+  left: 12px;
+  top: calc(14px + env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.add-optional-header__back-icon {
+  display: block;
+  width: 10px;
+  height: 18px;
+  object-fit: contain;
+  opacity: 0.9;
+}
+
+.add-optional-header__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #fff;
+  text-align: center;
+}
+
+.search {
+  position: relative;
+  z-index: 2;
+  margin: 12px 15px 16px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  padding: 0 14px;
+  align-items: center;
+
   .searchImg {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
     margin-right: 10px;
+    opacity: 0.55;
+    flex-shrink: 0;
   }
+
   .contain {
     flex: 1;
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-size: 14px;
-    color: var(--ex-default-font-color);
+    min-width: 0;
+
     .inputSearch {
       flex: 1;
+      min-width: 0;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: #fff;
+      font-size: 13px;
     }
-    input::-webkit-input-placeholder {
-      color: var(--ex-font-color5) 
+
+    .inputSearch::placeholder {
+      color: rgba(255, 255, 255, 0.4);
     }
-    input::-moz-input-placeholder {
-      color: var(--ex-font-color5) 
-    }
-    input::-ms-input-placeholder {
-      color: var(--ex-font-color5) 
-    }
+
     .over {
-      margin-left: 5px;
-      color: var(--ex-font-color9);
+      margin-left: 8px;
+      padding: 0;
+      border: none;
+      background: transparent;
+      color: rgb(196, 124, 255);
+      font-size: 14px;
+      font-weight: 500;
+      flex-shrink: 0;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
     }
   }
+}
+
+.currencyList {
+  position: relative;
+  z-index: 1;
+  padding: 0 12px;
+
+  .itemEvery {
+    margin-bottom: 12px;
+    padding: 14px 16px;
+    background: #221c31;
+    border-radius: 12px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+
+    .item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .collect-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      margin-left: 4px;
+      border: none;
+      background: transparent;
+      flex-shrink: 0;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .rightImg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
+
+.currencyList :deep(.left) {
+  flex: 1;
+  min-width: 0;
+
+  .leftImg {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: contain;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .itemTitle .itemTitleTop {
+    font-size: 14px;
+    color: #fff;
+    font-weight: 500;
+  }
+}
+
+.currencyList :deep(.numList) {
+  flex-shrink: 0;
+  min-width: 72px;
+
+  .numTop {
+    font-size: 14px;
+    color: #fff;
+    font-weight: 500;
+  }
+
+  .numBot {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.55);
+
+    &.rise {
+      color: #2ebd85;
+    }
+
+    &.fall {
+      color: #f6465d;
+    }
+  }
+}
+
+.loading-wrap {
+  position: fixed;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 </style>
