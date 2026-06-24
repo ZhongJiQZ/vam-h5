@@ -111,7 +111,7 @@ const displayPairCompact = computed(() => {
   const pair = displayPair.value
   if (!pair || pair === '--') return '--'
   if (/[\u4e00-\u9fff]/.test(pair)) return pair
-  return String(pair).replace(/\//g, '').replace(/-/g, '').toUpperCase()
+  return String(pair).replace(/\//g, '').replace(/-/g, '').replace(/USDT/gi, '').toUpperCase()
 })
 
 const coin = computed(() => {

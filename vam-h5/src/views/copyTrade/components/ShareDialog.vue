@@ -71,7 +71,7 @@
               <span class="kv-dot" style="background:#17ac74">
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
               </span>
-              <span class="kv-label">{{ _t18('copy_trade_period_pnl') }}</span>
+              <span class="kv-label">{{ _t18('copy_trade_actual_profit') }}</span>
               <span class="kv-val" :class="pnlClass(item.actualProfit)">{{ formatPnl(item.actualProfit) }} USDT</span>
             </div>
             <div class="card-kv">
