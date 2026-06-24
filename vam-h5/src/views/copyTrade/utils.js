@@ -938,10 +938,16 @@ export function formatCopyTradeStrategyTimeRange(item, fmt = 'YYYY-MM-DD HH:mm')
   return `${start} ~ ${end}`
 }
 
+/** 主单是否已完全退出（仅 status=1） */
+export function isCopyTradeFullyExited(item) {
+  if (!item) return false
+  return item.status === 1
+}
+
 /** 主单是否已结束（status=1 或策略场次已结束） */
 export function isCopyTradeOrderEnded(item) {
   if (!item) return false
-  return item.status === 1 || isCopyTradeStrategyEnded(item)
+  return isCopyTradeFullyExited(item) || isCopyTradeStrategyEnded(item)
 }
 
 /** 列表页展示盈亏：进行中用 netProfit，已结束用结算盈亏 */

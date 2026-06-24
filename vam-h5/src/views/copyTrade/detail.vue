@@ -129,7 +129,7 @@
       </div>
 
       <div
-        v-if="primaryOrder.id && !isCopyTradeOrderEnded(primaryOrder) && (!isCopyTradeStrategyEnded(primaryOrder) || canManualExitCopyTrade(primaryOrder))"
+        v-if="primaryOrder.id && !isCopyTradeFullyExited(primaryOrder) && (!isCopyTradeStrategyEnded(primaryOrder) || canManualExitCopyTrade(primaryOrder))"
         class="action-bar"
       >
         <button v-if="!isCopyTradeStrategyEnded(primaryOrder)" type="button" class="append-btn" @click="openAppend">
@@ -194,6 +194,7 @@ import {
   copyTradeOrderStatusText,
   isCopyTradeStrategyEnded,
   isCopyTradeOrderEnded,
+  isCopyTradeFullyExited,
   copyTradeOrderDisplayPnl,
   canManualExitCopyTrade
 } from './utils'
