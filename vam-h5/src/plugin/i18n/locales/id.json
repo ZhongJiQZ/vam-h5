@@ -1374,6 +1374,7 @@
   "copy_trade_period_pnl": "PnL Periode",
   "copy_trade_view_detail": "Lihat Detail ›",
   "copy_trade_detail_title": "Detail copy",
+  "copy_trade_detail_suffix": " Detail",
   "copy_trade_settled": "Diselesaikan",
   "copy_trade_exit_method": "Jenis keluar",
   "copy_trade_exit_normal": "Keluar normal",

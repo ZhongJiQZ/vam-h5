@@ -1357,6 +1357,7 @@
   "copy_trade_period_pnl": "L/L kỳ này",
   "copy_trade_view_detail": "Xem chi tiết",
   "copy_trade_detail_title": "Chi tiết copy",
+  "copy_trade_detail_suffix": " Chi tiết",
   "copy_trade_settled": "Đã thanh toán",
   "copy_trade_exit_method": "Cách thoát",
   "copy_trade_exit_normal": "Thoát bình thường",

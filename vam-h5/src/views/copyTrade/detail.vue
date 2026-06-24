@@ -234,7 +234,7 @@ const pageTitle = computed(() => {
   ).trim()
   if (!name) return t18('copy_trade_detail_title')
   const suffix = t18('copy_trade_detail_suffix')
-  const tail = suffix && suffix !== 'copy_trade_detail_suffix' ? suffix : '详情'
+  const tail = suffix && suffix !== 'copy_trade_detail_suffix' ? suffix : ' Details'
   return `${name}${tail}`
 })
 

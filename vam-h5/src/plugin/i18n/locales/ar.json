@@ -1355,6 +1355,7 @@
   "copy_trade_period_pnl": "ربح/خسارة الفترة",
   "copy_trade_view_detail": "عرض التفاصيل",
   "copy_trade_detail_title": "تفاصيل النسخ",
+  "copy_trade_detail_suffix": " التفاصيل",
   "copy_trade_settled": "تمت التسوية",
   "copy_trade_exit_method": "نوع الخروج",
   "copy_trade_exit_normal": "خروج عادي",

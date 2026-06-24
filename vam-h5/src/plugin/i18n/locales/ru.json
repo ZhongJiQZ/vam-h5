@@ -1353,6 +1353,7 @@
   "copy_trade_period_pnl": "P/L периода",
   "copy_trade_view_detail": "Подробнее",
   "copy_trade_detail_title": "Детали копирования",
+  "copy_trade_detail_suffix": " Детали",
   "copy_trade_settled": "Рассчитано",
   "copy_trade_exit_method": "Тип выхода",
   "copy_trade_exit_normal": "Обычный выход",

@@ -1361,6 +1361,7 @@
   "copy_trade_period_pnl": "本次盈虧",
   "copy_trade_view_detail": "查看交易詳情",
   "copy_trade_detail_title": "跟單詳情",
+  "copy_trade_detail_suffix": "詳情",
   "copy_trade_settled": "已結算",
   "copy_trade_exit_method": "退出方式",
   "copy_trade_exit_normal": "正常退出",

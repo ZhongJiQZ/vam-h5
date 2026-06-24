@@ -1353,6 +1353,7 @@
   "copy_trade_period_pnl": "P/L do período",
   "copy_trade_view_detail": "Ver detalhes",
   "copy_trade_detail_title": "Detalhe do copy",
+  "copy_trade_detail_suffix": " Detalhe",
   "copy_trade_settled": "Liquidado",
   "copy_trade_exit_method": "Tipo de saída",
   "copy_trade_exit_normal": "Saída normal",

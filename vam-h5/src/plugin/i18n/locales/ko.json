@@ -1357,6 +1357,7 @@
   "copy_trade_period_pnl": "이번 손익",
   "copy_trade_view_detail": "거래 상세 보기",
   "copy_trade_detail_title": "카피 상세",
+  "copy_trade_detail_suffix": " 상세",
   "copy_trade_settled": "정산 완료",
   "copy_trade_exit_method": "종료 방식",
   "copy_trade_exit_normal": "정상 종료",

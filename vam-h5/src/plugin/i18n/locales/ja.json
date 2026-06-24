@@ -1357,6 +1357,7 @@
   "copy_trade_period_pnl": "今回損益",
   "copy_trade_view_detail": "詳細を見る",
   "copy_trade_detail_title": "コピー詳細",
+  "copy_trade_detail_suffix": "詳細",
   "copy_trade_settled": "決済済み",
   "copy_trade_exit_method": "退出方法",
   "copy_trade_exit_normal": "通常退出",

@@ -1353,6 +1353,7 @@
   "copy_trade_period_pnl": "Dönem K/Z",
   "copy_trade_view_detail": "Detayları gör",
   "copy_trade_detail_title": "Kopya detayı",
+  "copy_trade_detail_suffix": " Detay",
   "copy_trade_settled": "Ödendi",
   "copy_trade_exit_method": "Çıkış türü",
   "copy_trade_exit_normal": "Normal çıkış",

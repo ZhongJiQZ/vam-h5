@@ -1357,6 +1357,7 @@
   "copy_trade_period_pnl": "Perioden G/V",
   "copy_trade_view_detail": "Details anzeigen",
   "copy_trade_detail_title": "Copy-Details",
+  "copy_trade_detail_suffix": " Details",
   "copy_trade_settled": "Abgerechnet",
   "copy_trade_exit_method": "Austrittsart",
   "copy_trade_exit_normal": "Normaler Austritt",
