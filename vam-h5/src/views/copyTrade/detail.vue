@@ -58,22 +58,24 @@
               <span>{{ _t18('copy_trade_trade_fee') }}</span>
               <span class="ff-num">{{ priceFormat(order.tradeFee ?? 0, 2) }} USDT</span>
             </div>
-            <div class="kv" :class="{ 'kv--no-border': !isCopyTradeOrderEnded(order) }">
+            <div class="kv kv--no-border">
               <span>{{ _t18('copy_trade_profit_share_amt') }}</span>
               <span class="ff-num">{{ priceFormat(order.profitShareAmt ?? 0, 2) }} USDT</span>
             </div>
-            <div v-if="isCopyTradeOrderEnded(order)" class="kv kv--no-border">
+            <!-- <div v-if="isCopyTradeOrderEnded(order)" class="kv kv--no-border">
               <span>{{ _t18('copy_trade_period_pnl') }}</span>
               <span>{{ _t18('copy_trade_pnl_rate') }}</span>
-            </div>
+            </div> -->
           </div>
           <div v-if="isCopyTradeOrderEnded(order)" class="pnl-row">
-            <span class="ff-num" :class="pnlClass(orderProfit(order))">{{ formatPnl(orderProfit(order)) }} USDT</span>
-            <span class="ff-num" :class="pnlClass(orderProfit(order))">{{ orderPnlRate(order) }}%</span>
-          </div>
-          <div v-if="isCopyTradeOrderEnded(order)" class="pnl-actual">
-            <span class="label">{{ _t18('copy_trade_net_profit') }}</span>
-            <span class="ff-num" :class="pnlClass(orderNetProfit(order))">{{ formatPnl(orderNetProfit(order)) }} USDT</span>
+            <div class="pnl-cell">
+              <span class="pnl-cell__label">{{ _t18('copy_trade_pnl_rate') }}</span>
+              <span class="ff-num" :class="pnlClass(orderProfit(order))">{{ orderPnlRate(order) }}%</span>
+            </div>
+            <div class="pnl-cell pnl-cell--right">
+              <span class="pnl-cell__label">{{ _t18('copy_trade_net_profit') }}</span>
+              <span class="ff-num" :class="pnlClass(orderNetProfit(order))">{{ formatPnl(orderNetProfit(order)) }} USDT</span>
+            </div>
           </div>
         </div>
 
@@ -512,26 +514,32 @@ $green: #17ac74;
 .pnl-row {
   display: flex;
   justify-content: space-between;
-  padding: 6px 0 4px;
+  gap: 12px;
+  padding: 10px 0 4px;
+  border-top: 1px dashed #eee;
+  margin-top: 4px;
+}
+.pnl-cell {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  &--right {
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  &__label {
+    font-size: 13px;
+    color: #888;
+  }
+
   .ff-num {
     font-size: 18px;
-    font-weight: 600;
-    color: #1a1a1a;
-    &.is-up { color: $green; }
-    &.is-down { color: #e8503a; }
-  }
-}
-.pnl-actual {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px dashed #eee;
-  .label { font-size: 14px; color: #888; }
-  .ff-num {
-    font-size: 20px;
     font-weight: 700;
+    color: #1a1a1a;
     &.is-up { color: $green; }
     &.is-down { color: #e8503a; }
   }
