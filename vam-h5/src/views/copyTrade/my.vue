@@ -17,10 +17,10 @@
           <span>{{ _t18('copy_trade_times') }}</span>
           <span>{{ institutionSummary.count }}{{ _t18('copy_trade_times_unit') }}</span>
         </div>
-        <div class="kv">
-          <span>{{ _t18('copy_trade_total_profit') }}</span>
-          <span class="ff-num is-up">{{ institutionSummary.totalProfit }} USDT</span>
-        </div>
+<!--        <div class="kv">-->
+<!--          <span>{{ _t18('copy_trade_total_profit') }}</span>-->
+<!--          <span class="ff-num is-up">{{ institutionSummary.totalProfit }} USDT</span>-->
+<!--        </div>-->
         <div class="kv">
           <span>{{ _t18('copy_trade_total_profit_rate') }}</span>
           <span class="ff-num is-up">{{ institutionSummary.totalRate }}%</span>

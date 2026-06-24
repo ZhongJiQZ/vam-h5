@@ -168,9 +168,8 @@ const closeSideBar = () => {
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   background: #fff;
-  // 
-  padding-bottom: calc(100px + constant(safe-area-inset-bottom));
-  padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(20px + constant(safe-area-inset-bottom));
+  padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
   box-sizing: border-box;
 }
 
@@ -184,9 +183,8 @@ const closeSideBar = () => {
 }
 // 退出登录（胶囊按钮）
 .logged-wrap {
-  // border-top: 1px solid var(--ex-input-boder-bgColor);
-  margin-top: 50px;
-  padding: 30px 15px;
+  margin-top: 16px;
+  padding: 0 15px 16px;
 }
 
 .logged-btn {

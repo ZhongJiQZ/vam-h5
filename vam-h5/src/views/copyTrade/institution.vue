@@ -776,14 +776,16 @@ $tab-active: #3d3d3d;
   background: transparent;
   padding: 10px 8px;
   font-size: 13px;
+  font-weight: 600;
+  line-height: 1.25;
   color: #6b7280;
   border-radius: 6px;
-  transition: all 0.2s;
+  transition: background-color 0.2s, color 0.2s;
+  text-align: center;
 
   &.active {
     background: $tab-active;
     color: #fff;
-    font-weight: 600;
   }
 }
 
