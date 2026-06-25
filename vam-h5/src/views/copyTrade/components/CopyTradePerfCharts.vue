@@ -13,10 +13,10 @@
             <stop offset="100%" stop-color="#a13cff" stop-opacity="0.02" />
           </linearGradient>
         </defs>
-        <polygon v-if="areaPath" :points="areaPath" :fill="`url(#${uid}-area)`" />
-        <polyline
-          v-if="linePath"
-          :points="linePath"
+        <path v-if="areaPathD" :d="areaPathD" :fill="`url(#${uid}-area)`" />
+        <path
+          v-if="linePathD"
+          :d="linePathD"
           fill="none"
           stroke="#a13cff"
           stroke-width="2"
@@ -128,8 +128,8 @@ const showCoin = computed(
 )
 
 const plotPoints = computed(() => buildPlotPoints(dailyPoints.value, width, height))
-const linePath = computed(() => plotPoints.value.map((p) => `${p.x},${p.y}`).join(' '))
-const areaPath = computed(() => buildAreaPathFromPlot(plotPoints.value, width, height))
+const linePathD = computed(() => buildSmoothLinePath(plotPoints.value))
+const areaPathD = computed(() => buildSmoothAreaPath(plotPoints.value, height))
 
 const weeklyBars = computed(() => {
   const list = (props.weeklySeries || []).map((row, idx) => ({
@@ -200,13 +200,31 @@ function buildPlotPoints(points, w, h) {
   })
 }
 
-function buildAreaPathFromPlot(plotPts, w, h) {
+function buildSmoothLinePath(points) {
+  if (!points.length) return ''
+  if (points.length === 1) return `M ${points[0].x} ${points[0].y}`
+
+  let d = `M ${points[0].x} ${points[0].y}`
+  for (let i = 0; i < points.length - 1; i++) {
+    const p0 = points[i - 1] || points[i]
+    const p1 = points[i]
+    const p2 = points[i + 1]
+    const p3 = points[i + 2] || p2
+    const cp1x = p1.x + (p2.x - p0.x) / 6
+    const cp1y = p1.y + (p2.y - p0.y) / 6
+    const cp2x = p2.x - (p3.x - p1.x) / 6
+    const cp2y = p2.y - (p3.y - p1.y) / 6
+    d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`
+  }
+  return d
+}
+
+function buildSmoothAreaPath(plotPts, h) {
   if (!plotPts.length) return ''
-  const line = plotPts.map((p) => `${p.x},${p.y}`).join(' ')
+  const baseY = h - 4
   const first = plotPts[0]
   const last = plotPts[plotPts.length - 1]
-  const baseY = h - 4
-  return `${first.x},${first.y} ${line} ${last.x},${baseY} ${first.x},${baseY}`
+  return `${buildSmoothLinePath(plotPts)} L ${last.x} ${baseY} L ${first.x} ${baseY} Z`
 }
 </script>
 
