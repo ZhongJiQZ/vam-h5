@@ -1,7 +1,7 @@
 <template>
-  <div class="perf-charts">
+  <div class="perf-charts" :class="{ 'perf-charts--embedded': embedded }">
     <!-- 每日收益折线图 -->
-    <div v-if="showDaily" class="chart-box">
+    <div v-if="showDaily" :class="embedded ? 'chart-embed' : 'chart-box'">
       <svg
         class="chart-svg"
         :viewBox="`0 0 ${width} ${height}`"
@@ -23,15 +23,15 @@
           vector-effect="non-scaling-stroke"
         />
       </svg>
-      <div class="chart-labels">
+      <div v-if="!embedded" class="chart-labels">
         <span v-for="(p, i) in dailyPoints" :key="i" class="chart-label">{{ p.label }}</span>
       </div>
     </div>
 
-    <p v-else-if="dailyEmptyHint" class="chart-empty">{{ dailyEmptyHint }}</p>
+    <p v-else-if="dailyEmptyHint" :class="embedded ? 'chart-empty--embedded' : 'chart-empty'">{{ dailyEmptyHint }}</p>
 
     <!-- 每周收益柱状图 -->
-    <div v-if="showWeekly" class="chart-box chart-box--bar">
+    <div v-if="showWeekly" :class="embedded ? 'chart-embed' : 'chart-box chart-box--bar'">
       <svg class="chart-svg chart-svg--bar" :viewBox="`0 0 ${width} ${barHeight}`" preserveAspectRatio="none">
         <rect
           v-for="(b, i) in weeklyBars"
@@ -45,11 +45,11 @@
           opacity="0.85"
         />
       </svg>
-      <div class="chart-labels">
+      <div v-if="!embedded" class="chart-labels">
         <span v-for="(b, i) in weeklyBars" :key="'w' + i" class="chart-label">{{ b.label }}</span>
       </div>
     </div>
-    <p v-else-if="weeklyEmptyHint" class="chart-empty">{{ weeklyEmptyHint }}</p>
+    <p v-else-if="weeklyEmptyHint" :class="embedded ? 'chart-empty--embedded' : 'chart-empty'">{{ weeklyEmptyHint }}</p>
 
     <!-- 币种偏好环形图 -->
     <div v-if="showCoin" class="donut-wrap">
@@ -99,7 +99,8 @@ const props = defineProps({
   coinEmptyHint: { type: String, default: '' },
   showDailyChart: { type: Boolean, default: true },
   showWeeklyChart: { type: Boolean, default: true },
-  showCoinChart: { type: Boolean, default: true }
+  showCoinChart: { type: Boolean, default: true },
+  embedded: { type: Boolean, default: false }
 })
 
 const uid = `ct${Math.random().toString(36).slice(2, 8)}`
@@ -214,6 +215,28 @@ function buildAreaPathFromPlot(plotPts, w, h) {
 
 .perf-charts {
   width: 100%;
+
+  &--embedded {
+    .chart-svg {
+      height: 80px;
+    }
+
+    .chart-svg--bar {
+      height: 80px;
+    }
+  }
+}
+
+.chart-embed {
+  width: 100%;
+}
+
+.chart-empty--embedded {
+  margin: 0;
+  padding: 16px 0;
+  text-align: center;
+  font-size: 12px;
+  color: ct.$ct-text-muted;
 }
 
 .chart-box {

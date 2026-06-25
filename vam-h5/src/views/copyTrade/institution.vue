@@ -1,179 +1,237 @@
-<!-- 机构介绍 / 带单表现（原型 1.1 + 1.2） -->
+<!-- 机构介绍 / 带单表现 -->
 <template>
-  <div class="inst-detail-page">
-    <CopyTradeHeader :title="t18('copy_trade_inst_intro_title')" :border-bottom="true" />
+  <div class="page page--institution-detail">
+    <header class="inst-header">
+      <button type="button" class="inst-header__back" aria-label="back" @click="onBack">
+        <img :src="iconBack" alt="" class="inst-header__back-icon" />
+      </button>
+      <h1 class="inst-header__title">{{ t18('copy_trade_inst_intro_title') }}</h1>
+      <span class="inst-header__spacer" aria-hidden="true"></span>
+    </header>
 
     <van-loading v-if="pageLoading" class="page-loading" />
     <template v-else-if="institutionId">
-      <!-- 机构头部 -->
-      <section class="profile">
-        <div class="profile__head">
-          <img v-if="detail.logo" :src="detail.logo" class="profile__avatar" alt="" />
-          <div v-else class="profile__avatar profile__avatar--ph" />
-          <div class="profile__meta">
-            <h2 class="profile__name">{{ detail.institutionName || '--' }}</h2>
-            <div class="profile__tags">
-              <span class="tag tag--provider">{{ providerTag }}</span>
-              <span class="tag" :class="isSubscribed ? 'tag--on' : 'tag--off'">{{ subscribeTag }}</span>
+      <main class="inst-main">
+        <section class="inst-profile">
+          <div class="inst-profile__card">
+            <div class="inst-profile__top">
+              <img
+                v-if="detail.logo"
+                :src="detail.logo"
+                class="inst-profile__avatar"
+                alt=""
+              />
+              <span v-else class="inst-profile__avatar inst-profile__avatar--placeholder" aria-hidden="true"></span>
+              <div class="inst-profile__meta">
+                <h2 class="inst-profile__name">{{ detail.institutionName || '--' }}</h2>
+                <div class="inst-profile__badges">
+                  <span class="inst-profile__badge" :style="{ '--badge-color': 'rgb(255,121,21)' }">
+                    {{ providerTag }}
+                  </span>
+                  <span
+                    class="inst-profile__badge"
+                    :style="{ '--badge-color': isSubscribed ? 'rgb(46,189,133)' : 'rgba(255,255,255,0.45)' }"
+                  >
+                    {{ subscribeTag }}
+                  </span>
+                </div>
+                <p class="inst-profile__join">
+                  {{ t18('copy_trade_join_date_label') }}{{ formatCopyTradeDisplayDate(detail.joinDate || detail.joinTime, 'YYYY-MM-DD') }}
+                </p>
+              </div>
             </div>
-            <p class="profile__join">
-              {{ t18('copy_trade_join_date_label') }} {{ formatCopyTradeDisplayDate(detail.joinDate || detail.joinTime, 'YYYY-MM-DD') }}
+            <p
+              v-if="detail.description"
+              ref="descRef"
+              class="inst-profile__desc inst-profile__desc--fold"
+              :class="{ 'inst-profile__desc--clickable': descOverflow }"
+              @click="openDescDialog"
+            >
+              {{ detail.description }}
+              <button v-if="descOverflow" type="button" class="desc-more" @click.stop="openDescDialog">
+                {{ t18('copy_trade_desc_more') }}
+              </button>
             </p>
           </div>
-        </div>
-        <p
-          v-if="detail.description"
-          ref="descRef"
-          class="profile__desc profile__desc--fold"
-          :class="{ 'profile__desc--clickable': descOverflow }"
-          @click="openDescDialog"
-        >
-          {{ detail.description }}
-          <button v-if="descOverflow" type="button" class="desc-more" @click.stop="openDescDialog">
-            {{ t18('copy_trade_desc_more') }}
-          </button>
-        </p>
-      </section>
+        </section>
 
-      <!-- 信号提供商规则 -->
-      <section class="rules">
-        <h3 class="rules__title">{{ t18('copy_trade_rules_title') }}</h3>
-        <div class="rules__grid">
-          <div class="rules__cell">
-            <span class="rules__label">{{ t18('copy_trade_min_amount') }}</span>
-            <span class="rules__val ff-num">{{ detail.minAmount ?? '--' }} USDT</span>
+        <section class="inst-rules">
+          <h2 class="inst-section__title">{{ t18('copy_trade_rules_title') }}</h2>
+          <div class="inst-rules__grid">
+            <div class="inst-rules__cell">
+              <span class="inst-rules__value ff-num">{{ detail.minAmount ?? '--' }} USDT</span>
+              <span class="inst-rules__label">{{ t18('copy_trade_min_amount') }}</span>
+            </div>
+            <div class="inst-rules__cell">
+              <span class="inst-rules__value ff-num">{{ detail.maxAmount ?? '--' }} USDT</span>
+              <span class="inst-rules__label">{{ t18('copy_trade_max_amount') }}</span>
+            </div>
+            <div class="inst-rules__cell">
+              <span class="inst-rules__value ff-num">{{ detail.normalShareRate ?? '--' }}%</span>
+              <span class="inst-rules__label">{{ t18('copy_trade_semi_share') }}</span>
+            </div>
+            <div class="inst-rules__cell">
+              <span class="inst-rules__value ff-num">{{ detail.forceShareRate ?? '--' }}%</span>
+              <span class="inst-rules__label">{{ t18('copy_trade_full_share') }}</span>
+            </div>
+            <div class="inst-rules__cell">
+              <span class="inst-rules__value ff-num">{{ detail.tradeFeeRate ?? '--' }}%</span>
+              <span class="inst-rules__label">{{ t18('copy_trade_trade_fee') }}</span>
+            </div>
+            <div class="inst-rules__cell">
+              <span class="inst-rules__value ff-num">{{ _numberWithCommas(subscriberCount) }}</span>
+              <span class="inst-rules__label">{{ t18('copy_trade_total_followers') }}</span>
+            </div>
           </div>
-          <div class="rules__cell">
-            <span class="rules__label">{{ t18('copy_trade_max_amount') }}</span>
-            <span class="rules__val ff-num">{{ detail.maxAmount ?? '--' }} USDT</span>
-          </div>
-          <div class="rules__cell">
-            <span class="rules__label">{{ t18('copy_trade_semi_share') }}</span>
-            <span class="rules__val ff-num">{{ detail.normalShareRate ?? '--' }}%</span>
-          </div>
-          <div class="rules__cell">
-            <span class="rules__label">{{ t18('copy_trade_full_share') }}</span>
-            <span class="rules__val ff-num">{{ detail.forceShareRate ?? '--' }}%</span>
-          </div>
-          <div class="rules__cell">
-            <span class="rules__label">{{ t18('copy_trade_trade_fee') }}</span>
-            <span class="rules__val ff-num">{{ detail.tradeFeeRate ?? '--' }}%</span>
-          </div>
-          <div class="rules__cell">
-            <span class="rules__label">{{ t18('copy_trade_total_followers') }}</span>
-            <span class="rules__val ff-num">{{ _numberWithCommas(subscriberCount) }}</span>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      <!-- Tab：机构带单表现 / 我的跟单记录 -->
-      <div class="seg-tabs">
-        <button
-          type="button"
-          class="seg-tab"
-          :class="{ active: perfTab === 'institution' }"
-          @click="switchPerfTab('institution')"
-        >
-          {{ t18('copy_trade_inst_perf') }}
-        </button>
-        <button
-          type="button"
-          class="seg-tab"
-          :class="{ active: perfTab === 'my' }"
-          @click="switchPerfTab('my')"
-        >
-          {{ t18('copy_trade_my_perf') }}
-        </button>
-      </div>
-
-      <div v-if="perfLoading" class="perf-loading"><van-loading /></div>
-      <div v-else class="perf-body">
-        <!-- 入驻时间 / 带单天数 / 总收益率 -->
-        <div class="summary-row">
-          <div class="summary-item">
-            <span class="summary-label">{{ t18('copy_trade_join_time_label') }}</span>
-            <span class="summary-val">{{ summaryJoinTime }}</span>
-          </div>
-          <div class="summary-item">
-            <span class="summary-label">{{ tradingDaysLabel }}</span>
-            <span class="summary-val">{{ summaryTradingDays }}{{ t18('copy_trade_day_unit') }}</span>
-          </div>
-          <div class="summary-item summary-item--rate">
-            <span class="summary-label">{{ t18('copy_trade_total_profit_rate') }}</span>
-            <span class="summary-val ff-num is-up">{{ formatSignedRate(summaryTotalRate) }}%</span>
-          </div>
-        </div>
-
-        <!-- ① 每日收益表现 -->
-        <section class="chart-section">
-          <h4 class="chart-section__title">{{ t18('copy_trade_daily_perf') }}</h4>
-          <p class="chart-section__sub">
-            {{ rangeRateLabel }} <span class="ff-num is-up">{{ formatSignedRate(perf.rangeTotalProfitRate) }}%</span>
-          </p>
-          <CopyTradePerfCharts
-            v-if="chartsReady"
-            :daily-series="dailySeries"
-            :weekly-series="[]"
-            :coin-preference="[]"
-            :format-rate="formatRate"
-            :show-daily-chart="true"
-            :show-weekly-chart="false"
-            :daily-empty-hint="hasDailyChart ? '' : t18('copy_trade_no_chart_data')"
-          />
-          <div class="range-row">
+        <section class="inst-perf">
+          <div class="inst-tabs" role="tablist">
             <button
-              v-for="r in ranges"
-              :key="r"
               type="button"
-              class="range-btn"
-              :class="{ active: range === r }"
-              @click="changeRange(r)"
+              class="inst-tabs__item"
+              :class="{ 'inst-tabs__item--active': perfTab === 'institution' }"
+              role="tab"
+              :aria-selected="perfTab === 'institution'"
+              @click="switchPerfTab('institution')"
             >
-              {{ rangeLabel(r) }}
+              {{ t18('copy_trade_inst_perf') }}
+            </button>
+            <button
+              type="button"
+              class="inst-tabs__item"
+              :class="{ 'inst-tabs__item--active': perfTab === 'my' }"
+              role="tab"
+              :aria-selected="perfTab === 'my'"
+              @click="switchPerfTab('my')"
+            >
+              {{ t18('copy_trade_my_perf') }}
             </button>
           </div>
-        </section>
 
-        <!-- ② 每周收益表现 -->
-        <section class="chart-section">
-          <h4 class="chart-section__title">{{ t18('copy_trade_weekly_perf') }}</h4>
-          <p class="chart-section__sub">
-            {{ t18('copy_trade_total_profit_rate') }} <span class="ff-num is-up">{{ formatSignedRate(weeklyPerf.weeklyTotalProfitRate ?? weeklyPerf.totalProfitRate) }}%</span>
-          </p>
-          <CopyTradePerfCharts
-            v-if="chartsReady"
-            :daily-series="[]"
-            :weekly-series="weeklySeries"
-            :coin-preference="[]"
-            :format-rate="formatRate"
-            :show-daily-chart="false"
-            :show-weekly-chart="true"
-            :weekly-empty-hint="hasWeeklyChart ? '' : t18('copy_trade_no_chart_data')"
-          />
-        </section>
+          <div v-if="perfLoading" class="perf-loading"><van-loading /></div>
+          <template v-else>
+            <div
+              class="inst-panel inst-panel--inst"
+              :class="{ 'inst-panel--hidden': perfTab !== 'institution' }"
+              role="tabpanel"
+            >
+              <article class="inst-card inst-card--daily">
+                <div class="inst-card__head">
+                  <h3 class="inst-card__title">{{ t18('copy_trade_daily_perf') }}</h3>
+                  <div class="inst-time-tabs">
+                    <button
+                      v-for="r in ranges"
+                      :key="r"
+                      type="button"
+                      class="inst-time-tabs__item"
+                      :class="{ 'inst-time-tabs__item--active': range === r }"
+                      @click="changeRange(r)"
+                    >
+                      {{ rangeLabel(r) }}
+                    </button>
+                  </div>
+                </div>
+                <div class="inst-card__roi">
+                  <span class="inst-card__roi-label">{{ rangeRateLabel }}</span>
+                  <span class="inst-card__roi-value ff-num" :class="rateToneClass(perf.rangeTotalProfitRate)">
+                    {{ formatSignedRate(perf.rangeTotalProfitRate) }}%
+                  </span>
+                </div>
+                <div class="inst-card__chart">
+                  <CopyTradePerfCharts
+                    v-if="chartsReady && hasDailyChart"
+                    embedded
+                    :daily-series="dailySeries"
+                    :weekly-series="[]"
+                    :coin-preference="[]"
+                    :format-rate="formatRate"
+                    :show-daily-chart="true"
+                    :show-weekly-chart="false"
+                    :show-coin-chart="false"
+                  />
+                  <p v-else-if="chartsReady" class="chart-empty-hint">{{ t18('copy_trade_no_chart_data') }}</p>
+                </div>
+              </article>
 
-        <!-- ③ 币种偏好 -->
-        <section class="chart-section chart-section--last">
-          <h4 class="chart-section__title">{{ t18('copy_trade_coin_preference') }}</h4>
-          <CopyTradePerfCharts
-            v-if="chartsReady"
-            :daily-series="[]"
-            :weekly-series="[]"
-            :coin-preference="coinPreference"
-            :format-rate="formatRate"
-            :show-daily-chart="false"
-            :show-weekly-chart="false"
-            :show-coin-chart="true"
-            :coin-empty-hint="hasCoinPreference ? '' : t18('copy_trade_no_chart_data')"
-          />
-        </section>
-      </div>
+              <article class="inst-card inst-card--weekly">
+                <div class="inst-card__head inst-card__head--split">
+                  <h3 class="inst-card__title">{{ t18('copy_trade_weekly_perf') }}</h3>
+                  <div class="inst-card__roi inst-card__roi--inline">
+                    <span class="inst-card__roi-label">{{ t18('copy_trade_total_profit_rate') }}</span>
+                    <span
+                      class="inst-card__roi-value ff-num"
+                      :class="rateToneClass(weeklyPerf.weeklyTotalProfitRate ?? weeklyPerf.totalProfitRate)"
+                    >
+                      {{ formatSignedRate(weeklyPerf.weeklyTotalProfitRate ?? weeklyPerf.totalProfitRate) }}%
+                    </span>
+                  </div>
+                </div>
+                <div class="inst-card__chart">
+                  <CopyTradePerfCharts
+                    v-if="chartsReady && hasWeeklyChart"
+                    embedded
+                    :daily-series="weeklyLineSeries"
+                    :weekly-series="[]"
+                    :coin-preference="[]"
+                    :format-rate="formatRate"
+                    :show-daily-chart="true"
+                    :show-weekly-chart="false"
+                    :show-coin-chart="false"
+                  />
+                  <p v-else-if="chartsReady" class="chart-empty-hint">{{ t18('copy_trade_no_chart_data') }}</p>
+                </div>
+              </article>
 
-      <div class="bottom-bar">
-        <button v-if="perfTab === 'my'" type="button" class="join-btn" @click="goMyCopy">
+              <article class="inst-card inst-card--asset">
+                <h3 class="inst-card__title">{{ t18('copy_trade_coin_preference') }}</h3>
+                <div v-if="hasCoinPreference" class="inst-asset__body">
+                  <div class="inst-asset__donut" :style="{ background: assetDonutGradient }" aria-hidden="true"></div>
+                  <div class="inst-asset__legend">
+                    <div v-for="(item, index) in assetLegend" :key="index" class="inst-asset__legend-item">
+                      <span class="inst-asset__dot" :style="{ background: item.color }"></span>
+                      <span class="inst-asset__symbol">{{ item.symbol }}</span>
+                      <span class="inst-asset__percent ff-num">{{ item.rate }}%</span>
+                    </div>
+                  </div>
+                </div>
+                <p v-else class="chart-empty-hint">{{ t18('copy_trade_no_chart_data') }}</p>
+              </article>
+            </div>
+
+            <div
+              class="inst-panel inst-panel--copy"
+              :class="{ 'inst-panel--hidden': perfTab !== 'my' }"
+              role="tabpanel"
+            >
+              <article class="inst-card inst-card--copy">
+                <div class="inst-copy__grid">
+                  <div class="inst-copy__stat">
+                    <span class="inst-copy__value">{{ summaryJoinTime }}</span>
+                    <span class="inst-copy__label">{{ t18('copy_trade_join_time_label') }}</span>
+                  </div>
+                  <div class="inst-copy__stat">
+                    <span class="inst-copy__value">{{ summaryTradingDays }}{{ t18('copy_trade_day_unit') }}</span>
+                    <span class="inst-copy__label">{{ tradingDaysLabel }}</span>
+                  </div>
+                  <div class="inst-copy__stat">
+                    <span class="inst-copy__value ff-num" :class="rateToneClass(summaryTotalRate, 'inst-copy__value')">
+                      {{ formatSignedRate(summaryTotalRate) }}%
+                    </span>
+                    <span class="inst-copy__label">{{ t18('copy_trade_total_profit_rate') }}</span>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </template>
+        </section>
+      </main>
+
+      <div class="inst-footer">
+        <button v-if="perfTab === 'my'" type="button" class="inst-footer__btn" @click="goMyCopy">
           {{ t18('copy_trade_my') }}
         </button>
-        <button v-else type="button" class="join-btn" @click="goStrategies">
+        <button v-else type="button" class="inst-footer__btn" @click="goStrategies">
           {{ t18('copy_trade_join_strategy') }}
         </button>
       </div>
@@ -194,9 +252,9 @@
 import { ref, computed, onMounted, watch, nextTick, defineAsyncComponent } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import CopyTradeHeader from './components/CopyTradeHeader.vue'
+import iconBack from '@/assets/images/gxpex/trade/icon-back.svg'
 const CopyTradePerfCharts = defineAsyncComponent(() => import('./components/CopyTradePerfCharts.vue'))
-import { _t18, _numberWithCommas } from '@/utils/public'
+import { _t18, _numberWithCommas, _back } from '@/utils/public'
 import {
   getCopyTradeInstitutionDetail,
   getCopyTradeInstitutionDailyChart,
@@ -220,8 +278,15 @@ import {
   formatSignedRate,
   formatCopyTradeDisplayDate
 } from './utils'
-import { priceFormat } from '@/utils/decimal'
 import { showToast } from 'vant'
+
+const ASSET_COLORS = [
+  'rgb(48,111,255)',
+  'rgb(48,201,201)',
+  'rgb(247,192,52)',
+  'rgb(123,61,209)',
+  'rgb(70,154,250)'
+]
 
 const route = useRoute()
 const router = useRouter()
@@ -243,6 +308,17 @@ const descRef = ref(null)
 const descOverflow = ref(false)
 const showDescDialog = ref(false)
 const ranges = ['7d', '15d', '30d', 'all']
+
+function onBack() {
+  _back()
+}
+
+function rateToneClass(val, prefix = 'inst-card__roi-value') {
+  const n = Number(val)
+  if (n > 0) return `${prefix}--positive`
+  if (n < 0) return `${prefix}--negative`
+  return ''
+}
 
 const descDialogTitle = computed(() => {
   const label = t18('copy_trade_inst_intro').replace(/[：:]\s*$/, '')
@@ -276,6 +352,12 @@ const weeklySeries = computed(() => {
   if (w.length) return w
   return normalizePerfData(perf.value).weeklySeries || []
 })
+const weeklyLineSeries = computed(() =>
+  weeklySeries.value.map((row, idx) => ({
+    date: row.week || row.label || t18('copy_trade_week_label').replace('{n}', String(idx + 1)),
+    chartValue: row.chartValue ?? row.weeklyRate ?? row.cumulativeRate ?? row.rate ?? row.value
+  }))
+)
 const coinPreference = computed(() => {
   const fromApi = normalizeCoinPreference(coinPerf.value)
   if (fromApi.length) return fromApi
@@ -286,6 +368,28 @@ const coinPreference = computed(() => {
 const hasDailyChart = computed(() => dailySeries.value.length > 0)
 const hasWeeklyChart = computed(() => weeklySeries.value.length > 0)
 const hasCoinPreference = computed(() => coinPreference.value.length > 0)
+
+const assetLegend = computed(() =>
+  coinPreference.value.map((item, i) => ({
+    symbol: item.symbol === 'Other' ? t18('copy_trade_coin_other') : item.symbol,
+    rate: formatRate(item.rate),
+    color: ASSET_COLORS[i % ASSET_COLORS.length]
+  }))
+)
+
+const assetDonutGradient = computed(() => {
+  const items = coinPreference.value
+  if (!items.length) return ''
+  let start = 0
+  const stops = items.map((item, i) => {
+    const pct = Number(item.rate) || 0
+    const end = start + pct
+    const slice = `${ASSET_COLORS[i % ASSET_COLORS.length]} ${start}% ${end}%`
+    start = end
+    return slice
+  })
+  return `conic-gradient(${stops.join(', ')})`
+})
 
 const activePerfSummary = computed(() =>
   mergePerfSummaryFields(perfSummary.value, normalizePerfSummary(perf.value))
@@ -606,261 +710,5 @@ watch(
 </script>
 
 <style lang="scss" scoped>
-@use './styles/theme.scss' as ct;
-
-.inst-detail-page {
-  @include ct.ct-page-bg;
-  padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
-}
-
-.page-loading,
-.perf-loading {
-  display: flex;
-  justify-content: center;
-  padding: 40px 0;
-}
-
-.profile {
-  padding: 14px 15px 10px;
-
-  &__head {
-    display: flex;
-    gap: 12px;
-  }
-
-  &__avatar {
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    object-fit: cover;
-    flex-shrink: 0;
-
-    &--ph {
-      @include ct.ct-avatar-ph;
-    }
-  }
-
-  &__name {
-    margin: 0 0 8px;
-    font-size: 17px;
-    font-weight: 700;
-    color: ct.$ct-text-primary;
-  }
-
-  &__tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 6px;
-  }
-
-  &__join {
-    margin: 0;
-    font-size: 12px;
-    color: ct.$ct-text-secondary;
-  }
-
-  &__desc {
-    margin: 10px 0 0;
-    font-size: 13px;
-    color: ct.$ct-text-secondary;
-    line-height: 1.55;
-
-    &--fold {
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    &--clickable {
-      cursor: pointer;
-    }
-  }
-}
-
-.desc-dialog-text {
-  padding: 8px 16px 16px;
-  margin: 0;
-  font-size: 14px;
-  color: ct.$ct-text-secondary;
-  line-height: 1.65;
-  word-break: break-word;
-  white-space: pre-wrap;
-  max-height: 60vh;
-  overflow-y: auto;
-}
-
-.tag {
-  font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-weight: 500;
-
-  &--provider {
-    background: rgba(255, 67, 93, 0.15);
-    color: ct.$ct-down;
-  }
-
-  &--on {
-    @include ct.ct-badge-on;
-  }
-
-  &--off {
-    @include ct.ct-badge-off;
-  }
-}
-
-.desc-more {
-  border: none;
-  background: none;
-  color: ct.$ct-purple-light;
-  font-size: 13px;
-  padding: 0;
-  margin-left: 4px;
-}
-
-.rules {
-  padding: 0 15px 14px;
-
-  &__title {
-    margin: 0 0 10px;
-    font-size: 14px;
-    font-weight: 600;
-    color: ct.$ct-text-primary;
-  }
-
-  &__grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-  }
-
-  &__cell {
-    @include ct.ct-card-alt;
-    border-radius: 6px;
-    padding: 10px 8px;
-    text-align: center;
-  }
-
-  &__label {
-    display: block;
-    font-size: 11px;
-    color: ct.$ct-text-muted;
-    margin-bottom: 4px;
-    line-height: 1.3;
-  }
-
-  &__val {
-    font-size: 13px;
-    font-weight: 700;
-    color: ct.$ct-text-primary;
-  }
-}
-
-.seg-tabs {
-  @include ct.ct-seg-tabs;
-  margin: 0 15px 12px;
-}
-
-.seg-tab {
-  @include ct.ct-seg-tab;
-  padding: 10px 8px;
-  font-size: 13px;
-}
-
-.perf-body {
-  padding: 0 15px;
-}
-
-.summary-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid ct.$ct-divider;
-}
-
-.summary-item {
-  flex: 1;
-  min-width: 0;
-
-  &--rate .summary-val {
-    color: ct.$ct-up;
-    font-weight: 700;
-  }
-}
-
-.summary-label {
-  display: block;
-  font-size: 11px;
-  color: ct.$ct-text-muted;
-  margin-bottom: 4px;
-}
-
-.summary-val {
-  font-size: 13px;
-  font-weight: 600;
-  color: ct.$ct-text-primary;
-  word-break: break-all;
-}
-
-.chart-section {
-  margin-bottom: 20px;
-
-  &--last {
-    margin-bottom: 8px;
-  }
-
-  &__title {
-    margin: 0 0 6px;
-    font-size: 14px;
-    font-weight: 600;
-    color: ct.$ct-text-primary;
-  }
-
-  &__sub {
-    margin: 0 0 10px;
-    font-size: 12px;
-    color: ct.$ct-text-secondary;
-  }
-}
-
-.range-row {
-  @include ct.ct-seg-tabs;
-  margin-top: 10px;
-  padding: 3px;
-}
-
-.range-btn {
-  @include ct.ct-seg-tab;
-  padding: 8px 4px;
-  font-size: 12px;
-}
-
-.empty-hint {
-  font-size: 13px;
-  color: ct.$ct-text-muted;
-  text-align: center;
-  padding: 16px 0;
-}
-
-.is-up {
-  @include ct.ct-is-up;
-}
-
-.bottom-bar {
-  @include ct.ct-bottom-bar;
-}
-
-.join-btn {
-  width: 100%;
-  border: none;
-  border-radius: 999px;
-  @include ct.ct-btn-primary;
-  font-size: 16px;
-  font-weight: 600;
-  padding: 14px;
-}
+@use './styles/institution-detail.scss';
 </style>
