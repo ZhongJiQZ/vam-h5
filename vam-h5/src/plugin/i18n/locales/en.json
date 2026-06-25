@@ -1384,7 +1384,7 @@
   "copy_trade_inst_locked": "Too many failed attempts. Please try again in 1 hour.",
   "copy_trade_inst_subscribe_first": "Please subscribe to this institution first",
   "copy_trade_title": "Copy Trade",
-  "copy_trade_my": "My Copy Trading",
+  "copy_trade_my": "My Copy Trades",
   "copy_trade_tab_ongoing": "Ongoing",
   "copy_trade_date_unknown": "Date TBD",
   "copy_trade_tab_ended": "Ended",

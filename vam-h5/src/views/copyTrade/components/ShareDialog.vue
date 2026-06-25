@@ -33,8 +33,10 @@
           <div class="card-top">
             <div class="card-left">
               <p class="caption">{{ _t18('copy_trade_share_caption') }}</p>
-              <p class="big-rate" :class="rateClass">{{ rateStr }}%</p>
-              <p class="rate-label">{{ _t18('copy_trade_share_rate_label') }}</p>
+              <p class="big-rate" :class="profitClass">
+                {{ formatPnl(shareNetProfit) }}<span class="big-rate__unit"> USDT</span>
+              </p>
+              <p class="rate-label">{{ _t18('copy_trade_actual_profit') }}</p>
               <div class="strategy-tag">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#17ac74" stroke-width="2.5"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
                 <span>{{ _t18('copy_trade_share_strategy') }}</span>
@@ -72,14 +74,14 @@
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
               </span>
               <span class="kv-label">{{ _t18('copy_trade_actual_profit') }}</span>
-              <span class="kv-val" :class="pnlClass(item.actualProfit)">{{ formatPnl(item.actualProfit) }} USDT</span>
+              <span class="kv-val" :class="pnlClass(shareNetProfit)">{{ formatPnl(shareNetProfit) }} USDT</span>
             </div>
             <div class="card-kv">
               <span class="kv-dot" style="background:#9b6cf0">
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
               </span>
               <span class="kv-label">{{ _t18('copy_trade_pnl_rate') }}</span>
-              <span class="kv-val" :class="pnlClass(item.actualProfit)">{{ rateStr }}%</span>
+              <span class="kv-val" :class="pnlClass(shareNetProfit)">{{ rateStr }}%</span>
             </div>
           </div>
 
@@ -113,7 +115,7 @@ import { ref, computed } from 'vue'
 import { showToast } from 'vant'
 import { _t18 } from '@/utils/public'
 import { priceFormat } from '@/utils/decimal'
-import { formatPnl, pnlClass, calcPnlRate, formatCopyTradeJoinTime, formatCopyTradeExitTime } from '../utils'
+import { formatPnl, pnlClass, calcPnlRate, formatCopyTradeJoinTime, formatCopyTradeExitTime, copyTradeShareNetProfit } from '../utils'
 
 const props = defineProps({
   show: { type: Boolean, default: false },
@@ -132,8 +134,9 @@ const dateArr = computed(() => {
   return [parts[0] || '--', parts[1]?.slice(0, 5) || '']
 })
 
-const rateStr = computed(() => calcPnlRate(props.item.actualProfit, props.item.amount))
-const rateClass = computed(() => pnlClass(props.item.actualProfit))
+const shareNetProfit = computed(() => copyTradeShareNetProfit(props.item))
+const rateStr = computed(() => calcPnlRate(shareNetProfit.value, props.item.amount))
+const profitClass = computed(() => pnlClass(shareNetProfit.value))
 
 async function buildCanvas() {
   const { default: html2canvas } = await import('html2canvas')
@@ -269,6 +272,12 @@ $green: #17ac74;
   letter-spacing: -1px;
   &.is-up { color: $green; }
   &.is-down { color: #e8503a; }
+
+  &__unit {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0;
+  }
 }
 .rate-label { font-size: 12px; color: #aaa; margin: 0 0 10px; }
 .strategy-tag {

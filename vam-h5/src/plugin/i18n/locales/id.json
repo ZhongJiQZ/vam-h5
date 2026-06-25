@@ -1376,7 +1376,7 @@
   "copy_trade_inst_secret_required": "Masukkan kunci institusi",
   "copy_trade_inst_locked": "Terlalu banyak percobaan gagal. Coba lagi dalam 1 jam.",
   "copy_trade_title": "Copy Trading",
-  "copy_trade_my": "Copy Trade Saya",
+  "copy_trade_my": "Copy Trading Saya",
   "copy_trade_tab_ongoing": "Berjalan",
   "copy_trade_tab_ended": "Selesai",
   "copy_trade_amount_range": "Rentang Investasi",

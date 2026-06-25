@@ -105,6 +105,16 @@ export function copyTradeNetProfit(item) {
   return Number.isFinite(n) ? n : 0
 }
 
+/** 分享卡净盈利：扣手续费与机构分润后（不含周期毛盈亏 fallback） */
+export function copyTradeShareNetProfit(item) {
+  if (!item) return 0
+  const params = item.params || {}
+  const raw = params.totalSettledProfit ?? params.netProfit ?? item.netProfit
+  if (raw == null || raw === '') return 0
+  const n = Number(raw)
+  return Number.isFinite(n) ? n : 0
+}
+
 /** 今日交易次数：优先 tradeCount */
 export function copyTradeTradeCount(item) {
   if (!item) return 0
