@@ -46,26 +46,10 @@
             </van-popover>
           </div>
           <div class="right firstItem">
-            <van-popover v-model:show="showPopoverNum" :show-arrow="false">
-              <div class="rightScondListNum" v-if="numList.length > 0">
-                <div
-                  v-for="item in numList"
-                  :key="item.id"
-                  class="rightScondListItem"
-                  :class="item.name === transactionNum ? 'hightBlue' : ''"
-                  @click="selectNum(item)"
-                >
-                  {{ item.name }}
-                </div>
-              </div>
-              <template #reference>
-                <div class="entrustSelect right">
-                  <div class="fw-num">{{ transactionNum }}</div>
-                  <svg-load v-if="!showPopoverNum" name="jiantou10x5-x" class="img"></svg-load>
-                  <svg-load v-if="showPopoverNum" name="jiantou10x5-s" class="img"></svg-load>
-                </div>
-              </template>
-            </van-popover>
+            <div class="entrustSelect right leverage-trigger" @click="openLeveragePicker">
+              <div class="fw-num">{{ leverageValue }}X</div>
+              <svg-load name="jiantou10x5-x" class="img"></svg-load>
+            </div>
           </div>
         </div>
         <!-- 市价占位 -->
@@ -248,6 +232,65 @@
       :coinInfo="coinInfo"
       :availableBalance="availableBalance"
     ></OrderListBox>
+
+    <!-- 杠杆拖动选择 -->
+    <van-popup v-model:show="showLeveragePicker" position="bottom" round>
+      <div class="leverage-sheet">
+        <div class="leverage-sheet__head">
+          <span>{{ _t18('paxpay_trade_top_tab5') }}</span>
+          <button type="button" class="leverage-sheet__close" @click="showLeveragePicker = false">×</button>
+        </div>
+        <div class="leverage-sheet__value-row">
+          <button type="button" class="leverage-step-btn" :disabled="leverageDraft <= minLeverage" @click="stepLeverage(-1)">−</button>
+          <p class="leverage-sheet__value ff-num">{{ leverageDraft }}X</p>
+          <button type="button" class="leverage-step-btn" :disabled="leverageDraft >= maxLeverage" @click="stepLeverage(1)">+</button>
+        </div>
+        <div class="leverage-sheet__range ff-num">{{ minLeverage }}X — {{ maxLeverage }}X</div>
+        <div class="leverage-sheet__slider-wrap">
+          <van-slider
+            v-model="leverageDraft"
+            :min="minLeverage"
+            :max="maxLeverage"
+            :step="1"
+            active-color="#17ac74"
+            inactive-color="#e5e7eb"
+            @change="applyLeverageDraft"
+          >
+            <template #button>
+              <div class="leverage-slider-btn"></div>
+            </template>
+          </van-slider>
+          <div class="leverage-sheet__marks">
+            <button
+              v-for="mark in leverageScaleMarks"
+              :key="mark"
+              type="button"
+              class="leverage-sheet__mark"
+              :class="{ active: leverageDraft === mark }"
+              :style="{ left: leverageMarkLeft(mark) }"
+              @click="setLeverageDraft(mark)"
+            >
+              {{ mark }}x
+            </button>
+          </div>
+        </div>
+        <div class="leverage-sheet__presets">
+          <button
+            v-for="mark in leverageScaleMarks"
+            :key="'preset-' + mark"
+            type="button"
+            class="leverage-preset-btn"
+            :class="{ active: leverageDraft === mark }"
+            @click="setLeverageDraft(mark)"
+          >
+            {{ mark }}X
+          </button>
+        </div>
+        <button type="button" class="leverage-sheet__confirm" @click="confirmLeverage">
+          {{ _t18('btnConfirm') }}
+        </button>
+      </div>
+    </van-popup>
   </div>
 </template>
 
@@ -352,16 +395,94 @@ const setTradePrice = (val) => {
 
 const contractObj = ref({})
 
-/**
- * 杠杆
- */
-const showPopoverNum = ref(false)
-const transactionNum = ref(null)
-const numList = ref([])
+function parseLeverageConfig(leverageStr) {
+  const presets = String(leverageStr || '')
+    .split(',')
+    .map((s) => Number(String(s).trim().replace(/x$/i, '')))
+    .filter((n) => Number.isFinite(n) && n > 0)
+    .sort((a, b) => a - b)
+  if (!presets.length) {
+    return { min: 1, max: 1, presets: [1] }
+  }
+  return {
+    min: presets[0],
+    max: presets[presets.length - 1],
+    presets
+  }
+}
 
-const selectNum = (item) => {
-  transactionNum.value = item.name
-  showPopoverNum.value = false
+function buildLeverageScaleMarks(min, max) {
+  const step = 25
+  const lo = toNum(min, 1)
+  const hi = toNum(max, lo)
+  if (hi <= lo) return [lo]
+  if (hi < step) return [lo, hi].filter((v, i, arr) => arr.indexOf(v) === i)
+
+  const marks = []
+  for (let v = step; v < hi; v += step) {
+    if (v >= lo) marks.push(v)
+  }
+  if (!marks.length || marks[marks.length - 1] !== hi) {
+    marks.push(hi)
+  }
+  return marks
+}
+
+function applyLeverageFromCoin(coinItem) {
+  const { min, max, presets } = parseLeverageConfig(coinItem?.leverage)
+  minLeverage.value = min
+  maxLeverage.value = max
+  leveragePresets.value = presets
+  const current = toNum(leverageValue.value, 0)
+  if (!current || current < min || current > max) {
+    leverageValue.value = presets[0] ?? min
+  }
+  leverageDraft.value = leverageValue.value
+}
+
+/**
+ * 杠杆（拖动选择 1 ~ 后台最大杠杆）
+ */
+const showLeveragePicker = ref(false)
+const leverageValue = ref(1)
+const leverageDraft = ref(1)
+const minLeverage = ref(1)
+const maxLeverage = ref(1)
+const leveragePresets = ref([1])
+
+const leverageScaleMarks = computed(() =>
+  buildLeverageScaleMarks(minLeverage.value, maxLeverage.value)
+)
+
+const openLeveragePicker = () => {
+  leverageDraft.value = leverageValue.value
+  showLeveragePicker.value = true
+}
+
+const setLeverageDraft = (val) => {
+  const n = Math.min(maxLeverage.value, Math.max(minLeverage.value, toNum(val, minLeverage.value)))
+  leverageDraft.value = n
+}
+
+const stepLeverage = (delta) => {
+  setLeverageDraft(leverageDraft.value + delta)
+}
+
+const applyLeverageDraft = (val) => {
+  setLeverageDraft(val)
+}
+
+const confirmLeverage = () => {
+  leverageValue.value = leverageDraft.value
+  showLeveragePicker.value = false
+}
+
+const leverageMarkLeft = (mark) => {
+  const min = minLeverage.value
+  const max = maxLeverage.value
+  if (max <= min) return '0%'
+  const pct = ((toNum(mark, min) - min) / (max - min)) * 100
+  return `calc(${pct}% - 12px)`
 }
 
 /**
@@ -396,10 +517,7 @@ const floorTo = (num, scale = 3) => {
   return Math.floor(n * factor) / factor
 }
 
-const getLeverage = () => {
-  const item = numList.value.find((e) => e.name === transactionNum.value)
-  return toNum(item?.id, 0)
-}
+const getLeverage = () => toNum(leverageValue.value, 0)
 
 const getTradePrice = () => {
   return toNum(transactionLabel.value ? coinPriceInfo.value.close : delegatePrice.value, 0)
@@ -500,8 +618,6 @@ watch(
     marginValue.value = '0'
 
     if (tradeStore.contractCoinList.length) {
-      numList.value = []
-      transactionNum.value = ''
       let newcoin = {}
 
       tradeStore.contractCoinList.forEach((element) => {
@@ -511,16 +627,9 @@ watch(
         }
       })
 
-      if (newcoin?.leverage) {
-        newcoin.leverage.split(',').forEach((ele) => {
-          numList.value.push({
-            name: ele + 'X',
-            id: ele
-          })
-        })
+      if (newcoin?.coin) {
+        applyLeverageFromCoin(newcoin)
       }
-
-      transactionNum.value = numList.value[0]?.name || ''
     }
   },
   { immediate: true }
@@ -603,7 +712,7 @@ watch(
  * 杠杆变化时，如果滑块已有值，重新带出数量
  */
 watch(
-  () => transactionNum.value,
+  () => leverageValue.value,
   () => {
     const maxLots = toNum(bearableValue.value, 0)
 
@@ -636,7 +745,7 @@ watch(
  * - 限价：delegatePrice
  */
 watch(
-  [() => delegateTotal.value, () => delegatePrice.value, () => transactionLabel.value, () => transactionNum.value],
+  [() => delegateTotal.value, () => delegatePrice.value, () => transactionLabel.value, () => leverageValue.value],
   () => {
     const lots = toNum(delegateTotal.value, 0)
     const leverage = getLeverage()
@@ -664,21 +773,10 @@ watch(
  */
 const init = () => {
   if (tradeStore.contractCoinList.length) {
-    numList.value = []
-    transactionNum.value = ''
-
     tradeStore.contractCoinList.forEach((element) => {
       if (element.coin === props.coinInfo.coin) {
         contractObj.value = element
-        if (element.leverage) {
-          element.leverage.split(',').forEach((lev) => {
-            numList.value.push({
-              name: lev + 'X',
-              id: lev
-            })
-          })
-        }
-        transactionNum.value = numList.value[0]?.name || ''
+        applyLeverageFromCoin(element)
       }
     })
   }
@@ -691,18 +789,12 @@ const buyOrSellForm = async (type) => {
   const pickMsg = (obj) =>
     obj?.msg || obj?.data?.msg || obj?.response?.data?.msg || obj?.message || ''
   let loadingToast = null
-  let typeId = ''
-  numList.value.forEach((element) => {
-    if (element.name === transactionNum.value) {
-      typeId = element.id
-    }
-  })
 
   const tradePrice = transactionLabel.value ? coinPriceInfo.value.close : delegatePrice.value
 
   const data = {
     symbol: props.coinInfo.coin,
-    leverage: typeId,
+    leverage: String(leverageValue.value),
     delegatePrice: tradePrice,
     delegateTotal: delegateTotal.value,
     type: type, // 0 买入(做多) 1 卖出(开空)
@@ -1164,5 +1256,148 @@ onUnmounted(() => {
     padding: 0 8px;
     font-size: 12px;
   }
+}
+
+.leverage-trigger {
+  cursor: pointer;
+}
+
+.leverage-sheet {
+  padding: 16px 16px calc(20px + env(safe-area-inset-bottom, 0px));
+
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ex-default-font-color);
+  }
+
+  &__close {
+    border: none;
+    background: transparent;
+    font-size: 24px;
+    line-height: 1;
+    color: #9ca3af;
+    padding: 0 4px;
+  }
+
+  &__value-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 6px;
+  }
+
+  &__value {
+    margin: 0;
+    min-width: 72px;
+    text-align: center;
+    font-size: 32px;
+    font-weight: 700;
+    color: #17ac74;
+  }
+
+  &__range {
+    text-align: center;
+    font-size: 12px;
+    color: #9ca3af;
+    margin-bottom: 18px;
+  }
+
+  &__slider-wrap {
+    position: relative;
+    padding: 8px 8px 28px;
+    margin-bottom: 14px;
+  }
+
+  &__marks {
+    position: relative;
+    height: 22px;
+    margin-top: 10px;
+    padding: 0 4px;
+  }
+
+  &__mark {
+    position: absolute;
+    transform: translateX(-50%);
+    border: none;
+    background: transparent;
+    font-size: 10px;
+    color: #9ca3af;
+    padding: 0 2px;
+    white-space: nowrap;
+
+    &.active {
+      color: #17ac74;
+      font-weight: 600;
+    }
+  }
+
+  &__presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  &__confirm {
+    width: 100%;
+    height: 44px;
+    border: none;
+    border-radius: 8px;
+    background: #17ac74;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+  }
+}
+
+.leverage-step-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  font-size: 20px;
+  line-height: 1;
+  color: #374151;
+
+  &:disabled {
+    opacity: 0.4;
+  }
+}
+
+.leverage-preset-btn {
+  min-width: 52px;
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  font-size: 12px;
+  color: #374151;
+
+  &.active {
+    border-color: #17ac74;
+    color: #17ac74;
+    background: rgba(23, 172, 116, 0.08);
+  }
+}
+
+.leverage-slider-btn {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #17ac74;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+:deep(.leverage-sheet__slider-wrap .van-slider) {
+  height: 4px;
 }
 </style>
