@@ -74,7 +74,7 @@
             </section>
 
             <!-- 合作机构 -->
-            <section class="section section1">
+            <!-- <section class="section section1">
                 <h2 class="section-title">{{ _t18('investment_partners_title') }}</h2>
                 <div class="partner-tags">
                     <span v-for="item in partners" :key="item" class="partner-tag">
@@ -82,7 +82,7 @@
                         {{ item }}
                     </span>
                 </div>
-            </section>
+            </section> -->
 
             <!-- 团队权益 -->
             <section class="section section-benefits">
@@ -228,7 +228,7 @@ const teamBenefits = computed(() => {
         _t18('investment_benefit_6'),
         _t18('investment_benefit_7'),
         _t18('investment_benefit_8'),
-        _t18('investment_benefit_9')
+        // _t18('investment_benefit_9')
     ]
 })
 
