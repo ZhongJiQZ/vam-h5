@@ -8,8 +8,29 @@ function escapeHtml(text) {
     .replace(/"/g, '&quot;')
 }
 
+/** 将接口/文案中的字面量 \\n、\\r 转为真实换行 */
+export function normalizeTextNewlines(text) {
+  return String(text ?? '')
+    .replace(/\\r\\n/g, '\n')
+    .replace(/\\n/g, '\n')
+    .replace(/\\r/g, '\n')
+    .replace(/\r\n/g, '\n')
+    .replace(/\r/g, '\n')
+}
+
+function looksLikeHtml(text) {
+  return /<[a-z][^>]*>/i.test(text)
+}
+
+export function normalizeCopyTradeDocContent(content) {
+  const text = normalizeTextNewlines(content).trim()
+  if (!text) return ''
+  if (looksLikeHtml(text)) return text
+  return plainTextToHtml(text)
+}
+
 export function plainTextToHtml(text) {
-  return String(text || '')
+  return normalizeTextNewlines(text)
     .trim()
     .split(/\n{2,}/)
     .filter(Boolean)
@@ -65,6 +86,11 @@ export function getCopyTradeRiskDoc(translate) {
 
 /** API 文档优先，无内容时使用本地默认 */
 export function resolveCopyTradeDoc(apiDoc, fallbackDoc) {
-  if (apiDoc && String(apiDoc.content || '').trim()) return apiDoc
+  if (apiDoc && String(apiDoc.content || '').trim()) {
+    return {
+      ...apiDoc,
+      content: normalizeCopyTradeDocContent(apiDoc.content)
+    }
+  }
   return fallbackDoc
 }
