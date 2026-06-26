@@ -1210,6 +1210,7 @@
   "copy_trade_share_title": "Share",
   "copy_trade_share_save": "Save Image",
   "copy_trade_share_caption": "Profit Share",
+  "copy_trade_share_profit_label": "Actual Profit",
   "copy_trade_share_rate_label": "P/L Rate",
   "copy_trade_share_strategy": "institutional copy trading",
   "copy_trade_share_link": "Share Link",

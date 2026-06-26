@@ -36,7 +36,7 @@
               <p class="big-rate" :class="profitClass">
                 {{ formatPnl(shareNetProfit) }}<span class="big-rate__unit"> USDT</span>
               </p>
-              <p class="rate-label">{{ _t18('copy_trade_actual_profit') }}</p>
+              <p class="rate-label">{{ _t18('copy_trade_share_profit_label') }}</p>
               <div class="strategy-tag">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#17ac74" stroke-width="2.5"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
                 <span>{{ _t18('copy_trade_share_strategy') }}</span>
@@ -73,15 +73,15 @@
               <span class="kv-dot" style="background:#17ac74">
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
               </span>
-              <span class="kv-label">{{ _t18('copy_trade_actual_profit') }}</span>
-              <span class="kv-val" :class="pnlClass(shareNetProfit)">{{ formatPnl(shareNetProfit) }} USDT</span>
+              <span class="kv-label">{{ _t18('copy_trade_period_pnl') }}</span>
+              <span class="kv-val" :class="pnlClass(periodProfit)">{{ formatPnl(periodProfit) }} USDT</span>
             </div>
             <div class="card-kv">
               <span class="kv-dot" style="background:#9b6cf0">
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
               </span>
               <span class="kv-label">{{ _t18('copy_trade_pnl_rate') }}</span>
-              <span class="kv-val" :class="pnlClass(shareNetProfit)">{{ rateStr }}%</span>
+              <span class="kv-val" :class="pnlClass(periodProfit)">{{ rateStr }}%</span>
             </div>
           </div>
 
@@ -135,7 +135,11 @@ const dateArr = computed(() => {
 })
 
 const shareNetProfit = computed(() => copyTradeShareNetProfit(props.item))
-const rateStr = computed(() => calcPnlRate(shareNetProfit.value, props.item.amount))
+const periodProfit = computed(() => {
+  const n = Number(props.item?.actualProfit)
+  return Number.isFinite(n) ? n : 0
+})
+const rateStr = computed(() => calcPnlRate(periodProfit.value, props.item.amount))
 const profitClass = computed(() => pnlClass(shareNetProfit.value))
 
 async function buildCanvas() {
