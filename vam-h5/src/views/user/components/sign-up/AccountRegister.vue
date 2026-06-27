@@ -67,6 +67,7 @@
           type="text"
           :placeholder="_t18('login_please')"
           v-model="formData1.invitCode"
+          :readonly="inviteFromUrl"
           @input="onInvitCodeInput"
         />
       </div>
@@ -107,6 +108,9 @@ const select = (val) => {
 }
 /** 仅允许字母、数字、中文，过滤空格与特殊字符 */
 const filterAlphanumeric = (val) => String(val ?? '').replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '')
+
+/** URL \u643a\u5e26\u9080\u8bf7\u7801\u65f6\u9501\u5b9a\u8f93\u5165\u6846 */
+const inviteFromUrl = !!filterAlphanumeric(route.query.invite_code)
 
 const onUsernameInput = (e) => {
   formData1.value.username = filterAlphanumeric(e.target.value)

@@ -41,7 +41,12 @@
         <i>({{ _t18('required') }})</i>
       </p>
       <div>
-        <input type="text" :placeholder="_t18('login_please')" v-model="formData3.invitCode" />
+        <input
+          type="text"
+          :placeholder="_t18('login_please')"
+          v-model="formData3.invitCode"
+          :readonly="inviteFromUrl"
+        />
       </div>
     </div>
 
@@ -63,6 +68,9 @@ import { computed } from 'vue'
 import { getCurrentLanguagePhoneCode } from '@/utils/languageCountry'
 
 const route = useRoute()
+
+/** URL 携带邀请码时锁定输入框 */
+const inviteFromUrl = !!String(route.query.invite_code ?? '').trim()
 
 const formData3 = ref({
   type: 3,

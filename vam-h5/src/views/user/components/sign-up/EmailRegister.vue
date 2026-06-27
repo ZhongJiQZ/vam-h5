@@ -57,7 +57,12 @@
         <i>({{ _t18('required') }})</i>
       </p>
       <div>
-        <input type="text" :placeholder="_t18('login_please')" v-model="formData2.invitCode" />
+        <input
+          type="text"
+          :placeholder="_t18('login_please')"
+          v-model="formData2.invitCode"
+          :readonly="inviteFromUrl"
+        />
       </div>
     </div>
     <div class="formData">
@@ -65,8 +70,8 @@
       <p>{{ _t18('login_code') }}</p>
       <div>
         <input type="text" :placeholder="_t18('login_please')" v-model="formData2.code" />
-        <p v-if="!flag" @click="send()">{{ _t18('login_send') }}</p>
-        <p v-else><van-count-down :time="time" format="ss" @finish="finish" /></p>
+        <p v-if="countdown === 0" @click="send()">{{ _t18('login_send') }}</p>
+        <p v-else>{{ countdown }}s</p>
       </div>
     </div>
 
@@ -86,6 +91,8 @@ import { getCurrentLanguagePhoneCode } from '@/utils/languageCountry'
 const { _toast } = useToast()
 import { useRoute } from 'vue-router'
 const route = useRoute()
+/** URL 携带邀请码时锁定输入框 */
+const inviteFromUrl = !!String(route.query.invite_code ?? '').trim()
 /**
  * 表单数据
  */
@@ -110,10 +117,27 @@ const requireShowk = ref(false)
  * 倒计时
  */
 
-// 倒计时
-const time = ref(0)
-const flag = ref(false)
+// 倒计时（秒），0 = 可点击发送
+const countdown = ref(0)
+let countdownTimer = null
+const startCountdown = (seconds = 60) => {
+  countdown.value = seconds
+  countdownTimer && clearInterval(countdownTimer)
+  countdownTimer = setInterval(() => {
+    if (countdown.value <= 1) {
+      clearInterval(countdownTimer)
+      countdownTimer = null
+      countdown.value = 0
+    } else {
+      countdown.value--
+    }
+  }, 1000)
+}
+onBeforeUnmount(() => {
+  countdownTimer && clearInterval(countdownTimer)
+})
 const send = () => {
+  if (countdown.value > 0) return
   // 邮箱发送验证码
   if (formData2.value.email == '') {
     _toast(`login_please_emailCode`)
@@ -122,16 +146,11 @@ const send = () => {
   }
   emailCode('REGISTER', formData2.value.email).then((res) => {
     if (res.code == '200') {
-      flag.value = true
-      time.value = 60 * 1000
+      startCountdown(60)
     } else {
       showToast(res.msg)
     }
   })
-}
-// 倒计时结束
-const finish = () => {
-  flag.value = false
 }
 const refreshCode = () => {}
 
