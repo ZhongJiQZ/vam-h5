@@ -11,6 +11,9 @@
           <div class="erweima">
             <QRCode :address="sharkCode"></QRCode>
           </div>
+          <div class="userId">
+            <p class="ff-num">{{ _t18('plug_userId') }}：{{ userInfo.detail.userId }}</p>
+          </div>
           <div class="sharkCode">
             <Copy :data="sharkCode">
               <template #copyMsg>
@@ -58,6 +61,9 @@
           <p class="shareContent_title fw-bold">{{ _t18('plug_invite', ['aams']) }}</p>
           <!-- 邀请好友，充值即刻获取佣金 -->
           <p class="shareContent_info">{{ _t18('plug_toInvite') }}</p>
+          <div class="userId">
+            <p class="ff-num uid">{{ _t18('plug_userId') }}：{{ userInfo.detail.userId }}</p>
+          </div>
           <div class="sharkCode">
             <Copy :data="sharkCode" :contentFix="'start'" :fontSize="'12px'">
               <template #copyMsg>
@@ -454,12 +460,17 @@ const changeIndex = (v) => {
       }
 
       .sharkCode,
+      .userId,
       .shareLink {
         p {
           line-height: 1.35;
           font-size: 12px;
           word-break: break-all;
           color: rgba(255, 255, 255, 0.92);
+        }
+
+        .uid{
+          padding: 6px 0;
         }
       }
     }
