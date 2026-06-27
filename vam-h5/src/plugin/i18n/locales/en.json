@@ -540,6 +540,7 @@
   "register_haveAccount": "Have account",
   "register_toLogin": "Log in",
   "register_agree": "By registering, I agree",
+  "register_agreeAgreement": "Please agree to the Terms of Service first",
   "register_howToUse": "Terms of use",
   "register_and": "and",
   "register_private": "Privacy",

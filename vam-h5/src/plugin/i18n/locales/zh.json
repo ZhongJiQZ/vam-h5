@@ -540,6 +540,7 @@
   "register_haveAccount": "已有账户",
   "register_toLogin": "立即登录",
   "register_agree": "注册即表示我同意",
+  "register_agreeAgreement": "请先同意服务条款",
   "register_howToUse": "使用条款",
   "register_and": "和",
   "register_private": "隐私条约",
