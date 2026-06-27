@@ -30,7 +30,10 @@
                 <p class="name">{{ item.institutionName || item.title }}</p>
                 <p class="subs">
                   {{ $t("pc_copy_trade_inst_subscribers", { n: subscriberCount(item) }) }}
-                  <span v-if="item.totalProfitRate != null" class="rate">
+                  <span
+                    v-if="isInstitutionSubscribed(item) && item.totalProfitRate != null"
+                    class="rate"
+                  >
                     · {{ formatRate(item.totalProfitRate) }}%
                   </span>
                 </p>
