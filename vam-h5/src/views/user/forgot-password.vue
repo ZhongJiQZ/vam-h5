@@ -1,63 +1,77 @@
-<!-- 忘记密码 -->
+<!-- 忘记密码 - GXPEX 暗紫主题 -->
 <template>
   <div class="forgot-page">
-    <header class="forgot-header">
-      <img :src="logoPng" class="logo" alt="" />
-      <img
-        :src="langPng"
-        class="lang-icon"
-        alt=""
-        @click="$router.push('/language-selection')"
-      />
-    </header>
+    <img :src="bgImg" class="forgot-bg" alt="" />
 
-    <div class="forgot-card">
-      <button type="button" class="card-close" @click="$router.push('/')" aria-label="close">
-        <img :src="closePng" alt="" />
+    <div class="forgot-content">
+      <button type="button" class="back-btn" @click="$router.back()" aria-label="back">
+        <img :src="iconBack" alt="" />
       </button>
 
-      <h1 class="card-title">{{ _t18('forget_pwd', ['bitmake']) }}</h1>
+      <div class="logo-block">
+        <img :src="logoG" class="logo-g" alt="GXPEX" />
+      </div>
 
-      <div class="forgot-body">
-        <div class="formData">
-          <p>{{ _t18('login_emailCode') }}</p>
-          <div>
-            <input type="text" :placeholder="_t18('login_emailCode')" v-model="formData.email" />
-          </div>
+      <h1 class="welcome">{{ _t18('forget_pwd', ['bitmake']) }}</h1>
+
+      <div class="form form--panel">
+        <div class="field">
+          <img :src="iconAccount" class="field__icon" alt="" />
+          <input
+            v-model="formData.email"
+            type="text"
+            class="field__input"
+            :placeholder="_t18('login_emailCode')"
+          />
         </div>
-        <div class="formData">
-          <p>{{ _t18('login_code') }}</p>
-          <div>
-            <input type="text" :placeholder="_t18('login_please')" v-model="formData.code" />
-            <p v-if="!flag" @click="send()">{{ _t18('login_send') }}</p>
-            <p v-else><van-count-down :time="time" format="ss" @finish="finish" /></p>
-          </div>
+
+        <div class="field field--code">
+          <img :src="iconInvite" class="field__icon" alt="" />
+          <input
+            v-model="formData.code"
+            type="text"
+            class="field__input"
+            :placeholder="_t18('login_please')"
+          />
+          <span v-if="!flag" class="code-send" @click="send()">{{ _t18('login_send') }}</span>
+          <span v-else class="code-count">
+            <van-count-down :time="time" format="ss" @finish="finish" />
+          </span>
         </div>
-        <div class="formData">
-          <p>{{ _t18('forgot_newPwd') }}</p>
-          <div>
-            <input
-              :type="showk ? 'text' : 'password'"
-              :placeholder="_t18('login_please')"
-              v-model="formData.password"
-            />
-            <svg-load :name="showk ? 'yanjin-k' : 'yanjin-g'" @click="showk = !showk"></svg-load>
-          </div>
+
+        <div class="field">
+          <img :src="iconLock" class="field__icon" alt="" />
+          <input
+            v-model="formData.password"
+            :type="showk ? 'text' : 'password'"
+            class="field__input"
+            :placeholder="_t18('forgot_newPwd')"
+          />
+          <img
+            :src="showk ? iconEye : iconEyeOff"
+            class="field__icon field__icon--right"
+            alt=""
+            @click="showk = !showk"
+          />
         </div>
-        <div class="formData">
-          <p>{{ _t18('forgot_require_newPwd') }}</p>
-          <div>
-            <input
-              :type="requireShowk ? 'text' : 'password'"
-              :placeholder="_t18('login_please')"
-              v-model="formData.password2"
-              @input="inputPass"
-            /><svg-load
-              :name="requireShowk ? 'yanjin-k' : 'yanjin-g'"
-              @click="requireShowk = !requireShowk"
-            ></svg-load>
-          </div>
+
+        <div class="field">
+          <img :src="iconLock" class="field__icon" alt="" />
+          <input
+            v-model="formData.password2"
+            :type="requireShowk ? 'text' : 'password'"
+            class="field__input"
+            :placeholder="_t18('forgot_require_newPwd')"
+            @input="inputPass"
+          />
+          <img
+            :src="requireShowk ? iconEye : iconEyeOff"
+            class="field__icon field__icon--right"
+            alt=""
+            @click="requireShowk = !requireShowk"
+          />
         </div>
+
         <p class="requirePass" v-if="requirePass">*{{ _t18('register_pwd_diff') }}</p>
 
         <Footer :type="2" :formDataToForget="formData"></Footer>
@@ -73,9 +87,14 @@ import { showToast } from 'vant'
 import { useToast } from '@/hook/useToast'
 const { _toast } = useToast()
 import { _t18 } from '@/utils/public'
-import logoPng from '@/assets/images/login/logo.png'
-import langPng from '@/assets/images/language.png'
-import closePng from '@/assets/images/login/close.png'
+import bgImg from '@/assets/images/gxpex/login/bg.png'
+import logoG from '@/assets/images/gxpex/login/gxpenlogo.png'
+import iconAccount from '@/assets/images/gxpex/login/icon-account.svg'
+import iconLock from '@/assets/images/gxpex/signup/icon-lock.svg'
+import iconEye from '@/assets/images/gxpex/signup/icon-eye.svg'
+import iconEyeOff from '@/assets/images/gxpex/signup/icon-eye-off.svg'
+import iconInvite from '@/assets/images/gxpex/signup/icon-invite.svg'
+import iconBack from '@/assets/images/gxpex/trade/icon-back.svg'
 
 const showk = ref(false)
 const requireShowk = ref(false)
@@ -112,160 +131,232 @@ const finish = () => {
 </script>
 
 <style lang="scss" scoped>
-$GXPEX-dark: #0c1017;
-$GXPEX-green: #17ac74;
+$purple-1: #b388ff;
+$purple-2: #a041ed;
+$purple-3: #872ddc;
+$font-raleway: 'Raleway', -apple-system, 'PingFang SC', sans-serif;
+$font-pingfang: 'PingFang SC', -apple-system, 'Raleway', sans-serif;
 
 .forgot-page {
+  position: relative;
   min-height: 100vh;
-  background: $GXPEX-dark;
-  display: flex;
-  flex-direction: column;
+  width: 100%;
+  overflow: hidden;
+  background: #0a0816;
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
-.forgot-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px 28px;
-  flex-shrink: 0;
-
-  .logo {
-    height: 42px;
-    width: auto;
-    max-width: min(200px, 55vw);
-    object-fit: contain;
-    display: block;
-  }
-
-  .lang-icon {
-    width: 32px;
-    height: 32px;
-    object-fit: contain;
-    cursor: pointer;
-  }
+.forgot-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
 }
 
-.forgot-card {
+.forgot-content {
   position: relative;
-  flex: 1;
-  background: #fff;
-  border-radius: 24px 24px 0 0;
-  padding: 28px 20px 24px;
-  margin-top: auto;
-  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.12);
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 28px 24px;
+  min-height: 100vh;
+  box-sizing: border-box;
 }
 
-.card-close {
+.back-btn {
   position: absolute;
   top: 16px;
-  right: 16px;
-  width: 32px;
-  height: 32px;
-  border: none;
+  left: 16px;
+  width: 36px;
+  height: 36px;
   padding: 0;
-  background: transparent;
+  border: 0;
+  background: rgba(20, 12, 38, 0.55);
+  border: 1px solid rgba(160, 65, 237, 0.25);
+  border-radius: 50%;
+  backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-
+  z-index: 2;
+  &:active { transform: scale(0.94); }
   img {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
+    display: block;
     object-fit: contain;
   }
 }
 
-.card-title {
-  margin: 0 40px 20px 0;
-  font-size: 22px;
-  font-weight: 700;
-  color: #111;
-  line-height: 1.35;
+.logo-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 16px;
+  margin-bottom: 6px;
+}
+.logo-g {
+  width: 92px;
+  height: 92px;
+  display: block;
+  border-radius: 18px;
+  filter: drop-shadow(0 6px 24px rgba(160, 65, 237, 0.5));
 }
 
-.forgot-body {
-  :deep(.formData > p) {
-    margin: 18px 0 8px;
-    color: #6b7280;
-    font-size: 14px;
-  }
+.welcome {
+  margin: 20px 0 24px;
+  font-family: $font-raleway;
+  font-size: 26px;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 0.3px;
+  line-height: 1.1;
+  text-align: center;
+}
 
-  :deep(.formData:first-child > p) {
-    margin-top: 0;
-  }
+.form {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+}
+.form--panel {
+  padding: 22px 18px 18px;
+  background: linear-gradient(
+    180deg,
+    rgba(20, 12, 38, 0.45) 0%,
+    rgba(20, 12, 38, 0.15) 100%
+  );
+  border: 1px solid rgba(160, 65, 237, 0.22);
+  border-radius: 22px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 6px 30px rgba(160, 65, 237, 0.15);
+}
 
-  :deep(.formData > div) {
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    padding: 10px 12px;
-    background: #fafafa;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    line-height: 1.5;
-  }
+.field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 48px;
+  margin-bottom: 14px;
+  padding: 0 16px;
+  background: rgba(20, 12, 38, 0.55);
+  border: 1px solid rgba(160, 65, 237, 0.25);
+  border-radius: 999px;
+  backdrop-filter: blur(6px);
 
-  :deep(.formData input) {
-    flex: 1;
-    border-radius: 0;
-    background: transparent !important;
-    padding: 3px 0;
-  }
+  &--code { padding-right: 6px; }
 
-  :deep(.formData input::placeholder) {
-    color: #9ca3af;
-  }
+  &__icon {
+    width: 18px;
+    height: 18px;
+    display: block;
+    flex-shrink: 0;
+    object-fit: contain;
+    opacity: 0.85;
 
-  :deep(.formData > div > p) {
-    background: $GXPEX-green !important;
-    border-radius: 8px !important;
-    padding: 6px 12px !important;
-    color: #fff !important;
-    font-size: 13px;
-    white-space: nowrap;
-    margin: 0;
-  }
-
-  :deep(.van-count-down) {
-    font-size: 14px;
-    color: $GXPEX-green;
-    padding: 0;
-  }
-
-  .requirePass {
-    font-size: 12px;
-    margin-top: 10px;
-    color: #ef4444;
-  }
-
-  :deep(.btnBox > div) {
-    border-radius: 999px !important;
-    padding: 15px 0 !important;
-    background: $GXPEX-dark !important;
-    color: #fff !important;
-    border: none !important;
-    font-size: 16px;
-    font-weight: 600;
-    margin-top: 28px;
-  }
-
-  :deep(.box) {
-    padding: 0 0 32px;
-  }
-
-  :deep(.info) {
-    margin-top: 20px;
-    text-align: center;
-    font-size: 13px;
-    line-height: 1.55;
-    color: #6b7280;
-
-    span {
-      color: $GXPEX-green !important;
-      text-decoration: underline;
+    &--right {
+      margin-left: auto;
+      cursor: pointer;
+      width: 22px;
+      height: 22px;
     }
+  }
+
+  &__input {
+    flex: 1;
+    height: 100%;
+    margin-left: 12px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    font-family: $font-pingfang;
+    font-size: 14px;
+    color: #fff;
+    caret-color: $purple-1;
+    min-width: 0;
+
+    &::placeholder { color: rgba(202, 202, 202, 0.7); }
+  }
+}
+
+.code-send {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, $purple-1 0%, $purple-2 100%);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(160, 65, 237, 0.4);
+  &:active { transform: scale(0.96); }
+}
+
+.code-count {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  color: $purple-1;
+  font-size: 14px;
+  font-weight: 600;
+  :deep(.van-count-down) {
+    color: inherit;
+    font-size: inherit;
+  }
+}
+
+.requirePass {
+  font-size: 12px;
+  margin: 4px 6px 12px;
+  color: #ff6b8a;
+}
+
+/* 覆写 signFooter（type=2 - 忘记密码） */
+:deep(.box) {
+  padding: 0;
+  margin-top: 8px;
+}
+:deep(.btnBox) {
+  margin: 0;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 999px;
+  overflow: hidden;
+}
+:deep(.btnBox .btn1),
+:deep(.btnBox .btn2) {
+  background: linear-gradient(135deg, $purple-1 0%, $purple-2 50%, $purple-3 100%) !important;
+  color: #fff !important;
+  border: 1.5px solid $purple-1 !important;
+  border-radius: 999px !important;
+  padding: 14px 0 !important;
+  font-family: $font-raleway;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  box-shadow:
+    0 8px 22px rgba(160, 65, 237, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  &:active { transform: scale(0.98); }
+}
+:deep(.info) {
+  margin-top: 18px;
+  text-align: center;
+  font-family: $font-pingfang;
+  font-size: 12px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.65);
+
+  span {
+    color: $purple-1 !important;
+    text-decoration: none;
+    cursor: pointer;
+    &:active { opacity: 0.7; }
   }
 }
 </style>
