@@ -539,6 +539,7 @@
   "register_haveAccount": "이미 계정이 있으신가요?",
   "register_toLogin": "로그인",
   "register_agree": "회원가입 시 다음에 동의합니다",
+  "register_agreeAgreement": "먼저 서비스 약관에 동의해 주세요",
   "register_howToUse": "이용약관",
   "register_and": "및",
   "register_private": "개인정보처리방침",

@@ -539,6 +539,7 @@
   "register_haveAccount": "¿Ya tienes cuenta?",
   "register_toLogin": "Iniciar sesión",
   "register_agree": "Al registrarte, aceptas",
+  "register_agreeAgreement": "Por favor, acepta primero los Términos de Servicio",
   "register_howToUse": "Términos de uso",
   "register_and": "y",
   "register_private": "Política de privacidad",

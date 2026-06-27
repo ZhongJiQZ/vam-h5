@@ -539,6 +539,7 @@
   "register_haveAccount": "Déjà un compte ?",
   "register_toLogin": "Se connecter",
   "register_agree": "En m'inscrivant, j'accepte",
+  "register_agreeAgreement": "Veuillez d'abord accepter les conditions d'utilisation",
   "register_howToUse": "Conditions d'utilisation",
   "register_and": "et",
   "register_private": "Politique de confidentialité",

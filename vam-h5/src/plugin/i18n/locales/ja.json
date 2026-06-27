@@ -541,6 +541,7 @@
   "register_haveAccount": "既にアカウントをお持ちの方",
   "register_toLogin": "ログイン",
   "register_agree": "登録することで以下の内容に同意したとみなします",
+  "register_agreeAgreement": "先に利用規約に同意してください",
   "register_howToUse": "利用規約",
   "register_and": "および",
   "register_private": "プライバシーポリシー",

@@ -539,6 +539,7 @@
   "register_haveAccount": "Bereits Konto vorhanden?",
   "register_toLogin": "Anmelden",
   "register_agree": "Mit der Registrierung stimme ich zu",
+  "register_agreeAgreement": "Bitte stimmen Sie zuerst den Servicebedingungen zu",
   "register_howToUse": "Nutzungsbedingungen",
   "register_and": "und",
   "register_private": "Datenschutzrichtlinie",

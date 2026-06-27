@@ -539,6 +539,7 @@
   "register_haveAccount": "มีบัญชีแล้ว?",
   "register_toLogin": "เข้าสู่ระบบ",
   "register_agree": "เมื่อสมัคร ฉันยอมรับ",
+  "register_agreeAgreement": "กรุณายอมรับข้อกำหนดในการให้บริการก่อน",
   "register_howToUse": "ข้อกำหนดการใช้งาน",
   "register_and": "และ",
   "register_private": "นโยบายความเป็นส่วนตัว",

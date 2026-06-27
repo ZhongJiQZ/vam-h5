@@ -544,7 +544,7 @@
   "register_howToUse": "Terms of use",
   "register_and": "and",
   "register_private": "Privacy",
-  "register_success": "Login was successful",
+  "register_success": "Registration successful",
   "forget_pwd": "Forgot password",
   "forgot_newPwd": "New password",
   "forgot_require_newPwd": "Confirm new password",
