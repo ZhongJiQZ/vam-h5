@@ -8,6 +8,10 @@
         <img :src="iconBack" alt="" />
       </button>
 
+      <button type="button" class="lang-btn" @click="$router.push('/language-selection')" aria-label="language">
+        <img :src="langIcon" alt="" />
+      </button>
+
       <div class="logo-block">
         <img :src="logoG" class="logo-g" alt="GXPEX" />
       </div>
@@ -95,6 +99,7 @@ import iconEye from '@/assets/images/gxpex/signup/icon-eye.svg'
 import iconEyeOff from '@/assets/images/gxpex/signup/icon-eye-off.svg'
 import iconInvite from '@/assets/images/gxpex/signup/icon-invite.svg'
 import iconBack from '@/assets/images/gxpex/trade/icon-back.svg'
+import langIcon from '@/assets/images/login/lang.png'
 
 const showk = ref(false)
 const requireShowk = ref(false)
@@ -166,14 +171,13 @@ $font-pingfang: 'PingFang SC', -apple-system, 'Raleway', sans-serif;
   box-sizing: border-box;
 }
 
-.back-btn {
+.back-btn,
+.lang-btn {
   position: absolute;
-  top: 16px;
-  left: 16px;
-  width: 36px;
-  height: 36px;
+  top: 14px;
+  width: 44px;
+  height: 44px;
   padding: 0;
-  border: 0;
   background: rgba(20, 12, 38, 0.55);
   border: 1px solid rgba(160, 65, 237, 0.25);
   border-radius: 50%;
@@ -185,12 +189,14 @@ $font-pingfang: 'PingFang SC', -apple-system, 'Raleway', sans-serif;
   z-index: 2;
   &:active { transform: scale(0.94); }
   img {
-    width: 16px;
-    height: 16px;
+    width: 22px;
+    height: 22px;
     display: block;
     object-fit: contain;
   }
 }
+.back-btn { left: 14px; }
+.lang-btn { right: 14px; }
 
 .logo-block {
   display: flex;

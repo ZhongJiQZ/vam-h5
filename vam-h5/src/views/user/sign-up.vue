@@ -4,13 +4,16 @@
     <img :src="bgImg" class="signup-bg" alt="" />
 
     <div class="signup-content">
+      <button type="button" class="lang-btn" @click="$router.push('/language-selection')" aria-label="language">
+        <img :src="langIcon" alt="" />
+      </button>
+
       <!-- Logo (G + GXPEX 一体图) -->
       <div class="logo-block">
         <img :src="logoG" class="logo-g" alt="GXPEX" />
       </div>
 
-      <!-- Welcome To -->
-      <h1 class="welcome">Welcome To</h1>
+      <h1 class="welcome">{{ _t18('register_title') }}</h1>
 
       <!-- 表单（含玻璃面板） -->
       <div class="form form--panel">
@@ -20,7 +23,7 @@
             v-model="form.username"
             type="text"
             class="field__input"
-            placeholder="Account"
+            :placeholder="_t18('register_account')"
             autocomplete="username"
             @input="onUsernameInput"
           />
@@ -32,7 +35,7 @@
             v-model="form.password"
             :type="showPwd ? 'text' : 'password'"
             class="field__input"
-            placeholder="Password"
+            :placeholder="_t18('login_pwd')"
             autocomplete="new-password"
             @input="onPasswordInput"
           />
@@ -50,7 +53,7 @@
             v-model="form.password2"
             :type="showPwd2 ? 'text' : 'password'"
             class="field__input"
-            placeholder="Confirm Password"
+            :placeholder="_t18('register_pwd_require')"
             autocomplete="new-password"
             @input="onPassword2Input"
           />
@@ -68,7 +71,7 @@
             v-model="form.invitCode"
             type="text"
             class="field__input"
-            placeholder="Invitation Code"
+            :placeholder="_t18('register_invitation')"
             @input="onInvitInput"
           />
         </div>
@@ -79,17 +82,17 @@
             v-model="form.code"
             type="text"
             class="field__input field__input--captcha"
-            placeholder="Code"
+            :placeholder="_t18('login_code')"
           />
           <img :src="codeUrl" class="captcha-img" @click="refreshCode" alt="" />
         </div>
 
         <button class="btn btn--primary" :disabled="loading" @click="doRegister">
-          <span>Sign Up</span>
+          <span>{{ _t18('register') }}</span>
         </button>
 
         <button class="btn btn--secondary" @click="$router.push('/sign-in')">
-          <span>Have an account? Log In Now</span>
+          <span>{{ _t18('register_haveAccount') }} {{ _t18('register_toLogin') }}</span>
         </button>
       </div>
 
@@ -103,12 +106,12 @@
           >
             <img v-if="!agreed" :src="iconRadio" alt="" />
           </span>
-          <span>I agree to GXPEX's</span>
+          <span>{{ _t18('register_agree') }}</span>
         </div>
         <div class="agree__line">
-          <span class="agree__link" @click="$router.push('/termsOfuse')">《Terms of Service》</span>
-          <span class="agree__and">and</span>
-          <span class="agree__link" @click="$router.push('/privacyPolicy')">《Privacy Policy》</span>
+          <span class="agree__link" @click="$router.push('/termsOfuse')">《{{ _t18('register_howToUse') }}》</span>
+          <span class="agree__and">{{ _t18('register_and') }}</span>
+          <span class="agree__link" @click="$router.push('/privacyPolicy')">《{{ _t18('register_private') }}》</span>
         </div>
       </div>
     </div>
@@ -120,6 +123,7 @@ import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useMainStore } from '@/store/index.js'
 import { useToast } from '@/hook/useToast'
+import { _t18 } from '@/utils/public'
 import { signUp } from '@/api/user'
 import bgImg from '@/assets/images/gxpex/login/bg.png'
 import logoG from '@/assets/images/gxpex/login/gxpenlogo.png'
@@ -129,6 +133,7 @@ import iconEye from '@/assets/images/gxpex/signup/icon-eye.svg'
 import iconEyeOff from '@/assets/images/gxpex/signup/icon-eye-off.svg'
 import iconInvite from '@/assets/images/gxpex/signup/icon-invite.svg'
 import iconRadio from '@/assets/images/gxpex/signup/icon-radio.svg'
+import langIcon from '@/assets/images/login/lang.png'
 
 const router = useRouter()
 const route = useRoute()
@@ -229,6 +234,31 @@ $font-pingfang: 'PingFang SC', -apple-system, 'Raleway', sans-serif;
   padding: 48px 28px 24px;
   min-height: 100vh;
   box-sizing: border-box;
+}
+
+.lang-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: rgba(20, 12, 38, 0.55);
+  border: 1px solid rgba(160, 65, 237, 0.25);
+  border-radius: 50%;
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  &:active { transform: scale(0.94); }
+  img {
+    width: 22px;
+    height: 22px;
+    display: block;
+    object-fit: contain;
+  }
 }
 
 /* Logo */

@@ -4,13 +4,16 @@
     <img :src="bgImg" class="login-bg" alt="" />
 
     <div class="login-content">
+      <button type="button" class="lang-btn" @click="$router.push('/language-selection')" aria-label="language">
+        <img :src="langIcon" alt="" />
+      </button>
+
       <!-- Logo (G + GXPEX 一体图) -->
       <div class="logo-block">
         <img :src="logoG" class="logo-g" alt="GXPEX" />
       </div>
 
-      <!-- Welcome To -->
-      <h1 class="welcome">Welcome To</h1>
+      <h1 class="welcome">{{ _t18('login_title') }}</h1>
 
       <!-- 表单（含玻璃面板） -->
       <div class="form form--panel">
@@ -20,7 +23,7 @@
             v-model="form.username"
             type="text"
             class="field__input"
-            placeholder="Account"
+            :placeholder="_t18('login_account')"
             autocomplete="username"
           />
         </div>
@@ -31,7 +34,7 @@
             v-model="form.password"
             :type="showPwd ? 'text' : 'password'"
             class="field__input"
-            placeholder="Password"
+            :placeholder="_t18('login_pwd')"
             autocomplete="current-password"
           />
           <img
@@ -49,25 +52,25 @@
             v-model="form.code"
             type="text"
             class="field__input field__input--captcha"
-            placeholder="Code"
+            :placeholder="_t18('login_code')"
           />
           <img :src="codeUrl" class="captcha-img" @click="refreshCode" alt="" />
         </div>
 
-        <div class="forgot" @click="$router.push('/forgot-password')">Forgot Password?</div>
+        <div class="forgot" @click="$router.push('/forgot-password')">{{ _t18('forget_pwd') }}</div>
 
         <button class="btn btn--primary" :disabled="loading" @click="doLogin">
-          <span>Sign Up</span>
+          <span>{{ _t18('login') }}</span>
         </button>
 
         <button class="btn btn--secondary" @click="doWalletLogin">
-          <span>Connect Wallet</span>
+          <span>{{ _t18('login_wallet') }}</span>
         </button>
       </div>
 
       <div class="bottom-link">
-        <span class="bottom-link__muted">Forgot Password?</span>
-        <span class="bottom-link__accent" @click="$router.push('/sign-up')">Sign Up Now</span>
+        <span class="bottom-link__muted">{{ _t18('forget_pwd') }}</span>
+        <span class="bottom-link__accent" @click="$router.push('/sign-up')">{{ _t18('login_toRegister') }}</span>
       </div>
     </div>
   </div>
@@ -79,6 +82,7 @@ import { useRouter } from 'vue-router'
 import { useMainStore } from '@/store/index.js'
 import { useUserStore } from '@/store/user/index'
 import { useToast } from '@/hook/useToast'
+import { _t18 } from '@/utils/public'
 import { signIn, signUp } from '@/api/user'
 import { check as checkETH, connect as connectETH } from '@/plugin/chain/eth'
 import { check as checkTRON } from '@/plugin/chain/tron'
@@ -88,6 +92,7 @@ import logoG from '@/assets/images/gxpex/login/gxpenlogo.png'
 import iconAccount from '@/assets/images/gxpex/login/icon-account.svg'
 import iconPassword from '@/assets/images/gxpex/login/icon-password.svg'
 import iconEye from '@/assets/images/gxpex/login/icon-eye.svg'
+import langIcon from '@/assets/images/login/lang.png'
 
 const router = useRouter()
 const mainStore = useMainStore()
@@ -250,6 +255,31 @@ $font-pingfang: 'PingFang SC', -apple-system, 'Raleway', sans-serif;
   padding: 64px 28px 32px;
   min-height: 100vh;
   box-sizing: border-box;
+}
+
+.lang-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: rgba(20, 12, 38, 0.55);
+  border: 1px solid rgba(160, 65, 237, 0.25);
+  border-radius: 50%;
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  &:active { transform: scale(0.94); }
+  img {
+    width: 22px;
+    height: 22px;
+    display: block;
+    object-fit: contain;
+  }
 }
 
 /* Logo */
