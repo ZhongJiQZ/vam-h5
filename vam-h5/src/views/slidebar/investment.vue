@@ -1,6 +1,12 @@
 <!-- 团队招商 -->
 <template>
     <div class="investment-page">
+        <DarkHeaderBar
+            class="investment-header"
+            :title="_t18('investment')"
+            :border_bottom="true"
+            bg-color="#f9f7f2"
+        />
         <div class="investment-body">
             <!-- Hero --> 
             <section class="hero">
@@ -21,8 +27,54 @@
                 </div>
             </section>
 
+            <!-- 保证金滚动动态 -->
+            <section class="section section-deposit">
+                <div class="section-head">
+                    <h2 class="section-title">{{ _t18('investment_deposit_scroll_title') }}</h2>
+                    <span class="live-badge"><i class="live-dot" />{{ _t18('investment_live') }}</span>
+                </div>
+                <div class="deposit-marquee">
+                    <div class="deposit-marquee__track">
+                        <div v-for="(text, index) in depositScrollItems" :key="`a-${index}`" class="deposit-marquee__item">
+                            <span class="deposit-marquee__icon">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" fill="currentColor"/>
+                                </svg>
+                            </span>
+                            <span class="deposit-marquee__text">{{ text }}</span>
+                        </div>
+                        <div v-for="(text, index) in depositScrollItems" :key="`b-${index}`" class="deposit-marquee__item" aria-hidden="true">
+                            <span class="deposit-marquee__icon">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" fill="currentColor"/>
+                                </svg>
+                            </span>
+                            <span class="deposit-marquee__text">{{ text }}</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 平台实力背书 -->
+            <section class="section section-strength">
+                <h2 class="section-title">{{ _t18('investment_strength_title') }}</h2>
+                <div class="strength-stats">
+                    <div class="strength-stat">
+                        <p class="strength-stat__value">{{ _t18('investment_stat_users_value') }}</p>
+                        <p class="strength-stat__label">{{ _t18('investment_stat_users_label') }}</p>
+                    </div>
+                    <div class="strength-stat">
+                        <p class="strength-stat__value">{{ _t18('investment_stat_countries_value') }}</p>
+                        <p class="strength-stat__label">{{ _t18('investment_stat_countries_label') }}</p>
+                    </div>
+                </div>
+                <div class="strength-paras">
+                    <p v-for="(para, index) in strengthParas" :key="index" class="strength-para">{{ para }}</p>
+                </div>
+            </section>
+
             <!-- 合作机构 -->
-            <section class="section section1">
+            <!-- <section class="section section1">
                 <h2 class="section-title">{{ _t18('investment_partners_title') }}</h2>
                 <div class="partner-tags">
                     <span v-for="item in partners" :key="item" class="partner-tag">
@@ -30,28 +82,16 @@
                         {{ item }}
                     </span>
                 </div>
-            </section>
+            </section> -->
 
-            <!-- 实时动态 -->
-            <section class="section section2">
-                <div class="section-head">
-                    <h2 class="section-title">{{ _t18('investment_dynamics_title') }}</h2>
-                    <span class="live-badge"><i class="live-dot" />{{ _t18('investment_live') }}</span>
-                </div>
-                <div class="dynamics-card">
-                    <div v-for="(item, index) in dynamics" :key="index" class="dynamics-item">
-                        <span class="dynamics-item__icon">
-                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M4 10v4h4l5 5V5L8 10H4zm11.5 2c0-1.77-1.02-3.29-2.5-4.03v8.06c1.48-.74 2.5-2.26 2.5-4.03z"
-                                    fill="currentColor" />
-                            </svg>
-                        </span>
-                        <p class="dynamics-item__text">
-                            <span class="dynamics-item__name">{{ item.name }}</span>
-                            {{ _t18('investment_dynamic_joined') }}
-                            <span class="dynamics-item__num">{{ item.size }}+</span>
-                        </p>
+            <!-- 团队权益 -->
+            <section class="section section-benefits">
+                <h2 class="section-title">{{ _t18('investment_benefits_title') }}</h2>
+                <p class="benefits-intro">{{ _t18('investment_benefits_intro') }}</p>
+                <div class="benefits-grid">
+                    <div v-for="(item, index) in teamBenefits" :key="index" class="benefit-item">
+                        <i class="benefit-item__check" />
+                        <span>{{ item }}</span>
                     </div>
                 </div>
             </section>
@@ -103,26 +143,104 @@
                 </div>
             </section>
 
+            <!-- 成功案例 -->
+            <section class="section section-case">
+                <h2 class="section-title">{{ _t18('investment_case_title') }}</h2>
+                <div class="case-card">
+                    <h3 class="case-card__name">{{ _t18('investment_case_horizon_name') }}</h3>
+                    <div class="case-card__rows">
+                        <p>{{ _t18('investment_case_horizon_size') }}</p>
+                        <p>{{ _t18('investment_case_horizon_date') }}</p>
+                        <p class="case-card__rate">{{ _t18('investment_case_horizon_rate') }}</p>
+                    </div>
+                </div>
+            </section>
+
             <!-- 底部 CTA -->
             <section class="cta-card section6">
                 <h2 class="cta-title">{{ _t18('investment_cta_title') }}</h2>
                 <p class="cta-desc">{{ _t18('investment_cta_desc') }}</p>
                 <button type="button" class="btn-cta" @click="handleApply">{{ _t18('investment_apply_btn') }}</button>
             </section>
+
+            <!-- 常见问题 -->
+            <section class="section section-faq">
+                <h2 class="section-title">{{ _t18('investment_faq_title') }}</h2>
+                <div class="faq-list">
+                    <div v-for="(item, index) in faqItems" :key="index" class="faq-item">
+                        <p class="faq-item__q">{{ item.q }}</p>
+                        <p class="faq-item__a">{{ item.a }}</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 风险与合规声明 -->
+            <section class="section section-risk">
+                <h2 class="section-title">{{ _t18('investment_risk_title') }}</h2>
+                <p class="risk-desc">{{ _t18('investment_risk_desc') }}</p>
+            </section>
         </div>
     </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { dispatchCustomEvent } from '@/utils'
 import { _t18 } from '@/utils/public'
+import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 
 const { locale } = useI18n()
 
 const showRewards = ref(false)
 const rewardsRef = ref(null)
+
+const depositScrollItems = computed(() => {
+    void locale.value
+    return [
+        _t18('investment_deposit_scroll_1'),
+        _t18('investment_deposit_scroll_2'),
+        _t18('investment_deposit_scroll_3'),
+        _t18('investment_deposit_scroll_4'),
+        _t18('investment_deposit_scroll_5'),
+        _t18('investment_deposit_scroll_6')
+    ]
+})
+
+const strengthParas = computed(() => {
+    void locale.value
+    return [
+        _t18('investment_strength_p1'),
+        _t18('investment_strength_p2'),
+        _t18('investment_strength_p3'),
+        _t18('investment_strength_p4')
+    ]
+})
+
+const teamBenefits = computed(() => {
+    void locale.value
+    return [
+        _t18('investment_benefit_1'),
+        _t18('investment_benefit_2'),
+        _t18('investment_benefit_3'),
+        _t18('investment_benefit_4'),
+        _t18('investment_benefit_5'),
+        _t18('investment_benefit_6'),
+        _t18('investment_benefit_7'),
+        _t18('investment_benefit_8'),
+        // _t18('investment_benefit_9')
+    ]
+})
+
+const faqItems = computed(() => {
+    void locale.value
+    return [
+        { q: _t18('investment_faq_q1'), a: _t18('investment_faq_a1') },
+        { q: _t18('investment_faq_q2'), a: _t18('investment_faq_a2') },
+        { q: _t18('investment_faq_q3'), a: _t18('investment_faq_a3') },
+        { q: _t18('investment_faq_q4'), a: _t18('investment_faq_a4') }
+    ]
+})
 
 const partners = computed(() => {
     void locale.value
@@ -133,12 +251,6 @@ const partners = computed(() => {
         _t18('investment_partner_4')
     ]
 })
-
-const dynamics = [
-    { name: 'l**', size: '5000' },
-    { name: 'l**', size: '10000' },
-    { name: 'w**', size: '8000' }
-]
 
 const ICON_TEAM = `<svg viewBox="0 0 24 24" fill="none"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5C15 14.17 10.33 13 8 13zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" fill="currentColor"/></svg>`
 const ICON_QUAL = `<svg viewBox="0 0 24 24" fill="none"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z" fill="currentColor"/></svg>`
@@ -262,13 +374,13 @@ $card-grey: #f2f1ed;
 }
 
 .investment-body {
-    padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
 }
 
 /* Hero */
 .hero {
     background: linear-gradient(135deg, #cdf4e6 0%, #fff 100%);
-    padding: 40px 20px 28px;
+    padding: 24px 20px 28px;
     border-radius: 0 0 24px 24px;
 }
 
@@ -361,6 +473,32 @@ $card-grey: #f2f1ed;
     background: #f6f3ee;
 }
 
+.section-deposit {
+    background: #f6f3ee;
+}
+
+.section-strength {
+    background: #fcf9f2;
+}
+
+.section-benefits {
+    background: #f6f3ee;
+}
+
+.section-case {
+    background: #fcf9f2;
+}
+
+.section-faq {
+    background: #fcf9f2;
+    padding-top: 8px;
+}
+
+.section-risk {
+    background: #f6f3ee;
+    padding-bottom: 32px;
+}
+
 .section3 {
     background: #fcf9f2;
 }
@@ -432,6 +570,246 @@ $card-grey: #f2f1ed;
             transform: rotate(45deg);
         }
     }
+}
+
+/* Deposit marquee */
+.deposit-marquee {
+    height: 168px;
+    overflow: hidden;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    position: relative;
+
+    &::before,
+    &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 20px;
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    &::before {
+        top: 0;
+        background: linear-gradient(to bottom, #fff, transparent);
+    }
+
+    &::after {
+        bottom: 0;
+        background: linear-gradient(to top, #fff, transparent);
+    }
+}
+
+.deposit-marquee__track {
+    display: flex;
+    flex-direction: column;
+    animation: deposit-scroll 28s linear infinite;
+}
+
+.deposit-marquee__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px 16px;
+    border-bottom: 1px solid #f5f3ee;
+    flex-shrink: 0;
+}
+
+.deposit-marquee__icon {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: $teal-light;
+    color: $teal;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+.deposit-marquee__text {
+    font-size: 13px;
+    line-height: 1.55;
+    color: $text;
+}
+
+@keyframes deposit-scroll {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(-50%);
+    }
+}
+
+/* Platform strength */
+.strength-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.strength-stat {
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px 12px;
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+
+    &__value {
+        margin: 0 0 6px;
+        font-size: 24px;
+        font-weight: 700;
+        color: $teal;
+    }
+
+    &__label {
+        margin: 0;
+        font-size: 12px;
+        color: $text-muted;
+    }
+}
+
+.strength-paras {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.strength-para {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.7;
+    color: $text-muted;
+}
+
+/* Team benefits */
+.benefits-intro {
+    margin: -4px 0 14px;
+    font-size: 13px;
+    color: $text-muted;
+}
+
+.benefits-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.benefit-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    background: #fff;
+    border-radius: 10px;
+    padding: 12px 10px;
+    font-size: 12px;
+    line-height: 1.45;
+    color: $text;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+
+    &__check {
+        flex-shrink: 0;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: $teal-light;
+        position: relative;
+        margin-top: 1px;
+
+        &::after {
+            content: '';
+            position: absolute;
+            left: 4px;
+            top: 2px;
+            width: 4px;
+            height: 7px;
+            border: solid $teal;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+    }
+}
+
+/* Success case */
+.case-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 18px 16px;
+    border: 1px solid rgba($teal, 0.2);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+
+    &__name {
+        margin: 0 0 12px;
+        font-size: 16px;
+        font-weight: 700;
+        color: $text;
+    }
+
+    &__rows p {
+        margin: 0 0 8px;
+        font-size: 13px;
+        line-height: 1.5;
+        color: $text-muted;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    &__rate {
+        color: $teal !important;
+        font-weight: 600;
+    }
+}
+
+/* FAQ */
+.faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.faq-item {
+    background: #fff;
+    border-radius: 12px;
+    padding: 14px 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+
+    &__q {
+        margin: 0 0 8px;
+        font-size: 14px;
+        font-weight: 600;
+        color: $text;
+    }
+
+    &__a {
+        margin: 0;
+        font-size: 13px;
+        line-height: 1.6;
+        color: $text-muted;
+    }
+}
+
+/* Risk */
+.risk-desc {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.75;
+    color: $text-muted;
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
 }
 
 /* Live dynamics */
@@ -679,7 +1057,7 @@ $card-grey: #f2f1ed;
 
 /* CTA */
 .cta-card {
-    margin-top: 32px;
+    margin: 32px 20px 0;
     padding: 28px 20px;
     background: $dark;
     border-radius: 16px;
