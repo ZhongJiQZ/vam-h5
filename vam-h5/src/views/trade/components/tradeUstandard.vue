@@ -204,7 +204,6 @@ const showSidePopup = () => {
       flex: 1;
       min-width: 0;
       white-space: nowrap;
-      overflow: hidden;
       text-overflow: ellipsis;
     }
     .img {
