@@ -370,11 +370,13 @@ onUnmounted(() => {
   font-variant-numeric: tabular-nums;
 }
 
-/* 列头 Price / Qty */
+/* 列头 Price / Qty — 左上/右上名称，左下/右下单位 */
 .title {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  row-gap: 2px;
+  column-gap: 8px;
   font-size: 11px;
   font-weight: 500;
   color: #aaa5b3;
@@ -382,11 +384,31 @@ onUnmounted(() => {
 
   .title_left,
   .title_right {
-    display: flex;
-    align-items: baseline;
-    gap: 3px;
+    display: contents;
   }
-  .title_right { text-align: right; }
+
+  .title_left .name {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: start;
+  }
+  .title_left .unit {
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: start;
+  }
+  .title_right .name {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    text-align: right;
+  }
+  .title_right .unit {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: end;
+    text-align: right;
+  }
 
   .name {
     color: #aaa5b3;
