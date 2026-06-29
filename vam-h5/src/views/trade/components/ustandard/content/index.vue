@@ -277,7 +277,7 @@
         </div>
         <div class="leverage-sheet__presets">
           <button
-            v-for="mark in leverageScaleMarks"
+            v-for="mark in leveragePresets"
             :key="'preset-' + mark"
             type="button"
             class="leverage-preset-btn"
@@ -431,8 +431,15 @@ const floorTo = (num, scale = 3) => {
 }
 
 function parseLeverageConfig(leverageStr) {
-  const presets = String(leverageStr || '')
-    .split(',')
+  const raw = String(leverageStr || '').trim()
+  const tokens = raw
+    ? raw.includes(',')
+      ? raw.split(',')
+      : /\d+\.\d+\.\d+/.test(raw)
+        ? raw.split('.')
+        : [raw]
+    : []
+  const presets = tokens
     .map((s) => Number(String(s).trim().replace(/x$/i, '')))
     .filter((n) => Number.isFinite(n) && n > 0)
     .sort((a, b) => a - b)
@@ -463,15 +470,33 @@ function buildLeverageScaleMarks(min, max) {
   return marks
 }
 
+function snapToLeveragePreset(val, presets) {
+  const list = presets?.length ? presets : [1]
+  const n = Number(val)
+  const num = Number.isFinite(n) ? n : list[0]
+  if (list.includes(num)) return num
+  let nearest = list[0]
+  let minDiff = Math.abs(num - nearest)
+  for (const p of list) {
+    const diff = Math.abs(num - p)
+    if (diff < minDiff) {
+      minDiff = diff
+      nearest = p
+    }
+  }
+  return nearest
+}
+
 function applyLeverageFromCoin(coinItem) {
   const { min, max, presets } = parseLeverageConfig(coinItem?.leverage)
   minLeverage.value = min
   maxLeverage.value = max
   leveragePresets.value = presets
   const current = toNum(leverageValue.value, 0)
-  if (!current || current < min || current > max) {
-    leverageValue.value = presets[0] ?? min
-  }
+  leverageValue.value = snapToLeveragePreset(
+    !current || current < min || current > max ? presets[0] : current,
+    presets
+  )
   leverageDraft.value = leverageValue.value
 }
 
