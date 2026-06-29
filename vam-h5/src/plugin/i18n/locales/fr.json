@@ -934,7 +934,7 @@
   "fly_swap": "FlySwap",
   "current_position2": "Position ouverte",
   "exchange_hisentrust2": "Historique des ordres",
-  "vol": "Volume",
+  "vol": "Quantité",
   "subscribed": "Souscrit",
   "cannot_subscribe": "Impossible de souscrire si vous n'avez pas souscrit",
   "available_quantity": "Quantité disponible",

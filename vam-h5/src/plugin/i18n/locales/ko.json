@@ -934,7 +934,7 @@
   "fly_swap": "FlySwap",
   "current_position2": "보유 포지션",
   "exchange_hisentrust2": "주문 내역",
-  "vol": "거래량",
+  "vol": "수량",
   "subscribed": "청약 완료",
   "cannot_subscribe": "청약하지 않은 경우 청약 불가",
   "available_quantity": "사용 가능 수량",

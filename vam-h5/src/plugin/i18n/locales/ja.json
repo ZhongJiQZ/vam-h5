@@ -934,7 +934,7 @@
   "fly_swap": "FlySwap",
   "current_position2": "保有建玉",
   "exchange_hisentrust2": "取引履歴",
-  "vol": "出来高",
+  "vol": "数量",
   "subscribed": "申込済み",
   "cannot_subscribe": "未申込の場合は申込できません",
   "available_quantity": "利用可能数量",

@@ -943,7 +943,7 @@
   "fly_swap": "FlySwap",
   "current_position2": "持有仓位",
   "exchange_hisentrust2": "历史订单",
-  "vol": "成交量",
+  "vol": "数量",
   "subscribed": "已订阅",
   "cannot_subscribe": "未订阅不可申购",
   "available_quantity": "可购买数量",

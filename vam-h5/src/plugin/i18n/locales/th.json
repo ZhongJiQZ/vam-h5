@@ -934,7 +934,7 @@
   "fly_swap": "FlySwap",
   "current_position2": "ตำแหน่งที่ถืออยู่",
   "exchange_hisentrust2": "ประวัติคำสั่ง",
-  "vol": "ปริมาณ",
+  "vol": "จำนวน",
   "subscribed": "สมัครแล้ว",
   "cannot_subscribe": "ไม่สามารถสมัครได้หากยังไม่ได้สมัคร",
   "available_quantity": "จำนวนที่ใช้ได้",
