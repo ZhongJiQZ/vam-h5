@@ -96,3 +96,4 @@ const generateHtml = (html, envObj) => {
 }
 
 export { customHtmlPlugin }
+
