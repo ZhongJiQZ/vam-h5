@@ -25,14 +25,15 @@
         >
           <img :src="iconService" alt="" />
         </span>
-        <span
+        <!-- 信息/公告入口暂时下线 -->
+        <!-- <span
           class="home-top-bar__icon-btn"
           role="button"
           aria-label="notification"
           @click="goNotice"
         >
           <img :src="iconBell" alt="" />
-        </span>
+        </span> -->
         <span
           class="home-top-bar__icon-btn"
           role="button"
@@ -132,7 +133,7 @@ import logoFallback from '@/assets/images/logo-black.png'
 import logoG from '@/assets/images/gxpex/home/logo-g.png'
 import brandText from '@/assets/images/gxpex/home/brand-text.png'
 import iconService from '@/assets/images/gxpex/home/icon-service.svg'
-import iconBell from '@/assets/images/gxpex/home/icon-bell.svg'
+// import iconBell from '@/assets/images/gxpex/home/icon-bell.svg'
 import iconMenu from '@/assets/images/gxpex/home/icon-menu.svg'
 import arrowUp from '@/assets/images/gxpex/home/arrow-up.png'
 import arrowDown from '@/assets/images/gxpex/home/arrow-down.png'
@@ -157,7 +158,7 @@ const goMyAssets = () => {
 }
 
 const goService = () => dispatchCustomEvent('event_serviceChange')
-const goNotice = () => $router.push('/broadcast')
+// const goNotice = () => $router.push('/broadcast')
 
 const rfdFromChangePercent = (coin) => {
   const info = tradeStore.allCoinPriceInfo[coin]

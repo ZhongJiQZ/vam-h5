@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import avatarImg from '@/assets/images/touxiang.png'
+import avatarImg from '@/assets/images/gxpex/home/sidebar-avatar.png'
 import { computed } from 'vue'
 import Copy from 'vue-clipboard3'
 import { useToast } from '@/hook/useToast'

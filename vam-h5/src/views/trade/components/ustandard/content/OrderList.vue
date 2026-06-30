@@ -41,12 +41,13 @@
     </van-tabs>
     <!-- 隐藏其他币种，刷新 (Figma icons) -->
     <div class="tab_right">
-      <img
+      <!-- 眼睛：隐藏其他币种，暂时下线 -->
+      <!-- <img
         :src="iconEye"
         :class="['entrustRImg', { 'entrustRImg--off': !showEye }]"
         @click="handelEye"
         alt=""
-      />
+      /> -->
       <img :src="iconRefresh" class="entrustRImg" @click="handelRefresh" alt="" />
     </div>
   </div>
@@ -64,8 +65,8 @@ import {
   orderList
 } from '@/api/trade/index'
 import { useTradeStore } from '@/store/trade'
-import iconEye from '@/assets/images/gxpex/trade/icon-order-filter2.svg'
 import iconRefresh from '@/assets/images/gxpex/trade/icon-order-filter1.svg'
+// import iconEye from '@/assets/images/gxpex/trade/icon-order-filter2.svg'
 const props = defineProps({
   coinInfo: {
     type: Object,

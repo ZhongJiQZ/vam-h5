@@ -26,7 +26,7 @@
           <img :src="iconOrderbook" class="action-pill__icon" alt="" />
         </div>
       </div>
-      <div class="copytrade-btn" @click="onCopyTrade">
+      <div v-if="showCopyTradeBtn" class="copytrade-btn" @click="onCopyTrade">
         <img :src="iconCopytrade" class="copytrade-btn__icon" alt="" />
         <span class="copytrade-btn__text">{{ _t18('copy_trade') }}</span>
       </div>
@@ -39,12 +39,15 @@ import { useTradeStore } from '@/store/trade'
 import { _t18, _toView } from '@/utils/public'
 import { useMainStore } from '@/store/index.js'
 import { useRouter } from 'vue-router'
+import { isCopyTradeJingangVisible } from '@/utils/copyTradeMenu'
 import iconChevron from '@/assets/images/gxpex/trade/icon-symbol-info.svg'
 import iconDepth from '@/assets/images/gxpex/trade/icon-btn-left.svg'
 import iconOrderbook from '@/assets/images/gxpex/trade/icon-btn-right.svg'
 import iconCopytrade from '@/assets/images/gxpex/trade/icon-copytrade.svg'
 const mainStore = useMainStore()
 const router = useRouter()
+
+const showCopyTradeBtn = computed(() => isCopyTradeJingangVisible(mainStore.getJinGangList))
 
 const props = defineProps({
   coinInfo: { type: Object, default: () => {} }
