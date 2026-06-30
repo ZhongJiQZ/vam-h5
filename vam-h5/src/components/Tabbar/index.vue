@@ -2,6 +2,7 @@
 <script setup>
 import { useMainStore } from '@/store/index.js'
 import { _toView } from '../../utils/public'
+import { isTabbarRouteActive } from '@/utils/tabbar'
 import { useRouter } from 'vue-router'
 import { computed } from 'vue'
 const router = useRouter()
@@ -16,9 +17,8 @@ const getTabbarList = computed(() => {
 watch(
   router.currentRoute,
   (newVal) => {
-    // currentTab.value = tabbarList.find((elem) => elem.pathName == newVal.name)
     currentTab.value =
-      getTabbarList.value.find((elem) => elem.key == newVal.name.toLowerCase()) ?? {}
+      getTabbarList.value.find((elem) => isTabbarRouteActive(newVal, elem)) ?? {}
   },
   { immediate: true }
 )

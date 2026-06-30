@@ -14,7 +14,7 @@ import { openCustomerService, syncSaleSmartlyLogin, injectSaleSmartlyPlatformScr
 import { useRouter } from 'vue-router'
 import { initWebSocket } from '@/plugin/socket'
 import { showDialog } from 'vant'
-import PubSub from 'pubsub-js'
+import { buildTabbarRouteNameList } from '@/utils/tabbar'
 
 // import { useFreeze } from '@/hook/useFreeze'
 
@@ -87,19 +87,12 @@ const userStore = useUserStore()
 const mainStroe = useMainStore()
 const isLoading = ref(false)
 const currentRoute = computed(() => useRoute())
-const tabbarPathNameList = computed(() =>
-  [...mainStroe.getTabbarList
-    .filter((elt) => {
-      return elt.isOpen === true
-    })
-    .map((elem) => {
-      return elem.key.charAt(0).toUpperCase() + elem.key.slice(1)
-    }),
-    'OrderCenter',
-    'AssetRecord',
-    'FinancialDetails'
-  ]
-)
+const tabbarPathNameList = computed(() => [
+  ...buildTabbarRouteNameList(mainStroe.getTabbarList),
+  'OrderCenter',
+  'AssetRecord',
+  'FinancialDetails'
+])
 
 const { _toast } = useToast()
 /**

@@ -51,7 +51,8 @@
             <flowInvestComponent v-show="tabActive === 'flow_invest'" />
             <flowDepositComponent v-show="tabActive === 'flow_deposit'" />
             <flowWithdrawComponent v-show="tabActive === 'flow_withdraw'" />
-            <flowTradeRewardComponent v-show="tabActive === 'flow_trade_reward'" />
+            <!-- 跟单奖励暂时下线 -->
+            <!-- <flowTradeRewardComponent v-show="tabActive === 'flow_trade_reward'" /> -->
           </div>
         </div>
       </div>
@@ -67,7 +68,7 @@ import flowMiningComponent from './components/flowMiningComponent.vue'
 import flowInvestComponent from './components/flowInvestComponent.vue'
 import flowDepositComponent from './components/flowDepositComponent.vue'
 import flowWithdrawComponent from './components/flowWithdrawComponent.vue'
-import flowTradeRewardComponent from './components/flowTradeRewardComponent.vue'
+// import flowTradeRewardComponent from './components/flowTradeRewardComponent.vue'
 import imgQianbao from '@/assets/images/assets/qianbao.png'
 import imgQianbaoX from '@/assets/images/assets/qianbao-x.png'
 import imgWenhao from '@/assets/images/assets/wenhao.png'
@@ -92,7 +93,7 @@ const tabInnerList = computed(() => {
     { name: 'flow_invest', keyStr: 'flow_invest', sort: 20 },
     { name: 'flow_deposit', keyStr: 'flow_deposit', sort: 30 },
     { name: 'flow_withdraw', keyStr: 'flow_withdraw', sort: 40 },
-    { name: 'flow_trade_reward', keyStr: 'flow_trade_reward', sort: 50 },
+    // { name: 'flow_trade_reward', keyStr: 'flow_trade_reward', sort: 50 },
   ]
   list.forEach((item) => {
     item.keyStr = _t18(item.keyStr, ['latcoin'])
