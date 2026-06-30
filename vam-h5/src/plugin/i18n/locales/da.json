@@ -1201,6 +1201,19 @@
   "flow_invest": "Inverest",
   "flow_deposit": "Stored Value",
   "flow_withdraw": "Withdrawal",
+  "flow_trade_reward": "Copy trading-belønning",
+  "tradeReward": {
+    "pending": "Afventer gennemgang",
+    "granted": "Udbetalt",
+    "rejected": "Afvist",
+    "tier": "Belønningsniveau",
+    "statDate": "Statistikdato",
+    "participatingPeople": "Deltagende følgere",
+    "validPeople": "Kvalificerede antal",
+    "rewardAmount": "Belønningsbeløb",
+    "grantTime": "Udbetalingstidspunkt",
+    "rejectReason": "Afvisningsårsag"
+  },
   "records": {
     "total": "Total",
     "inProgress": "In Progress",

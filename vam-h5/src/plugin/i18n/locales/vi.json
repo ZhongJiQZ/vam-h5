@@ -1203,6 +1203,19 @@
   "flow_invest": "Đầu tư",
   "flow_deposit": "Nạp tiền",
   "flow_withdraw": "Rút tiền",
+  "flow_trade_reward": "Thưởng copy trade",
+  "tradeReward": {
+    "pending": "Chờ duyệt",
+    "granted": "Đã chi trả",
+    "rejected": "Đã từ chối",
+    "tier": "Cấp thưởng",
+    "statDate": "Ngày thống kê",
+    "participatingPeople": "Số người theo dõi tham gia",
+    "validPeople": "Số người đạt chuẩn",
+    "rewardAmount": "Số tiền thưởng",
+    "grantTime": "Thời gian chi trả",
+    "rejectReason": "Lý do từ chối"
+  },
   "records": {
     "total": "Tổng cộng",
     "inProgress": "Đang thực hiện",

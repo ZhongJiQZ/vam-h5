@@ -1200,6 +1200,19 @@
   "flow_invest": "Inverest",
   "flow_deposit": "Stored Value",
   "flow_withdraw": "Withdrawal",
+  "flow_trade_reward": "Copy trading-beloning",
+  "tradeReward": {
+    "pending": "In afwachting van beoordeling",
+    "granted": "Uitbetaald",
+    "rejected": "Afgewezen",
+    "tier": "Beloningsniveau",
+    "statDate": "Statistiekdatum",
+    "participatingPeople": "Deelnemende volgers",
+    "validPeople": "Gekwalificeerd aantal",
+    "rewardAmount": "Beloningsbedrag",
+    "grantTime": "Uitbetalingstijd",
+    "rejectReason": "Reden van afwijzing"
+  },
   "records": {
     "total": "Total",
     "inProgress": "In Progress",

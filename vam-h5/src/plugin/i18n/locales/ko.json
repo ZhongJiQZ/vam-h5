@@ -1203,6 +1203,19 @@
   "flow_invest": "투자",
   "flow_deposit": "입금",
   "flow_withdraw": "출금",
+  "flow_trade_reward": "카피 트레이딩 보상",
+  "tradeReward": {
+    "pending": "심사 대기",
+    "granted": "지급 완료",
+    "rejected": "반려",
+    "tier": "보상 등급",
+    "statDate": "집계일",
+    "participatingPeople": "참여 팔로워 수",
+    "validPeople": "달성 인원",
+    "rewardAmount": "보상 금액",
+    "grantTime": "지급 시간",
+    "rejectReason": "반려 사유"
+  },
   "records": {
     "total": "총계",
     "inProgress": "진행 중",

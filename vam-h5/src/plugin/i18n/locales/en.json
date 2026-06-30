@@ -1212,6 +1212,19 @@
   "flow_invest": "Inverest",
   "flow_deposit": "Stored Value",
   "flow_withdraw": "Withdrawal",
+  "flow_trade_reward": "Copy Trade Reward",
+  "tradeReward": {
+    "pending": "Pending Review",
+    "granted": "Granted",
+    "rejected": "Rejected",
+    "tier": "Reward Tier",
+    "statDate": "Stat Date",
+    "participatingPeople": "Participating Followers",
+    "validPeople": "Qualified Count",
+    "rewardAmount": "Reward Amount",
+    "grantTime": "Grant Time",
+    "rejectReason": "Reject Reason"
+  },
   "records": {
     "total": "Total",
     "inProgress": "In Progress",

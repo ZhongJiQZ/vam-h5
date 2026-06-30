@@ -1201,6 +1201,19 @@
   "flow_invest": "Inverest",
   "flow_deposit": "Stored Value",
   "flow_withdraw": "Withdrawal",
+  "flow_trade_reward": "مكافأة نسخ التداول",
+  "tradeReward": {
+    "pending": "قيد المراجعة",
+    "granted": "تم الصرف",
+    "rejected": "مرفوض",
+    "tier": "مستوى المكافأة",
+    "statDate": "تاريخ الإحصاء",
+    "participatingPeople": "عدد المتابعين المشاركين",
+    "validPeople": "عدد المؤهلين",
+    "rewardAmount": "مبلغ المكافأة",
+    "grantTime": "وقت الصرف",
+    "rejectReason": "سبب الرفض"
+  },
   "records": {
     "total": "Total",
     "inProgress": "In Progress",

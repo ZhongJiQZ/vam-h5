@@ -1203,6 +1203,19 @@
   "flow_invest": "投資",
   "flow_deposit": "入金",
   "flow_withdraw": "出金",
+  "flow_trade_reward": "コピートレード報酬",
+  "tradeReward": {
+    "pending": "審査待ち",
+    "granted": "支給済み",
+    "rejected": "却下",
+    "tier": "報酬ランク",
+    "statDate": "集計日",
+    "participatingPeople": "参加フォロワー数",
+    "validPeople": "達標人数",
+    "rewardAmount": "報酬額",
+    "grantTime": "支給時間",
+    "rejectReason": "却下理由"
+  },
   "records": {
     "total": "合計",
     "inProgress": "進行中",

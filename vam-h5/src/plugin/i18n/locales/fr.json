@@ -1203,6 +1203,19 @@
   "flow_invest": "Investissement",
   "flow_deposit": "Valeur stockée",
   "flow_withdraw": "Retrait",
+  "flow_trade_reward": "Récompense de copy trading",
+  "tradeReward": {
+    "pending": "En attente de validation",
+    "granted": "Versé",
+    "rejected": "Rejeté",
+    "tier": "Niveau de récompense",
+    "statDate": "Date statistique",
+    "participatingPeople": "Suiveurs participants",
+    "validPeople": "Nombre qualifié",
+    "rewardAmount": "Montant de la récompense",
+    "grantTime": "Heure de versement",
+    "rejectReason": "Motif du rejet"
+  },
   "records": {
     "total": "Total",
     "inProgress": "En cours",

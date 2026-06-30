@@ -1203,6 +1203,19 @@
   "flow_invest": "Investitionen",
   "flow_deposit": "Einzahlungen",
   "flow_withdraw": "Abhebungen",
+  "flow_trade_reward": "Copy-Trading-Belohnung",
+  "tradeReward": {
+    "pending": "Ausstehende Prüfung",
+    "granted": "Ausgezahlt",
+    "rejected": "Abgelehnt",
+    "tier": "Belohnungsstufe",
+    "statDate": "Statistikdatum",
+    "participatingPeople": "Teilnehmende Follower",
+    "validPeople": "Qualifizierte Anzahl",
+    "rewardAmount": "Belohnungsbetrag",
+    "grantTime": "Auszahlungszeit",
+    "rejectReason": "Ablehnungsgrund"
+  },
   "records": {
     "total": "Gesamt",
     "inProgress": "In Bearbeitung",

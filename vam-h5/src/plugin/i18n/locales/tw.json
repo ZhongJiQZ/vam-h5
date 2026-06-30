@@ -1206,6 +1206,19 @@
   "flow_invest": "投资记录",
   "flow_deposit": "儲值記錄",
   "flow_withdraw": "提現記錄",
+  "flow_trade_reward": "跟單獎勵",
+  "tradeReward": {
+    "pending": "待審核",
+    "granted": "已發放",
+    "rejected": "已駁回",
+    "tier": "獎勵檔位",
+    "statDate": "統計日期",
+    "participatingPeople": "參與跟單人數",
+    "validPeople": "達標人數",
+    "rewardAmount": "獎勵金額",
+    "grantTime": "發放時間",
+    "rejectReason": "駁回原因"
+  },
   "records": {
     "total": "全部",
     "inProgress": "進行中",

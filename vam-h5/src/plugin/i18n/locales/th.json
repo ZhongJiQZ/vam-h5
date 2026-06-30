@@ -1203,6 +1203,19 @@
   "flow_invest": "การลงทุน",
   "flow_deposit": "เงินฝาก",
   "flow_withdraw": "การถอนเงิน",
+  "flow_trade_reward": "รางวัลคัดลอกเทรด",
+  "tradeReward": {
+    "pending": "รอตรวจสอบ",
+    "granted": "จ่ายแล้ว",
+    "rejected": "ปฏิเสธ",
+    "tier": "ระดับรางวัล",
+    "statDate": "วันที่สถิติ",
+    "participatingPeople": "ผู้ติดตามที่เข้าร่วม",
+    "validPeople": "จำนวนที่ผ่านเกณฑ์",
+    "rewardAmount": "จำนวนรางวัล",
+    "grantTime": "เวลาจ่าย",
+    "rejectReason": "เหตุผลที่ปฏิเสธ"
+  },
   "records": {
     "total": "ทั้งหมด",
     "inProgress": "กำลังดำเนินการ",

@@ -1203,6 +1203,19 @@
   "flow_invest": "Inverest",
   "flow_deposit": "Stored Value",
   "flow_withdraw": "Withdrawal",
+  "flow_trade_reward": "Kopiehandel-beloning",
+  "tradeReward": {
+    "pending": "Wag op hersiening",
+    "granted": "Toegeken",
+    "rejected": "Afgekeur",
+    "tier": "Beloningsvlak",
+    "statDate": "Statistiekdatum",
+    "participatingPeople": "Deelnemende volgers",
+    "validPeople": "Gekwalifiseerde aantal",
+    "rewardAmount": "Beloningsbedrag",
+    "grantTime": "Toekenningstyd",
+    "rejectReason": "Afkeurrede"
+  },
   "records": {
     "total": "Total",
     "inProgress": "In Progress",

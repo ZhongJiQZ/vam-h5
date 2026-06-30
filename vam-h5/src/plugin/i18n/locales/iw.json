@@ -1198,6 +1198,19 @@
   "flow_invest": "Inverest",
   "flow_deposit": "Stored Value",
   "flow_withdraw": "Withdrawal",
+  "flow_trade_reward": "תגמול העתקת מסחר",
+  "tradeReward": {
+    "pending": "ממתין לבדיקה",
+    "granted": "שולם",
+    "rejected": "נדחה",
+    "tier": "רמת תגמול",
+    "statDate": "תאריך סטטיסטיקה",
+    "participatingPeople": "עוקבים משתתפים",
+    "validPeople": "מספר מוסמך",
+    "rewardAmount": "סכום תגמול",
+    "grantTime": "זמן תשלום",
+    "rejectReason": "סיבת דחייה"
+  },
   "records": {
     "total": "Total",
     "inProgress": "In Progress",

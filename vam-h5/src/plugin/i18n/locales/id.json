@@ -1206,6 +1206,19 @@
   "flow_invest": "Investasi",
   "flow_deposit": "Deposit",
   "flow_withdraw": "Penarikan",
+  "flow_trade_reward": "Hadiah Copy Trade",
+  "tradeReward": {
+    "pending": "Menunggu Review",
+    "granted": "Telah Dibayar",
+    "rejected": "Ditolak",
+    "tier": "Tingkat Hadiah",
+    "statDate": "Tanggal Statistik",
+    "participatingPeople": "Pengikut Aktif",
+    "validPeople": "Jumlah Memenuhi Syarat",
+    "rewardAmount": "Jumlah Hadiah",
+    "grantTime": "Waktu Pembayaran",
+    "rejectReason": "Alasan Penolakan"
+  },
   "records": {
     "total": "Total",
     "inProgress": "Sedang Berjalan",

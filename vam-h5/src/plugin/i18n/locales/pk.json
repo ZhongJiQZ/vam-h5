@@ -981,6 +981,19 @@
   "bityc_exchange_bearish": "شارٹ",
   "bityc_option_buy_up": "لانگ",
   "bityc_option_buy_short": "شارٹ",
+  "flow_trade_reward": "کاپی ٹریڈ انعام",
+  "tradeReward": {
+    "pending": "جائزے کے منتظر",
+    "granted": "جاری کیا گیا",
+    "rejected": "مسترد",
+    "tier": "انعام درجہ",
+    "statDate": "شماریاتی تاریخ",
+    "participatingPeople": "شرکت کرنے والے فالوورز",
+    "validPeople": "اہل تعداد",
+    "rewardAmount": "انعام کی رقم",
+    "grantTime": "اجراء کا وقت",
+    "rejectReason": "مسترد کرنے کی وجہ"
+  },
   "records": {
     "total": "کل",
     "inProgress": "جاری",

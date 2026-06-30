@@ -1199,6 +1199,19 @@
   "flow_invest": "Inverest",
   "flow_deposit": "Stored Value",
   "flow_withdraw": "Withdrawal",
+  "flow_trade_reward": "Kopya İşlem Ödülü",
+  "tradeReward": {
+    "pending": "İnceleme Bekliyor",
+    "granted": "Ödendi",
+    "rejected": "Reddedildi",
+    "tier": "Ödül Seviyesi",
+    "statDate": "İstatistik Tarihi",
+    "participatingPeople": "Katılan takipçiler",
+    "validPeople": "Uygun sayısı",
+    "rewardAmount": "Ödül Tutarı",
+    "grantTime": "Ödeme Zamanı",
+    "rejectReason": "Red Nedeni"
+  },
   "records": {
     "total": "Total",
     "inProgress": "In Progress",

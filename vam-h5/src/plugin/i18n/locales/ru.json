@@ -1199,6 +1199,19 @@
   "flow_invest": "Inverest",
   "flow_deposit": "Stored Value",
   "flow_withdraw": "Withdrawal",
+  "flow_trade_reward": "Награда за копитрейдинг",
+  "tradeReward": {
+    "pending": "На проверке",
+    "granted": "Выплачено",
+    "rejected": "Отклонено",
+    "tier": "Уровень награды",
+    "statDate": "Дата статистики",
+    "participatingPeople": "Участвующие подписчики",
+    "validPeople": "Количество соответствующих",
+    "rewardAmount": "Сумма награды",
+    "grantTime": "Время выплаты",
+    "rejectReason": "Причина отклонения"
+  },
   "records": {
     "total": "Total",
     "inProgress": "In Progress",

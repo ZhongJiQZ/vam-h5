@@ -1199,6 +1199,19 @@
   "flow_invest": "Inverest",
   "flow_deposit": "Stored Value",
   "flow_withdraw": "Withdrawal",
+  "flow_trade_reward": "Nagroda za copy trading",
+  "tradeReward": {
+    "pending": "Oczekuje na weryfikację",
+    "granted": "Wypłacono",
+    "rejected": "Odrzucono",
+    "tier": "Poziom nagrody",
+    "statDate": "Data statystyki",
+    "participatingPeople": "Uczestniczący obserwujący",
+    "validPeople": "Liczba kwalifikujących",
+    "rewardAmount": "Kwota nagrody",
+    "grantTime": "Czas wypłaty",
+    "rejectReason": "Powód odrzucenia"
+  },
   "records": {
     "total": "Total",
     "inProgress": "In Progress",

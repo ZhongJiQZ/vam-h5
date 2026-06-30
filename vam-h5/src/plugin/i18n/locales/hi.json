@@ -1201,6 +1201,19 @@
   "flow_invest": "Inverest",
   "flow_deposit": "Stored Value",
   "flow_withdraw": "Withdrawal",
+  "flow_trade_reward": "कॉपी ट्रेड इनाम",
+  "tradeReward": {
+    "pending": "समीक्षा लंबित",
+    "granted": "जारी किया गया",
+    "rejected": "अस्वीकृत",
+    "tier": "इनाम स्तर",
+    "statDate": "सांख्यिकी तिथि",
+    "participatingPeople": "भाग लेने वाले अनुयायी",
+    "validPeople": "योग्य संख्या",
+    "rewardAmount": "इनाम राशि",
+    "grantTime": "जारी करने का समय",
+    "rejectReason": "अस्वीकृति का कारण"
+  },
   "records": {
     "total": "Total",
     "inProgress": "In Progress",
