@@ -1,7 +1,13 @@
 <!-- 机构介绍 / 带单表现（原型 1.1 + 1.2） -->
 <template>
   <div class="inst-detail-page">
-    <DarkHeaderBar :title="t18('copy_trade_inst_intro_title')" :border_bottom="true" />
+    <DarkHeaderBar :title="t18('copy_trade_inst_intro_title')" :border_bottom="true">
+      <template #right>
+        <button type="button" class="header-info-btn" aria-label="info" @click="showInfo = true">
+          <span class="header-info-icon">i</span>
+        </button>
+      </template>
+    </DarkHeaderBar>
 
     <van-loading v-if="pageLoading" class="page-loading" />
     <template v-else-if="institutionId">
@@ -187,6 +193,8 @@
     >
       <p class="desc-dialog-text">{{ detail.description }}</p>
     </van-dialog>
+
+    <CopyTradeDocumentDrawer v-model:show="showInfo" :doc="rulesDoc" />
   </div>
 </template>
 
@@ -195,6 +203,8 @@ import { ref, computed, onMounted, watch, nextTick, defineAsyncComponent } from 
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
+import CopyTradeDocumentDrawer from './components/CopyTradeDocumentDrawer.vue'
+import { getCopyTradeInstitutionRulesDoc } from './documents'
 const CopyTradePerfCharts = defineAsyncComponent(() => import('./components/CopyTradePerfCharts.vue'))
 import { _t18, _numberWithCommas } from '@/utils/public'
 import {
@@ -242,7 +252,10 @@ const chartsReady = ref(false)
 const descRef = ref(null)
 const descOverflow = ref(false)
 const showDescDialog = ref(false)
+const showInfo = ref(false)
 const ranges = ['7d', '15d', '30d', 'all']
+
+const rulesDoc = computed(() => getCopyTradeInstitutionRulesDoc(t18))
 
 const descDialogTitle = computed(() => {
   const label = t18('copy_trade_inst_intro').replace(/[：:]\s*$/, '')
@@ -613,6 +626,28 @@ $tab-active: #3d3d3d;
   min-height: 100vh;
   background: #fff;
   padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+}
+
+.header-info-btn {
+  border: none;
+  background: none;
+  padding: 0;
+  line-height: 0;
+}
+
+.header-info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: $green;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  font-style: italic;
+  font-family: Georgia, serif;
 }
 
 .page-loading,

@@ -1572,5 +1572,6 @@
   "copy_trade_strategy_period": "Strategy Period",
   "copy_trade_follow_period": "Copy Period",
   "copy_trade_records_title": "Copy Records",
-  "copy_trade_position": "Position"
+  "copy_trade_position": "Position",
+  "copy_trade_institution_rules_doc_title": "MetaDomain Capital כללי מערכת Copy Trading"
 }

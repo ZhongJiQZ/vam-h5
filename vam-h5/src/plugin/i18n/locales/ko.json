@@ -1577,5 +1577,6 @@
   "copy_trade_strategy_period": "전략 기간",
   "copy_trade_follow_period": "카피 기간",
   "copy_trade_records_title": "카피 기록",
-  "copy_trade_position": "포지션"
+  "copy_trade_position": "포지션",
+  "copy_trade_institution_rules_doc_title": "MetaDomain Capital 카피 트레이딩 시스템 규칙"
 }

@@ -1574,5 +1574,6 @@
   "copy_trade_strategy_period": "Strategieperiode",
   "copy_trade_follow_period": "Copy-periode",
   "copy_trade_records_title": "Copy-geschiedenis",
-  "copy_trade_position": "Positie"
+  "copy_trade_position": "Positie",
+  "copy_trade_institution_rules_doc_title": "MetaDomain Capital Copy Trading Systeemregels"
 }
