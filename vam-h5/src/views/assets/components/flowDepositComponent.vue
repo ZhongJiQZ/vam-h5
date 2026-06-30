@@ -74,6 +74,7 @@ import { ref, computed, watch } from 'vue'
 import Tab from '@/components/Tab/index.vue'
 import { _t18, _numberWithCommas } from '@/utils/public'
 import { formatLocalTime } from '@/utils/time'
+import { priceFormat } from '@/utils/decimal'
 
 // ✅ 用你真实的投资记录接口替换这里
 // 例：import { getRecordList } from '@/api/assets'
@@ -108,12 +109,6 @@ const pageSize = ref(10)
 const total = ref(0)
 const tabContentList = ref([])
 
-const fiatPrefix = (coin) => {
-  const c = String(coin || '').toUpperCase()
-  if (c === 'IDR') return 'Rp'
-  return c || 'Rp'
-}
-
 const formatCreateTime = (item) => {
   const raw = item?.params?.createTime ?? item?.createTime
   if (raw === null || raw === undefined || raw === '') return '-'
@@ -123,13 +118,14 @@ const formatCreateTime = (item) => {
 
 const formatRecordAmount = (item) => {
   const isBank = String(item?.type || '').toUpperCase() === 'BANK'
+  const coin = String(item?.coin || 'USDT').toUpperCase()
   if (!isBank) {
-    return `${item?.amount ?? '-'} ${(item?.coin || '').toUpperCase()}`.trim()
+    return `${item?.amount ?? '-'} ${coin}`.trim()
   }
-  const raw = item?.receiptAmount ?? item?.amount
+  const raw = item?.realAmount ?? item?.amount
   const n = Number(raw)
-  const fiat = Number.isFinite(n) ? _numberWithCommas(n) : raw
-  return `${fiatPrefix(item?.receiptCoin)} ${fiat}`
+  const amountText = Number.isFinite(n) ? priceFormat(n) : raw
+  return `${amountText} ${coin}`
 }
 
 const buildParams = () => {

@@ -12,49 +12,53 @@
         </div>
         <div class="field">
           <p class="label">
-            {{ _t18('recharge_number', ['bitmake']) }}
-            <span v-if="showFiatMode" class="rate-pill">1={{ _numberWithCommas(fiatRateNum) }}</span>
+            {{ isBankType ? _t18('recharge_amount_usdt') : _t18('recharge_number', ['bitmake']) }}
+            <span v-if="showBankRate" class="rate-pill">
+              1 USDT ≈ {{ _numberWithCommas(fiatRateNum) }} {{ fiatCurrency }}
+            </span>
           </p>
-          <div class="input-box" :class="{ 'input-box--suffix': showFiatMode }">
+          <div class="input-box" :class="{ 'input-box--suffix': isBankType }">
             <input
               v-model="amount"
               type="number"
               class="ff-num"
               :placeholder="_t18('recharge_input')"
             />
-            <span v-if="showFiatMode" class="currency-suffix">{{ fiatCurrency }}</span>
+            <span v-if="isBankType" class="currency-suffix">USDT</span>
           </div>
-          <p v-if="showFiatMode && convertedUsdt" class="approx-line">
-            {{ _t18('recharge_amount_usdt') }}: {{ convertedUsdt }}
+          <p v-if="showBankRate && estimatedFiatPayment" class="approx-line">
+            {{ _t18('recharge_fiat_transfer') }}: {{ estimatedFiatPayment }}
           </p>
-          <p v-if="showFiatMode && convertedUsdt" class="approx-line approx-line--net">
+          <p v-if="isBankType && netUsdt" class="approx-line approx-line--net">
             {{ _t18('Actual_amount_received') }}: {{ netUsdt }}
           </p>
         </div>
-        <div class="tips-card">
-          <div v-if="showFiatMode && hasLimitRange" class="tips-row">
-            <span class="tips-label">
-              <i class="tips-dot"></i>
-              {{ _t18('recharge_limit_range') }}
-            </span>
-            <span class="tips-value tips-value--stack">
-              <span class="tips-limit-line">
-                <span class="tips-chip">MIN</span>
-                <span>{{ limitMinDisplay }}</span>
+        <div class="tips-card" :class="{ 'tips-card--compact': !isBankType }">
+          <template v-if="isBankType">
+            <div v-if="hasLimitRange" class="tips-row">
+              <span class="tips-label">
+                <i class="tips-dot"></i>
+                {{ _t18('recharge_limit_range') }}
               </span>
-              <span class="tips-limit-line">
-                <span class="tips-chip">MAX</span>
-                <span>{{ limitMaxDisplay }}</span>
+              <span class="tips-value tips-value--stack">
+                <span class="tips-limit-line">
+                  <span class="tips-chip">MIN</span>
+                  <span>{{ limitMinDisplay }}</span>
+                </span>
+                <span class="tips-limit-line">
+                  <span class="tips-chip">MAX</span>
+                  <span>{{ limitMaxDisplay }}</span>
+                </span>
               </span>
-            </span>
-          </div>
-          <div v-if="showFiatMode" class="tips-row">
-            <span class="tips-label">
-              <i class="tips-dot tips-dot--warn"></i>
-              {{ _t18('withdraw_commission') }}
-            </span>
-            <span class="tips-value tips-value--warn">{{ feeRatioNum }}%</span>
-          </div>
+            </div>
+            <div v-if="feeRatioNum > 0" class="tips-row">
+              <span class="tips-label">
+                <i class="tips-dot tips-dot--warn"></i>
+                {{ _t18('withdraw_commission') }}
+              </span>
+              <span class="tips-value tips-value--warn">{{ feeRatioNum }}%</span>
+            </div>
+          </template>
           <p class="tips-desc">{{ _t18('recharge_amount_confirm_hint') }}</p>
         </div>
       </div>
@@ -103,28 +107,27 @@ const fiatRateNum = computed(() => {
 const fiatCurrency = computed(() =>
   String(rechargeObj.value?.fiatCurrency || 'Rp').toUpperCase()
 )
-const showFiatMode = computed(() => isBankType.value && fiatRateNum.value != null)
+const showBankRate = computed(() => isBankType.value && fiatRateNum.value != null)
 const feeRatioNum = computed(() => {
   const n = Number(rechargeObj.value?.rechargeFeeRatio)
   return Number.isFinite(n) && n > 0 ? n : 0
 })
-const convertedUsdt = computed(() => {
-  if (!showFiatMode.value) return ''
-  const fiat = Number(amount.value)
-  if (!Number.isFinite(fiat) || fiat <= 0) return ''
-  const usdt = fiat / fiatRateNum.value
-  return `${priceFormat(usdt)} USDT`
+const estimatedFiatPayment = computed(() => {
+  if (!showBankRate.value) return ''
+  const usdt = Number(amount.value)
+  if (!Number.isFinite(usdt) || usdt <= 0) return ''
+  const fiat = Math.round(usdt * fiatRateNum.value)
+  return `${fiatCurrency.value} ${_numberWithCommas(fiat)}`
 })
 const netUsdt = computed(() => {
-  if (!showFiatMode.value) return ''
-  const fiat = Number(amount.value)
-  if (!Number.isFinite(fiat) || fiat <= 0) return ''
-  const usdt = fiat / fiatRateNum.value
+  if (!isBankType.value) return ''
+  const usdt = Number(amount.value)
+  if (!Number.isFinite(usdt) || usdt <= 0) return ''
   const net = usdt * (1 - feeRatioNum.value / 100)
   return `${priceFormat(Math.max(net, 0))} USDT`
 })
 const hasLimitRange = computed(() => {
-  if (!showFiatMode.value) return ''
+  if (!isBankType.value) return false
   const min = Number(rechargeObj.value?.rechargeMin)
   const max = Number(rechargeObj.value?.rechargeMax)
   return Number.isFinite(min) && Number.isFinite(max)
@@ -132,12 +135,12 @@ const hasLimitRange = computed(() => {
 const limitMinDisplay = computed(() => {
   const min = Number(rechargeObj.value?.rechargeMin)
   if (!Number.isFinite(min)) return '--'
-  return `${_numberWithCommas(String(Math.floor(min)))} ${fiatCurrency.value}`
+  return `${priceFormat(min)} USDT`
 })
 const limitMaxDisplay = computed(() => {
   const max = Number(rechargeObj.value?.rechargeMax)
   if (!Number.isFinite(max)) return '--'
-  return `${_numberWithCommas(String(Math.floor(max)))} ${fiatCurrency.value}`
+  return `${priceFormat(max)} USDT`
 })
 const submitAddress = computed(() => {
   if (isBankRecharge.value) return rechargeObj.value?.bankCardNo ?? ''
@@ -181,6 +184,14 @@ const onNext = async () => {
     _toast('recharge_num')
     return
   }
+  if (isBankType.value && hasLimitRange.value) {
+    const min = Number(rechargeObj.value?.rechargeMin)
+    const max = Number(rechargeObj.value?.rechargeMax)
+    if (val < min || val > max) {
+      _toast('recharge_num')
+      return
+    }
+  }
   const submitAmountValue = val
 
   const addr = submitAddress.value
@@ -218,7 +229,7 @@ const onNext = async () => {
       res?.data?.serialId ??
       res?.id ??
       ''
-    if (isBankType && submitPayUrl) {
+    if (isBankType.value && submitPayUrl) {
       window.location.href = submitPayUrl
       return
     }
@@ -371,6 +382,11 @@ const onNext = async () => {
   border-radius: 10px;
   border: 1px solid rgba(255, 138, 0, 0.35);
   background: linear-gradient(180deg, rgba(255, 245, 230, 0.75) 0%, rgba(255, 250, 242, 0.95) 100%);
+}
+
+.tips-card--compact {
+  border-color: #ebedf0;
+  background: #fafafa;
 }
 
 .tips-row {

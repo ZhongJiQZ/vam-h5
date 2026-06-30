@@ -412,3 +412,5 @@ $muted: #8b95a5;
   }
 }
 </style>
+
+</style>
