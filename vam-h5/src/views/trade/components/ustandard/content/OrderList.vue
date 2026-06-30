@@ -41,11 +41,12 @@
     </van-tabs>
     <!-- 隐藏其他币种，刷新 -->
     <div class="tab_right">
-      <svg-load
+      <!-- 眼睛：隐藏其他币种，暂时下线 -->
+      <!-- <svg-load
         :name="showEye ? 'yanjin-k' : 'yanjin-g'"
         class="entrustRImg"
         @click="handelEye"
-      ></svg-load>
+      ></svg-load> -->
       <svg-load name="shuaxin" class="entrustRImg" @click="handelRefresh"></svg-load>
     </div>
   </div>

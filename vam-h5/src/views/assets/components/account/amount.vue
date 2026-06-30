@@ -2,7 +2,7 @@
   <div class="userAmount">
     <div class="balance-title-row">
       <p class="balance-title">
-        {{ t18Type(type) }}{{ _t18('asset_account', ['ebc']) }}
+        {{ _t18('asset_account', ['ebc']) }}
       </p>
       <div v-if="type === 'plat'" class="header-shortcuts">
         <button
@@ -129,16 +129,6 @@ const toRecharge = (url) => {
   } else {
     _toView(url)
   }
-}
-const t18Type = (type) => {
-  if (type == 'plat') {
-    return _t18('asset_platform');
-  } else if (type == 'finance') {
-    return _t18('asset_finance');
-  } else if (type == 'contract') {
-    return _t18('asset_contarct');
-  }
-  return type;
 }
 </script>
 
