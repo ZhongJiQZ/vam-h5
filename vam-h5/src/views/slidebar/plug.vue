@@ -97,6 +97,19 @@
             <p>{{ _t18('plug_threeNum', ['aams']) }}</p>
             <span class="ff-num">{{ teamInfo.threeCount || 0 }}</span>
           </div>
+          <!-- 各级跟单人数 -->
+          <div>
+            <p>{{ _t18('plug_oneCopyTradeNum', ['aams']) }}</p>
+            <span class="ff-num">{{ teamInfo.oneCopyTradeCount || 0 }}</span>
+          </div>
+          <div>
+            <p>{{ _t18('plug_twoCopyTradeNum', ['aams']) }}</p>
+            <span class="ff-num">{{ teamInfo.twoCopyTradeCount || 0 }}</span>
+          </div>
+          <div>
+            <p>{{ _t18('plug_threeCopyTradeNum', ['aams']) }}</p>
+            <span class="ff-num">{{ teamInfo.threeCopyTradeCount || 0 }}</span>
+          </div>
           <!-- 推广总人数 -->
           <div>
             <p>{{ _t18('plug_sum', ['aams']) }}</p>
