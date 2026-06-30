@@ -2,7 +2,7 @@
   <div class="assets-account">
     <div class="assets-summary">
       <span class="assets-summary__label">
-        {{ t18Type(type) }}{{ _t18('asset_account', ['ebc']) }}
+        {{ _t18('asset_account', ['ebc']) }}
       </span>
       <div v-if="type === 'plat'" class="assets-summary__tools">
         <AssetsShortcuts />
@@ -145,13 +145,6 @@ const toRecharge = (url) => {
   } else {
     _toView(url)
   }
-}
-
-const t18Type = (type) => {
-  if (type === 'plat') return _t18('asset_platform')
-  if (type === 'finance') return _t18('asset_finance')
-  if (type === 'contract') return _t18('asset_contarct')
-  return type
 }
 </script>
 
