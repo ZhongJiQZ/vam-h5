@@ -295,14 +295,14 @@ const tiers = computed(() => {
         },
         {
             level: _t18('investment_tier_senior'),
-            people: '10,000',
+            people: '30,000',
             rate: '50%',
             bonus: _t18('investment_tier_senior_bonus'),
             hot: true
         },
         {
             level: _t18('investment_tier_super'),
-            people: '30,000',
+            people: '100,000',
             rate: '60%',
             bonus: _t18('investment_tier_super_bonus'),
             hot: false
