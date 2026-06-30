@@ -1567,5 +1567,6 @@
   "copy_trade_strategy_period": "策略週期",
   "copy_trade_follow_period": "跟單週期",
   "copy_trade_records_title": "跟單記錄",
-  "copy_trade_position": "倉位"
+  "copy_trade_position": "倉位",
+  "copy_trade_institution_rules_doc_title": "MetaDomain Capital 跟單系統規則"
 }

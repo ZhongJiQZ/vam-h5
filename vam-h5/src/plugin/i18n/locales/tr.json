@@ -1555,5 +1555,6 @@
   "copy_trade_strategy_period": "Strateji Dönemi",
   "copy_trade_follow_period": "Kopya Dönemi",
   "copy_trade_records_title": "Kopya kayıtları",
-  "copy_trade_position": "Pozisyon"
+  "copy_trade_position": "Pozisyon",
+  "copy_trade_institution_rules_doc_title": "MetaDomain Capital Copy Trading Sistem Kuralları"
 }

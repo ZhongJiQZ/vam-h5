@@ -66,6 +66,7 @@ export function getCopyTradeDocMessages(locale) {
   return {
     copy_trade_intro_doc_content: texts.intro,
     copy_trade_agreement_doc_content: texts.agreement,
-    copy_trade_risk_doc_content: texts.risk
+    copy_trade_risk_doc_content: texts.risk,
+    copy_trade_institution_rules_doc_content: texts.institutionRules
   }
 }

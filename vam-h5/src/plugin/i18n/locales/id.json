@@ -1567,5 +1567,6 @@
   "copy_trade_strategy_period": "Periode Strategi",
   "copy_trade_follow_period": "Periode Copy Trade",
   "copy_trade_records_title": "Riwayat Copy Trade",
-  "copy_trade_position": "Posisi"
+  "copy_trade_position": "Posisi",
+  "copy_trade_institution_rules_doc_title": "MetaDomain Capital Peraturan Sistem Copy Trading"
 }

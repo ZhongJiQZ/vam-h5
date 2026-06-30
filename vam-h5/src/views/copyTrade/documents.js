@@ -84,6 +84,17 @@ export function getCopyTradeRiskDoc(translate) {
   }
 }
 
+export function getCopyTradeInstitutionRulesDoc(translate) {
+  return {
+    title: resolveDocTitle(
+      translate,
+      ['copy_trade_institution_rules_doc_title'],
+      'Copy Trading System Rules'
+    ),
+    content: plainTextToHtml(resolveDocContent(translate, 'copy_trade_institution_rules_doc_content'))
+  }
+}
+
 /** API 文档优先，无内容时使用本地默认 */
 export function resolveCopyTradeDoc(apiDoc, fallbackDoc) {
   if (apiDoc && String(apiDoc.content || '').trim()) {
