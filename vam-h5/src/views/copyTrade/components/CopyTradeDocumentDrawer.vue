@@ -96,12 +96,13 @@ $green: #17ac74;
 
 .doc-drawer__content {
   font-size: 14px;
-  color: #374151;
+  color: #111;
   line-height: 1.7;
   word-break: break-word;
 
   :deep(p) {
     margin: 0 0 12px;
+    color: #111;
   }
 
   :deep(h1),

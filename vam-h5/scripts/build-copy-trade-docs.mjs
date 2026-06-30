@@ -11,10 +11,6 @@ const en = {
 
 Institutional automated trading signals are a trading system that combines market data analysis, intelligent strategy models, and automated trade execution. The system monitors in real time price movements, trading volume changes, market depth, and short-term trends of major digital assets such as BTC and ETH. Based on this analysis, the system automatically identifies short-term profit opportunities in the market and executes position opening, take profit, stop loss, and position closing according to the established strategy.
 
-Institution Profile
-
-MetaDomain Capital is a professional capital team focused on digital asset market research, strategy execution, and trading services. The institution primarily serves retail investors by providing intelligent trading strategies, institutional automated trading signals, and copy trading services. Through systematic trading models and automated execution mechanisms, MetaDomain Capital helps users participate more efficiently in trading major digital assets such as BTC, ETH, and other digital assets.
-
 Strategy Advantages
 
 Automated Trading
@@ -173,10 +169,6 @@ const zh = {
   intro: `信号介绍
 
 机构自动交易信号是一种结合市场数据分析、智能策略模型与自动交易执行的交易系统。系统实时监控 BTC、ETH 等主要数字资产的价格走势、成交量变化、市场深度及短期趋势。基于上述分析，系统会自动识别市场中的短期盈利机会，并按照既定策略执行开仓、止盈、止损及平仓流程。
-
-机构简介
-
-MetaDomain Capital 是一支专注于数字资产市场研究、策略执行与交易服务的专业资本团队。机构主要面向零售投资者，提供智能交易策略、机构自动交易信号及跟单交易服务。通过系统化交易模型与自动执行机制，MetaDomain Capital 帮助用户更高效地参与 BTC、ETH 及其他主要数字资产的交易。
 
 策略优势
 
