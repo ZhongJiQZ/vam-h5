@@ -186,7 +186,7 @@
               </div>
               <div  class="content" v-for="(item, index) in commissionRecordsList" :key="index">
                 <p class="ff-num">{{ item.fromId || '' }}</p>
-                <p class="ff-num">{{ getCommissionType(item.type) }}</p>
+                <p class="ff-num">{{ getCommissionType(item) }}</p>
                 <p class="ff-num">{{ item.sumAmount || 0 }}</p> 
                 <p class="ff-num">
                   {{
@@ -262,10 +262,23 @@ const getTeamList = async () => {
   }
 }
 
-const getCommissionType = (type)=>{
-  if (type == 1) return _t18('plug_recharge');
-  if (type == 2) return _t18('plug_mining');
-  if (type == 3) return _t18('plug_ustandard');
+const REBATE_TYPE_I18N_KEY = {
+  1: 'agent.rebate.type.recharge',
+  2: 'agent.rebate.type.invest',
+  3: 'agent.rebate.type.ustandard',
+  4: 'agent.rebate.type.pledge',
+  5: 'agent.rebate.type.copy_trade',
+}
+
+const getCommissionType = (item) => {
+  if (!item) return '-'
+  const key = item.typeTextKey || REBATE_TYPE_I18N_KEY[item.type]
+  if (key) {
+    const text = _t18(key)
+    if (text && text !== key) return text
+  }
+  if (item.typeText) return item.typeText
+  return _t18('agent.rebate.type.unknown')
 }
 
 const getCommissionRecordsList = async () => {
