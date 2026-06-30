@@ -242,6 +242,8 @@ $green: #17ac74;
 
 .inst-page {
   min-height: 100vh;
+  padding-bottom: calc(79px + env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
   background: #fff;
 }
 

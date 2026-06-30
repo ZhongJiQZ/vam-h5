@@ -40,9 +40,12 @@ declare module 'vue' {
     VanButton: typeof import('vant/es')['Button']
     VanCell: typeof import('vant/es')['Cell']
     VanCheckbox: typeof import('vant/es')['Checkbox']
-    VanCircle: typeof import('vant/es')['Circle']
+    VanCheckboxGroup: typeof import('vant/es')['CheckboxGroup']
     VanCountDown: typeof import('vant/es')['CountDown']
+    VanDatePicker: typeof import('vant/es')['DatePicker']
     VanDialog: typeof import('vant/es')['Dialog']
+    VanDropdownItem: typeof import('vant/es')['DropdownItem']
+    VanDropdownMenu: typeof import('vant/es')['DropdownMenu']
     VanEmpty: typeof import('vant/es')['Empty']
     VanField: typeof import('vant/es')['Field']
     VanIcon: typeof import('vant/es')['Icon']
@@ -61,5 +64,7 @@ declare module 'vue' {
     VanSwipeItem: typeof import('vant/es')['SwipeItem']
     VanTab: typeof import('vant/es')['Tab']
     VanTabs: typeof import('vant/es')['Tabs']
+    VanTimePicker: typeof import('vant/es')['TimePicker']
+    VanUploader: typeof import('vant/es')['Uploader']
   }
 }

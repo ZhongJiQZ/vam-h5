@@ -14,7 +14,8 @@ import { openCustomerService, syncSaleSmartlyLogin, injectSaleSmartlyPlatformScr
 import { useRouter } from 'vue-router'
 import { initWebSocket } from '@/plugin/socket'
 import { showDialog } from 'vant'
-import { buildTabbarRouteNameList } from '@/utils/tabbar'
+import { buildTabbarRouteNameList, shouldShowTabbar } from '@/utils/tabbar'
+import PubSub from 'pubsub-js'
 
 // import { useFreeze } from '@/hook/useFreeze'
 
@@ -86,13 +87,14 @@ const getShowDefiActivityNotice = async () => {
 const userStore = useUserStore()
 const mainStroe = useMainStore()
 const isLoading = ref(false)
-const currentRoute = computed(() => useRoute())
+const route = useRoute()
 const tabbarPathNameList = computed(() => [
   ...buildTabbarRouteNameList(mainStroe.getTabbarList),
   'OrderCenter',
   'AssetRecord',
   'FinancialDetails'
 ])
+const showTabbar = computed(() => shouldShowTabbar(route, mainStroe.getTabbarList))
 
 const { _toast } = useToast()
 /**
@@ -203,7 +205,7 @@ onUnmounted(() => {
       </transition>
     </router-view>
   </div>
-  <Tabbar v-if="tabbarPathNameList.includes(currentRoute.name)"></Tabbar>
+  <Tabbar v-if="showTabbar"></Tabbar>
   <!-- 幸运活动 -->
   <ActivityPopup v-model:value="showDefiActivityPopup" :data="activityInfo"></ActivityPopup>
   <!-- 客服弹窗 -->

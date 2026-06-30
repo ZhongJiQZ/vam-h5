@@ -2,7 +2,7 @@
 <script setup>
 import { useMainStore } from '@/store/index.js'
 import { _toView } from '../../utils/public'
-import { isTabbarRouteActive } from '@/utils/tabbar'
+import { isTabbarRouteActive, normalizeTabbarLinkPath } from '@/utils/tabbar'
 import { useRouter } from 'vue-router'
 import { computed } from 'vue'
 const router = useRouter()
@@ -28,7 +28,7 @@ watch(
   <div class="tab-bar-box" v-if="currentTab.linkUrl !== '/trade'">
     <div class="tab-bar">
       <template v-for="item in getTabbarList" :key="item.key">
-        <div class="item" @click="_toView(item.linkUrl)">
+        <div class="item" @click="_toView(normalizeTabbarLinkPath(item.linkUrl) || item.linkUrl)">
           <div class="itemTop">
             <image-load
               :filePath="item.checkedImgUrl"
