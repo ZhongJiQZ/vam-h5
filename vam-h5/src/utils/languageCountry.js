@@ -58,6 +58,10 @@ const LANGUAGE_COUNTRY_MAP = {
     phoneCode: '62',
     country: 'Indonesia'
   },
+  ph: {
+    phoneCode: '63',
+    country: 'Philippines'
+  },
   pk: {
     phoneCode: '92',
     country: 'Pakistan'

@@ -12,6 +12,7 @@ import iw from './iw.js'
 import ja from './ja.js'
 import ko from './ko.js'
 import nl from './nl.js'
+import ph from './ph.js'
 import pk from './pk.js'
 import pl from './pl.js'
 import pt from './pt.js'
@@ -37,6 +38,7 @@ const PACKS = {
   ja,
   ko,
   nl,
+  ph,
   pk,
   pl,
   pt,
