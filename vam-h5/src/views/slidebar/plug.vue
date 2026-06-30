@@ -97,7 +97,7 @@
             <p>{{ _t18('plug_threeNum', ['aams']) }}</p>
             <span class="ff-num">{{ teamInfo.threeCount || 0 }}</span>
           </div>
-          <!-- 各级跟单人数 -->
+          <!-- 各级活跃人数 -->
           <div>
             <p>{{ _t18('plug_oneCopyTradeNum', ['aams']) }}</p>
             <span class="ff-num">{{ teamInfo.oneCopyTradeCount || 0 }}</span>
