@@ -1,17 +1,32 @@
+import { writeFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { loadEnv } from 'vite'
+
+let buildVersion = ''
 
 const customHtmlPlugin = (mode) => {
   const envObj = loadEnv(mode, process.cwd())
 
   return {
     name: 'custom-html-plugin',
+    config() {
+      buildVersion = `2.0.${Date.now()}`
+    },
     transformIndexHtml(html) {
-      return generateHtml(html, envObj)
+      return generateHtml(html, envObj, buildVersion)
+    },
+    closeBundle() {
+      if (!buildVersion) return
+      writeFileSync(
+        resolve(process.cwd(), 'dist/version.json'),
+        JSON.stringify({ version: buildVersion }),
+        'utf-8'
+      )
     }
   }
 }
 
-const generateHtml = (html, envObj) => {
+const generateHtml = (html, envObj, version) => {
   // 获取 完整标题
   let title = envObj['VITE_APP_META_TITLE']
   title = envObj['VITE_APP_WEB_TITLE']
@@ -22,8 +37,6 @@ const generateHtml = (html, envObj) => {
   // 获取 当前平台
   // let platform = envObj['VITE_APP_ENV']
   let platform = "dev"
-  // 获取 当前版本
-  let version = `2.0.${+new Date()}`
 
   // 替换占位符为实际数据
   return html

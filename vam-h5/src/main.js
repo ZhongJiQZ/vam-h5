@@ -22,8 +22,10 @@ import { setToastDefaultOptions, showDialog } from 'vant'
 // 加载主题
 import { initTheme, switchPlanform } from './utils/index'
 import { DEFAULT_LANGUAGE } from '@/config'
+import { initVersionCheck, checkAppVersion } from '@/utils/versionCheck'
 
 initTheme()
+initVersionCheck()
 
 /**
  * 切换平台 pc、h5
@@ -164,17 +166,8 @@ document.addEventListener('gesturestart', function (event) {
 
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState == 'hidden') {
-    //页面隐藏
     localStorage.setItem(storageDict.CLOSE_WINDOW_TIME, +new Date())
   } else {
-    // 页面显示
-    let visibleTime = +new Date()
-    let hiddenTime = localStorage.getItem(storageDict.CLOSE_WINDOW_TIME) || visibleTime
-    //页面再次可见时间-隐藏时间>60s,重连 >5min,刷新页面
-    let diffTime = (visibleTime - hiddenTime) / 1000
-    // console.log('页面再次可见时间', diffTime)
-    if (diffTime > 30 * 60) {
-      //setTimeout(() => location.reload(), 10)
-    }
+    checkAppVersion()
   }
 })

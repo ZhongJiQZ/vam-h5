@@ -115,6 +115,25 @@ export default ({ mode }) =>
     build: {
       // 指定输出路径
       outDir: 'dist',
+      // index.html 引用的入口文件带 hash，避免 JS 被长期缓存
+      rollupOptions: {
+        preserveEntrySignatures: false,
+        output: {
+          minify: true,
+          compact: true,
+          minifyInternalExports: true,
+          entryFileNames: 'assets/[name]-[hash].js',
+          chunkFileNames: 'assets/[name]-[hash].js',
+          assetFileNames: 'assets/[name]-[hash][extname]',
+          manualChunks: (id) => {
+            if (id.includes('node_modules')) {
+              return 'vendor'
+            } else if (id.includes('/src/views/')) {
+              return 'views'
+            }
+          }
+        }
+      },
       // 小于此阈值的导入或引用资源将内联为 base64 编码，避免额外的 HTTP 请求。设置为 0 可以完全禁用此项
       assetsInlineLimit: 500,
       // 启用/禁用 CSS 代码拆分
@@ -146,32 +165,5 @@ export default ({ mode }) =>
       chunkSizeWarningLimit: 500,
       // gzip 压缩大小报告
       reportCompressedSize: false
-    },
-    rollupOptions: {
-      // Rollup 不会将入口模块中的任何导出内容添加到相应的 chunk 中
-      preserveEntrySignatures: false,
-      output: {
-        // 代码压缩
-        minify: true,
-        // 该选项用于压缩 Rollup 产生的额外代码
-        compact: true,
-        // Rollup 会尝试把内部变量导出为单个字母的变量
-        minifyInternalExports: true,
-        // 生成的代码块文件的名称
-        chunkFileNames: '[name]-[hash].js',
-        // 生成的资源文件的名称
-        assetFileNames: 'assets/[name]-[hash][extname]',
-
-        // 通过 manualChunks 指定哪些模块需要预加载
-        manualChunks: (id) => {
-          if (id.includes('node_modules')) {
-            // node_modules 中的依赖
-            return 'vendor'
-          } else if (id.includes('/src/views/')) {
-            return 'views'
-          }
-          // 返回 null 或 undefined 表示不进行预加载
-        }
-      }
     }
   })
