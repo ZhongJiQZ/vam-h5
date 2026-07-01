@@ -1245,6 +1245,7 @@
     "createTime": "创建时间",
     "updateTime": "更新时间",
     "status": "状态",
+    "reward": "奖励",
     "PNL": "盈亏",
     "today": "当天",
     "total": "全部"

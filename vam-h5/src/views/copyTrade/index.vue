@@ -38,12 +38,12 @@
                 <p class="inst-card__name">{{ item.institutionName || item.title || '--' }}</p>
                 <p class="inst-card__subs ff-num">
                   {{ subscriberText(item) }}
-                  <span
+                  <!-- <span
                     v-if="isInstitutionSubscribed(item) && item.totalProfitRate != null"
                     class="inst-card__rate"
                   >
                     · {{ formatProfitRate(item.totalProfitRate) }}%
-                  </span>
+                  </span> -->
                 </p>
               </div>
               <button
