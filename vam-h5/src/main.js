@@ -23,6 +23,7 @@ import { setToastDefaultOptions, showDialog } from 'vant'
 import { initTheme, switchPlanform } from './utils/index'
 import { DEFAULT_LANGUAGE } from '@/config'
 import { initVersionCheck, checkAppVersion } from '@/utils/versionCheck'
+import { resolveInitialLocale } from '@/utils/resolveInitialLocale'
 
 initTheme()
 initVersionCheck()
@@ -72,37 +73,12 @@ Promise.all([
 ]).then(async () => {
   preloadHomeCriticalImages(mainStore.settingConfig)
   const languageList = mainStore.languageList || []
-  const norm = (s) => String(s || '').toLowerCase().replace(/_/g, '-')
-
-  const matchDeviceToList = () => {
-    if (typeof navigator === 'undefined') return null
-    const raw = (navigator.languages && navigator.languages[0]) || navigator.language || ''
-    if (!raw) return null
-    const candidates = [raw, raw.split(/[-_]/)[0]]
-    for (const c of candidates) {
-      const n = norm(c)
-      let hit = languageList.find((i) => norm(i.dictValue) === n)
-      if (hit) return hit.dictValue
-      const prim = n.split('-')[0]
-      hit = languageList.find((i) => norm(i.dictValue).split('-')[0] === prim)
-      if (hit) return hit.dictValue
-    }
-    return null
-  }
-
   const saved = localStorage.getItem(storageDict.LANGUAGE)
-  let initialLocale = DEFAULT_LANGUAGE
-
-  if (saved && languageList.some((i) => i.dictValue === saved)) {
-    initialLocale = saved
-  } else if (languageList.length) {
-    initialLocale =
-      matchDeviceToList() ||
-      languageList.find((i) => norm(i.dictValue) === 'en')?.dictValue ||
-      DEFAULT_LANGUAGE
-  } else {
-    initialLocale = saved || DEFAULT_LANGUAGE
-  }
+  const initialLocale = await resolveInitialLocale({
+    languageList,
+    saved,
+    defaultLanguage: DEFAULT_LANGUAGE
+  })
 
   const i18n = await setupI18n(initialLocale)
   app.use(i18n)
