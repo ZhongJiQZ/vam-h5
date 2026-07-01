@@ -26,10 +26,10 @@
             <span>{{ t18('copy_trade_strategy_list_end') }}</span>
             <span>{{ formatCopyTradeStrategyEndTime(item) }}</span>
           </div>
-          <div class="kv">
+          <!-- <div class="kv">
             <span>{{ t18('copy_trade_profit_rate_range') }}</span>
             <span class="ff-num">{{ formatStrategyProfitRateRange(item) }}</span>
-          </div>
+          </div> -->
           <div class="kv">
             <span>{{ t18('copy_trade_amount_range') }}</span>
             <span class="ff-num">{{ item.minAmount }} - {{ item.maxAmount }} USDT</span>
