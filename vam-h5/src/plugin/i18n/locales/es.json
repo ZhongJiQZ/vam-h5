@@ -1254,6 +1254,7 @@
     "createTime": "Fecha de creación",
     "updateTime": "Fecha de actualización",
     "status": "Estado",
+    "reward": "Recompensa",
     "PNL": "PyG",
     "today": "Hoy",
     "total": "Total"

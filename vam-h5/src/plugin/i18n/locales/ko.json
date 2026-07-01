@@ -1254,6 +1254,7 @@
     "createTime": "생성 시간",
     "updateTime": "수정 시간",
     "status": "상태",
+    "reward": "보상",
     "PNL": "손익",
     "today": "오늘",
     "total": "총계"

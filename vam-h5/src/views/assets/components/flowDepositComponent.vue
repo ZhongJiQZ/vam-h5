@@ -34,7 +34,7 @@
               <div class="card">
                 <div class="row">
                   <div class="k">{{ _t18('assets.chainType') }}</div>
-                  <div class="v">{{ item.type || '-' }}</div>
+                  <div class="v">{{ item.orderType == '2' ? _t18('assets.reward') : item.type || '-' }}</div>
                 </div> 
 
                 <div class="row">
