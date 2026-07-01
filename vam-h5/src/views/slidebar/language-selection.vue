@@ -51,7 +51,7 @@ const checked = computed(() => {
   return temp
 })
 
-const languageList = mainStore.languageList
+const languageList = computed(() => mainStore.languageList)
 </script>
 
 <style lang="scss" scoped>

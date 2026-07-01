@@ -235,6 +235,9 @@ const tierStats = computed(() => [
   { label: _t18('plug_oneNum', ['aams']), value: teamInfo.value.oneCount || 0 },
   { label: _t18('plug_twoNum', ['aams']), value: teamInfo.value.twoCount || 0 },
   { label: _t18('plug_threeNum', ['aams']), value: teamInfo.value.threeCount || 0 },
+  { label: _t18('plug_oneCopyTradeNum', ['aams']), value: teamInfo.value.oneCopyTradeCount || 0 },
+  { label: _t18('plug_twoCopyTradeNum', ['aams']), value: teamInfo.value.twoCopyTradeCount || 0 },
+  { label: _t18('plug_threeCopyTradeNum', ['aams']), value: teamInfo.value.threeCopyTradeCount || 0 },
   { label: _t18('plug_today_sum', ['aams']), value: teamInfo.value.todaySumCount || 0 },
   {
     label: `${_t18('plug_today_amount', ['aams'])}(USDT)`,

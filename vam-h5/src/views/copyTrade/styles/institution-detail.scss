@@ -1,4 +1,5 @@
 // GXPEX Institution Details — ported from raw/css/institution-detail.css (rem × 50 → px)
+@use './theme.scss' as ct;
 
 .page--institution-detail {
   position: relative;
@@ -49,10 +50,34 @@
   color: #fff;
 }
 
-.inst-header__spacer {
+.inst-header__info-btn {
   grid-column: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 22px;
   height: 22px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.inst-header__info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(-43deg, ct.$ct-purple-dark, ct.$ct-purple-bright);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  font-style: italic;
+  font-family: Georgia, serif;
+  line-height: 1;
 }
 
 .inst-main {

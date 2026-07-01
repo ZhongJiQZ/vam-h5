@@ -43,9 +43,10 @@ function resolveDocContent(translate, key) {
 }
 
 export function getCopyTradeIntroDoc(translate) {
+  const raw = resolveDocContent(translate, 'copy_trade_intro_doc_content')
   return {
-    title: resolveDocTitle(translate, ['copy_trade_intro_doc_title', 'pc_copy_trade_intro_doc_title'], 'Copy Trading Guide'),
-    content: plainTextToHtml(resolveDocContent(translate, 'copy_trade_intro_doc_content'))
+    title: resolveDocTitle(translate, ['copy_trade_intro_doc_title', 'pc_copy_trade_intro_doc_title'], 'Copy Trading Rules'),
+    content: plainTextToHtml(raw)
   }
 }
 

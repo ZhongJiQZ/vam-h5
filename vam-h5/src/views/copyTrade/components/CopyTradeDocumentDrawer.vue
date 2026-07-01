@@ -78,7 +78,7 @@ function close() {
   margin: 0;
   font-size: 16px;
   font-weight: 700;
-  color: ct.$ct-text-primary;
+  color: #fff;
   line-height: 1.4;
 }
 
@@ -101,12 +101,13 @@ function close() {
 
 .doc-drawer__content {
   font-size: 14px;
-  color: ct.$ct-text-secondary;
+  color: #fff;
   line-height: 1.7;
   word-break: break-word;
 
   :deep(p) {
     margin: 0 0 12px;
+    color: #fff;
   }
 
   :deep(h1),
@@ -115,7 +116,7 @@ function close() {
   :deep(h4) {
     margin: 16px 0 8px;
     font-size: 15px;
-    color: ct.$ct-text-primary;
+    color: #fff;
   }
 }
 

@@ -6,7 +6,9 @@
         <img :src="iconBack" alt="" class="inst-header__back-icon" />
       </button>
       <h1 class="inst-header__title">{{ t18('copy_trade_inst_intro_title') }}</h1>
-      <span class="inst-header__spacer" aria-hidden="true"></span>
+      <button type="button" class="inst-header__info-btn" aria-label="info" @click="showInfo = true">
+        <span class="inst-header__info-icon">i</span>
+      </button>
     </header>
 
     <van-loading v-if="pageLoading" class="page-loading" />
@@ -245,6 +247,8 @@
     >
       <p class="desc-dialog-text">{{ detail.description }}</p>
     </van-dialog>
+
+    <CopyTradeDocumentDrawer v-model:show="showInfo" :doc="introDoc" />
   </div>
 </template>
 
@@ -253,6 +257,8 @@ import { ref, computed, onMounted, watch, nextTick, defineAsyncComponent } from 
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import iconBack from '@/assets/images/gxpex/trade/icon-back.svg'
+import CopyTradeDocumentDrawer from './components/CopyTradeDocumentDrawer.vue'
+import { getCopyTradeIntroDoc } from './documents'
 const CopyTradePerfCharts = defineAsyncComponent(() => import('./components/CopyTradePerfCharts.vue'))
 import { _t18, _numberWithCommas, _back } from '@/utils/public'
 import {
@@ -307,7 +313,10 @@ const chartsReady = ref(false)
 const descRef = ref(null)
 const descOverflow = ref(false)
 const showDescDialog = ref(false)
+const showInfo = ref(false)
 const ranges = ['7d', '15d', '30d', 'all']
+
+const introDoc = computed(() => getCopyTradeIntroDoc(t18))
 
 function onBack() {
   _back()
