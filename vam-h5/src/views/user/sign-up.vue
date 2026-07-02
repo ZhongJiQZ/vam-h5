@@ -8,24 +8,71 @@
         <img :src="langIcon" alt="" />
       </button>
 
-      <!-- Logo (G + GXPEX 一体图) -->
       <div class="logo-block">
         <img :src="logoG" class="logo-g" alt="GXPEX" />
       </div>
 
       <h1 class="welcome">{{ _t18('register_title') }}</h1>
 
-      <!-- 表单（含玻璃面板） -->
       <div class="form form--panel">
-        <div class="field">
-          <img :src="iconAccount" class="field__icon" alt="" />
+        <div v-if="showTabs" class="register-tabs">
+          <button
+            type="button"
+            class="register-tabs__item"
+            :class="{ 'register-tabs__item--active': registerType === 'account' }"
+            @click="registerType = 'account'"
+          >
+            {{ _t18('register_account') }}
+          </button>
+          <button
+            type="button"
+            class="register-tabs__item"
+            :class="{ 'register-tabs__item--active': registerType === 'email' }"
+            @click="registerType = 'email'"
+          >
+            {{ _t18('register_email') }}
+          </button>
+        </div>
+
+        <template v-if="registerType === 'account'">
+          <div class="field">
+            <img :src="iconAccount" class="field__icon" alt="" />
+            <input
+              v-model="form.username"
+              type="text"
+              class="field__input"
+              :placeholder="_t18('register_account')"
+              autocomplete="username"
+              @input="onUsernameInput"
+            />
+          </div>
+        </template>
+
+        <template v-else>
+          <div class="field">
+            <img :src="iconAccount" class="field__icon" alt="" />
+            <input
+              v-model="form.email"
+              type="email"
+              class="field__input"
+              :placeholder="_t18('login_emailCode')"
+              autocomplete="email"
+            />
+          </div>
+        </template>
+
+        <div class="field field--phone">
+          <button type="button" class="area-code" @click="showAreaCode = true">
+            +{{ form.areaCode }}
+          </button>
           <input
-            v-model="form.username"
-            type="text"
-            class="field__input"
-            :placeholder="_t18('register_account')"
-            autocomplete="username"
-            @input="onUsernameInput"
+            v-model="form.mobile"
+            type="tel"
+            inputmode="numeric"
+            class="field__input field__input--phone"
+            :placeholder="mobilePlaceholder"
+            :maxlength="mobileMaxLength"
+            @input="onMobileInput"
           />
         </div>
 
@@ -76,8 +123,7 @@
           />
         </div>
 
-        <!-- 图形验证码（如后端要求） -->
-        <div v-if="mainStore.getISCode" class="field field--captcha">
+        <div v-if="registerType === 'account' && mainStore.getISCode" class="field field--captcha">
           <input
             v-model="form.code"
             type="text"
@@ -85,6 +131,29 @@
             :placeholder="_t18('login_code')"
           />
           <img :src="codeUrl" class="captcha-img" @click="refreshCode" alt="" />
+        </div>
+
+        <div v-else-if="registerType === 'email'" class="field field--captcha">
+          <input
+            v-model="form.code"
+            type="text"
+            class="field__input field__input--captcha"
+            :placeholder="_t18('login_code')"
+          />
+          <button
+            type="button"
+            class="send-code-btn"
+            :disabled="emailCodeSending"
+            @click="sendEmailCode"
+          >
+            <van-count-down
+              v-if="emailCodeSending"
+              :time="emailCodeCountdown"
+              format="ss"
+              @finish="onEmailCodeFinish"
+            />
+            <span v-else>{{ _t18('login_send') }}</span>
+          </button>
         </div>
 
         <button class="btn btn--primary" :disabled="loading" @click="doRegister">
@@ -96,7 +165,6 @@
         </button>
       </div>
 
-      <!-- 服务条款同意 -->
       <div class="agree">
         <div class="agree__line">
           <span
@@ -115,16 +183,25 @@
         </div>
       </div>
     </div>
+
+    <AreaCode :show="showAreaCode" @handelClick="showAreaCode = false" @handelSelect="onSelectAreaCode" />
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useMainStore } from '@/store/index.js'
 import { useToast } from '@/hook/useToast'
 import { _t18 } from '@/utils/public'
-import { signUp } from '@/api/user'
+import { signUp, emailCode } from '@/api/user'
+import AreaCode from './components/areaCode.vue'
+import {
+  digitsOnlyMobile,
+  isIndonesiaAreaCode,
+  validateMobileByAreaCode
+} from '@/utils/phoneValidate'
+import { getCurrentLanguagePhoneCode } from '@/utils/languageCountry'
 import bgImg from '@/assets/images/gxpex/login/bg.png'
 import logoG from '@/assets/images/gxpex/login/gxpenlogo.png'
 import iconAccount from '@/assets/images/gxpex/login/icon-account.svg'
@@ -143,54 +220,155 @@ const { _toast } = useToast()
 const filterAlphanumeric = (val) =>
   String(val ?? '').replace(/[^a-zA-Z0-9一-龥]/g, '')
 
+const loginMethods = computed(() => mainStore.getLoginMethodList || {})
+const showAccountTab = computed(() => loginMethods.value.ordinaryIsOpen !== false)
+const showEmailTab = computed(() => loginMethods.value.emailIsOpen !== false)
+const showTabs = computed(() => showAccountTab.value && showEmailTab.value)
+
+const registerType = ref('account')
+
 const form = ref({
   username: '',
+  email: '',
+  mobile: '',
+  areaCode: getCurrentLanguagePhoneCode(),
   password: '',
   password2: '',
   invitCode: filterAlphanumeric(route.query.invite_code),
   code: ''
 })
+
 const showPwd = ref(false)
 const showPwd2 = ref(false)
 const agreed = ref(false)
 const loading = ref(false)
+const showAreaCode = ref(false)
+const emailCodeSending = ref(false)
+const emailCodeCountdown = ref(60 * 1000)
 
-const onUsernameInput = (e) => { form.value.username = filterAlphanumeric(e.target.value) }
-const onPasswordInput = (e) => { form.value.password = filterAlphanumeric(e.target.value) }
-const onPassword2Input = (e) => { form.value.password2 = filterAlphanumeric(e.target.value) }
-const onInvitInput = (e) => { form.value.invitCode = filterAlphanumeric(e.target.value) }
+const mobileMaxLength = computed(() =>
+  isIndonesiaAreaCode(form.value.areaCode) ? 13 : 20
+)
 
-// 图形验证码
+const mobilePlaceholder = computed(() =>
+  isIndonesiaAreaCode(form.value.areaCode)
+    ? `${_t18('login_mobileCode')} (10-13)`
+    : _t18('login_mobileCode')
+)
+
+onMounted(() => {
+  if (!showAccountTab.value && showEmailTab.value) {
+    registerType.value = 'email'
+  }
+})
+
+const onUsernameInput = (e) => {
+  form.value.username = filterAlphanumeric(e.target.value)
+}
+const onPasswordInput = (e) => {
+  form.value.password = filterAlphanumeric(e.target.value)
+}
+const onPassword2Input = (e) => {
+  form.value.password2 = filterAlphanumeric(e.target.value)
+}
+const onInvitInput = (e) => {
+  form.value.invitCode = filterAlphanumeric(e.target.value)
+}
+const onMobileInput = () => {
+  form.value.mobile = digitsOnlyMobile(form.value.mobile)
+}
+const onSelectAreaCode = (code) => {
+  form.value.areaCode = code
+  onMobileInput()
+}
+
 const timestamp = ref(+new Date())
 const codeUrl = computed(
   () => `${mainStore.verificationCodeUrl}?codeType=REGISTER&timestamp=${timestamp.value}`
 )
-const refreshCode = () => { timestamp.value = +new Date() }
+const refreshCode = () => {
+  timestamp.value = +new Date()
+}
+
+const sendEmailCode = async () => {
+  const email = String(form.value.email ?? '').trim()
+  if (!email) {
+    _toast('login_please_emailCode')
+    return
+  }
+  try {
+    const res = await emailCode('REGISTER', email)
+    if (res.code == '200' || res.code == 200) {
+      emailCodeSending.value = true
+      emailCodeCountdown.value = 60 * 1000
+    } else {
+      _toast(res.msg || 'error')
+    }
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+const onEmailCodeFinish = () => {
+  emailCodeSending.value = false
+}
+
+const buildRegisterParams = () => {
+  const mobileCheck = validateMobileByAreaCode(form.value.areaCode, form.value.mobile)
+  if (!mobileCheck.ok) {
+    _toast(mobileCheck.key)
+    return null
+  }
+
+  const params = {
+    loginPassword: form.value.password,
+    activeCode: form.value.invitCode,
+    phone: String(form.value.areaCode ?? '') + mobileCheck.digits
+  }
+
+  if (registerType.value === 'account') {
+    params.signType = 3
+    params.loginName = form.value.username
+    params.code = form.value.code
+  } else {
+    params.signType = 1
+    params.email = String(form.value.email ?? '').trim()
+    params.code = form.value.code
+  }
+
+  return params
+}
 
 const doRegister = async () => {
   if (loading.value) return
   if (!agreed.value) return _toast('register_agreeAgreement')
-  if (!form.value.username) return _toast('please_user')
+
+  if (registerType.value === 'account') {
+    if (!form.value.username) return _toast('please_user')
+    if (mainStore.getISCode && !form.value.code) return _toast('please_code')
+  } else {
+    if (!String(form.value.email ?? '').trim()) return _toast('please_email')
+    if (!form.value.code) return _toast('please_code')
+  }
+
   if (!form.value.password) return _toast('please_pwd')
   if (form.value.password !== form.value.password2) return _toast('register_pwd_diff')
   if (!form.value.invitCode) return _toast('please_shareCode')
-  if (mainStore.getISCode && !form.value.code) return _toast('please_code')
+
+  const params = buildRegisterParams()
+  if (!params) return
 
   loading.value = true
   try {
-    const res = await signUp({
-      signType: 3,
-      loginName: form.value.username,
-      loginPassword: form.value.password,
-      activeCode: form.value.invitCode,
-      code: form.value.code
-    })
+    const res = await signUp(params)
     if (res.code == '200' || res.code == 200) {
       _toast('register_success')
       setTimeout(() => router.push('/sign-in'), 500)
     } else {
       _toast(res.msg || 'error')
-      refreshCode()
+      if (registerType.value === 'account') {
+        refreshCode()
+      }
     }
   } catch (e) {
     console.log(e)
@@ -261,7 +439,6 @@ $font-pingfang: 'PingFang SC', -apple-system, 'Raleway', sans-serif;
   }
 }
 
-/* Logo */
 .logo-block {
   display: flex;
   flex-direction: column;
@@ -288,7 +465,6 @@ $font-pingfang: 'PingFang SC', -apple-system, 'Raleway', sans-serif;
   text-align: center;
 }
 
-/* 表单 */
 .form {
   width: 100%;
   max-width: 360px;
@@ -308,6 +484,34 @@ $font-pingfang: 'PingFang SC', -apple-system, 'Raleway', sans-serif;
   box-shadow: 0 6px 30px rgba(160, 65, 237, 0.15);
 }
 
+.register-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(20, 12, 38, 0.55);
+  border: 1px solid rgba(160, 65, 237, 0.2);
+
+  &__item {
+    flex: 1;
+    height: 36px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    font-family: $font-pingfang;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.65);
+    cursor: pointer;
+
+    &--active {
+      color: #fff;
+      background: linear-gradient(135deg, $purple-1 0%, $purple-2 100%);
+      box-shadow: 0 4px 14px rgba(160, 65, 237, 0.35);
+    }
+  }
+}
+
 .field {
   position: relative;
   display: flex;
@@ -320,7 +524,10 @@ $font-pingfang: 'PingFang SC', -apple-system, 'Raleway', sans-serif;
   border-radius: 999px;
   backdrop-filter: blur(6px);
 
-  &--captcha { padding-right: 6px; }
+  &--captcha,
+  &--phone {
+    padding-right: 6px;
+  }
 
   &__icon {
     width: 18px;
@@ -351,8 +558,23 @@ $font-pingfang: 'PingFang SC', -apple-system, 'Raleway', sans-serif;
     caret-color: $purple-1;
 
     &::placeholder { color: rgba(202, 202, 202, 0.7); }
-    &--captcha { flex: 1; }
+    &--captcha { flex: 1; margin-left: 12px; }
+    &--phone { margin-left: 8px; }
   }
+}
+
+.area-code {
+  flex-shrink: 0;
+  height: 34px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(160, 65, 237, 0.18);
+  font-family: $font-pingfang;
+  font-size: 13px;
+  color: #fff;
+  cursor: pointer;
+  white-space: nowrap;
 }
 
 .captcha-img {
@@ -362,7 +584,31 @@ $font-pingfang: 'PingFang SC', -apple-system, 'Raleway', sans-serif;
   flex-shrink: 0;
 }
 
-/* 按钮 */
+.send-code-btn {
+  flex-shrink: 0;
+  min-width: 64px;
+  height: 34px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, $purple-1 0%, $purple-2 100%);
+  font-family: $font-pingfang;
+  font-size: 12px;
+  color: #fff;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.75;
+    cursor: not-allowed;
+  }
+
+  :deep(.van-count-down) {
+    color: #fff;
+    font-size: 12px;
+    line-height: 34px;
+  }
+}
+
 .btn {
   display: block;
   width: 100%;
@@ -396,7 +642,6 @@ $font-pingfang: 'PingFang SC', -apple-system, 'Raleway', sans-serif;
   }
 }
 
-/* 服务条款 */
 .agree {
   margin-top: auto;
   padding-top: 18px;
