@@ -151,9 +151,18 @@ const receiptFiatDisplay = computed(() => {
   return `${coin} ${_numberWithCommas(n)}`
 })
 
+const isRechargeOrderRoute = computed(() => router.currentRoute.value.name === 'RechargOrder')
+
 const defaultAmountDisplay = computed(() => {
   const d = dataValue.value
   const isBank = String(d?.type || '').toUpperCase() === 'BANK'
+  if (isBank && isRechargeOrderRoute.value) {
+    const raw = d?.realAmount ?? d?.amount
+    const n = Number(raw)
+    const text = Number.isFinite(n) ? priceFormat(n) : String(raw ?? '')
+    const coin = String(d?.coin || 'USDT').toUpperCase()
+    return `${text} ${coin}`
+  }
   if (!isAssetRecordRoute.value || !isBank) {
     return priceFormat(d?.amount)
   }
