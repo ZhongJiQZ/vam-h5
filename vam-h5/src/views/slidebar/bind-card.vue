@@ -208,7 +208,7 @@ import iconEmpty from '@/assets/images/gxpex/trade/icon-bjwu.png'
 const goService = () => dispatchCustomEvent('event_serviceChange')
 import { dict } from '@/api/common/index.js'
 import { useToast } from '@/hook/useToast'
-import { INDONESIA_BANK_OPTIONS } from '@/constants/indonesiaBanks'
+import { PHILIPPINE_BANK_OPTIONS } from '@/constants/philippineBanks'
 
 const { _toast } = useToast()
 
@@ -250,11 +250,12 @@ const showBankPicker = ref(false)
 const bankKeyword = ref('')
 const filteredBankOptions = computed(() => {
   const kw = bankKeyword.value.toUpperCase()
-  if (!kw) return INDONESIA_BANK_OPTIONS
-  return INDONESIA_BANK_OPTIONS.filter((n) => n.includes(kw))
+  if (!kw) return PHILIPPINE_BANK_OPTIONS
+  return PHILIPPINE_BANK_OPTIONS.filter((n) => n.toUpperCase().includes(kw))
 })
 const selectBankName = (name) => {
   formData.bankName = name
+  formData.bankCode = name
   showBankPicker.value = false
 }
 const add = () => {
@@ -321,10 +322,7 @@ const submit = () => {
     return
   }
 
-  if (formData.bankName == 'BANK BCA' && formData.cardNumber.length !== 10) {
-    _toast('Bank_please_cardNumber')
-    return
-  }
+  formData.bankCode = formData.bankName
 
   bindCardSubmit(params).then((res) => {
     if (res.code == '200') {

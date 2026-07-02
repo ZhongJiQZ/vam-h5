@@ -146,7 +146,7 @@ import { useToast } from '@/hook/useToast'
 import { useUserStore } from '@/store/user/index'
 import { dict } from '@/api/common/index.js'
 import { storeToRefs } from 'pinia'
-import { INDONESIA_BANK_OPTIONS } from '@/constants/indonesiaBanks'
+import { PHILIPPINE_BANK_OPTIONS } from '@/constants/philippineBanks'
 import iconBack from '@/assets/images/gxpex/trade/icon-back.svg'
 import '@/views/assets/styles/picker-sheet.scss'
 
@@ -163,12 +163,13 @@ const bankKeyword = ref('')
 
 const filteredBankOptions = computed(() => {
   const kw = bankKeyword.value.toUpperCase()
-  if (!kw) return INDONESIA_BANK_OPTIONS
-  return INDONESIA_BANK_OPTIONS.filter((n) => n.includes(kw))
+  if (!kw) return PHILIPPINE_BANK_OPTIONS
+  return PHILIPPINE_BANK_OPTIONS.filter((n) => n.toUpperCase().includes(kw))
 })
 
 const selectBankName = (name) => {
   formData.bankName = name
+  formData.bankCode = name
   showBankPicker.value = false
 }
 
@@ -221,6 +222,7 @@ onMounted(() => {
 })
 
 const submit = () => {
+  formData.bankCode = formData.bankName
   updateBindCard(formData).then((res) => {
     if (res.code == '200') {
       _toast('Bank_update_success')
