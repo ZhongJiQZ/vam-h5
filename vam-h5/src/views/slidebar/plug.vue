@@ -119,7 +119,7 @@
             <article v-for="(item, index) in teamList" :key="index" class="referrals-member">
               <div class="referrals-member__id">
                 <img class="referrals-member__avatar" :src="getAvatar(index)" alt="" aria-hidden="true" />
-                <span class="referrals-member__uid">{{ maskUid(item.fromId) }}</span>
+                <span class="referrals-member__uid">{{ item.fromId || '' }}</span>
               </div>
               <div class="referrals-member__col">
                 <span class="referrals-member__label">{{ _t18('plug_back') }}</span>
@@ -265,12 +265,6 @@ const tabList = computed(() => [
 const formatMoney = (val) => Number(val || 0).toFixed(2)
 
 const getAvatar = (index) => memberAvatars[index % memberAvatars.length]
-
-const maskUid = (id) => {
-  if (id === undefined || id === null || id === '') return ''
-  const s = String(id)
-  return `**${s.slice(-4)}`
-}
 
 const copyText = (text) => _copy(text)
 
@@ -552,7 +546,7 @@ onMounted(() => {
 .referrals-card--stats {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
   padding: 0;
   background: transparent;
 }
@@ -628,7 +622,7 @@ onMounted(() => {
 .referrals-tier__grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  gap: 12px;
 }
 
 .referrals-tier__cell {
@@ -636,9 +630,9 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  min-height: 73px;
-  padding: 10px 4px;
+  gap: 8px;
+  min-height: 78px;
+  padding: 12px 8px;
   border-radius: 12px;
   border: 1px solid rgba(160, 65, 237, 0.5);
   background: rgba(34, 28, 49, 0.85);
@@ -759,7 +753,7 @@ onMounted(() => {
 .referrals-members {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
   min-height: 120px;
 }
 
@@ -793,9 +787,9 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  min-height: 61px;
-  padding: 12px;
+  gap: 14px;
+  min-height: 68px;
+  padding: 14px 12px;
   border-radius: 12px;
   background: rgb(34, 28, 49);
 }
@@ -808,10 +802,10 @@ onMounted(() => {
 .referrals-member__id {
   display: flex;
   align-items: center;
-  gap: 8px;
-  width: 81px;
-  flex-shrink: 0;
+  gap: 10px;
+  flex: 1;
   min-width: 0;
+  max-width: 46%;
 }
 
 .referrals-member__avatar {
@@ -824,26 +818,27 @@ onMounted(() => {
 
 .referrals-member__uid {
   font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Roboto', 'PingFang SC', sans-serif;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
-  line-height: 1.2;
+  line-height: 1.3;
   color: #fff;
   min-width: 0;
+  word-break: break-all;
 }
 
 .referrals-member__col {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  width: 66px;
+  gap: 4px;
+  width: 72px;
   flex-shrink: 0;
   min-width: 0;
   text-align: center;
 }
 
 .referrals-member__col--date {
-  width: 77px;
+  width: 84px;
 }
 
 .referrals-member__col--record {
