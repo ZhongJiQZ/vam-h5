@@ -413,11 +413,11 @@ function submit() {
       <section class="card amount-card">
         <p class="amount-card__label">{{ t18('copy_trade_amount') }}</p>
         <div class="amount-card__input-row" :class="{ 'amount-card__input-row--error': amountFieldError }">
+          <!-- :placeholder="amountPlaceholder" -->
           <input
             v-model="amount"
             type="number"
             class="amount-card__input ff-num"
-            :placeholder="amountPlaceholder"
             :min="amountLimits.minAmount ?? undefined"
             :max="amountLimits.maxAmount ?? undefined"
             step="any"
@@ -483,7 +483,7 @@ function submit() {
     </div>
 
     <div v-if="!pageLoading" class="bottom-bar">
-      <button type="button" class="submit-btn" :disabled="!canSubmit" @click="submit">
+      <button type="bu tton" class="submit-btn" :disabled="!canSubmit" @click="submit">
         {{ submitLoading ? t18('loading') : t18('copy_trade_confirm_join') }}
       </button>
     </div>
