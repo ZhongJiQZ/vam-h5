@@ -59,7 +59,7 @@
         @error="onBannerImageReady"
       />
       <div class="hero__overlay">
-        <h1 class="hero__title">{{ _t18('home_hero_title') }}</h1>
+        <!-- <h1 class="hero__title">{{ _t18('home_hero_title') }}</h1> -->
         <!-- <button class="hero__cta" @click="onHeroCta"> -->
           <!-- <span>{{ _t18('home_view_now') }}</span> -->
         <!-- </button> -->
