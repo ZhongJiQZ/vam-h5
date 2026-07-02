@@ -93,12 +93,6 @@ const pageSize = ref(10)
 const total = ref(0)
 const tabContentList = ref([])
 
-const fiatPrefix = (coin) => {
-  const c = String(coin || '').toUpperCase()
-  if (c === 'IDR') return 'Rp'
-  return c || 'Rp'
-}
-
 const formatCreateTime = (item) => {
   const raw = item?.params?.createTime ?? item?.createTime
   if (raw === null || raw === undefined || raw === '') return '-'
