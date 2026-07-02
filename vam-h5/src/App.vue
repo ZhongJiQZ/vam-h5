@@ -10,7 +10,11 @@ import ServicePopup from '@/components/CustomerService/ServicePopup.vue'
 // import FreezePopup from '@/components/Freeze/FreezePopup.vue'
 import { useToast } from './hook/useToast'
 import { _t18, _toView } from '@/utils/public'
-import { openCustomerService, syncSaleSmartlyLogin, injectSaleSmartlyPlatformScript } from '@/utils/salesmartly'
+import {
+  openCustomerService,
+  syncSaleSmartlyLogin,
+  preloadSaleSmartlyPlugin
+} from '@/utils/salesmartly'
 import { useRouter } from 'vue-router'
 import { initWebSocket } from '@/plugin/socket'
 import { showDialog } from 'vant'
@@ -178,7 +182,7 @@ const event_serviceChange = () => {
   }
 }
 onMounted(() => {
-  injectSaleSmartlyPlatformScript(__config._APP_ENV)
+  preloadSaleSmartlyPlugin(__config._APP_ENV)
   userStore.token && userStore.getUserInfo()
 
   document.addEventListener('event_toastChange', event_toastChange)

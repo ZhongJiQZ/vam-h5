@@ -12,7 +12,11 @@ export const SALE_SMARTLY_CUSTOM_FIELD_USER_ID = 'userId'
 
 const SCRIPT_ID = 'ss-salesmartly-project'
 
+/** onReady 已错过时的兜底等待（避免重复注册 onReady 卡满 12s） */
+const ON_READY_FALLBACK_MS = 300
+
 let scriptInjectPromise = null
+let pluginReady = false
 
 /** 隐藏插件默认悬浮图标（须在插件脚本加载前调用） */
 export function initSaleSmartlyHideIcon() {
@@ -70,60 +74,81 @@ function waitForSsq(maxWaitMs = 12000, intervalMs = 200) {
   })
 }
 
-/** 等待 SaleSmartly 插件 onReady */
+function markPluginReady() {
+  pluginReady = true
+}
+
+/** 等待 SaleSmartly 插件 onReady（结果会缓存，避免重复等待） */
 export function waitSaleSmartlyReady(timeoutMs = 12000) {
+  if (pluginReady) return Promise.resolve()
+
   return waitForSsq(timeoutMs).then(
     () =>
-      new Promise((resolve, reject) => {
+      new Promise((resolve) => {
+        if (pluginReady) {
+          resolve()
+          return
+        }
         let done = false
-        const timer = setTimeout(() => {
+        const finish = () => {
           if (done) return
           done = true
+          markPluginReady()
           resolve()
-        }, timeoutMs)
+        }
+        const timer = setTimeout(finish, ON_READY_FALLBACK_MS)
         try {
           window.ssq.push('onReady', () => {
-            if (done) return
-            done = true
             clearTimeout(timer)
-            resolve()
+            finish()
           })
         } catch (e) {
           clearTimeout(timer)
-          resolve()
+          finish()
         }
       })
   )
 }
 
-/** 加载项目插件脚本 */
+/** 加载项目插件脚本（结果会缓存，应用启动时可预加载） */
 export function ensureSaleSmartlyPlugin() {
   if (typeof window === 'undefined') {
     return Promise.reject(new Error('no window'))
   }
 
+  if (pluginReady) return Promise.resolve()
+
   initSaleSmartlyHideIcon()
   bootstrapSsqQueue()
 
-  if (document.getElementById(SCRIPT_ID)) {
-    return waitSaleSmartlyReady()
-  }
-
   if (!scriptInjectPromise) {
-    scriptInjectPromise = new Promise((resolve, reject) => {
-      const js = document.createElement('script')
-      js.id = SCRIPT_ID
-      js.async = true
-      js.src = SALE_SMARTLY_PLUGIN_SRC
-      js.onload = () => waitSaleSmartlyReady().then(resolve).catch(resolve)
-      js.onerror = () => {
+    if (document.getElementById(SCRIPT_ID)) {
+      scriptInjectPromise = waitSaleSmartlyReady().catch((e) => {
         scriptInjectPromise = null
-        reject(new Error('SaleSmartly plugin script load failed'))
-      }
-      ;(document.head || document.body).appendChild(js)
-    })
+        throw e
+      })
+    } else {
+      scriptInjectPromise = new Promise((resolve, reject) => {
+        const js = document.createElement('script')
+        js.id = SCRIPT_ID
+        js.async = true
+        js.src = SALE_SMARTLY_PLUGIN_SRC
+        js.onload = () => waitSaleSmartlyReady().then(resolve).catch(resolve)
+        js.onerror = () => {
+          scriptInjectPromise = null
+          reject(new Error('SaleSmartly plugin script load failed'))
+        }
+        ;(document.head || document.body).appendChild(js)
+      })
+    }
   }
   return scriptInjectPromise
+}
+
+/** 应用启动时预加载客服插件，点击时即可立即打开 */
+export function preloadSaleSmartlyPlugin(appEnv) {
+  injectSaleSmartlyPlatformScript(appEnv)
+  ensureSaleSmartlyPlugin().catch(() => {})
 }
 
 /** 构建 setLoginInfo 参数（user_id 必填；业务 userId 写入 custom_fields_ext，最长 300 字符） */
@@ -177,7 +202,9 @@ export async function openCustomerService({ userInfo, preferWidget = true, appEn
 
   try {
     injectSaleSmartlyPlatformScript(appEnv)
-    await ensureSaleSmartlyPlugin()
+    if (!pluginReady) {
+      await ensureSaleSmartlyPlugin()
+    }
     syncSaleSmartlyLogin(userInfo)
     openSaleSmartlyChat()
   } catch (e) {
