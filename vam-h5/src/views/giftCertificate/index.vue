@@ -75,13 +75,9 @@
     <div class="body">
       <p v-if="batchesLoaded && !batches.length" class="empty-hint">{{ t('gift_cert_empty_activity') }}</p>
 
-      <!-- Hero: 整张 icon-gift-hero 图占满整行作 banner；标题文字垂直居中叠在图左侧 -->
+      <!-- Hero: 整张 icon-gift-hero 图占满整行作 banner -->
       <div class="hero-banner">
         <img :src="iconGiftHero" alt="" class="hero-banner__img" />
-        <div class="hero-text">
-          <span class="hero-label">{{ t('gift_cert_current_activity') }}</span>
-          <h2 class="hero-name">{{ t('gift_cert_voucher_name_fallback') }}</h2>
-        </div>
       </div>
 
       <!-- Claim 输入 + 进度 -->
@@ -731,41 +727,6 @@ onMounted(async () => {
   height: auto;
   position: relative;
   z-index: 0;
-}
-
-.hero-text {
-  position: absolute;
-  top: 50%;
-  left: 26px;
-  transform: translateY(-50%);
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  max-width: 55%;
-  pointer-events: none;
-}
-
-.hero-label {
-  font-size: 13px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.85);
-  letter-spacing: 0.04em;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-}
-
-.hero-name {
-  margin: 0;
-  font-size: 28px;
-  font-weight: 700;
-  line-height: 1.15;
-  white-space: pre-line;
-  word-break: break-word;
-  color: #fff;
-  background: linear-gradient(135deg, #fff 0%, #fff 35%, rgb(196, 124, 255) 70%, rgb(160, 65, 237) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
 
 
