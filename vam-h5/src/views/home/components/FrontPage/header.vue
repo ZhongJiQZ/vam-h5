@@ -380,24 +380,19 @@ onMounted(() => {
 /* Hero 山图区 */
 .hero {
   position: relative;
-  height: 270px;
   background: #111111;
   overflow: visible;
 
   &__skeleton {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
+    width: 100%;
+    aspect-ratio: 375 / 180;
     background: #111111;
   }
 
   &__bg {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
+    display: block;
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: auto;
     opacity: 0;
     transition: opacity 0.3s ease-out;
     &--ready { opacity: 1; }
