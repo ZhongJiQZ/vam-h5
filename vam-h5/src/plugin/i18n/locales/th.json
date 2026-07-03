@@ -871,6 +871,7 @@
   "quote_search": "ค้นหาสกุลเงิน",
   "quote_finish": "เสร็จสิ้น",
   "quote_addSuccess": "ดำเนินการสำเร็จ",
+  "contract_price_confirm_title": "แจ้งเตือนราคาเปลี่ยนแปลง",
   "quote_edit": "แก้ไขรายการโปรด",
   "quote_del": "ลบ",
   "quote_all": "ทั้งหมด",

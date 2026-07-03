@@ -909,7 +909,8 @@ const buyOrSellForm = async (type) => {
     loadingToast?.close?.()
     loadingToast = null
     await showConfirmDialog({
-      title: pickMsg(res),
+      title: _t18('contract_price_confirm_title'),
+      message: pickMsg(res),
       className: 'uc-price-confirm-dialog',
       width: '320px',
       showCancelButton: true,
@@ -946,7 +947,8 @@ const buyOrSellForm = async (type) => {
       loadingToast = null
       try {
         await showConfirmDialog({
-          title: pickMsg(errRes),
+          title: _t18('contract_price_confirm_title'),
+          message: pickMsg(errRes),
           className: 'uc-price-confirm-dialog',
           width: '320px',
           showCancelButton: true,
@@ -1474,14 +1476,13 @@ onUnmounted(() => {
 }
 
 .uc-price-confirm-dialog .van-dialog__header {
-  padding: 22px 20px;
+  padding: 22px 20px 8px;
   background:
     radial-gradient(120% 110% at 100% 0%, rgba(160, 65, 237, 0.28) 0%, rgba(160, 65, 237, 0) 60%),
     linear-gradient(155deg, rgba(60, 26, 110, 0.65) 0%, rgba(30, 21, 48, 0.95) 60%);
   color: #fff !important;
-  font-size: 15px !important;
-  font-weight: 500 !important;
-  line-height: 1.55 !important;
+  font-size: 17px !important;
+  font-weight: 600 !important;
   text-align: center;
   letter-spacing: 0.01em;
   backdrop-filter: blur(22px) saturate(160%);
@@ -1489,13 +1490,26 @@ onUnmounted(() => {
 }
 
 .uc-price-confirm-dialog .van-dialog__content {
-  display: none;
+  padding: 8px 22px 22px;
+  background:
+    linear-gradient(155deg, rgba(60, 26, 110, 0.55) 0%, rgba(30, 21, 48, 0.92) 60%);
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+}
+
+.uc-price-confirm-dialog .van-dialog__message {
+  color: rgba(255, 255, 255, 0.82) !important;
+  font-size: 13px !important;
+  line-height: 1.65 !important;
+  text-align: center !important;
+  padding: 0 !important;
+  word-break: break-word;
 }
 
 .uc-price-confirm-dialog .van-dialog__footer {
   background: rgba(30, 21, 48, 0.92);
   border-top: none !important;
-  padding: 12px 16px 16px;
+  padding: 12px 16px;
   display: flex;
   gap: 10px;
 }

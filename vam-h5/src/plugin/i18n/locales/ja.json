@@ -871,6 +871,7 @@
   "quote_search": "通貨検索",
   "quote_finish": "完了",
   "quote_addSuccess": "操作成功",
+  "contract_price_confirm_title": "価格変動のお知らせ",
   "quote_edit": "お気に入りを編集",
   "quote_del": "削除",
   "quote_all": "すべて",

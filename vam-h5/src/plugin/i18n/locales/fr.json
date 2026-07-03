@@ -871,6 +871,7 @@
   "quote_search": "Rechercher une crypto",
   "quote_finish": "Terminer",
   "quote_addSuccess": "Opération réussie",
+  "contract_price_confirm_title": "Alerte de fluctuation des prix",
   "quote_edit": "Modifier les favoris",
   "quote_del": "Supprimer",
   "quote_all": "Tous",

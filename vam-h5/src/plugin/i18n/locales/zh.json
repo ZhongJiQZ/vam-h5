@@ -874,6 +874,7 @@
   "quote_search": "搜索币种",
   "quote_finish": "完成",
   "quote_addSuccess": "操作成功",
+  "contract_price_confirm_title": "价格波动提醒",
   "quote_edit": "编辑自选",
   "quote_del": "删除",
   "quote_all": "全选",

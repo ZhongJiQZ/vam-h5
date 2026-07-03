@@ -874,6 +874,7 @@
   "quote_search": "搜索幣種",
   "quote_finish": "完成",
   "quote_addSuccess": "操作成功",
+  "contract_price_confirm_title": "價格波動提醒",
   "quote_edit": "編輯自選",
   "quote_del": "刪除",
   "quote_all": "全選",

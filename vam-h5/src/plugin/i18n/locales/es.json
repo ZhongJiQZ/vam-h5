@@ -871,6 +871,7 @@
   "quote_search": "Buscar moneda",
   "quote_finish": "Finalizar",
   "quote_addSuccess": "Operación exitosa",
+  "contract_price_confirm_title": "Alerta de fluctuación de precios",
   "quote_edit": "Editar favoritos",
   "quote_del": "Eliminar",
   "quote_all": "Todo",
