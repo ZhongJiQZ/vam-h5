@@ -909,7 +909,7 @@ const buyOrSellForm = async (type) => {
     loadingToast?.close?.()
     loadingToast = null
     await showConfirmDialog({
-      title: _t18('contract_price_confirm_title'),
+      title: i18nT('contract_price_confirm_title'),
       message: pickMsg(res),
       className: 'uc-price-confirm-dialog',
       width: '320px',
@@ -947,7 +947,7 @@ const buyOrSellForm = async (type) => {
       loadingToast = null
       try {
         await showConfirmDialog({
-          title: _t18('contract_price_confirm_title'),
+          title: i18nT('contract_price_confirm_title'),
           message: pickMsg(errRes),
           className: 'uc-price-confirm-dialog',
           width: '320px',
