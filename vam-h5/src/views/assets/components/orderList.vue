@@ -71,7 +71,7 @@
         <p class="left">{{ _t18('recharge_time') }}</p>
         <p class="right ff-num time-val">{{ formatLocalTime(dataValue.params?.createTime) }}</p>
       </div>
-      <div v-if="dataValue.rechargeRemark" :class="{ 'remark-row': cardLayout }">
+      <!-- <div v-if="dataValue.rechargeRemark" :class="{ 'remark-row': cardLayout }">
         <template v-if="cardLayout">
           <div class="remark-box">
             <p class="remark-box__title">{{ _t18('kind_tips') }}</p>
@@ -82,7 +82,7 @@
           <p class="left">{{ _t18('kind_tips') }}</p>
           <p class="right ff-num">{{ dataValue.rechargeRemark }}</p>
         </template>
-      </div>
+      </div> -->
       <div v-if="dataValue.withDrawRemark" :class="{ 'remark-row': cardLayout }">
         <template v-if="cardLayout">
           <div class="remark-box">
