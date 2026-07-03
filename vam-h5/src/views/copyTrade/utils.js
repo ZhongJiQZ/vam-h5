@@ -516,7 +516,7 @@ function formatCopyTradeStrategyTimeValue(raw, dailyTimeEnabled) {
   return formatted !== '--' ? formatted : s
 }
 
-/**
+/**   
  * 跟单时间统一格式化（本地时间）
  * @param {object} item
  * @param {'strategyStart'|'strategyEnd'|'join'|'exit'} field - 见 COPY_TRADE_TIME_FIELD
