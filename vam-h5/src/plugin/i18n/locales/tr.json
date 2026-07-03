@@ -1235,7 +1235,8 @@
     "reward": "Ödül",
     "PNL": "Kar ve Zarar",
     "today": "Bugün",
-    "total": "Toplam"
+    "total": "Toplam",
+    "totday": "Today"
   },
   "gift_cert_title": "Yükleme · Ödüller ve hediyeler",
   "gift_cert_empty_activity": "Henüz kupon kampanyası yok. Daha sonra deneyin.",
@@ -1563,5 +1564,12 @@
   "copy_trade_margin": "Marjin",
   "copy_trade_week_label": "Hafta {n}",
   "copy_trade_strategy_list_start": "Başlangıç Zamanı",
-  "copy_trade_strategy_list_end": "Bitiş Zamanı"
+  "copy_trade_strategy_list_end": "Bitiş Zamanı",
+  "bb_market_order": "Market order",
+  "open_time": "Opening time",
+  "close_time": "Closing time",
+  "plug_today_sum": "Today’s Invites",
+  "plug_today_amount": "Today’s Rebates",
+  "recharge_limit_range": "Deposit limit",
+  "withdraw_limit_range": "Withdrawal limit"
 }
