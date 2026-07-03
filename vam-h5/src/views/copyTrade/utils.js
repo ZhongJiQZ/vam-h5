@@ -529,7 +529,7 @@ export function formatCopyTradeStrategyStartTime(item) {
   }
 
   const execute =
-    item?.executeStartTime ?? item?.strategy?.executeStartTime
+    item?.executeStartTimeMillis ?? item?.strategy?.executeStartTimeMillis
   if (execute != null) {
     return formatCopyTradeStrategyTimeValue(execute, item?.dailyTimeEnabled)
   }
@@ -546,7 +546,7 @@ export function formatCopyTradeStrategyEndTime(item) {
     return formatCopyTradeStrategyTimeValue(strategyTime, item?.dailyTimeEnabled)
   }
 
-  const execute = item?.executeEndTime ?? item?.strategy?.executeEndTime
+  const execute = item?.executeEndTimeMillis ?? item?.strategy?.executeEndTimeMillis
   if (execute != null) {
     return formatCopyTradeStrategyTimeValue(execute, item?.dailyTimeEnabled)
   }
