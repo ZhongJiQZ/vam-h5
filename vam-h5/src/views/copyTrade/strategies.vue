@@ -51,7 +51,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import { _t18 } from '@/utils/public'
-import { getCopyTradeInstitutionStrategyList } from '@/api/copyTrade'
+import { getCopyTradeInstitutionDetail, getCopyTradeInstitutionStrategyList } from '@/api/copyTrade'
 import {
   formatCopyTradeTime,
   COPY_TRADE_TIME_FIELD,
@@ -60,6 +60,7 @@ import {
   formatActiveSubCountCondition,
   getStrategyJoinBlockMessage,
   isStrategyFollowing,
+  isInstitutionSubscribed,
   normalizeStrategyDetail,
   formatAmountRangeText
 } from './utils'
@@ -77,12 +78,19 @@ const refreshing = ref(false)
 async function loadData() {
   const institutionId = route.query.institutionId
   if (!institutionId) {
+    router.replace('/copy-trade')
     loading.value = false
     refreshing.value = false
     return
   }
   loading.value = true
   try {
+    const detailRes = await getCopyTradeInstitutionDetail({ institutionId })
+    if (detailRes?.code == 200 && detailRes.data && !isInstitutionSubscribed(detailRes.data)) {
+      showToast(t18('copy_trade_inst_subscribe_first'))
+      router.replace('/copy-trade')
+      return
+    }
     const res = await getCopyTradeInstitutionStrategyList({ institutionId })
     list.value =
       res?.code == 200 && Array.isArray(res.data)
