@@ -897,11 +897,6 @@ const buyOrSellForm = async (type) => {
       return
     }
 
-    const priceConfirmData = res?.data?.confirmCode
-      ? res.data
-      : res?.data?.data?.confirmCode
-        ? res.data.data
-        : res?.data || {}
     const needPriceConfirm = Number(res?.code) === 601
     if (!needPriceConfirm) {
       showToast({
@@ -911,13 +906,11 @@ const buyOrSellForm = async (type) => {
       return
     }
 
-    const confirmTitle = pickMsg(res)
-    const confirmTip = priceConfirmData?.tip || res?.data?.tip || pickMsg(res) || ''
     loadingToast?.close?.()
     loadingToast = null
     await showConfirmDialog({
-      title: confirmTitle,
-      message: confirmTip,
+      title: pickMsg(res),
+      className: 'uc-price-confirm-dialog',
       width: '320px',
       showCancelButton: true,
       confirmButtonText: i18nT('utils.confirm') || '确认',
@@ -949,19 +942,12 @@ const buyOrSellForm = async (type) => {
     const errRes = error?.data || error?.response?.data
     const needPriceConfirmInCatch = Number(errRes?.code) === 601
     if (needPriceConfirmInCatch) {
-      const catchConfirmData = errRes?.data?.confirmCode
-        ? errRes.data
-        : errRes?.data?.data?.confirmCode
-          ? errRes.data.data
-          : errRes?.data || {}
-      const confirmTitle = pickMsg(errRes)
-      const confirmTip = catchConfirmData?.tip || errRes?.data?.tip || pickMsg(errRes) || ''
       loadingToast?.close?.()
       loadingToast = null
       try {
         await showConfirmDialog({
-          title: confirmTitle,
-          message: confirmTip,
+          title: pickMsg(errRes),
+          className: 'uc-price-confirm-dialog',
           width: '320px',
           showCancelButton: true,
           confirmButtonText: i18nT('utils.confirm') || '确认',
@@ -1472,5 +1458,81 @@ onUnmounted(() => {
   background: #9b4dff;
   border: 2px solid #211b32;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+</style>
+
+<!-- 价格波动二次确认弹窗 — vant teleport 到 body，全局 + className 限定 -->
+<style lang="scss">
+.uc-price-confirm-dialog.van-dialog {
+  background: transparent !important;
+  border-radius: 18px !important;
+  overflow: hidden !important;
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(160, 65, 237, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
+}
+
+.uc-price-confirm-dialog .van-dialog__header {
+  padding: 22px 20px;
+  background:
+    radial-gradient(120% 110% at 100% 0%, rgba(160, 65, 237, 0.28) 0%, rgba(160, 65, 237, 0) 60%),
+    linear-gradient(155deg, rgba(60, 26, 110, 0.65) 0%, rgba(30, 21, 48, 0.95) 60%);
+  color: #fff !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  line-height: 1.55 !important;
+  text-align: center;
+  letter-spacing: 0.01em;
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+}
+
+.uc-price-confirm-dialog .van-dialog__content {
+  display: none;
+}
+
+.uc-price-confirm-dialog .van-dialog__footer {
+  background: rgba(30, 21, 48, 0.92);
+  border-top: none !important;
+  padding: 12px 16px 16px;
+  display: flex;
+  gap: 10px;
+}
+
+.uc-price-confirm-dialog .van-dialog__footer::before,
+.uc-price-confirm-dialog .van-dialog__footer::after,
+.uc-price-confirm-dialog .van-hairline--top::after,
+.uc-price-confirm-dialog .van-hairline--top-bottom::after {
+  display: none !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+.uc-price-confirm-dialog .van-dialog__cancel {
+  flex: 1;
+  height: 44px !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  background: transparent !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.uc-price-confirm-dialog .van-dialog__confirm {
+  flex: 1;
+  height: 44px !important;
+  border-radius: 999px !important;
+  border: none !important;
+  background: linear-gradient(-43deg, rgb(127, 43, 218) 0%, rgb(163, 67, 238) 100%) !important;
+  box-shadow: 0 4px 12px rgba(127, 43, 218, 0.32) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: #fff !important;
+}
+
+.uc-price-confirm-dialog .van-hairline--left::after {
+  display: none !important;
 }
 </style>
