@@ -492,6 +492,7 @@ export const COPY_TRADE_TIME_FIELD = {
   EXIT: 'exit',
 }
 
+<<<<<<< HEAD
 function formatUtcOffsetLabel(at = new Date()) {
   return formatClientUtcOffsetLabel(at)
 }
@@ -499,6 +500,15 @@ function formatUtcOffsetLabel(at = new Date()) {
 /** 策略开始/结束：本地时间 + UTC 偏移，如 2026-07-03 16:00 (UTC+8) */
 function formatCopyTradeStrategyLocalDateTime(input, fmt = COPY_TRADE_STRATEGY_TIME_FMT) {
   return formatClientLocalDateTime(input, fmt)
+=======
+/** 策略开始/结束：本地时间，如 2026-07-03 16:00 */
+function formatCopyTradeStrategyLocalDateTime(input, fmt = COPY_TRADE_STRATEGY_TIME_FMT) {
+  if (input === null || input === undefined || input === '') return '--'
+  const ms = toEpochMs(input)
+  const d = ms != null ? dayjs(ms) : dayjs(input)
+  if (!d.isValid()) return '--'
+  return d.format(fmt)
+>>>>>>> 7143112 (1)
 }
 
 function formatCopyTradeStrategyTimeValue(raw, dailyTimeEnabled) {
@@ -510,12 +520,72 @@ function formatCopyTradeStrategyTimeValue(raw, dailyTimeEnabled) {
   if (useDaily) {
     const d = dayjs(raw)
     if (!d.isValid()) return '--'
+<<<<<<< HEAD
     return `${d.format('HH:mm')} (${formatUtcOffsetLabel(new Date())})`
+=======
+    return d.format('HH:mm')
+>>>>>>> 7143112 (1)
   }
   const formatted = formatCopyTradeStrategyLocalDateTime(raw)
   return formatted !== '--' ? formatted : s
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * 跟单时间统一格式化（本地时间）
+ * @param {object} item
+ * @param {'strategyStart'|'strategyEnd'|'join'|'exit'} field - 见 COPY_TRADE_TIME_FIELD
+ * @param {string} [fmt='YYYY-MM-DD HH:mm']
+ */
+export function formatCopyTradeTime(item, field, fmt = COPY_TRADE_STRATEGY_TIME_FMT) {
+  if (!item) return '--'
+
+  switch (field) {
+    case COPY_TRADE_TIME_FIELD.STRATEGY_START: {
+      const ms = pickCopyTradeMillis(item, 'strategyStartTimeMillis')
+      if (ms != null) return formatCopyTradeStrategyLocalDateTime(ms, fmt)
+      const strategyTime = pickCopyTradeTimeField(item, 'strategyStartTime')
+      if (strategyTime != null) {
+        return formatCopyTradeStrategyTimeValue(strategyTime, item?.dailyTimeEnabled)
+      }
+      const execute = item?.executeStartTimeMillis ?? item?.strategy?.executeStartTimeMillis
+      if (execute != null) {
+        return formatCopyTradeStrategyTimeValue(execute, item?.dailyTimeEnabled)
+      }
+      return '--'
+    }
+    case COPY_TRADE_TIME_FIELD.STRATEGY_END: {
+      const ms = pickCopyTradeMillis(item, 'strategyEndTimeMillis')
+      if (ms != null) return formatCopyTradeStrategyLocalDateTime(ms, fmt)
+      const strategyTime = pickCopyTradeTimeField(item, 'strategyEndTime')
+      if (strategyTime != null) {
+        return formatCopyTradeStrategyTimeValue(strategyTime, item?.dailyTimeEnabled)
+      }
+      const execute = item?.executeEndTimeMillis ?? item?.strategy?.executeEndTimeMillis
+      if (execute != null) {
+        return formatCopyTradeStrategyTimeValue(execute, item?.dailyTimeEnabled)
+      }
+      return '--'
+    }
+    case COPY_TRADE_TIME_FIELD.JOIN: {
+      const raw = resolveCopyTradeJoinRaw(item)
+      if (!raw) return '--'
+      const formatted = formatCopyTradeStrategyLocalDateTime(raw, fmt)
+      return formatted !== '--' ? formatted : String(raw)
+    }
+    case COPY_TRADE_TIME_FIELD.EXIT: {
+      const raw = resolveCopyTradeExitRaw(item)
+      if (!raw) return '--'
+      const formatted = formatCopyTradeStrategyLocalDateTime(raw, fmt)
+      return formatted !== '--' ? formatted : String(raw)
+    }
+    default:
+      return '--'
+  }
+}
+
+>>>>>>> 7143112 (1)
 /** 策略加入条件：下级跟单人数门槛 */
 export function getActiveSubCount(item) {
   if (!item) return 0
