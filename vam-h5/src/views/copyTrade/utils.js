@@ -1,6 +1,6 @@
 import { _mul, _div, priceFormat, _toFixed } from '@/utils/decimal'
-import { formatLocalTime, toEpochMs } from '@/utils/time'
-import dayjs from 'dayjs'
+import { formatLocalTime, toEpochMs, formatClientLocalDateTime, formatClientUtcOffsetLabel } from '@/utils/time'
+import dayjs from '@/plugin/dayjs/index'
 
 /** 跟单金额精度（USDT 两位小数，提交时向下截断避免超额） */
 export const COPY_TRADE_AMOUNT_DECIMALS = 2
@@ -492,23 +492,13 @@ export const COPY_TRADE_TIME_FIELD = {
   EXIT: 'exit',
 }
 
-function formatUtcOffsetLabel(d) {
-  const offsetMinutes = d.utcOffset()
-  const sign = offsetMinutes >= 0 ? '+' : '-'
-  const abs = Math.abs(offsetMinutes)
-  const hours = Math.floor(abs / 60)
-  const mins = abs % 60
-  if (mins === 0) return `UTC${sign}${hours}`
-  return `UTC${sign}${hours}:${String(mins).padStart(2, '0')}`
+function formatUtcOffsetLabel(at = new Date()) {
+  return formatClientUtcOffsetLabel(at)
 }
 
 /** 策略开始/结束：本地时间 + UTC 偏移，如 2026-07-03 16:00 (UTC+8) */
 function formatCopyTradeStrategyLocalDateTime(input, fmt = COPY_TRADE_STRATEGY_TIME_FMT) {
-  if (input === null || input === undefined || input === '') return '--'
-  const ms = toEpochMs(input)
-  const d = ms != null ? dayjs(ms) : dayjs(input)
-  if (!d.isValid()) return '--'
-  return `${d.format(fmt)} (${formatUtcOffsetLabel(d)})`
+  return formatClientLocalDateTime(input, fmt)
 }
 
 function formatCopyTradeStrategyTimeValue(raw, dailyTimeEnabled) {
@@ -520,7 +510,7 @@ function formatCopyTradeStrategyTimeValue(raw, dailyTimeEnabled) {
   if (useDaily) {
     const d = dayjs(raw)
     if (!d.isValid()) return '--'
-    return `${d.format('HH:mm')} (${formatUtcOffsetLabel(d)})`
+    return `${d.format('HH:mm')} (${formatUtcOffsetLabel(new Date())})`
   }
   const formatted = formatCopyTradeStrategyLocalDateTime(raw)
   return formatted !== '--' ? formatted : s
