@@ -235,7 +235,7 @@ const toRecharge = () => {
 }
 </script>
 <style lang="scss" scoped>
-/* 金刚区 - GXPEX 5 列 + 暗紫卡片背景 */
+/* 金刚区 - GXPEX 4 列 + 暗紫卡片背景 */
 .main {
   position: relative;
   top: 0;
@@ -245,7 +245,7 @@ const toRecharge = () => {
   border: 0;
   border-radius: 12px;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 14px 4px;
 
   .item {

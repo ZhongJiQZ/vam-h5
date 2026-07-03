@@ -7,9 +7,6 @@
         <button type="button" class="earn-header__action" aria-label="service" @click="goService">
           <img :src="iconService" alt="" />
         </button>
-        <button type="button" class="earn-header__action" aria-label="notification" @click="goNotice">
-          <img :src="iconBell" alt="" />
-        </button>
         <button type="button" class="earn-header__action" aria-label="search" @click="$router.push('/quote')">
           <img :src="iconSearch" alt="" />
         </button>
@@ -28,14 +25,12 @@ import { useRouter } from 'vue-router'
 import { _t18 } from '@/utils/public'
 import { dispatchCustomEvent } from '@/utils'
 import iconService from '@/assets/images/gxpex/home/icon-service.svg'
-import iconBell from '@/assets/images/gxpex/home/icon-bell.svg'
 import iconSearch from '@/assets/images/gxpex/quote/icon-search.svg'
 import Header from './components/header.vue'
 import FundList from './components/fundList.vue'
 
 const $router = useRouter()
 const goService = () => dispatchCustomEvent('event_serviceChange')
-const goNotice = () => $router.push('/broadcast')
 </script>
 
 <style lang="scss" scoped>
