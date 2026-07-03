@@ -13,8 +13,8 @@
             </div>
             <el-tag size="mini">{{ item.followStatusText || $t("pc_copy_trade_follow_now") }}</el-tag>
           </div>
-          <p>{{ $t("pc_copy_trade_strategy_start_time") }}: {{ formatCopyTradeStrategyStartTime(item) }}</p>
-          <p>{{ $t("pc_copy_trade_strategy_end_time") }}: {{ formatCopyTradeStrategyEndTime(item) }}</p>
+          <p>{{ $t("pc_copy_trade_strategy_start_time") }}: {{ formatCopyTradeTime(item, COPY_TRADE_TIME_FIELD.STRATEGY_START) }}</p>
+          <p>{{ $t("pc_copy_trade_strategy_end_time") }}: {{ formatCopyTradeTime(item, COPY_TRADE_TIME_FIELD.STRATEGY_END) }}</p>
           <p>{{ $t("pc_copy_trade_profit_rate_range") }}: {{ formatStrategyProfitRateRange(item) }}</p>
           <p>{{ $t("pc_copy_trade_range") }}: {{ item.minAmount }} ~ {{ item.maxAmount }} USDT</p>
           <p v-if="hasActiveSubCountCondition(item)">
@@ -30,8 +30,8 @@
 <script>
 import { getCopyTradeInstitutionStrategyList } from "@/api/copyTrade";
 import {
-  formatCopyTradeStrategyStartTime,
-  formatCopyTradeStrategyEndTime,
+  formatCopyTradeTime,
+  COPY_TRADE_TIME_FIELD,
   formatStrategyProfitRateRange,
   hasActiveSubCountCondition,
   formatActiveSubCountCondition,
@@ -42,14 +42,13 @@ import {
 export default {
   name: "CopyTradeStrategies",
   data() {
-    return { loading: false, list: [] };
+    return { COPY_TRADE_TIME_FIELD, loading: false, list: [] };
   },
   created() {
     this.loadData();
   },
   methods: {
-    formatCopyTradeStrategyStartTime,
-    formatCopyTradeStrategyEndTime,
+    formatCopyTradeTime,
     formatStrategyProfitRateRange,
     hasActiveSubCountCondition,
     formatActiveSubCountCondition,

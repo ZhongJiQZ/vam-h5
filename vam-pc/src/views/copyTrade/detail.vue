@@ -24,10 +24,10 @@
           <el-row :gutter="12" class="meta-grid">
             <el-col :span="12">{{ $t("pc_copy_trade_amount") }}：{{ num(order.amount) }} USDT</el-col>
             <el-col :span="12">{{ $t("pc_copy_trade_symbol") }}：{{ positionSymbol(order) }}</el-col>
-            <el-col :span="12">{{ $t("pc_copy_trade_strategy_start_time") }}：{{ formatCopyTradeStrategyStartTime(order) }}</el-col>
-            <el-col :span="12">{{ $t("pc_copy_trade_strategy_end_time") }}：{{ formatCopyTradeStrategyEndTime(order) }}</el-col>
-            <el-col :span="12">{{ $t("pc_copy_trade_join_time") }}：{{ formatCopyTradeJoinTime(order) }}</el-col>
-            <el-col v-if="order.status === 1" :span="12">{{ $t("pc_copy_trade_end_time") }}：{{ order.endTime || "--" }}</el-col>
+            <el-col :span="12">{{ $t("pc_copy_trade_strategy_start_time") }}：{{ formatCopyTradeTime(order, COPY_TRADE_TIME_FIELD.STRATEGY_START) }}</el-col>
+            <el-col :span="12">{{ $t("pc_copy_trade_strategy_end_time") }}：{{ formatCopyTradeTime(order, COPY_TRADE_TIME_FIELD.STRATEGY_END) }}</el-col>
+            <el-col :span="12">{{ $t("pc_copy_trade_join_time") }}：{{ formatCopyTradeTime(order, COPY_TRADE_TIME_FIELD.JOIN) }}</el-col>
+            <el-col v-if="order.status === 1" :span="12">{{ $t("pc_copy_trade_end_time") }}：{{ formatCopyTradeTime(order, COPY_TRADE_TIME_FIELD.EXIT) }}</el-col>
             <el-col :span="12">{{ $t("pc_copy_trade_cycle_progress") }}：{{ cycleProgress(order) }}</el-col>
             <el-col :span="12">{{ $t("pc_copy_trade_target_profit") }}：{{ num(order.targetProfit) }} USDT</el-col>
             <el-col :span="12">{{ $t("pc_copy_trade_win_lose") }}：{{ winLose(order) }}</el-col>
@@ -135,9 +135,8 @@ import {
   copyTradeTradeCount,
   copyTradePnlRate,
   copyTradePositionSymbol,
-  formatCopyTradeStrategyStartTime,
-  formatCopyTradeStrategyEndTime,
-  formatCopyTradeJoinTime,
+  formatCopyTradeTime,
+  COPY_TRADE_TIME_FIELD,
   normalizeCopyTradeDetailResponse,
   copyTradeOrderTagType,
   copyTradeOrderStatusText,
@@ -149,6 +148,7 @@ export default {
   name: "CopyTradeDetail",
   data() {
     return {
+      COPY_TRADE_TIME_FIELD,
       activeName: "0",
       loading: false,
       stopping: false,
@@ -286,9 +286,7 @@ export default {
         this.appendLoading = false;
       }
     },
-    formatCopyTradeStrategyStartTime,
-    formatCopyTradeStrategyEndTime,
-    formatCopyTradeJoinTime,
+    formatCopyTradeTime,
     positionSymbol(order) {
       return copyTradePositionSymbol(order, (key) => this.$t(key));
     },

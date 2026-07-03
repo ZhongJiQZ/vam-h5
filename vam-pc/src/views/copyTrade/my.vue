@@ -23,8 +23,8 @@
         <el-row :gutter="10" class="meta-grid">
           <el-col :span="12">{{ $t("pc_copy_trade_amount") }}：{{ num(item.amount) }} USDT</el-col>
           <el-col :span="12">{{ $t("pc_copy_trade_symbol") }}：{{ positionSymbol(item) }}</el-col>
-          <el-col :span="12">{{ $t("pc_copy_trade_strategy_start_time") }}：{{ formatCopyTradeStrategyStartTime(item) }}</el-col>
-          <el-col :span="12">{{ $t("pc_copy_trade_strategy_end_time") }}：{{ formatCopyTradeStrategyEndTime(item) }}</el-col>
+          <el-col :span="12">{{ $t("pc_copy_trade_strategy_start_time") }}：{{ formatCopyTradeTime(item, COPY_TRADE_TIME_FIELD.STRATEGY_START) }}</el-col>
+          <el-col :span="12">{{ $t("pc_copy_trade_strategy_end_time") }}：{{ formatCopyTradeTime(item, COPY_TRADE_TIME_FIELD.STRATEGY_END) }}</el-col>
           <el-col :span="12">{{ $t("pc_copy_trade_cycle_progress") }}：{{ cycleProgress(item) }}</el-col>
           <el-col v-if="activeName === '1'" :span="12">{{ $t("pc_copy_trade_current_pnl") }}：<span :class="pnlClass(currentPnl(item))">{{ signNum(currentPnl(item)) }} USDT</span></el-col>
           <el-col v-if="activeName === '1'" :span="12">{{ $t("pc_copy_trade_pnl_rate") }}：<span :class="pnlClass(currentPnl(item))">{{ copyTradePnlRate(item) }}%</span></el-col>
@@ -93,8 +93,8 @@ import {
   copyTradeTradeCount,
   copyTradePnlRate,
   copyTradePositionSymbol,
-  formatCopyTradeStrategyStartTime,
-  formatCopyTradeStrategyEndTime,
+  formatCopyTradeTime,
+  COPY_TRADE_TIME_FIELD,
   copyTradeOrderTagType,
   copyTradeOrderStatusText,
   isCopyTradeStrategyEnded,
@@ -104,6 +104,7 @@ export default {
   name: "CopyTradeMy",
   data() {
     return {
+      COPY_TRADE_TIME_FIELD,
       activeName: "0",
       loading: false,
       list: [],
@@ -196,8 +197,7 @@ export default {
     currentPnl(item) {
       return copyTradeNetProfit(item);
     },
-    formatCopyTradeStrategyStartTime,
-    formatCopyTradeStrategyEndTime,
+    formatCopyTradeTime,
     positionSymbol(item) {
       return copyTradePositionSymbol(item, (key) => this.$t(key));
     },
