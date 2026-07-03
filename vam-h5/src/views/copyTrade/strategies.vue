@@ -20,11 +20,11 @@
           </div>
           <div class="kv">
             <span>{{ t18('copy_trade_strategy_list_start') }}</span>
-            <span>{{ formatCopyTradeStrategyStartTime(item) }}</span>
+            <span>{{ formatCopyTradeTime(item, COPY_TRADE_TIME_FIELD.STRATEGY_START) }}</span>
           </div>
           <div class="kv">
             <span>{{ t18('copy_trade_strategy_list_end') }}</span>
-            <span>{{ formatCopyTradeStrategyEndTime(item) }}</span>
+            <span>{{ formatCopyTradeTime(item, COPY_TRADE_TIME_FIELD.STRATEGY_END) }}</span>
           </div>
           <!-- <div class="kv">
             <span>{{ t18('copy_trade_profit_rate_range') }}</span>
@@ -53,8 +53,8 @@ import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import { _t18 } from '@/utils/public'
 import { getCopyTradeInstitutionStrategyList } from '@/api/copyTrade'
 import {
-  formatCopyTradeStrategyStartTime,
-  formatCopyTradeStrategyEndTime,
+  formatCopyTradeTime,
+  COPY_TRADE_TIME_FIELD,
   formatStrategyProfitRateRange,
   hasActiveSubCountCondition,
   formatActiveSubCountCondition,
