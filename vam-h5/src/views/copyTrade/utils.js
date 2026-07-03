@@ -634,59 +634,6 @@ export function calcCopyTradeRunningDays(joinRaw, endRaw) {
   return Math.max(1, end.diff(start, 'day') + 1)
 }
 
-/**
- * 跟单时间统一格式化（本地时间 + UTC 偏移）
- * @param {object} item
- * @param {'strategyStart'|'strategyEnd'|'join'|'exit'} field - 见 COPY_TRADE_TIME_FIELD
- * @param {string} [fmt='YYYY-MM-DD HH:mm']
- */
-export function formatCopyTradeTime(item, field, fmt = COPY_TRADE_STRATEGY_TIME_FMT) {
-  if (!item) return '--'
-
-  switch (field) {
-    case COPY_TRADE_TIME_FIELD.STRATEGY_START: {
-      const ms = pickCopyTradeMillis(item, 'strategyStartTimeMillis')
-      if (ms != null) return formatCopyTradeStrategyLocalDateTime(ms, fmt)
-      const strategyTime = pickCopyTradeTimeField(item, 'strategyStartTime')
-      if (strategyTime != null) {
-        return formatCopyTradeStrategyTimeValue(strategyTime, item?.dailyTimeEnabled)
-      }
-      const execute = item?.executeStartTimeMillis ?? item?.strategy?.executeStartTimeMillis
-      if (execute != null) {
-        return formatCopyTradeStrategyTimeValue(execute, item?.dailyTimeEnabled)
-      }
-      return '--'
-    }
-    case COPY_TRADE_TIME_FIELD.STRATEGY_END: {
-      const ms = pickCopyTradeMillis(item, 'strategyEndTimeMillis')
-      if (ms != null) return formatCopyTradeStrategyLocalDateTime(ms, fmt)
-      const strategyTime = pickCopyTradeTimeField(item, 'strategyEndTime')
-      if (strategyTime != null) {
-        return formatCopyTradeStrategyTimeValue(strategyTime, item?.dailyTimeEnabled)
-      }
-      const execute = item?.executeEndTimeMillis ?? item?.strategy?.executeEndTimeMillis
-      if (execute != null) {
-        return formatCopyTradeStrategyTimeValue(execute, item?.dailyTimeEnabled)
-      }
-      return '--'
-    }
-    case COPY_TRADE_TIME_FIELD.JOIN: {
-      const raw = resolveCopyTradeJoinRaw(item)
-      if (!raw) return '--'
-      const formatted = formatCopyTradeStrategyLocalDateTime(raw, fmt)
-      return formatted !== '--' ? formatted : String(raw)
-    }
-    case COPY_TRADE_TIME_FIELD.EXIT: {
-      const raw = resolveCopyTradeExitRaw(item)
-      if (!raw) return '--'
-      const formatted = formatCopyTradeStrategyLocalDateTime(raw, fmt)
-      return formatted !== '--' ? formatted : String(raw)
-    }
-    default:
-      return '--'
-  }
-}
-
 /** 跟单详情接口响应归一化 */
 export function normalizeCopyTradeDetailResponse(res) {
   const payload = res?.data
