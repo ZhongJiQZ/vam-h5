@@ -8,7 +8,8 @@ const TABBAR_KEY_ROUTE_MAP = {
   myassets: 'Myassets',
   financial: 'Financial',
   copytrade: 'CopyTrade',
-  copy_trade: 'CopyTrade'
+  copy_trade: 'CopyTrade',
+  my_copy_trade: 'MyCopyTrade'
 }
 
 const TABBAR_LINK_ROUTE_MAP = {
@@ -19,7 +20,8 @@ const TABBAR_LINK_ROUTE_MAP = {
   '/tradebb': 'TradeBB',
   '/myassets': 'Myassets',
   '/financial': 'Financial',
-  '/copy-trade': 'CopyTrade'
+  '/copy-trade': 'CopyTrade',
+  '/copy-trade/my': 'MyCopyTrade'
 }
 
 /** 跟单模块子页仍高亮「跟单」底栏 */

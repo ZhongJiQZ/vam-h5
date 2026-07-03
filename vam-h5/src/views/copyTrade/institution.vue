@@ -621,11 +621,13 @@ watch(
 <style lang="scss" scoped>
 $green: #17ac74;
 $tab-active: #3d3d3d;
+$tabbar-height: 79px;
+$bottom-bar-height: 72px;
 
 .inst-detail-page {
   min-height: 100vh;
   background: #fff;
-  padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(#{$bottom-bar-height} + #{$tabbar-height} + env(safe-area-inset-bottom, 0px));
 }
 
 .header-info-btn {
@@ -940,8 +942,9 @@ $tab-active: #3d3d3d;
   position: fixed;
   left: 0;
   right: 0;
-  bottom: 0;
-  padding: 12px 15px calc(12px + env(safe-area-inset-bottom, 0px));
+  bottom: $tabbar-height;
+  z-index: 8;
+  padding: 12px 15px;
   background: #fff;
   border-top: 1px solid #eee;
 }
