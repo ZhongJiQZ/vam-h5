@@ -1,5 +1,5 @@
 import { _mul, _div, priceFormat, _toFixed } from '@/utils/decimal'
-import { formatLocalTime } from '@/utils/time'
+import { formatLocalTime, toEpochMs } from '@/utils/time'
 import dayjs from 'dayjs'
 
 /** 跟单金额精度（USDT 两位小数，提交时向下截断避免超额） */
@@ -482,13 +482,28 @@ function pickCopyTradeTimeField(item, key) {
   return raw
 }
 
-function formatCopyTradeTimeValue(raw, dailyTimeEnabled, fmt = 'YYYY-MM-DD HH:mm') {
-  if (raw == null || raw === '') return '--'
-  const formatted = formatStrategyExecuteTime(raw, dailyTimeEnabled, fmt)
-  return formatted !== '--' ? formatted : String(raw)
+const COPY_TRADE_STRATEGY_TIME_FMT = 'YYYY-MM-DD HH:mm'
+
+function formatUtcOffsetLabel(d) {
+  const offsetMinutes = d.utcOffset()
+  const sign = offsetMinutes >= 0 ? '+' : '-'
+  const abs = Math.abs(offsetMinutes)
+  const hours = Math.floor(abs / 60)
+  const mins = abs % 60
+  if (mins === 0) return `UTC${sign}${hours}`
+  return `UTC${sign}${hours}:${String(mins).padStart(2, '0')}`
 }
 
-function formatStrategyExecuteTime(raw, dailyTimeEnabled, fmt = 'YYYY-MM-DD HH:mm') {
+/** 策略开始/结束：本地时间 + UTC 偏移，如 2026-07-03 16:00 (UTC+8) */
+function formatCopyTradeStrategyLocalDateTime(input, fmt = COPY_TRADE_STRATEGY_TIME_FMT) {
+  if (input === null || input === undefined || input === '') return '--'
+  const ms = toEpochMs(input)
+  const d = ms != null ? dayjs(ms) : dayjs(input)
+  if (!d.isValid()) return '--'
+  return `${d.format(fmt)} (${formatUtcOffsetLabel(d)})`
+}
+
+function formatCopyTradeStrategyTimeValue(raw, dailyTimeEnabled) {
   if (raw == null || raw === '') return '--'
   const s = String(raw)
   const useDaily =
@@ -496,43 +511,44 @@ function formatStrategyExecuteTime(raw, dailyTimeEnabled, fmt = 'YYYY-MM-DD HH:m
     (s.startsWith('2000-01-01') || s.includes('2000-01-01'))
   if (useDaily) {
     const d = dayjs(raw)
-    return d.isValid() ? d.format('HH:mm') : '--'
+    if (!d.isValid()) return '--'
+    return `${d.format('HH:mm')} (${formatUtcOffsetLabel(d)})`
   }
-  const formatted = formatLocalTime(raw, fmt)
+  const formatted = formatCopyTradeStrategyLocalDateTime(raw)
   return formatted !== '--' ? formatted : s
 }
 
 /** 策略开始时间：strategyStartTime / strategyStartTimeMillis / executeStartTime */
-export function formatCopyTradeStrategyStartTime(item, fmt = 'YYYY-MM-DD HH:mm') {
+export function formatCopyTradeStrategyStartTime(item) {
   const ms = pickCopyTradeMillis(item, 'strategyStartTimeMillis')
-  if (ms != null) return formatLocalTime(ms, fmt)
+  if (ms != null) return formatCopyTradeStrategyLocalDateTime(ms)
 
   const strategyTime = pickCopyTradeTimeField(item, 'strategyStartTime')
   if (strategyTime != null) {
-    return formatCopyTradeTimeValue(strategyTime, item?.dailyTimeEnabled, fmt)
+    return formatCopyTradeStrategyTimeValue(strategyTime, item?.dailyTimeEnabled)
   }
 
   const execute =
     item?.executeStartTime ?? item?.strategy?.executeStartTime
   if (execute != null) {
-    return formatStrategyExecuteTime(execute, item?.dailyTimeEnabled, fmt)
+    return formatCopyTradeStrategyTimeValue(execute, item?.dailyTimeEnabled)
   }
   return '--'
 }
 
 /** 策略结束时间：strategyEndTime / strategyEndTimeMillis / executeEndTime（不用 endTime） */
-export function formatCopyTradeStrategyEndTime(item, fmt = 'YYYY-MM-DD HH:mm') {
+export function formatCopyTradeStrategyEndTime(item) {
   const ms = pickCopyTradeMillis(item, 'strategyEndTimeMillis')
-  if (ms != null) return formatLocalTime(ms, fmt)
+  if (ms != null) return formatCopyTradeStrategyLocalDateTime(ms)
 
   const strategyTime = pickCopyTradeTimeField(item, 'strategyEndTime')
   if (strategyTime != null) {
-    return formatCopyTradeTimeValue(strategyTime, item?.dailyTimeEnabled, fmt)
+    return formatCopyTradeStrategyTimeValue(strategyTime, item?.dailyTimeEnabled)
   }
 
   const execute = item?.executeEndTime ?? item?.strategy?.executeEndTime
   if (execute != null) {
-    return formatStrategyExecuteTime(execute, item?.dailyTimeEnabled, fmt)
+    return formatCopyTradeStrategyTimeValue(execute, item?.dailyTimeEnabled)
   }
   return '--'
 }
@@ -934,9 +950,9 @@ export function normalizeCopyTradeListResponse(res) {
 }
 
 /** 策略时间范围 */
-export function formatCopyTradeStrategyTimeRange(item, fmt = 'YYYY-MM-DD HH:mm') {
-  const start = formatCopyTradeStrategyStartTime(item, fmt)
-  const end = formatCopyTradeStrategyEndTime(item, fmt)
+export function formatCopyTradeStrategyTimeRange(item) {
+  const start = formatCopyTradeStrategyStartTime(item)
+  const end = formatCopyTradeStrategyEndTime(item)
   if (start === '--' && end === '--') return '--'
   if (start === '--') return end
   if (end === '--') return start
