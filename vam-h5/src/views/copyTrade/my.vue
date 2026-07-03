@@ -85,15 +85,15 @@
                 </div>
                 <div class="kv">
                   <span class="kv__label">{{ _t18('copy_trade_strategy_start_time') }}</span>
-                  <span class="kv__value">{{ formatCopyTradeStrategyStartTime(item) }}</span>
+                  <span class="kv__value">{{ formatCopyTradeTime(item, COPY_TRADE_TIME_FIELD.STRATEGY_START) }}</span>
                 </div>
                 <div v-if="!isCopyTradeOrderEnded(item)" class="kv">
                   <span class="kv__label">{{ _t18('copy_trade_strategy_end_time') }}</span>
-                  <span class="kv__value">{{ formatCopyTradeStrategyEndTime(item) }}</span>
+                  <span class="kv__value">{{ formatCopyTradeTime(item, COPY_TRADE_TIME_FIELD.STRATEGY_END) }}</span>
                 </div>
                 <div v-if="isCopyTradeOrderEnded(item)" class="kv kv--last">
                   <span class="kv__label">{{ _t18('copy_trade_exit_time') }}</span>
-                  <span class="kv__value">{{ formatCopyTradeExitTime(item) }}</span>
+                  <span class="kv__value">{{ formatCopyTradeTime(item, COPY_TRADE_TIME_FIELD.EXIT) }}</span>
                 </div>
                 <div v-if="!isCopyTradeOrderEnded(item)" class="kv">
                   <span class="kv__label">{{ _t18('copy_trade_current_symbol') }}</span>
@@ -159,9 +159,8 @@ import {
   formatPnl,
   pnlClass,
   copyTradeTradeCount,
-  formatCopyTradeStrategyStartTime,
-  formatCopyTradeStrategyEndTime,
-  formatCopyTradeExitTime,
+  formatCopyTradeTime,
+  COPY_TRADE_TIME_FIELD,
   copyTradeHasAmount,
   normalizeCopyTradeListResponse,
   copyTradeOrderBadgeClass,

@@ -15,31 +15,54 @@ function toEpochMs(v) {
   return n < 1e12 ? n * 1000 : n;
 }
 
-function formatLocalTime(input, fmt = "YYYY-MM-DD HH:mm:ss") {
-  if (input === null || input === undefined || input === "") return "--";
-  const ms = toEpochMs(input);
-  const parsed = ms != null ? ms : input;
-  const d = dayjs(parsed);
-  return d.isValid() ? d.format(fmt) : "--";
-}
-
 function pickCopyTradeMillis(item, key) {
   if (!item) return null;
   const params = item.params || {};
   const strategy = item.strategy || {};
-  const raw =
-    params[key] != null
-      ? params[key]
-      : item[key] != null
-        ? item[key]
-        : strategy[key] != null
-          ? strategy[key]
-          : null;
+  const raw = params[key] ?? item[key] ?? strategy[key];
   if (raw == null || raw === "") return null;
   return raw;
 }
 
-function formatStrategyExecuteTime(raw, dailyTimeEnabled, fmt = "YYYY-MM-DD HH:mm") {
+function pickCopyTradeTimeField(item, key) {
+  if (!item) return null;
+  const params = item.params || {};
+  const strategy = item.strategy || {};
+  const raw = item[key] ?? params[key] ?? strategy[key];
+  if (raw == null || raw === "") return null;
+  return raw;
+}
+
+const COPY_TRADE_STRATEGY_TIME_FMT = "YYYY-MM-DD HH:mm";
+
+/** 跟单时间字段 key（供 formatCopyTradeTime 使用） */
+export const COPY_TRADE_TIME_FIELD = {
+  STRATEGY_START: "strategyStart",
+  STRATEGY_END: "strategyEnd",
+  JOIN: "join",
+  EXIT: "exit",
+};
+
+function formatUtcOffsetLabel(d) {
+  const offsetMinutes = d.utcOffset();
+  const sign = offsetMinutes >= 0 ? "+" : "-";
+  const abs = Math.abs(offsetMinutes);
+  const hours = Math.floor(abs / 60);
+  const mins = abs % 60;
+  if (mins === 0) return `UTC${sign}${hours}`;
+  return `UTC${sign}${hours}:${String(mins).padStart(2, "0")}`;
+}
+
+/** 策略开始/结束：本地时间 + UTC 偏移，如 2026-07-03 16:00 (UTC+8) */
+function formatCopyTradeStrategyLocalDateTime(input, fmt = COPY_TRADE_STRATEGY_TIME_FMT) {
+  if (input === null || input === undefined || input === "") return "--";
+  const ms = toEpochMs(input);
+  const d = ms != null ? dayjs(ms) : dayjs(input);
+  if (!d.isValid()) return "--";
+  return `${d.format(fmt)} (${formatUtcOffsetLabel(d)})`;
+}
+
+function formatCopyTradeStrategyTimeValue(raw, dailyTimeEnabled) {
   if (raw == null || raw === "") return "--";
   const s = String(raw);
   const useDaily =
@@ -47,36 +70,92 @@ function formatStrategyExecuteTime(raw, dailyTimeEnabled, fmt = "YYYY-MM-DD HH:m
     (s.startsWith("2000-01-01") || s.includes("2000-01-01"));
   if (useDaily) {
     const d = dayjs(raw);
-    return d.isValid() ? d.format("HH:mm") : "--";
+    if (!d.isValid()) return "--";
+    return `${d.format("HH:mm")} (${formatUtcOffsetLabel(d)})`;
   }
-  const formatted = formatLocalTime(raw, fmt);
+  const formatted = formatCopyTradeStrategyLocalDateTime(raw);
   return formatted !== "--" ? formatted : s;
 }
 
-/** 策略开始时间（毫秒时间戳 → 设备本地时间） */
-export function formatCopyTradeStrategyStartTime(item, fmt = "YYYY-MM-DD HH:mm") {
-  const ms = pickCopyTradeMillis(item, "strategyStartTimeMillis");
-  if (ms != null) return formatLocalTime(ms, fmt);
-  if (item && item.executeStartTime) {
-    return formatStrategyExecuteTime(item.executeStartTime, item.dailyTimeEnabled, fmt);
-  }
-  const fallback = item && item.startTime ? item.startTime : item && item.cycleStartTime ? item.cycleStartTime : "";
-  if (!fallback) return "--";
-  const formatted = formatLocalTime(fallback, fmt);
-  return formatted !== "--" ? formatted : fallback;
+function resolveCopyTradeJoinRaw(item) {
+  if (!item) return "";
+  const params = item.params || {};
+  if (params.joinTimeMillis != null && params.joinTimeMillis !== "") return params.joinTimeMillis;
+  if (item.joinTimeMillis != null && item.joinTimeMillis !== "") return item.joinTimeMillis;
+  return item.joinTime ?? params.joinTime ?? item.startTime ?? item.createTime ?? "";
 }
 
-/** 策略结束时间（毫秒时间戳 → 设备本地时间） */
-export function formatCopyTradeStrategyEndTime(item, fmt = "YYYY-MM-DD HH:mm") {
-  const ms = pickCopyTradeMillis(item, "strategyEndTimeMillis");
-  if (ms != null) return formatLocalTime(ms, fmt);
-  if (item && item.executeEndTime) {
-    return formatStrategyExecuteTime(item.executeEndTime, item.dailyTimeEnabled, fmt);
+function resolveCopyTradeExitRaw(item) {
+  if (!item) return "";
+  const params = item.params || {};
+  if (params.exitTimeMillis != null && params.exitTimeMillis !== "") return params.exitTimeMillis;
+  if (item.exitTimeMillis != null && item.exitTimeMillis !== "") return item.exitTimeMillis;
+  return item.exitTime ?? params.exitTime ?? item.settleTime ?? params.settleTime ?? item.endTime ?? params.endTime ?? "";
+}
+
+/**
+ * 跟单时间统一格式化（本地时间 + UTC 偏移）
+ * @param {object} item
+ * @param {'strategyStart'|'strategyEnd'|'join'|'exit'} field - 见 COPY_TRADE_TIME_FIELD
+ * @param {string} [fmt='YYYY-MM-DD HH:mm']
+ */
+export function formatCopyTradeTime(item, field, fmt = COPY_TRADE_STRATEGY_TIME_FMT) {
+  if (!item) return "--";
+
+  switch (field) {
+    case COPY_TRADE_TIME_FIELD.STRATEGY_START: {
+      const ms = pickCopyTradeMillis(item, "strategyStartTimeMillis");
+      if (ms != null) return formatCopyTradeStrategyLocalDateTime(ms, fmt);
+      const strategyTime = pickCopyTradeTimeField(item, "strategyStartTime");
+      if (strategyTime != null) {
+        return formatCopyTradeStrategyTimeValue(strategyTime, item?.dailyTimeEnabled);
+      }
+      const execute = item?.executeStartTimeMillis ?? item?.strategy?.executeStartTimeMillis;
+      if (execute != null) {
+        return formatCopyTradeStrategyTimeValue(execute, item?.dailyTimeEnabled);
+      }
+      if (item?.executeStartTime) {
+        return formatCopyTradeStrategyTimeValue(item.executeStartTime, item?.dailyTimeEnabled);
+      }
+      const fallback = item?.startTime || item?.cycleStartTime;
+      if (!fallback) return "--";
+      const formatted = formatCopyTradeStrategyLocalDateTime(fallback, fmt);
+      return formatted !== "--" ? formatted : String(fallback);
+    }
+    case COPY_TRADE_TIME_FIELD.STRATEGY_END: {
+      const ms = pickCopyTradeMillis(item, "strategyEndTimeMillis");
+      if (ms != null) return formatCopyTradeStrategyLocalDateTime(ms, fmt);
+      const strategyTime = pickCopyTradeTimeField(item, "strategyEndTime");
+      if (strategyTime != null) {
+        return formatCopyTradeStrategyTimeValue(strategyTime, item?.dailyTimeEnabled);
+      }
+      const execute = item?.executeEndTimeMillis ?? item?.strategy?.executeEndTimeMillis;
+      if (execute != null) {
+        return formatCopyTradeStrategyTimeValue(execute, item?.dailyTimeEnabled);
+      }
+      if (item?.executeEndTime) {
+        return formatCopyTradeStrategyTimeValue(item.executeEndTime, item?.dailyTimeEnabled);
+      }
+      const fallback = item?.endTime;
+      if (!fallback) return "--";
+      const formatted = formatCopyTradeStrategyLocalDateTime(fallback, fmt);
+      return formatted !== "--" ? formatted : String(fallback);
+    }
+    case COPY_TRADE_TIME_FIELD.JOIN: {
+      const raw = resolveCopyTradeJoinRaw(item);
+      if (!raw) return "--";
+      const formatted = formatCopyTradeStrategyLocalDateTime(raw, fmt);
+      return formatted !== "--" ? formatted : String(raw);
+    }
+    case COPY_TRADE_TIME_FIELD.EXIT: {
+      const raw = resolveCopyTradeExitRaw(item);
+      if (!raw) return "--";
+      const formatted = formatCopyTradeStrategyLocalDateTime(raw, fmt);
+      return formatted !== "--" ? formatted : String(raw);
+    }
+    default:
+      return "--";
   }
-  const fallback = item && item.endTime ? item.endTime : "";
-  if (!fallback) return "--";
-  const formatted = formatLocalTime(fallback, fmt);
-  return formatted !== "--" ? formatted : fallback;
 }
 
 export function getActiveSubCount(item) {
@@ -113,25 +192,6 @@ export function formatStrategyProfitRateRange(item) {
   if (!Number.isFinite(maxN)) return fmt(minN);
   if (minN === maxN) return fmt(minN);
   return `${minN.toFixed(2)}% ~ ${maxN.toFixed(2)}%`;
-}
-
-/** 加入时间（毫秒时间戳 / ISO → 设备本地时间） */
-export function formatCopyTradeJoinTime(item, fmt = "YYYY-MM-DD HH:mm") {
-  if (!item) return "--";
-  const params = item.params || {};
-  const ms = params.joinTimeMillis != null ? params.joinTimeMillis : item.joinTimeMillis;
-  if (ms != null) return formatLocalTime(ms, fmt);
-  const fallback =
-    item && item.joinTime
-      ? item.joinTime
-      : params.joinTime
-        ? params.joinTime
-        : item && item.startTime
-          ? item.startTime
-          : "";
-  if (!fallback) return "--";
-  const formatted = formatLocalTime(fallback, fmt);
-  return formatted !== "--" ? formatted : fallback;
 }
 
 /** 跟单详情接口响应归一化 */
@@ -208,9 +268,9 @@ export function normalizeCopyTradeDetailResponse(res) {
 }
 
 /** 策略时间范围 */
-export function formatCopyTradeStrategyTimeRange(item, fmt = "YYYY-MM-DD HH:mm") {
-  const start = formatCopyTradeStrategyStartTime(item, fmt);
-  const end = formatCopyTradeStrategyEndTime(item, fmt);
+export function formatCopyTradeStrategyTimeRange(item, fmt = COPY_TRADE_STRATEGY_TIME_FMT) {
+  const start = formatCopyTradeTime(item, COPY_TRADE_TIME_FIELD.STRATEGY_START, fmt);
+  const end = formatCopyTradeTime(item, COPY_TRADE_TIME_FIELD.STRATEGY_END, fmt);
   if (start === "--" && end === "--") return "--";
   if (start === "--") return end;
   if (end === "--") return start;

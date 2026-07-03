@@ -24,19 +24,19 @@
             </div>
             <div class="kv">
               <span>{{ _t18('copy_trade_strategy_start_time') }}</span>
-              <span>{{ formatCopyTradeStrategyStartTime(order) }}</span>
+              <span>{{ formatCopyTradeTime(order, COPY_TRADE_TIME_FIELD.STRATEGY_START) }}</span>
             </div>
             <div class="kv">
               <span>{{ _t18('copy_trade_strategy_end_time') }}</span>
-              <span>{{ formatCopyTradeStrategyEndTime(order) }}</span>
+              <span>{{ formatCopyTradeTime(order, COPY_TRADE_TIME_FIELD.STRATEGY_END) }}</span>
             </div>
             <div class="kv">
               <span>{{ _t18('copy_trade_join_time') }}</span>
-              <span>{{ formatCopyTradeJoinTime(order) }}</span>
+              <span>{{ formatCopyTradeTime(order, COPY_TRADE_TIME_FIELD.JOIN) }}</span>
             </div>
             <div v-if="isCopyTradeOrderEnded(order)" class="kv">
               <span>{{ _t18('copy_trade_exit_time') }}</span>
-              <span>{{ formatCopyTradeExitTime(order) }}</span>
+              <span>{{ formatCopyTradeTime(order, COPY_TRADE_TIME_FIELD.EXIT) }}</span>
             </div>
             <div v-if="!isCopyTradeOrderEnded(order)" class="kv">
               <span>{{ _t18('copy_trade_current_symbol') }}</span>
@@ -187,10 +187,8 @@ import {
   copyTradePnlRate,
   copyTradePositionSymbol,
   copyTradeRunningSymbol,
-  formatCopyTradeStrategyStartTime,
-  formatCopyTradeStrategyEndTime,
-  formatCopyTradeJoinTime,
-  formatCopyTradeExitTime,
+  formatCopyTradeTime,
+  COPY_TRADE_TIME_FIELD,
   mergeCopyTradeDetailResponses,
   copyTradeOrderBadgeClass,
   copyTradeOrderStatusText,
