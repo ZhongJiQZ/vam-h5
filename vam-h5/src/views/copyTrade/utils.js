@@ -492,15 +492,6 @@ export const COPY_TRADE_TIME_FIELD = {
   EXIT: 'exit',
 }
 
-<<<<<<< HEAD
-function formatUtcOffsetLabel(at = new Date()) {
-  return formatClientUtcOffsetLabel(at)
-}
-
-/** 策略开始/结束：本地时间 + UTC 偏移，如 2026-07-03 16:00 (UTC+8) */
-function formatCopyTradeStrategyLocalDateTime(input, fmt = COPY_TRADE_STRATEGY_TIME_FMT) {
-  return formatClientLocalDateTime(input, fmt)
-=======
 /** 策略开始/结束：本地时间，如 2026-07-03 16:00 */
 function formatCopyTradeStrategyLocalDateTime(input, fmt = COPY_TRADE_STRATEGY_TIME_FMT) {
   if (input === null || input === undefined || input === '') return '--'
@@ -508,7 +499,6 @@ function formatCopyTradeStrategyLocalDateTime(input, fmt = COPY_TRADE_STRATEGY_T
   const d = ms != null ? dayjs(ms) : dayjs(input)
   if (!d.isValid()) return '--'
   return d.format(fmt)
->>>>>>> 7143112 (1)
 }
 
 function formatCopyTradeStrategyTimeValue(raw, dailyTimeEnabled) {
@@ -520,18 +510,12 @@ function formatCopyTradeStrategyTimeValue(raw, dailyTimeEnabled) {
   if (useDaily) {
     const d = dayjs(raw)
     if (!d.isValid()) return '--'
-<<<<<<< HEAD
-    return `${d.format('HH:mm')} (${formatUtcOffsetLabel(new Date())})`
-=======
     return d.format('HH:mm')
->>>>>>> 7143112 (1)
   }
   const formatted = formatCopyTradeStrategyLocalDateTime(raw)
   return formatted !== '--' ? formatted : s
 }
 
-<<<<<<< HEAD
-=======
 /**
  * 跟单时间统一格式化（本地时间）
  * @param {object} item
@@ -585,7 +569,6 @@ export function formatCopyTradeTime(item, field, fmt = COPY_TRADE_STRATEGY_TIME_
   }
 }
 
->>>>>>> 7143112 (1)
 /** 策略加入条件：下级跟单人数门槛 */
 export function getActiveSubCount(item) {
   if (!item) return 0
