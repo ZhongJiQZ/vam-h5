@@ -121,12 +121,25 @@
               </div>
 
               <div
-                v-if="copyTradeHasAmount(item) && !isCopyTradeOrderEnded(item)"
+                v-if="copyTradeHasAmount(item) && !isCopyTradeFullyExited(item) && (!isCopyTradeStrategyEnded(item) || canManualExitCopyTrade(item))"
                 class="card-actions"
                 @click.stop
               >
-                <button type="button" class="append-btn" @click="openAppend(item)">
+                <button
+                  v-if="!isCopyTradeStrategyEnded(item)"
+                  type="button"
+                  class="append-btn"
+                  @click="openAppend(item)"
+                >
                   {{ _t18('copy_trade_append') }}
+                </button>
+                <button
+                  v-else-if="canManualExitCopyTrade(item)"
+                  type="button"
+                  class="stop-btn"
+                  @click="openStop(item)"
+                >
+                  {{ _t18('copy_trade_stop') }}
                 </button>
               </div>
               <div class="card-footer">
@@ -142,6 +155,12 @@
 
     <ShareDialog v-if="shareVisible" v-model:show="shareVisible" :item="shareItem" />
     <AppendDialog v-model:show="appendVisible" :item="appendItem" :loading="appendLoading" @confirm="confirmAppend" />
+    <StopConfirmDialog
+      v-model:show="stopVisible"
+      :rows="stopRows"
+      :loading="stopLoading"
+      @confirm="confirmStop"
+    />
   </div>
 </template>
 
@@ -150,9 +169,10 @@ import { ref, computed, onMounted, watch, defineAsyncComponent } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import AppendDialog from './components/AppendDialog.vue'
+import StopConfirmDialog from './components/StopConfirmDialog.vue'
 const ShareDialog = defineAsyncComponent(() => import('./components/ShareDialog.vue'))
 import { _t18 } from '@/utils/public'
-import { getCopyTradeList, appendCopyTrade, getCopyTradeMyPerformance } from '@/api/copyTrade'
+import { getCopyTradeList, appendCopyTrade, exitCopyTrade, getCopyTradeMyPerformance } from '@/api/copyTrade'
 import { priceFormat, _add } from '@/utils/decimal'
 import {
   copyTradePositionSymbol,
@@ -166,6 +186,9 @@ import {
   copyTradeOrderBadgeClass,
   copyTradeOrderStatusText,
   isCopyTradeOrderEnded,
+  isCopyTradeFullyExited,
+  isCopyTradeStrategyEnded,
+  canManualExitCopyTrade,
   copyTradeOrderDisplayPnl,
   copyTradeOrderDisplayPnlRate,
   groupCopyTradeOrdersByDate,
@@ -218,6 +241,10 @@ const shareItem = ref({})
 const appendVisible = ref(false)
 const appendItem = ref({})
 const appendLoading = ref(false)
+const stopVisible = ref(false)
+const stopItem = ref({})
+const stopRows = ref([])
+const stopLoading = ref(false)
 
 const groupedList = computed(() => groupCopyTradeOrdersByDate(list.value, t18))
 
@@ -433,6 +460,42 @@ async function confirmAppend(amount) {
     void e
   } finally {
     appendLoading.value = false
+  }
+}
+
+function openStop(item) {
+  stopItem.value = item
+  stopRows.value = [
+    { label: t18('copy_trade_amount'), value: `${priceFormat(item.amount, 2)} USDT`, cls: '' },
+    {
+      label: t18('copy_trade_trade_fee'),
+      value: `${priceFormat(item.tradeFee ?? item.params?.tradeFee ?? 0, 2)} USDT`,
+      cls: ''
+    },
+    {
+      label: t18('copy_trade_profit_share_amt'),
+      value: `${priceFormat(item.profitShareAmt ?? item.params?.profitShareAmt ?? 0, 2)} USDT`,
+      cls: ''
+    }
+  ]
+  stopVisible.value = true
+}
+
+async function confirmStop() {
+  stopLoading.value = true
+  try {
+    const res = await exitCopyTrade({ id: stopItem.value.id })
+    if (res?.code == 200) {
+      showToast(res.msg || t18('copy_trade_exit_success'))
+      stopVisible.value = false
+      onRefresh()
+    } else {
+      showToast(res?.msg)
+    }
+  } catch (e) {
+    void e
+  } finally {
+    stopLoading.value = false
   }
 }
 
@@ -735,15 +798,24 @@ $muted: #888;
   margin-top: 12px;
 }
 
-.append-btn {
+.append-btn,
+.stop-btn {
   width: 100%;
   height: 40px;
   border: none;
   border-radius: 10px;
-  background: rgba($green, 0.1);
-  color: $green;
   font-size: 14px;
   font-weight: 600;
+}
+
+.append-btn {
+  background: rgba($green, 0.1);
+  color: $green;
+}
+
+.stop-btn {
+  background: $green;
+  color: #fff;
 }
 
 .card-footer {
