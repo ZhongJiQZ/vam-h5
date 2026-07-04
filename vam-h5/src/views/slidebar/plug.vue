@@ -192,6 +192,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { NO_SHOW_MEMBER } from '@/config/index'
 import { _t18, _timeFormat } from '@/utils/public'
@@ -212,6 +213,7 @@ import avatar2 from '@/assets/images/gxpex/referrals/avatar-2.jpg'
 import avatar3 from '@/assets/images/gxpex/referrals/avatar-3.jpg'
 
 const router = useRouter()
+const i18n = useI18n()
 const { _copy } = useCopy()
 const useStore = useUserStore()
 const userInfo = useStore.userInfo
@@ -232,34 +234,34 @@ const curIndex = ref(0)
 const memberAvatars = [avatar1, avatar2, avatar3]
 
 const tierStats = computed(() => [
-  { label: _t18('plug_oneNum', ['aams']), value: teamInfo.value.oneCount || 0 },
-  { label: _t18('plug_twoNum', ['aams']), value: teamInfo.value.twoCount || 0 },
-  { label: _t18('plug_threeNum', ['aams']), value: teamInfo.value.threeCount || 0 },
-  { label: _t18('plug_oneCopyTradeNum', ['aams']), value: teamInfo.value.oneCopyTradeCount || 0 },
-  { label: _t18('plug_twoCopyTradeNum', ['aams']), value: teamInfo.value.twoCopyTradeCount || 0 },
-  { label: _t18('plug_threeCopyTradeNum', ['aams']), value: teamInfo.value.threeCopyTradeCount || 0 },
-  { label: _t18('plug_today_sum', ['aams']), value: teamInfo.value.todaySumCount || 0 },
+  { label: _t18('plug_oneNum', ['aams'], i18n), value: teamInfo.value.oneCount || 0 },
+  { label: _t18('plug_twoNum', ['aams'], i18n), value: teamInfo.value.twoCount || 0 },
+  { label: _t18('plug_threeNum', ['aams'], i18n), value: teamInfo.value.threeCount || 0 },
+  { label: _t18('plug_oneCopyTradeNum', ['aams'], i18n), value: teamInfo.value.oneCopyTradeCount || 0 },
+  { label: _t18('plug_twoCopyTradeNum', ['aams'], i18n), value: teamInfo.value.twoCopyTradeCount || 0 },
+  { label: _t18('plug_threeCopyTradeNum', ['aams'], i18n), value: teamInfo.value.threeCopyTradeCount || 0 },
+  { label: _t18('plug_today_sum', ['aams'], i18n), value: teamInfo.value.todaySumCount || 0 },
   {
-    label: `${_t18('plug_today_amount', ['aams'])}(USDT)`,
-    value: teamInfo.value.todaySumAmount || 0
+    label: `${_t18('plug_today_amount', ['aams'], i18n)}(USDT)`,
+    value: formatMoney(teamInfo.value.todaySumAmount)
   },
-  { label: _t18('plug_records', ['aams']), value: teamInfo.value.totalRecords || 0 }
+  { label: _t18('plug_records', ['aams'], i18n), value: teamInfo.value.totalRecords || 0 }
 ])
 
 const summaryStats = computed(() => [
-  { label: _t18('plug_sum', ['aams']), value: teamInfo.value.sumCount || 0 },
+  { label: _t18('plug_sum', ['aams'], i18n), value: teamInfo.value.sumCount || 0 },
   {
-    label: `${_t18('plug_amount', ['aams'])} (USDT)`,
+    label: `${_t18('plug_amount', ['aams'], i18n)} (USDT)`,
     value: formatMoney(teamInfo.value.sumAmount)
   },
-  { label: _t18('plug_records', ['aams']), value: teamInfo.value.totalRecords || 0 }
+  { label: _t18('plug_records', ['aams'], i18n), value: teamInfo.value.totalRecords || 0 }
 ])
 
 const tabList = computed(() => [
-  _t18('plug_one', ['aams']),
-  _t18('plug_two', ['aams']),
-  _t18('plug_three', ['aams']),
-  _t18('plug_myCommissionRecords', ['aams'])
+  _t18('plug_one', ['aams'], i18n),
+  _t18('plug_two', ['aams'], i18n),
+  _t18('plug_three', ['aams'], i18n),
+  _t18('plug_myCommissionRecords', ['aams'], i18n)
 ])
 
 const formatMoney = (val) => Number(val || 0).toFixed(2)
