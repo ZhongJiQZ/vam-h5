@@ -412,6 +412,7 @@
   "purchase": "購入",
   "bb_sell1": "売却",
   "bb_Limit_order": "指値注文",
+  "bb_market_order": "成行注文",
   "please_enter_quantity": "数量を入力してください",
   "Insufficient_funds_available": "利用可能額が不足しています",
   "enter_the_amount": "金額を入力してください",
