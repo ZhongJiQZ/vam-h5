@@ -5,7 +5,7 @@
 
 /** 项目专属插件脚本（后台生成的接入代码） */
 export const SALE_SMARTLY_PLUGIN_SRC =
-  'https://plugin-code.salesmartly.com/js/project_765684_791059_1782872435.js'
+  'https://plugin-code.salesmartly.com/js/project_769062_794682_1783166010.js'
 
 /** SaleSmartly 后台自定义字段 key（项目设置 → 自定义字段 → userId） */
 export const SALE_SMARTLY_CUSTOM_FIELD_USER_ID = 'userId'
