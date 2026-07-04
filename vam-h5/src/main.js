@@ -22,6 +22,7 @@ import { setToastDefaultOptions, showDialog } from 'vant'
 // 加载主题
 import { initTheme, switchPlanform } from './utils/index'
 import { DEFAULT_LANGUAGE } from '@/config'
+import { getLangByIp } from '@/utils/ipLanguage'
 
 initTheme()
 
@@ -95,6 +96,7 @@ Promise.all([
     initialLocale = saved
   } else if (languageList.length) {
     initialLocale =
+      (await getLangByIp(languageList)) ||
       matchDeviceToList() ||
       languageList.find((i) => norm(i.dictValue) === 'en')?.dictValue ||
       DEFAULT_LANGUAGE
