@@ -189,8 +189,9 @@ import {
   isCopyTradeFullyExited,
   isCopyTradeStrategyEnded,
   canManualExitCopyTrade,
+  copyTradeNetProfit,
+  copyTradePnlRate,
   copyTradeOrderDisplayPnl,
-  copyTradeOrderDisplayPnlRate,
   groupCopyTradeOrdersByDate,
   formatCopyTradeDisplayDate,
   resolveCopyTradeJoinRaw,
@@ -248,12 +249,13 @@ const stopLoading = ref(false)
 
 const groupedList = computed(() => groupCopyTradeOrdersByDate(list.value, t18))
 
+/** 列表卡片盈亏/ROI：仅用 netProfit（扣费、分润后），不用 totalSettledProfit / actualProfit */
 function orderPnl(item) {
-  return copyTradeOrderDisplayPnl(item)
+  return copyTradeNetProfit(item)
 }
 
 function orderPnlRate(item) {
-  return copyTradeOrderDisplayPnlRate(item)
+  return copyTradePnlRate(item)
 }
 
 const DAYJS_LOCALE_MAP = {
