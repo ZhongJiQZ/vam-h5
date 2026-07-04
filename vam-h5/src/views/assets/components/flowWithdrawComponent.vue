@@ -48,7 +48,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed } from 'vue'
 import { getWithdrawList } from '@/api/account'
 import OrderList from '../components/orderList.vue'
 import { _t18 } from '@/utils/public'
@@ -128,14 +128,6 @@ const onClickStatusTab = () => {
   loading.value = true
   getList()
 }
-
-watch(
-  curIndex,
-  () => {
-    getList()
-  },
-  { immediate: true }
-)
 </script>
 
 <style lang="scss" scoped>

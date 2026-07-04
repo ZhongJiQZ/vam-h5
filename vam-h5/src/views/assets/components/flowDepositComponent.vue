@@ -66,7 +66,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed } from 'vue'
 import { _t18, _numberWithCommas } from '@/utils/public'
 import { formatLocalTime } from '@/utils/time'
 import { priceFormat } from '@/utils/decimal'
@@ -178,14 +178,6 @@ const onClickStatusTab = () => {
   loading.value = true
   getList()
 }
-
-watch(
-  curIndex,
-  () => {
-    getList()
-  },
-  { immediate: true }
-)
 </script>
 
 <style scoped lang="scss">
