@@ -1506,5 +1506,6 @@
   "copy_trade_mask_explain_s3_content": "उच्च-उपज Alpha रणनीतियों की सीमित execution क्षमता होती है। डेटा डी-सेंसिटाइजेशन अवैध बाहरी 'free-riding/copycatting' व्यवहारों को प्रभावी रूप से रोकता है, सीमित order-matching चैनलों को unrelated पूंजी से congest होने से रोकता है, और core premium सदस्यों के लिए preferential execution अधिकार और optimal entry price points सुनिश्चित करता है।",
   "copy_trade_mask_explain_conclusion_title": "जोखिम प्रबंधन सारांश:",
   "copy_trade_mask_explain_conclusion_content": "डेटा डी-सेंसिटाइजेशन intra-day noise को filter करने, दुर्भावनापूर्ण manipulation को neutralize करने और followers की अंतिम net returns को preserve करने के लिए एक अनिवार्य defensive tool है। सभी transaction डेटा position liquidation के तुरंत बाद granular, full-spectrum disclosure से गुजरेगा ताकि authenticity, compliance और absolute auditability सुनिश्चित हो।",
-  "copy_trade_explain_got_it": "समझ गया"
+  "copy_trade_explain_got_it": "समझ गया",
+  "login_account_email": "Account/Email"
 }

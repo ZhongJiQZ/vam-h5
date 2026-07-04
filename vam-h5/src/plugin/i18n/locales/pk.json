@@ -1286,5 +1286,6 @@
   "copy_trade_mask_explain_s3_content": "اعلیٰ منافع Alpha حکمت عملیوں کی محدود execution capacity ہوتی ہے۔ ڈیٹا ڈی سینسیٹائزیشن غیر قانونی بیرونی 'free-riding/copycatting' رویوں کو مؤثر طریقے سے روکتی ہے، محدود order-matching channels کو unrelated سرمایہ سے congest ہونے سے روکتی ہے، اور core premium اراکین کے لیے preferential execution rights اور optimal entry price points کو یقینی بناتی ہے۔",
   "copy_trade_mask_explain_conclusion_title": "رسک مینجمنٹ خلاصہ:",
   "copy_trade_mask_explain_conclusion_content": "ڈیٹا ڈی سینسیٹائزیشن intra-day noise کو filter کرنے، بدنیتی manipulation کو neutralize کرنے اور followers کی حتمی net returns کو preserve کرنے کے لیے ایک لازمی defensive tool ہے۔ تمام transaction ڈیٹا position liquidation کے فوراً بعد granular, full-spectrum disclosure سے گزرے گا تاکہ authenticity، compliance اور absolute auditability یقینی بنے۔",
-  "copy_trade_explain_got_it": "سمجھ گیا"
+  "copy_trade_explain_got_it": "سمجھ گیا",
+  "login_account_email": "اکاؤنٹ/ای میل"
 }

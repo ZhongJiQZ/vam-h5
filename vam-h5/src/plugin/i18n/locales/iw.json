@@ -1503,5 +1503,6 @@
   "copy_trade_mask_explain_s3_content": "לאסטרטגיות Alpha בתשואה גבוהה יש קיבולת ביצוע מוגבלת. השחרת רגישות נתונים חוסמת ביעילות התנהגויות illicit חיצוניות של 'free-riding/copycatting', מונעת עומס יתר על ערוצי matching מוגבלים על ידי הון לא קשור, ומבטיחה זכויות ביצוע מועדפות ונקודות כניסה אופטימליות לחברי premium מרכזיים.",
   "copy_trade_mask_explain_conclusion_title": "סיכום ניהול סיכונים:",
   "copy_trade_mask_explain_conclusion_content": "השחרת רגישות נתונים היא כלי הגנה שאין לו תחליף, הנדרש לסנן רעש intraday, לנטרל מניפולציה זדונית ולשמר את התשואות הנקיות הסופיות של העוקבים שלנו. כל נתוני העסקאות יעברו גילוי מלא ומפורט מיד עם liquidation של הפוזיציה, כדי להבטיח אותנטיות, ציות ויכולת ביקורת מוחלטת.",
-  "copy_trade_explain_got_it": "הבנתי"
+  "copy_trade_explain_got_it": "הבנתי",
+  "login_account_email": "Account/Email"
 }

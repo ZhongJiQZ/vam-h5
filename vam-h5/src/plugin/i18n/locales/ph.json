@@ -1516,5 +1516,6 @@
   "copy_trade_mask_explain_s3_content": "High-yield alpha strategies possess finite execution capacity. Data desensitization effectively intercepts illicit external 'free-riding/copycatting' behaviors, preventing limited order-matching channels from being congested by unrelated capital, thereby securing preferential execution rights and optimal entry price points for core premium members.",
   "copy_trade_mask_explain_conclusion_title": "Risk Management Summary:",
   "copy_trade_mask_explain_conclusion_content": "Data desensitization is a non-negotiable defensive tool required to filter out intra-day noise, neutralize malicious manipulation, and preserve the final net returns for our followers. All transaction data will undergo granular, full-spectrum disclosure immediately upon position liquidation to guarantee authenticity, compliance, and absolute auditability.",
-  "copy_trade_explain_got_it": "Got it"
+  "copy_trade_explain_got_it": "Got it",
+  "login_account_email": "Account/Email"
 }

@@ -90,6 +90,14 @@ export const getCustomerService = () => post(`/api/common/getCustomerService`)
 export const getTimeZone = () => post(`/api/timezone/getTimeZone`)
 
 /**
+ * 根据访问 IP 获取国家码（ISO2），可选后端能力
+ * 期望返回: { code: 200, data: { countryCode: 'PH' } } 或 { code: 200, data: 'PH' }
+ * 未实现时前端会静默失败并继续走公网 GeoIP 兜底
+ */
+export const getIpCountryApi = () =>
+  post('/api/common/getIpCountry', {}, { skipBizErrorToast: true, timeout: 3500 })
+
+/**
  * 获取白皮书
  */
 export const getWhitePaperUrl = () => post(`api/common/getWhitePaperSetting`)

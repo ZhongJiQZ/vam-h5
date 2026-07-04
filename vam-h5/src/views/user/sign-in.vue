@@ -23,7 +23,7 @@
             v-model="form.username"
             type="text"
             class="field__input"
-            :placeholder="_t18('login_account')"
+            :placeholder="_t18('login_account_email')"
             autocomplete="username"
           />
         </div>

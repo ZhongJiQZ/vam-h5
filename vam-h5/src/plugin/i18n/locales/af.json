@@ -1508,5 +1508,6 @@
   "copy_trade_mask_explain_s3_content": "Hoë-opbrengs Alpha-strategieë het 'n eindige uitvoeringskapasiteit. Data-desensibilisering onderskep effektief onwettige eksterne 'free-riding/copycatting'-gedrag, voorkom dat beperkte orderbypassingskanale deur onverwante kapitaal oorlaai word, en verseker preferensiële uitvoeringsregte en optimale instappryspunte vir kern premium-lede.",
   "copy_trade_mask_explain_conclusion_title": "Risikobestuur Opsomming:",
   "copy_trade_mask_explain_conclusion_content": "Data-desensibilisering is 'n ononderhandelbare verdedigingsinstrument wat nodig is om intradag-ruis te filter, kwaadwillige manipulasie te neutraliseer, en die finale netto-opbrengste vir ons volgelinge te beskerm. Alle transaksiedata sal onmiddellik na posisielikwidasie gedetailleerde, volledige openbaarmaking ondergaan om egtheid, nakoming en absolute ouditeerbaarheid te waarborg.",
-  "copy_trade_explain_got_it": "Verstaan"
+  "copy_trade_explain_got_it": "Verstaan",
+  "login_account_email": "Account/Email"
 }

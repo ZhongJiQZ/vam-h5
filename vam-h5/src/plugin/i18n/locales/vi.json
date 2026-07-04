@@ -1508,5 +1508,6 @@
   "copy_trade_mask_explain_s3_content": "Các chiến lược Alpha lợi nhuận cao có dung lượng thực thi hữu hạn. Khử nhạy dữ liệu hiệu quả chặn các hành vi 'free-riding/copycatting' bên ngoài bất hợp pháp, ngăn các kênh khớp lệnh hạn chế bị tắc nghẽn bởi vốn không liên quan, từ đó đảm bảo quyền thực thi ưu tiên và điểm vào lệnh tối ưu cho thành viên premium cốt lõi.",
   "copy_trade_mask_explain_conclusion_title": "Tóm tắt quản lý rủi ro:",
   "copy_trade_mask_explain_conclusion_content": "Khử nhạy dữ liệu là công cụ phòng thủ không thể thiếu để lọc nhiễu trong ngày, vô hiệu hóa thao túng độc hại và bảo toàn lợi nhuận ròng cuối cùng cho người theo dõi. Tất cả dữ liệu giao dịch sẽ được công bố chi tiết và toàn diện ngay sau khi thanh lý vị thế để đảm bảo tính xác thực, tuân thủ và khả năng kiểm toán tuyệt đối.",
-  "copy_trade_explain_got_it": "Đã hiểu"
+  "copy_trade_explain_got_it": "Đã hiểu",
+  "login_account_email": "Tài khoản/Email"
 }

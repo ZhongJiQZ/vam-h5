@@ -1516,5 +1516,6 @@
   "copy_trade_mask_explain_s3_content": "高收益策略的容量（Capacity）是有限的。数据脱敏能有效拦截外部黑产的“免费抄单”行为，避免有限的订单撮合通道被无关资金挤占，从而保障核心会员的优先成交权与最优质的开仓点位。",
   "copy_trade_mask_explain_conclusion_title": "风控结论：",
   "copy_trade_mask_explain_conclusion_content": "数据脱敏是为了屏蔽盘中噪音、对冲恶意操纵、保障跟随者最终净值的必要防御手段。所有交易数据将在平仓（Liquidation）后进行穿透式全量披露，确保结果的真实、合规与可追溯。",
-  "copy_trade_explain_got_it": "我知道了"
+  "copy_trade_explain_got_it": "我知道了",
+  "login_account_email": "账号/邮箱"
 }

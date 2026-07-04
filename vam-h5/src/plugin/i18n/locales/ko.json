@@ -1508,5 +1508,6 @@
   "copy_trade_mask_explain_s3_content": "고수익 Alpha 전략은 유한한 체결 용량을 보유합니다. 데이터 비식별화는 불법적인 외부 'free-riding/copycatting' 행위를 효과적으로 차단하여, 제한된 주문 매칭 채널이 무관한 자본으로 혼잡해지는 것을 방지하고, 핵심 프리미엄 회원의 우선 체결권과 최적 진입 가격을 확보합니다.",
   "copy_trade_mask_explain_conclusion_title": "리스크 관리 요약:",
   "copy_trade_mask_explain_conclusion_content": "데이터 비식별화는 장중 노이즈를 필터링하고, 악의적 조작을 중화하며, 팔로워의 최종 순수익을 보호하기 위한 필수 방어 수단입니다. 모든 거래 데이터는 포지션 청산(Liquidation) 직후 상세하고 전면적으로 공개되어 진정성, 컴플라이언스 및 절대적 감사 가능성을 보장합니다.",
-  "copy_trade_explain_got_it": "알겠습니다"
+  "copy_trade_explain_got_it": "알겠습니다",
+  "login_account_email": "계정/이메일"
 }

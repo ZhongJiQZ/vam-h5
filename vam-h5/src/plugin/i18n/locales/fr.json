@@ -1508,5 +1508,6 @@
   "copy_trade_mask_explain_s3_content": "Les stratégies Alpha à haut rendement possèdent une capacité d'exécution finie. La désensibilisation des données intercepte efficacement les comportements illicites externes de 'free-riding/copycatting', empêchant les canaux limités de matching d'ordres d'être congestionnés par du capital non pertinent, garantissant ainsi des droits d'exécution préférentiels et des points d'entrée optimaux pour les membres premium centraux.",
   "copy_trade_mask_explain_conclusion_title": "Résumé de la gestion des risques :",
   "copy_trade_mask_explain_conclusion_content": "La désensibilisation des données est un outil défensif incontournable pour filtrer le bruit intraday, neutraliser la manipulation malveillante et préserver les rendements nets finaux de nos suiveurs. Toutes les données de transaction feront l'objet d'une divulgation granulaire et complète immédiatement après la liquidation de la position pour garantir authenticité, conformité et auditabilité absolue.",
-  "copy_trade_explain_got_it": "Compris"
+  "copy_trade_explain_got_it": "Compris",
+  "login_account_email": "Compte/Email"
 }
