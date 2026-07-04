@@ -152,8 +152,7 @@
       obj.title = isUsdt ? 'USDT' : sym.replace(/usdt/ig, '').trim().toUpperCase()
       obj.icon = isUsdt ? 'usdt' : sym.replace(/usdt/ig, '').trim()
   
-      if (isUsdt) list.unshift(obj)
-      else list.push(obj)
+      list.push(obj)
     })
     return list
   })
