@@ -14,6 +14,15 @@
         @click="linkTo(item)"
       >
       </CollectItem>
+      <div class="quote-optional__add-more">
+        <button
+          type="button"
+          class="quote-optional__add-btn"
+          @click="$router.push('/addOptional')"
+        >
+          +{{ _t18(`quote_addOwn`) }}
+        </button>
+      </div>
     </div>
     <div v-else class="quote-optional__empty">
       <img :src="noDataImg" alt="" class="quote-optional__empty-img" />
@@ -77,7 +86,7 @@ const linkTo = (item) => {
     path: '/trade',
     query: {
       symbol: item.coin,
-      componentName: item.componentName, // 或你当前tab的标识
+      componentName: 'Ustandard',
     },
   })
 }
@@ -121,6 +130,26 @@ const linkTo = (item) => {
 
 .quote-optional__empty-btn {
   margin-top: 24px;
+  width: 100%;
+  max-width: 280px;
+  height: 44px;
+  border: 1px solid #9f40ec;
+  border-radius: 999px;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 500;
+  color: #9e40eb;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.quote-optional__add-more {
+  display: flex;
+  justify-content: center;
+  padding: 8px 24px 24px;
+}
+
+.quote-optional__add-btn {
   width: 100%;
   max-width: 280px;
   height: 44px;

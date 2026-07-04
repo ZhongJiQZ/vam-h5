@@ -135,6 +135,12 @@ watch(
 watch(
   headerList,
   () => {
+    // 优先按 URL query.componentName 定位；否则回读 store.tradeFlag
+    const queryName = $route.query.componentName
+    if (typeof queryName === 'string' && queryName) {
+      setIndexByComponentName(queryName)
+      return
+    }
     currentIndex.value = readInitialTradeListIndex()
   },
   { immediate: true }

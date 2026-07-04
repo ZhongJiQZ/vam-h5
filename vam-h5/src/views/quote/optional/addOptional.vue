@@ -77,18 +77,11 @@ const mainStroe = useMainStore()
 const $router = useRouter()
 
 const allCoinList = computed(() => {
-  const withComponent = (list, componentName) =>
-    (list || []).map((item) => ({
-      ...item,
-      componentName,
-      coinKey: `${item.coin}|${componentName}`
-    }))
-
-  return [
-    ...withComponent(tradeStore.secondContractCoinList, 'SecondContract'),
-    ...withComponent(tradeStore.spotCoinList, 'BBTrading'),
-    ...withComponent(tradeStore.contractCoinList, 'Ustandard')
-  ]
+  return (tradeStore.contractCoinList || []).map((item) => ({
+    ...item,
+    componentName: 'Ustandard',
+    coinKey: `${item.coin}|Ustandard`
+  }))
 })
 
 const searchValue = ref('')
@@ -109,7 +102,13 @@ onMounted(() => {
 mainStroe.setTradeStatus(Number(-1))
 
 const linkTo = (item) => {
-  $router.push(`/trade?symbol=${item.coin}`)
+  $router.push({
+    path: '/trade',
+    query: {
+      symbol: item.coin,
+      componentName: 'Ustandard'
+    }
+  })
 }
 
 const handelCollect = (item) => {
