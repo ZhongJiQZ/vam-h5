@@ -407,6 +407,7 @@
   "purchase": "Comprar",
   "bb_sell1": "Vender",
   "bb_Limit_order": "Orden limitada",
+  "bb_market_order": "orden de mercado",
   "please_enter_quantity": "Por favor ingresa la cantidad",
   "Insufficient_funds_available": "Saldo disponible insuficiente",
   "enter_the_amount": "Por favor ingresa el monto",

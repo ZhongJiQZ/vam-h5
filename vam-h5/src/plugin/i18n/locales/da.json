@@ -407,6 +407,7 @@
   "purchase": "Buy",
   "bb_sell1": "Sell",
   "bb_Limit_order": "Limit order",
+  "bb_market_order": "markedsordre",
   "please_enter_quantity": "Please enter the quantity",
   "Insufficient_funds_available": "Insufficient available amount",
   "enter_the_amount": "Please enter the amount",

@@ -407,6 +407,7 @@
   "purchase": "ซื้อ",
   "bb_sell1": "ขาย",
   "bb_Limit_order": "คำสั่งจำกัดราคา",
+  "bb_market_order": "คำสั่งซื้อขาย ณ ราคาตลาด",
   "please_enter_quantity": "กรุณาใส่จำนวน",
   "Insufficient_funds_available": "ยอดคงเหลือไม่เพียงพอ",
   "enter_the_amount": "กรุณาใส่จำนวนเงิน",

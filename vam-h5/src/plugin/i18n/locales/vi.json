@@ -407,6 +407,7 @@
   "purchase": "Mua",
   "bb_sell1": "Bán",
   "bb_Limit_order": "Lệnh giới hạn",
+  "bb_market_order": "Lệnh thị trường",
   "please_enter_quantity": "Vui lòng nhập số lượng",
   "Insufficient_funds_available": "Số dư khả dụng không đủ",
   "enter_the_amount": "Vui lòng nhập số tiền",

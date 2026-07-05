@@ -407,6 +407,7 @@
   "purchase": "구매",
   "bb_sell1": "매도",
   "bb_Limit_order": "지정가 주문",
+  "bb_market_order": "시장가 주문",
   "please_enter_quantity": "수량을 입력하세요",
   "Insufficient_funds_available": "사용 가능 금액 부족",
   "enter_the_amount": "금액을 입력하세요",
