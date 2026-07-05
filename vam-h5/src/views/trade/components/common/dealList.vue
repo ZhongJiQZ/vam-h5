@@ -1,7 +1,7 @@
 <script setup>
 import { socketDict } from '@/config/dict'
 import { _coinWebSocket } from '@/plugin/socket/index'
-import { _div, countFormat, priceFormat } from '@/utils/decimal'
+import { countFormat, priceFormat } from '@/utils/decimal'
 import PubSub from 'pubsub-js'
 import { reactive } from 'vue'
 import { _t18 } from '@/utils/public'
@@ -111,7 +111,7 @@ onUnmounted(() => {
       {{ _t18(`purchase`) }}
     </div>
     <div class="price fw-num">{{ priceFormat(item.price) }}</div>
-    <div class="count fw-num">{{ countFormat(_div(item.amount, item.price)) }}</div>
+    <div class="count fw-num">{{ countFormat(item.amount) }}</div>
   </div>
   <Nodata v-if="dataList.length === 0"></Nodata>
 </template>
