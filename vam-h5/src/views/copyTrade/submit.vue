@@ -13,13 +13,13 @@ import {
   getCopyTradeInstitutionDetail,
   subscribeCopyTradeInstitution
 } from '@/api/copyTrade'
-import { isInstitutionSubscribed, patchInstitutionSubscribed, isInstitutionSecretLocked, isSecretKeyLockMessage, setInstitutionSecretLock, normalizeStrategyDetail, resolveStrategyAmountRange, parseAmountRangeText, parseCopyTradeStrategyQuery, getStrategyJoinBlockMessage, formatCopyTradeDisplayDate, formatCopyTradeAmountRangeTip, formatCopyTradeAmountPlaceholder, validateCopyTradeSubmitAmount, getCopyTradeAmountValidationMessage, resolveCopyTradeFillAmount, normalizeCopyTradeAmount, formatCopyTradeBalance, COPY_TRADE_SUBMIT_CODE, isCopyTradeSubmitJoinClosedCode, isCopyTradeSubmitJoinNotOpenCode, parseCopyTradeSubmitResponse, shouldLeaveSubmitPageOnJoinBlock, isStrategyFollowing } from './utils'
+import { isInstitutionSubscribed, patchInstitutionSubscribed, isInstitutionSecretLocked, isSecretKeyLockMessage, setInstitutionSecretLock, normalizeStrategyDetail, resolveStrategyAmountRange, parseAmountRangeText, parseCopyTradeStrategyQuery, getStrategyJoinBlockMessage, formatCopyTradeDisplayDate, formatCopyTradeAmountRangeTip, formatCopyTradeAmountPlaceholder, validateCopyTradeSubmitAmount, getCopyTradeAmountValidationMessage, resolveCopyTradeFillAmount, normalizeCopyTradeAmount, formatCopyTradeBalance, COPY_TRADE_SUBMIT_CODE, isCopyTradeSubmitJoinClosedCode, isCopyTradeSubmitJoinNotOpenCode, parseCopyTradeSubmitResponse, shouldLeaveSubmitPageOnJoinBlock, isStrategyFollowing, hasCopyTradeAgreementAccepted, setCopyTradeAgreementAccepted } from './utils'
 import { getCopyTradeAgreementDoc, getCopyTradeRiskDoc, resolveCopyTradeDoc } from './documents'
 import { useUserStore } from '@/store/user/index'
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
 import { showToast } from 'vant'
-import { computed, reactive, ref, onMounted } from 'vue'
+import { computed, reactive, ref, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { getResponseErrorMsg } from '@/utils/request'
 
@@ -40,7 +40,9 @@ function initStrategyFromRoute() {
 const strategy = reactive(initStrategyFromRoute())
 
 const userStore = useUserStore()
-const { asset } = storeToRefs(userStore)
+const { asset, userInfo } = storeToRefs(userStore)
+const userId = computed(() => userInfo.value?.user?.userId)
+const agreementRemembered = ref(false)
 const institution = ref({})
 const amount = ref('')
 const secretKey = ref('')
@@ -147,6 +149,19 @@ const amountFieldError = computed(() => {
 const canSubmit = computed(
   () => agreed.value && !pageLoading.value && !submitLoading.value && !amountFieldError.value
 )
+
+function syncAgreementFromStorage() {
+  const remembered = hasCopyTradeAgreementAccepted(userId.value)
+  agreementRemembered.value = remembered
+  if (remembered) agreed.value = true
+}
+
+watch(userId, syncAgreementFromStorage)
+watch(agreed, (val) => {
+  if (!val) return
+  setCopyTradeAgreementAccepted(userId.value)
+  agreementRemembered.value = true
+})
 
 function applyAmountLimits(extra = {}) {
   const limits = resolveStrategyAmountRange({ ...strategy, ...extra }, {}, { strategyOnly: true })
@@ -286,10 +301,11 @@ async function onSubscribeConfirm({ institutionId, secretKey: key }) {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
   agreementDoc.value = getCopyTradeAgreementDoc(t18)
   riskDoc.value = getCopyTradeRiskDoc(t18)
-  userStore.getUserInfo()
+  await userStore.getUserInfo()
+  syncAgreementFromStorage()
   applyAmountLimits()
   if (route.query.strategyId || strategy.id) loadStrategyDetail()
 })
@@ -327,6 +343,7 @@ async function submitForm() {
     const msg = String(res?.msg || '').trim()
 
     if (code === COPY_TRADE_SUBMIT_CODE.SUCCESS) {
+      setCopyTradeAgreementAccepted(userId.value)
       showToast(msg || t18('copy_trade_submit_success'))
       setTimeout(() => router.replace('/copy-trade/my'), 500)
       return
@@ -455,8 +472,8 @@ function submit() {
         </div>
       </section>
 
-      <!-- 协议勾选 -->
-      <van-checkbox v-model="agreed" class="agreement-row" icon-size="18px">
+      <!-- 协议勾选：仅首次需手动确认，之后自动记住 -->
+      <van-checkbox v-if="!agreementRemembered" v-model="agreed" class="agreement-row" icon-size="18px">
         <span class="agreement-row__text">
           {{ t18('copy_trade_agreement_prefix') }}
           <button
@@ -483,7 +500,7 @@ function submit() {
     </div>
 
     <div v-if="!pageLoading" class="bottom-bar">
-      <button type="bu tton" class="submit-btn" :disabled="!canSubmit" @click="submit">
+      <button type="button" class="submit-btn" :disabled="!canSubmit" @click="submit">
         {{ submitLoading ? t18('loading') : t18('copy_trade_confirm_join') }}
       </button>
     </div>
@@ -501,11 +518,13 @@ function submit() {
 
 <style lang="scss" scoped>
 $green: #17ac74;
+$tabbar-height: 79px;
+$bottom-bar-height: 72px;
 
 .copy-submit-page {
   min-height: 100vh;
   background: #f6f7fa;
-  padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(#{$bottom-bar-height} + #{$tabbar-height} + env(safe-area-inset-bottom, 0px));
 }
 
 .sheet {
@@ -780,7 +799,8 @@ $green: #17ac74;
   position: fixed;
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: $tabbar-height;
+  z-index: 8;
   padding: 10px 15px calc(10px + env(safe-area-inset-bottom, 0px));
   background: #fff;
   border-top: 1px solid #eee;

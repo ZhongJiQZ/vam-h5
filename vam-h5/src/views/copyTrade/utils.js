@@ -1093,6 +1093,27 @@ export function setInstitutionSecretLock(institutionId, ms = SECRET_LOCK_MS) {
   }
 }
 
+const COPY_TRADE_AGREEMENT_PREFIX = 'copy_trade_agreement_accepted_'
+
+/** 用户是否已在本地确认过跟单协议（按 userId 区分账号） */
+export function hasCopyTradeAgreementAccepted(userId) {
+  if (userId == null || userId === '') return false
+  try {
+    return localStorage.getItem(`${COPY_TRADE_AGREEMENT_PREFIX}${userId}`) === '1'
+  } catch {
+    return false
+  }
+}
+
+export function setCopyTradeAgreementAccepted(userId) {
+  if (userId == null || userId === '') return
+  try {
+    localStorage.setItem(`${COPY_TRADE_AGREEMENT_PREFIX}${userId}`, '1')
+  } catch {
+    /* ignore */
+  }
+}
+
 /** 后端锁定提示（连续错 5 次） */
 export function isSecretKeyLockMessage(msg) {
   const s = String(msg || '')
