@@ -70,7 +70,7 @@
           <div v-if="isCopyTradeOrderEnded(order)" class="pnl-row">
             <div class="pnl-cell">
               <span class="pnl-cell__label">{{ _t18('copy_trade_pnl_rate') }}</span>
-              <span class="ff-num" :class="pnlClass(orderProfit(order))">{{ orderPnlRate(order) }}%</span>
+              <span class="ff-num" :class="pnlClass(copyTradeGrossProfit(order))">{{ orderPnlRate(order) }}%</span>
             </div>
             <div class="pnl-cell pnl-cell--right">
               <span class="pnl-cell__label">{{ _t18('copy_trade_net_profit') }}</span>
@@ -180,11 +180,11 @@ import { priceFormat } from '@/utils/decimal'
 import {
   formatPnl,
   pnlClass,
-  calcPnlRate,
   formatProfitShareRate,
   copyTradeNetProfit,
+  copyTradeGrossProfit,
   copyTradeTradeCount,
-  copyTradePnlRate,
+  copyTradeGrossPnlRate,
   copyTradePositionSymbol,
   copyTradeRunningSymbol,
   formatCopyTradeTime,
@@ -247,10 +247,7 @@ function orderNetProfit(order) {
 }
 
 function orderPnlRate(order) {
-  if (isCopyTradeOrderEnded(order)) {
-    return calcPnlRate(orderProfit(order), order.amount)
-  }
-  return copyTradePnlRate(order)
+  return copyTradeGrossPnlRate(order)
 }
 
 function profitShareRateText(rate) {

@@ -137,6 +137,28 @@ export function copyTradePnlRate(item) {
   return calcPnlRate(copyTradeNetProfit(item), item?.amount)
 }
 
+/** 跟单毛盈亏（未扣手续费、机构分润）：totalSettledProfit / actualProfit */
+export function copyTradeGrossProfit(item) {
+  if (!item) return 0
+  const params = item.params || {}
+  const raw =
+    params.totalSettledProfit ??
+    item.totalSettledProfit ??
+    item.actualProfit ??
+    params.actualProfit
+  if (raw == null || raw === '') {
+    if (isCopyTradeOrderEnded(item)) return 0
+    return copyTradeNetProfit(item)
+  }
+  const n = Number(raw)
+  return Number.isFinite(n) ? n : 0
+}
+
+/** 跟单盈利率 %（毛盈亏 / 投入金额，不用 netProfit） */
+export function copyTradeGrossPnlRate(item) {
+  return calcPnlRate(copyTradeGrossProfit(item), item?.amount)
+}
+
 const MIN_AMOUNT_KEYS = [
   'minAmount',
   'minCopyAmount',

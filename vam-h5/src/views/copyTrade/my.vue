@@ -116,7 +116,7 @@
                 </div>
                 <div class="pnl-hero__metric pnl-hero__metric--right">
                   <span class="pnl-hero__label">{{ _t18('copy_trade_roi') }}</span>
-                  <span class="ff-num pnl-hero__value" :class="pnlClass(orderPnl(item))">{{ orderPnlRate(item) }}%</span>
+                  <span class="ff-num pnl-hero__value" :class="pnlClass(copyTradeGrossProfit(item))">{{ orderPnlRate(item) }}%</span>
                 </div>
               </div>
 
@@ -190,7 +190,8 @@ import {
   isCopyTradeStrategyEnded,
   canManualExitCopyTrade,
   copyTradeNetProfit,
-  copyTradePnlRate,
+  copyTradeGrossProfit,
+  copyTradeGrossPnlRate,
   copyTradeOrderDisplayPnl,
   groupCopyTradeOrdersByDate,
   formatCopyTradeDisplayDate,
@@ -249,13 +250,13 @@ const stopLoading = ref(false)
 
 const groupedList = computed(() => groupCopyTradeOrdersByDate(list.value, t18))
 
-/** 列表卡片盈亏/ROI：仅用 netProfit（扣费、分润后），不用 totalSettledProfit / actualProfit */
+/** 列表卡片：盈亏用 netProfit；ROI 用毛盈利率（不含手续费/机构分润） */
 function orderPnl(item) {
   return copyTradeNetProfit(item)
 }
 
 function orderPnlRate(item) {
-  return copyTradePnlRate(item)
+  return copyTradeGrossPnlRate(item)
 }
 
 const DAYJS_LOCALE_MAP = {
