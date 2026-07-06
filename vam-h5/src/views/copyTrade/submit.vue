@@ -157,11 +157,6 @@ function syncAgreementFromStorage() {
 }
 
 watch(userId, syncAgreementFromStorage)
-watch(agreed, (val) => {
-  if (!val) return
-  setCopyTradeAgreementAccepted(userId.value)
-  agreementRemembered.value = true
-})
 
 function applyAmountLimits(extra = {}) {
   const limits = resolveStrategyAmountRange({ ...strategy, ...extra }, {}, { strategyOnly: true })
@@ -472,7 +467,7 @@ function submit() {
         </div>
       </section>
 
-      <!-- 协议勾选：仅首次需手动确认，之后自动记住 -->
+      <!-- 协议勾选：首次需手动确认；跟单成功后下次进入自动跳过 -->
       <van-checkbox v-if="!agreementRemembered" v-model="agreed" class="agreement-row" icon-size="18px">
         <span class="agreement-row__text">
           {{ t18('copy_trade_agreement_prefix') }}

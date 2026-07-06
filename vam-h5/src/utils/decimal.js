@@ -62,6 +62,15 @@ export const _toFixed = (a, b = 4, round = 'down') => {
 }
 
 /**
+ * 去掉小数末尾多余 0（如 0.000057900 → 0.0000579）
+ */
+export const trimDecimalZeros = (val) => {
+  const s = String(val ?? '')
+  if (!s.includes('.')) return s
+  return s.replace(/(\.\d*?)0+$/, '$1').replace(/\.$/, '')
+}
+
+/**
  * 科学计数法2小数
  * @param {*} val
  * @returns
@@ -73,7 +82,7 @@ export const _SN2D = (val) => {
   const numArr = e.match(rex)
   const n = Number('' + numArr[1] + (numArr[2] || ''))
   const num = '0.' + String(Math.pow(10, Number(numArr[3]) - 1)).substring(1) + n
-  return num.replace(/0*$/, '')
+  return trimDecimalZeros(num)
 }
 /**
  * 数量格式化
@@ -112,7 +121,7 @@ export const countFormat = (val) => {
   if (`${temp}`.indexOf('e') > -1) {
     temp = _SN2D(temp)
   }
-  return temp
+  return trimDecimalZeros(temp)
 }
 
 /**
