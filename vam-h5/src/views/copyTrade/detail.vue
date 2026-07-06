@@ -70,11 +70,12 @@
           <div v-if="isCopyTradeOrderEnded(order)" class="pnl-row">
             <div class="pnl-cell">
               <span class="pnl-cell__label">{{ _t18('copy_trade_pnl_rate') }}</span>
-              <span class="ff-num" :class="pnlClass(orderProfit(order))">{{ order.profitRate }}%</span>
+              <span class="ff-num" :class="pnlClass(orderProfit(order))">{{ orderPnlRate(order) }}%</span>
             </div>
             <div class="pnl-cell pnl-cell--right">
               <span class="pnl-cell__label">{{ _t18('copy_trade_net_profit') }}</span>
-              <span class="ff-num" :class="pnlClass(orderNetProfit(order))">{{ formatPnl(orderNetProfit(order)) }} USDT</span>
+              <span class="ff-num" :class="pnlClass(orderNetProfit(order))">{{ formatPnl(orderNetProfit(order)) }}
+                USDT</span>
             </div>
           </div>
         </div>
@@ -88,43 +89,23 @@
                   <img src="@/assets/images/Frame 10711.png" alt="" class="section-info-icon" />
                 </button>
               </div>
-              <button
-                type="button"
-                class="section-refresh-btn"
-                :disabled="sectionRefreshing"
-                @click="refreshOrderFromList"
-              >
-                <img
-                  src="@/assets/images/copy-trade-refresh.png"
-                  alt=""
-                  class="section-refresh-icon"
-                  :class="{ 'is-spinning': sectionRefreshing }"
-                />
+              <button type="button" class="section-refresh-btn" :disabled="sectionRefreshing"
+                @click="refreshOrderFromList">
+                <img src="@/assets/images/copy-trade-refresh.png" alt="" class="section-refresh-icon"
+                  :class="{ 'is-spinning': sectionRefreshing }" />
               </button>
             </div>
 
             <template v-if="order._recordGroups?.holding?.length">
               <h4 class="subsection-title">{{ _t18('copy_trade_position_holding') }}</h4>
-              <PositionRecordCard
-                v-for="(rec, idx) in order._recordGroups.holding"
-                :key="rec.orderNo || `h-${idx}`"
-                :record="rec"
-                :parent-symbol="copyTradeRunningSymbol(order)"
-                masked
-                :closed="false"
-              />
+              <PositionRecordCard v-for="(rec, idx) in order._recordGroups.holding" :key="rec.orderNo || `h-${idx}`"
+                :record="rec" :parent-symbol="copyTradeRunningSymbol(order)" masked :closed="false" />
             </template>
 
             <template v-if="order._recordGroups?.closed?.length">
               <h4 class="subsection-title subsection-title--history">{{ _t18('copy_trade_history_positions') }}</h4>
-              <PositionRecordCard
-                v-for="(rec, idx) in order._recordGroups.closed"
-                :key="rec.orderNo || `c-${idx}`"
-                :record="rec"
-                :parent-symbol="copyTradeRunningSymbol(order)"
-                :masked="false"
-                closed
-              />
+              <PositionRecordCard v-for="(rec, idx) in order._recordGroups.closed" :key="rec.orderNo || `c-${idx}`"
+                :record="rec" :parent-symbol="copyTradeRunningSymbol(order)" :masked="false" closed />
             </template>
           </div>
         </div>
@@ -132,35 +113,19 @@
 
       <div
         v-if="primaryOrder.id && !isCopyTradeFullyExited(primaryOrder) && (!isCopyTradeStrategyEnded(primaryOrder) || canManualExitCopyTrade(primaryOrder))"
-        class="action-bar"
-      >
+        class="action-bar">
         <button v-if="!isCopyTradeStrategyEnded(primaryOrder)" type="button" class="append-btn" @click="openAppend">
           {{ _t18('copy_trade_append') }}
         </button>
-        <button
-          v-if="canManualExitCopyTrade(primaryOrder)"
-          type="button"
-          class="stop-btn"
-          @click="openStop"
-        >
+        <button v-if="canManualExitCopyTrade(primaryOrder)" type="button" class="stop-btn" @click="openStop">
           {{ _t18('copy_trade_stop') }}
         </button>
       </div>
     </template>
     <Nodata v-else />
 
-    <StopConfirmDialog
-      v-model:show="stopVisible"
-      :rows="stopRows"
-      :loading="stopLoading"
-      @confirm="confirmStop"
-    />
-    <AppendDialog
-      v-model:show="appendVisible"
-      :item="primaryOrder"
-      :loading="appendLoading"
-      @confirm="confirmAppend"
-    />
+    <StopConfirmDialog v-model:show="stopVisible" :rows="stopRows" :loading="stopLoading" @confirm="confirmStop" />
+    <AppendDialog v-model:show="appendVisible" :item="primaryOrder" :loading="appendLoading" @confirm="confirmAppend" />
     <CopyTradeMaskExplainPopup v-model:show="showExplain" />
   </div>
 </template>
@@ -378,25 +343,30 @@ $green: #17ac74;
   background: #f6f7fa;
   padding-bottom: 80px;
 }
+
 .page-loading {
   display: flex;
   justify-content: center;
   padding: 48px;
 }
+
 .order-block {
   margin-bottom: 8px;
 }
+
 .summary-card {
   margin: 12px 15px;
   background: #fff;
   border-radius: 12px;
   padding: 16px;
+
   &__head {
     display: flex;
     gap: 12px;
     align-items: center;
     margin-bottom: 14px;
   }
+
   .avatar {
     width: 44px;
     height: 44px;
@@ -408,39 +378,51 @@ $green: #17ac74;
     font-size: 18px;
     color: #666;
     flex-shrink: 0;
+
     &--img {
       display: block;
       object-fit: cover;
       background: #f2f4f7;
     }
   }
+
   .name {
     font-size: 16px;
     font-weight: 600;
     margin: 0 0 6px;
   }
+
   .badge {
     font-size: 11px;
     padding: 2px 8px;
     border-radius: 4px;
+
     &--ongoing {
       background: rgba($green, 0.12);
       color: $green;
     }
+
     &--settled {
       background: #f2f2f2;
       color: #888;
     }
   }
 }
+
 .kv-list .kv {
   display: flex;
   justify-content: space-between;
   padding: 8px 0;
   font-size: 14px;
   border-bottom: 1px solid #f8f8f8;
-  span:first-child { color: #888; }
-  &.kv--no-border { border-bottom: none; }
+
+  span:first-child {
+    color: #888;
+  }
+
+  &.kv--no-border {
+    border-bottom: none;
+  }
 }
 
 .section-title-row {
@@ -473,6 +455,7 @@ $green: #17ac74;
   height: 18px;
   display: block;
 }
+
 .section-refresh-btn {
   width: 32px;
   height: 32px;
@@ -482,23 +465,28 @@ $green: #17ac74;
   display: flex;
   align-items: center;
   justify-content: center;
+
   &:disabled {
     opacity: 0.55;
   }
 }
+
 .section-refresh-icon {
   width: 20px;
   height: 20px;
   display: block;
+
   &.is-spinning {
     animation: copy-trade-refresh-spin 0.8s linear infinite;
   }
 }
+
 @keyframes copy-trade-refresh-spin {
   to {
     transform: rotate(360deg);
   }
 }
+
 .subsection-title {
   margin: 0 0 10px;
   font-size: 14px;
@@ -509,6 +497,7 @@ $green: #17ac74;
     margin-top: 4px;
   }
 }
+
 .pnl-row {
   display: flex;
   justify-content: space-between;
@@ -517,6 +506,7 @@ $green: #17ac74;
   border-top: 1px dashed #eee;
   margin-top: 4px;
 }
+
 .pnl-cell {
   flex: 1;
   min-width: 0;
@@ -538,21 +528,31 @@ $green: #17ac74;
     font-size: 18px;
     font-weight: 700;
     color: #1a1a1a;
-    &.is-up { color: $green; }
-    &.is-down { color: #e8503a; }
+
+    &.is-up {
+      color: $green;
+    }
+
+    &.is-down {
+      color: #e8503a;
+    }
   }
 }
+
 .records-wrap {
   margin-top: 4px;
 }
+
 .records-section {
   padding: 0 15px;
 }
+
 .section-title {
   font-size: 15px;
   font-weight: 600;
   margin: 0;
 }
+
 .action-bar {
   position: fixed;
   left: 15px;
@@ -563,6 +563,7 @@ $green: #17ac74;
   display: flex;
   gap: 10px;
 }
+
 .append-btn,
 .stop-btn {
   flex: 1;
@@ -571,11 +572,13 @@ $green: #17ac74;
   font-size: 16px;
   border: none;
 }
+
 .append-btn {
   background: #fff;
   border: 1px solid $green;
   color: $green;
 }
+
 .stop-btn {
   background: $green;
   color: #fff;
