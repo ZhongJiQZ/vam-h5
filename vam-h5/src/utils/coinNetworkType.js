@@ -99,12 +99,16 @@ export function getExpectedAddressLength(type, samples = COIN_ADDRESS_LENGTH_SAM
 export function findRechargeListItem(list, type) {
   const q = String(type || '').trim()
   if (!q || !Array.isArray(list)) return null
+  const qu = q.toUpperCase()
   return (
     list.find((item) => {
       const coinName = String(item?.coinName || '').trim()
-      if (!coinName) return false
-      if (coinName === q || coinName.toUpperCase() === q.toUpperCase()) return true
-      return isSameCoinNetworkType(coinName, q)
+      const rechargeType = String(item?.rechargeType || item?.type || '').trim()
+      if (coinName && (coinName === q || coinName.toUpperCase() === qu || isSameCoinNetworkType(coinName, q))) {
+        return true
+      }
+      if (rechargeType && rechargeType.toUpperCase() === qu) return true
+      return false
     }) || null
   )
 }

@@ -43,9 +43,10 @@
 <script setup>
 import { computed, onMounted, watch } from 'vue'
 import { dispatchCustomEvent } from '@/utils'
-import { _t18, _back, _getConfig, filterCoin2 } from '@/utils/public'
+import { _t18, _back, _getConfig } from '@/utils/public'
 import List from './recharge-list.vue'
 import { useMainStore } from '@/store/index.js'
+import { resolveRechargeListTitle, resolveRechargeIcon } from '@/utils/rechargeType'
 import iconBack from '@/assets/images/gxpex/trade/icon-back.svg'
 import iconService from '@/assets/images/gxpex/home/icon-service.svg'
 
@@ -66,17 +67,14 @@ watch(
 )
 
 const coinList = computed(() => {
-  return mainStore.getRechargeList.map((item) => {
-    const isBank = Boolean(item.bankCardNo && item.bankName)
-    return {
-      icon: isBank ? 'card' : filterCoin2(item.coin),
-      type: 0,
-      title: isBank ? item.bankName : item.coinName,
-      coinName: item.coinName,
-      address: item.address,
-      coin: item.coin
-    }
-  })
+  return mainStore.getRechargeList.map((item) => ({
+    icon: resolveRechargeIcon(item),
+    type: 0,
+    title: resolveRechargeListTitle(item),
+    coinName: item.coinName,
+    address: item.address,
+    coin: item.coin
+  }))
 })
 
 const goService = () => dispatchCustomEvent('event_serviceChange')

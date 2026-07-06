@@ -23,8 +23,8 @@
         </div>
       </div>
 
-      <div class="applyMes" :class="{ 'applyMes--noqr': isBankRecharge }">
-        <template v-if="isBankRecharge">
+      <div class="applyMes" :class="{ 'applyMes--noqr': isBankRecharge || isPayGatewayType }">
+        <template v-if="isBankRecharge && !isPayGatewayType">
           <div class="info-row">
             <p class="top">{{ _t18('bank_name') }}</p>
             <div class="bottom">{{ rechargeObj?.bankName }}</div>
@@ -111,6 +111,16 @@
       <template
         v-else-if="!isBankRecharge && ['aams', 'gmmoin'].includes(_getConfig('_APP_ENV'))"
       ></template>
+      <template v-else-if="isPayGatewayType">
+        <div class="tip-list">
+          <div class="tip">{{ _t18('recharge_submitting') }}</div>
+        </div>
+        <div class="btn-wrap">
+          <div class="btn btn--primary" @click="tryRedirectPayGateway">
+            <p>{{ _t18('recharge_require') }}</p>
+          </div>
+        </div>
+      </template>
       <template v-else>
         <div class="btn-wrap">
           <div class="btn btn--primary" @click="onIRecharged">
@@ -206,8 +216,9 @@ import { useCopy } from '@/hook/useCopy'
 import { useRouter, useRoute } from 'vue-router'
 import { useMainStore } from '@/store'
 import { dispatchCustomEvent } from '@/utils'
-import { reactive, computed, ref, watch, onUnmounted } from 'vue'
+import { reactive, computed, ref, watch, onMounted, onUnmounted } from 'vue'
 import { findRechargeListItem } from '@/utils/coinNetworkType'
+import { isPayGatewayRechargeType, normalizeRechargeType } from '@/utils/rechargeType'
 import { getRechargeAddressFromMap } from '@/utils/rechargeAddress'
 import { formatLocalTime } from '@/utils/time'
 
@@ -362,9 +373,34 @@ const rechargeObj = computed(() =>
   findRechargeListItem(mainStore.getRechargeList, route.query.type)
 )
 
-const isBankRecharge = computed(() =>
-  Boolean(rechargeObj.value?.bankCardNo && rechargeObj.value?.bankName)
+const rechargeTypeUpper = computed(() => normalizeRechargeType(route.query.type))
+/** 三方支付通道（BANK-GC、BANK-MAYA 等）：跳转 payUrl */
+const isPayGatewayType = computed(() => isPayGatewayRechargeType(route.query.type))
+
+const isBankRecharge = computed(
+  () =>
+    Boolean(rechargeObj.value?.bankCardNo && rechargeObj.value?.bankName) &&
+    !isPayGatewayType.value
 )
+
+function redirectToPayUrl(url) {
+  const target = String(url || '').trim()
+  if (!target) return false
+  window.location.href = target
+  return true
+}
+
+async function tryRedirectPayGateway() {
+  if (!isPayGatewayType.value) return
+  if (redirectToPayUrl(route.query.payUrl)) return
+  if (!queryOrderId.value) return
+  try {
+    const order = await fetchOrderStatus()
+    redirectToPayUrl(order?.payUrl ?? order?.params?.payUrl)
+  } catch {
+    /* ignore */
+  }
+}
 
 function ensureUserRechargeAddresses() {
   if (isBankRecharge.value) return
@@ -420,6 +456,10 @@ const successReceivedDisplay = computed(() => {
 const successArriveTimeDisplay = computed(() => {
   if (!successArriveTime.value) return '--'
   return formatLocalTime(successArriveTime.value)
+})
+
+onMounted(() => {
+  tryRedirectPayGateway()
 })
 
 onUnmounted(() => {

@@ -83,7 +83,7 @@
 import { rechargeSubmit, getUserRechageNewApi } from '@/api/account.js'
 import { useMainStore } from '@/store'
 import { useRoute, useRouter } from 'vue-router'
-import { _t18, _back, filterCoin2, _numberWithCommas } from '@/utils/public'
+import { _t18, _back, _numberWithCommas } from '@/utils/public'
 import { dispatchCustomEvent } from '@/utils'
 import iconBack from '@/assets/images/gxpex/trade/icon-back.svg'
 import iconService from '@/assets/images/gxpex/home/icon-service.svg'
@@ -91,6 +91,14 @@ import { useToast } from '@/hook/useToast'
 import { computed, ref, watch } from 'vue'
 import { priceFormat } from '@/utils/decimal'
 import { findRechargeListItem } from '@/utils/coinNetworkType'
+import {
+  isPayGatewayRechargeType,
+  isBankManualRechargeType,
+  isBankRechargeType,
+  normalizeRechargeType,
+  resolveRechargeListTitle,
+  resolveRechargeIcon
+} from '@/utils/rechargeType'
 import { getRechargeAddressFromMap, normalizeRechargeAddressFromApi } from '@/utils/rechargeAddress'
 
 const route = useRoute()
@@ -99,17 +107,28 @@ const mainStore = useMainStore()
 const { _toast } = useToast()
 
 const amount = ref('')
-const currentName = `${_t18('recharge', ['latcoin'])} ${route.query.type || ''}`
-const coinIcon = computed(() => filterCoin2(String(route.query.coin || '')))
-
 const rechargeObj = computed(() =>
   findRechargeListItem(mainStore.getRechargeList, route.query.type)
 )
-const isBankRecharge = computed(() =>
-  Boolean(rechargeObj.value?.bankCardNo && rechargeObj.value?.bankName)
+const currentName = computed(() => {
+  const fromConfig = resolveRechargeListTitle(rechargeObj.value)
+  if (fromConfig) return `${_t18('recharge', ['latcoin'])} ${fromConfig}`
+  return `${_t18('recharge', ['latcoin'])} ${route.query.type || ''}`
+})
+const coinIcon = computed(() =>
+  resolveRechargeIcon(rechargeObj.value, route.query.coin)
 )
-const isBankType = computed(() => String(route.query.type || '').toUpperCase() === 'BANK')
+const rechargeTypeUpper = computed(() => normalizeRechargeType(route.query.type))
+const isPayGatewayType = computed(() => isPayGatewayRechargeType(route.query.type))
+const isBankManualType = computed(() => isBankManualRechargeType(route.query.type))
+const isBankType = computed(() => isBankRechargeType(route.query.type))
 const isVirtualType = computed(() => !isBankType.value)
+/** 手动银行卡转账（排除 BANK-GC / BANK-MAYA 等三方通道） */
+const isBankRecharge = computed(
+  () =>
+    Boolean(rechargeObj.value?.bankCardNo && rechargeObj.value?.bankName) &&
+    !isPayGatewayType.value
+)
 const fiatRateNum = computed(() => {
   const n = Number(rechargeObj.value?.fiatPerUsdt)
   return Number.isFinite(n) && n > 0 ? n : null
@@ -153,6 +172,9 @@ const limitMaxDisplay = computed(() => {
   return `${priceFormat(max)} USDT`
 })
 const submitAddress = computed(() => {
+  if (isPayGatewayType.value) {
+    return rechargeObj.value?.coinAddress || rechargeTypeUpper.value || ''
+  }
   if (isBankRecharge.value) return rechargeObj.value?.bankCardNo ?? ''
   const key = rechargeObj.value?.coinName || route.query.type
   const fromMap = key ? getRechargeAddressFromMap(mainStore.userRechageMap, key) : ''
@@ -205,7 +227,7 @@ const onNext = async () => {
   const submitAmountValue = val
 
   const addr = submitAddress.value
-  if (!addr) {
+  if (!addr && !isPayGatewayType.value) {
     _toast('recharge_address_empty')
     return
   }
@@ -214,7 +236,7 @@ const onNext = async () => {
     type: route.query.type,
     coin: route.query.coin,
     filePath: '',
-    address: addr
+    address: addr || rechargeTypeUpper.value
   }
   let orderId = ''
   let submitErrorMsg = ''
@@ -234,18 +256,18 @@ const onNext = async () => {
     const res = await rechargeSubmit(payload)
     submitPayUrl = String(res?.data?.payUrl || '').trim()
     orderId =
-      res?.data?.id ??
       res?.data?.orderId ??
+      res?.data?.id ??
       res?.data?.serialId ??
       res?.id ??
       ''
-    if (isBankType.value && submitPayUrl) {
-      window.location.href = submitPayUrl
-      return
-    }
     if (res.code != '200' && res.code != 200) {
       submitErrorMsg = res.msg || ''
       _toast(submitErrorMsg || 'error')
+      return
+    }
+    if (submitPayUrl) {
+      window.location.href = submitPayUrl
       return
     }
   } catch (err) {
@@ -259,8 +281,13 @@ const onNext = async () => {
     return
   }
 
-  if (isBankType.value) {
-    _toast(submitErrorMsg || 'recharge_waiting')
+  if (isPayGatewayType.value) {
+    _toast('error')
+    return
+  }
+
+  if (isBankManualType.value) {
+    jumpToApply(orderId)
     return
   }
 
