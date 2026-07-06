@@ -42,7 +42,6 @@ const strategy = reactive(initStrategyFromRoute())
 const userStore = useUserStore()
 const { asset, userInfo } = storeToRefs(userStore)
 const userId = computed(() => userInfo.value?.user?.userId)
-const agreementRemembered = ref(false)
 const institution = ref({})
 const amount = ref('')
 const secretKey = ref('')
@@ -151,9 +150,9 @@ const canSubmit = computed(
 )
 
 function syncAgreementFromStorage() {
-  const remembered = hasCopyTradeAgreementAccepted(userId.value)
-  agreementRemembered.value = remembered
-  if (remembered) agreed.value = true
+  if (hasCopyTradeAgreementAccepted(userId.value)) {
+    agreed.value = true
+  }
 }
 
 watch(userId, syncAgreementFromStorage)
@@ -467,8 +466,8 @@ function submit() {
         </div>
       </section>
 
-      <!-- 协议勾选：首次需手动确认；跟单成功后下次进入自动跳过 -->
-      <van-checkbox v-if="!agreementRemembered" v-model="agreed" class="agreement-row" icon-size="18px">
+      <!-- 协议勾选：首次手动勾选；跟单成功后下次进入自动打钩 -->
+      <van-checkbox v-model="agreed" class="agreement-row" icon-size="18px">
         <span class="agreement-row__text">
           {{ t18('copy_trade_agreement_prefix') }}
           <button
