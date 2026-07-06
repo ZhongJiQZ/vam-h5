@@ -44,6 +44,7 @@ const generateHtml = (html, envObj) => {
       <meta property="og:title" content="${title}">
       <meta property="og:description" content="${description}">
 
+      <link rel="icon" href="/favicon.ico" sizes="any"/>
       <link rel="icon" href="/gxpenlogo.png?${version}" type="image/png"/>
       <link rel="bookmark" href="/gxpenlogo.png?${version}" type="image/png">
 
@@ -51,7 +52,11 @@ const generateHtml = (html, envObj) => {
       <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/gxpenlogo.png?${version}"/>
       <link rel="apple-touch-icon-precomposed" sizes="120x120" href="/gxpenlogo.png?${version}"/>
       <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/gxpenlogo.png?${version}"/>
-      
+
+      <script type="application/ld+json">
+      {"@context":"https://schema.org","@type":"Organization","name":"GXPEX","url":"https://gxpex.bond","logo":"https://gxpex.bond/gxpenlogo.png"}
+      </script>
+
       </head>
 
       <script>
