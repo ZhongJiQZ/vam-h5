@@ -1,6 +1,7 @@
 import { _mul, _div, priceFormat, _toFixed } from '@/utils/decimal'
 import { formatLocalTime, toEpochMs, formatClientLocalDateTime, formatClientUtcOffsetLabel } from '@/utils/time'
 import dayjs from '@/plugin/dayjs/index'
+import Decimal from 'decimal.js'
 
 /** 跟单金额精度（USDT 两位小数，提交时向下截断避免超额） */
 export const COPY_TRADE_AMOUNT_DECIMALS = 2
@@ -45,7 +46,7 @@ export function resolveCopyTradeFillAmount(balance, limits = {}, decimals = COPY
 export function formatSignedRate(val, digits = 2) {
   const n = Number(val)
   if (!Number.isFinite(n)) return '0.00'
-  const formatted = priceFormat(n, digits)
+  const formatted = Decimal(n).toFixed(digits, Decimal.ROUND_HALF_UP)
   const prefix = n > 0 ? '+' : ''
   return `${prefix}${formatted}`
 }
