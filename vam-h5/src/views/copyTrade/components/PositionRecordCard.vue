@@ -20,7 +20,7 @@
       <span class="board-status" :class="{ 'board-status--closed': closed }">{{ displayStatus }}</span>
     </div>
 
-    <div class="board-hero">
+    <!-- <div class="board-hero">
       <div class="board-hero__metric">
         <span class="board-hero__label">{{ _t18('copy_trade_pnl_usdt') }}</span>
         <span class="board-hero__value ff-num" :class="masked ? '' : pnlClass(record.earn)">
@@ -33,7 +33,7 @@
           {{ masked ? MASK : `${recordPnlRate(record)}%` }}
         </span>
       </div>
-    </div>
+    </div> -->
 
     <div class="board-grid">
       <div class="board-cell">
