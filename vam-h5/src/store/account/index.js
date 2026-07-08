@@ -20,8 +20,9 @@ export const useAccountStore = defineStore('account', () => {
   const rechangeCoinList = ref([])
   const getRechangeCoinList = async () => {
     const data = await getAppCurrencyList()
-    rechangeCoinList.value = data.data
-    console.log(1111, rechangeCoinList.value)
+    const list = data?.data?.data ?? data?.data ?? []
+    rechangeCoinList.value = Array.isArray(list) ? list : []
+    return rechangeCoinList.value
   }
   /**
    * 提现

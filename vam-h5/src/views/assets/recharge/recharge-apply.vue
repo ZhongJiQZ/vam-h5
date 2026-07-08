@@ -23,7 +23,13 @@
         <template v-if="isBankRecharge">
           <div class="info-row">
             <p class="top">{{ _t18('bank_name') }}</p>
-            <div class="bottom">{{ rechargeObj?.bankName }}</div>
+            <div class="bottom">
+              <Copy :data="rechargeObj?.bankName || ''" :fontSize="'16px'">
+                <template #copyMsg>
+                  <span>{{ rechargeObj?.bankName }}</span>
+                </template>
+              </Copy>
+            </div>
           </div>
           <div class="address">
             <p class="top">{{ _t18('Account_holder') }}</p>
@@ -41,6 +47,16 @@
               <Copy :data="rechargeObj?.bankCardNo || ''" :fontSize="'16px'">
                 <template #copyMsg>
                   <span class="fw-num">{{ rechargeObj?.bankCardNo }}</span>
+                </template>
+              </Copy>
+            </div>
+          </div>
+          <div class="info-row">
+            <p class="top">{{ _t18('recharge_coin') }}</p>
+            <div class="bottom">
+              <Copy :data="rechargeObj?.fiatCurrency || ''" :fontSize="'16px'">
+                <template #copyMsg>
+                  <span class="fw-num">{{ rechargeObj?.fiatCurrency }}</span>
                 </template>
               </Copy>
             </div>
@@ -70,9 +86,32 @@
             </p>
             <div class="bottom ff-num">{{ submitAmountDisplay }}</div>
           </div>
-          <div v-if="showFeeHints" class="fee-hints">
+          <div v-if="showBankFiat" class="fiat-pay-hero">
+            <p class="fiat-pay-hero__label">{{ _t18('recharge_fiat_transfer') }}</p>
+            <div class="fiat-pay-hero__amount">
+              <Copy :data="String(estimatedFiatAmountRaw)" :fontSize="'22px'">
+                <template #copyMsg>
+                  <span class="ff-num fiat-pay-hero__value">{{ estimatedFiatPayment }}</span>
+                </template>
+              </Copy>
+            </div>
+            <p v-if="showFeeHints" class="fiat-pay-hero__sub ff-num">
+              {{ _t18('withdraw_commission') }}: {{ feeRatioNum }}% ·
+              {{ _t18('Actual_amount_received') }}: {{ netUsdtReceived }}
+            </p>
+          </div>
+          <div v-if="showFeeHints && !showBankFiat" class="fee-hints">
             <p class="fee-line">{{ _t18('withdraw_commission') }}: {{ feeRatioNum }}%</p>
             <p class="fee-line ff-num">100U {{ _t18('Actual_amount_received') }}: {{ hundredNetAmount }}</p>
+          </div>
+          <div v-if="isBankRecharge" class="upload-proof">
+            <p class="top">{{ _t18('recharge_imgUpload', ['bitmake']) }}</p>
+            <van-uploader
+              v-model="fileList"
+              :max-count="1"
+              accept="image/*"
+              :after-read="afterRead"
+            />
           </div>
         </template>
       </div>
@@ -109,8 +148,14 @@
       ></template>
       <template v-else>
         <div class="btn-wrap">
-          <div class="btn btn--primary" @click="onIRecharged">
-            <p>{{ _t18('recharge_i_paid') }}</p>
+          <div class="btn btn--primary" @click="isBankRecharge ? submitManualBank() : onIRecharged()">
+            <p>
+              {{
+                isBankRecharge
+                  ? _t18('recharge_require', ['bitmake'])
+                  : _t18('recharge_i_paid')
+              }}
+            </p>
           </div>
         </div>
       </template>
@@ -186,8 +231,9 @@
 </template>
 
 <script setup>
-import { getRechargeDetail, getRechargeList } from '@/api/account.js'
-import { _t18, _getConfig } from '@/utils/public'
+import { getRechargeDetail, getRechargeList, rechargeSubmit } from '@/api/account.js'
+import { uploadImg } from '@/api/common/index.js'
+import { _t18, _getConfig, _numberWithCommas } from '@/utils/public'
 import { priceFormat } from '@/utils/decimal'
 import QRCode from '@/components/common/QRCode/index.vue'
 import Copy from '@/components/common/Copy/index.vue'
@@ -197,16 +243,24 @@ import { useToast } from '@/hook/useToast'
 import { useCopy } from '@/hook/useCopy'
 import { useRouter, useRoute } from 'vue-router'
 import { useMainStore } from '@/store'
+import { useAccountStore } from '@/store/account'
 import { dispatchCustomEvent } from '@/utils'
 import { reactive, computed, ref, watch, onUnmounted } from 'vue'
 import { findRechargeListItem } from '@/utils/coinNetworkType'
 import { getRechargeAddressFromMap } from '@/utils/rechargeAddress'
 import { formatLocalTime } from '@/utils/time'
+import {
+  getRechargePayMode,
+  getRechargePayUrl,
+  isManualBankRecharge
+} from '@/utils/rechargeChannel'
 
 const { _toast } = useToast()
 const { _copy } = useCopy()
 const route = useRoute()
 const router = useRouter()
+const mainStore = useMainStore()
+const accountStore = useAccountStore()
 
 const currentName = `${_t18('recharge', ['latcoin'])} ${route.query.type}`
 
@@ -233,6 +287,8 @@ const showSuccessPopup = ref(false)
 const showTimeoutPopup = ref(false)
 const successReceived = ref('')
 const successArriveTime = ref('')
+const fileList = ref([])
+const submitting = ref(false)
 const elapsedSeconds = ref(0)
 const polling = ref(false)
 let pollingTimer = null
@@ -339,15 +395,84 @@ const contactService = () => {
   dispatchCustomEvent('event_serviceChange')
 }
 
-const mainStore = useMainStore()
-
+const rechargeList = computed(() =>
+  accountStore.rechangeCoinList.length
+    ? accountStore.rechangeCoinList
+    : mainStore.getRechargeList
+)
 const rechargeObj = computed(() =>
-  findRechargeListItem(mainStore.getRechargeList, route.query.type)
+  findRechargeListItem(rechargeList.value, route.query.type)
 )
 
-const isBankRecharge = computed(() =>
-  Boolean(rechargeObj.value?.bankCardNo && rechargeObj.value?.bankName)
-)
+const isBankRecharge = computed(() => isManualBankRecharge(rechargeObj.value))
+
+const afterRead = async (file) => {
+  file.status = 'uploading'
+  const formData = new FormData()
+  formData.append('file', file.file)
+  try {
+    const uploadResponse = await uploadImg(formData)
+    const result = uploadResponse?.data
+    if (result?.code == '200' || result?.code == 200) {
+      file.res = result?.data?.url || ''
+      file.status = 'success'
+      return
+    }
+    fileList.value = []
+    _toast(result?.msg || 'error')
+  } catch (error) {
+    fileList.value = []
+    _toast(error?.response?.data?.msg || error?.message || 'error')
+  }
+}
+
+const submitManualBank = async () => {
+  if (submitting.value) return
+  if (submitAmount.value <= 0) {
+    _toast('recharge_num')
+    return
+  }
+  const proof = fileList.value[0]
+  if (!proof) {
+    _toast('recharge_img')
+    return
+  }
+  if (proof.status !== 'success' || !proof.res) {
+    _toast('recharge_img_load')
+    return
+  }
+
+  submitting.value = true
+  try {
+    const res = await rechargeSubmit({
+      type: route.query.type,
+      coin: route.query.coin,
+      amount: priceFormat(submitAmount.value),
+      filePath: proof.res,
+      address: ''
+    })
+    if (res.code != '200' && res.code != 200) {
+      _toast(res.msg || 'error')
+      return
+    }
+    const payUrl = getRechargePayUrl(res)
+    if (payUrl) {
+      window.location.href = payUrl
+      return
+    }
+    if (getRechargePayMode(res) === 'MANUAL_BANK') {
+      _toast('recharge_waiting')
+      setTimeout(() => router.replace('/recharge-order'), 500)
+      return
+    }
+    _toast('recharge_success')
+    setTimeout(() => router.replace('/recharge-order'), 500)
+  } catch (error) {
+    _toast(error?.response?.data?.msg || error?.message || 'error')
+  } finally {
+    submitting.value = false
+  }
+}
 
 function ensureUserRechargeAddresses() {
   if (isBankRecharge.value) return
@@ -356,7 +481,10 @@ function ensureUserRechargeAddresses() {
 
 watch(
   [() => route.query.coin, () => route.query.type, isBankRecharge],
-  ensureUserRechargeAddresses,
+  () => {
+    accountStore.getRechangeCoinList().catch(() => {})
+    ensureUserRechargeAddresses()
+  },
   { immediate: true }
 )
 
@@ -384,6 +512,29 @@ const address = computed(() => {
 const feeRatioNum = computed(() => {
   const n = Number(rechargeObj.value?.rechargeFeeRatio)
   return Number.isFinite(n) && n > 0 ? n : 0
+})
+const fiatRateNum = computed(() => {
+  const n = Number(rechargeObj.value?.fiatPerUsdt)
+  return Number.isFinite(n) && n > 0 ? n : null
+})
+const fiatCurrency = computed(() =>
+  String(rechargeObj.value?.fiatCurrency || 'Rp').toUpperCase()
+)
+const showBankFiat = computed(
+  () => isBankRecharge.value && fiatRateNum.value != null && submitAmount.value > 0
+)
+const estimatedFiatAmountRaw = computed(() => {
+  if (!showBankFiat.value) return ''
+  return Math.round(submitAmount.value * fiatRateNum.value)
+})
+const estimatedFiatPayment = computed(() => {
+  if (estimatedFiatAmountRaw.value === '' || estimatedFiatAmountRaw.value == null) return ''
+  return `${fiatCurrency.value} ${_numberWithCommas(estimatedFiatAmountRaw.value)}`
+})
+const netUsdtReceived = computed(() => {
+  if (!isBankRecharge.value || submitAmount.value <= 0) return ''
+  const net = submitAmount.value * (1 - feeRatioNum.value / 100)
+  return `${priceFormat(Math.max(net, 0))} USDT`
 })
 const showFeeHints = computed(() => feeRatioNum.value > 0)
 const hundredNetAmount = computed(() => {
@@ -510,11 +661,55 @@ onUnmounted(() => {
     margin: -4px 0 4px;
   }
 
+  .fiat-pay-hero {
+    margin: 4px 0 16px;
+    padding: 16px 12px;
+    border-radius: 12px;
+    background: #ecf9f1;
+    border: 1px solid #17ac74;
+    text-align: center;
+  }
+
+  .fiat-pay-hero__label {
+    margin: 0 0 8px;
+    font-size: 13px;
+    color: #646566;
+  }
+
+  .fiat-pay-hero__amount {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .fiat-pay-hero__value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #17ac74;
+    line-height: 1.2;
+  }
+
+  .fiat-pay-hero__sub {
+    margin: 10px 0 0;
+    font-size: 12px;
+    color: #969799;
+    line-height: 1.5;
+  }
+
   .fee-line {
     margin: 0 0 8px;
     font-size: 13px;
     color: #646566;
     line-height: 1.5;
+  }
+
+  .upload-proof {
+    :deep(.van-uploader__upload),
+    :deep(.van-uploader__preview-image) {
+      width: 92px;
+      height: 92px;
+      border-radius: 8px;
+    }
   }
 }
 

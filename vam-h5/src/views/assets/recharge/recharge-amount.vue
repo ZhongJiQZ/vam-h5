@@ -26,9 +26,14 @@
             />
             <span v-if="isBankType" class="currency-suffix">USDT</span>
           </div>
-          <p v-if="showBankRate && estimatedFiatPayment" class="approx-line">
-            {{ _t18('recharge_fiat_transfer') }}: {{ estimatedFiatPayment }}
-          </p>
+          <div v-if="showBankRate && estimatedFiatPayment" class="fiat-pay-hero">
+            <p class="fiat-pay-hero__label">{{ _t18('recharge_fiat_transfer') }}</p>
+            <p class="fiat-pay-hero__value ff-num">{{ estimatedFiatPayment }}</p>
+            <p class="fiat-pay-hero__rate">
+              {{ priceFormat(amount || 0) }} USDT × 1 USDT = {{ _numberWithCommas(fiatRateNum) }}
+              {{ fiatCurrency }}
+            </p>
+          </div>
           <p v-if="isBankType && netUsdt" class="approx-line approx-line--net">
             {{ _t18('Actual_amount_received') }}: {{ netUsdt }}
           </p>
@@ -82,23 +87,36 @@ import { computed, ref, watch } from 'vue'
 import { priceFormat } from '@/utils/decimal'
 import { findRechargeListItem } from '@/utils/coinNetworkType'
 import { getRechargeAddressFromMap, normalizeRechargeAddressFromApi } from '@/utils/rechargeAddress'
+import { useAccountStore } from '@/store/account'
+import {
+  getRechargePayMode,
+  getRechargePayUrl,
+  getRechargeResponseData,
+  isBankRecharge,
+  isManualBankRecharge
+} from '@/utils/rechargeChannel'
 
 const route = useRoute()
 const router = useRouter()
 const mainStore = useMainStore()
+const accountStore = useAccountStore()
 const { _toast } = useToast()
 
 const amount = ref('')
 const currentName = `${_t18('recharge', ['latcoin'])} ${route.query.type || ''}`
-const coinIcon = computed(() => filterCoin2(String(route.query.coin || '')))
-
+const rechargeList = computed(() =>
+  accountStore.rechangeCoinList.length
+    ? accountStore.rechangeCoinList
+    : mainStore.getRechargeList
+)
 const rechargeObj = computed(() =>
-  findRechargeListItem(mainStore.getRechargeList, route.query.type)
+  findRechargeListItem(rechargeList.value, route.query.type)
 )
-const isBankRecharge = computed(() =>
-  Boolean(rechargeObj.value?.bankCardNo && rechargeObj.value?.bankName)
+const isManualBank = computed(() => isManualBankRecharge(rechargeObj.value))
+const isBankType = computed(() => isBankRecharge(rechargeObj.value))
+const coinIcon = computed(() =>
+  isBankType.value ? 'card' : filterCoin2(String(route.query.coin || ''))
 )
-const isBankType = computed(() => String(route.query.type || '').toUpperCase() === 'BANK')
 const isVirtualType = computed(() => !isBankType.value)
 const fiatRateNum = computed(() => {
   const n = Number(rechargeObj.value?.fiatPerUsdt)
@@ -143,14 +161,14 @@ const limitMaxDisplay = computed(() => {
   return `${priceFormat(max)} USDT`
 })
 const submitAddress = computed(() => {
-  if (isBankRecharge.value) return rechargeObj.value?.bankCardNo ?? ''
+  if (isBankType.value) return ''
   const key = rechargeObj.value?.coinName || route.query.type
   const fromMap = key ? getRechargeAddressFromMap(mainStore.userRechageMap, key) : ''
   return fromMap || rechargeObj.value?.coinAddress || ''
 })
 
 const refreshCurrentCoinAddress = async () => {
-  if (isBankRecharge.value) return
+  if (isBankType.value) return
   const type = String(route.query.type || '').trim()
   const coin = String(route.query.coin || '').trim()
   if (!type || !coin) return
@@ -170,7 +188,8 @@ const refreshCurrentCoinAddress = async () => {
 watch(
   () => route.query.type,
   () => {
-    if (!isBankRecharge.value) {
+    accountStore.getRechangeCoinList().catch(() => {})
+    if (!isBankType.value) {
       mainStore.getUserRechageNew()
       refreshCurrentCoinAddress()
     }
@@ -179,6 +198,11 @@ watch(
 )
 
 const onNext = async () => {
+  if (!accountStore.rechangeCoinList.length) {
+    try {
+      await accountStore.getRechangeCoinList()
+    } catch {}
+  }
   const val = Number(amount.value)
   if (!Number.isFinite(val) || val <= 0) {
     _toast('recharge_num')
@@ -194,23 +218,6 @@ const onNext = async () => {
   }
   const submitAmountValue = val
 
-  const addr = submitAddress.value
-  if (!addr) {
-    _toast('recharge_address_empty')
-    return
-  }
-  const payload = {
-    amount: priceFormat(submitAmountValue),
-    type: route.query.type,
-    coin: route.query.coin,
-    filePath: '',
-    address: addr
-  }
-  let orderId = ''
-  let submitErrorMsg = ''
-  let submitPayUrl = ''
-  const pickErrMsg = (e) =>
-    String(e?.data?.msg || e?.response?.data?.msg || e?.msg || e?.message || '')
   const jumpToApply = (oid = '') => {
     const q = new URLSearchParams({
       type: String(route.query.type || ''),
@@ -220,27 +227,51 @@ const onNext = async () => {
     })
     router.push(`/recharge-apply?${q.toString()}`)
   }
+
+  if (isManualBank.value) {
+    jumpToApply()
+    return
+  }
+
+  const addr = submitAddress.value
+  if (!addr && isVirtualType.value) {
+    _toast('recharge_address_empty')
+    return
+  }
+  const payload = {
+    amount: priceFormat(submitAmountValue),
+    type: route.query.type,
+    coin: route.query.coin,
+    filePath: '',
+    address: addr || ''
+  }
+  let orderId = ''
+  const pickErrMsg = (e) =>
+    String(e?.data?.msg || e?.response?.data?.msg || e?.msg || e?.message || '')
   try {
     const res = await rechargeSubmit(payload)
-    submitPayUrl = String(res?.data?.payUrl || '').trim()
+    const responseData = getRechargeResponseData(res)
+    const submitPayUrl = getRechargePayUrl(res)
     orderId =
-      res?.data?.id ??
-      res?.data?.orderId ??
-      res?.data?.serialId ??
+      responseData.id ??
+      responseData.orderId ??
+      responseData.serialId ??
       res?.id ??
       ''
-    if (isBankType.value && submitPayUrl) {
+    if (res.code != '200' && res.code != 200) {
+      _toast(res.msg || 'error')
+      return
+    }
+    if (submitPayUrl) {
       window.location.href = submitPayUrl
       return
     }
-    if (res.code != '200' && res.code != 200) {
-      submitErrorMsg = res.msg || ''
-      _toast(submitErrorMsg || 'error')
+    if (getRechargePayMode(res) === 'MANUAL_BANK') {
+      jumpToApply(orderId)
       return
     }
   } catch (err) {
-    submitErrorMsg = pickErrMsg(err)
-    _toast(submitErrorMsg || 'error')
+    _toast(pickErrMsg(err) || 'error')
     return
   }
 
@@ -250,7 +281,7 @@ const onNext = async () => {
   }
 
   if (isBankType.value) {
-    _toast(submitErrorMsg || 'recharge_waiting')
+    _toast('error')
     return
   }
 
@@ -362,6 +393,36 @@ const onNext = async () => {
   margin: 8px 2px 0;
   font-size: 13px;
   color: #646566;
+}
+
+.fiat-pay-hero {
+  margin: 14px 0 0;
+  padding: 14px 12px;
+  border-radius: 12px;
+  background: #ecf9f1;
+  border: 1px solid #17ac74;
+  text-align: center;
+}
+
+.fiat-pay-hero__label {
+  margin: 0 0 6px;
+  font-size: 13px;
+  color: #646566;
+}
+
+.fiat-pay-hero__value {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+  color: #17ac74;
+  line-height: 1.25;
+}
+
+.fiat-pay-hero__rate {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: #969799;
+  line-height: 1.45;
 }
 
 .approx-line--net {

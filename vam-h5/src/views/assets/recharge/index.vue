@@ -29,11 +29,15 @@ import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import List from './recharge-list.vue'
 import { filterCoin2 } from '@/utils/public'
 import { useMainStore } from '@/store/index.js'
-import { onMounted, watch } from 'vue'
+import { useAccountStore } from '@/store/account'
+import { isBankRecharge } from '@/utils/rechargeChannel'
+import { computed, onMounted, watch } from 'vue'
 
 const mainStore = useMainStore()
+const accountStore = useAccountStore()
 
 onMounted(() => {
+  accountStore.getRechangeCoinList().catch(() => {})
   // 进入充值页时主动拉取用户定制充值地址（/api/recharge/getAdress）
   mainStore.getUserRechageNew()
 })
@@ -49,13 +53,19 @@ watch(
   { immediate: true }
 )
 
+const rechargeList = computed(() =>
+  accountStore.rechangeCoinList.length
+    ? accountStore.rechangeCoinList
+    : mainStore.getRechargeList
+)
+
 const coinList = computed(() => {
-  return mainStore.getRechargeList.map((item) => {
-    const isBank = Boolean(item.bankCardNo && item.bankName)
+  return rechargeList.value.map((item) => {
+    const isBank = isBankRecharge(item)
     return {
       icon: isBank ? 'card' : filterCoin2(item.coin),
       type: 0,
-      title: isBank ? item.bankName : item.coinName,
+      title: isBank ? item.bankName || item.coinName : item.coinName,
       coinName: item.coinName,
       address: item.address,
       coin: item.coin
