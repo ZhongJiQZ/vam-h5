@@ -96,11 +96,11 @@ const handleSend = () => {
     _toast('login_please_emailCode')
     return
   }
-  flag.value = true
-  time.value = 60 * 1000
   emailCode('BIND', formData.value.email).then((res) => {
-    if (res.code != '200') {
-      flag.value = false
+    if (res.code == '200') {
+      flag.value = true
+      time.value = 60 * 1000
+    } else {
       showToast(res.msg)
     }
   })
