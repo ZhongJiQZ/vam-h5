@@ -151,26 +151,28 @@
           </div>
         </div>
 
-        <template v-if="email">
-          <div class="formInput">
-            <p class="label">{{ _t18('login_emailCode') }}</p>
-            <input :value="email" class="form-input" readonly disabled />
+        <div class="verify-block">
+          <div class="tip">{{ _t18('login_emailCode') }}</div>
+          <div class="input disabled" :class="{ 'input--unbound': !hasBoundEmail }">
+            <svg-load name="youxiang-x" class="icon"></svg-load>
+            <input type="text" disabled readonly :value="emailDisplayText" />
           </div>
-          <div class="formInput">
-            <p class="label">{{ _t18('verification_code') }}</p>
-            <div class="code-row">
-              <input
-                v-model="formData.emailCode"
-                class="form-input code-input"
-                :placeholder="_t18('login_please')"
-              />
-              <div v-if="flag" class="code-box">
+          <div class="tip">{{ _t18('verification_code') }}</div>
+          <div class="input">
+            <svg-load name="yanzhengma" class="icon"></svg-load>
+            <input
+              type="text"
+              v-model="formData.emailCode"
+              :placeholder="_t18('login_please')"
+            />
+            <div class="code-box">
+              <div class="wait-code" v-if="flag">
                 <van-count-down :time="time" format="ss" @finish="finish" />
               </div>
-              <div v-else class="code-box send" @click="handleSend">{{ _t18('login_send') }}</div>
+              <div class="send-code" v-else @click="handleSend">{{ _t18('login_send') }}</div>
             </div>
           </div>
-        </template>
+        </div>
 
         <div class="btnBox" @click="submit">
           <ButtonBar :btnValue="_t18('advanced_submit')" />
@@ -240,16 +242,19 @@ const formData = reactive({
   email: '',
   emailCode: ''
 })
-const email = computed(() => userInfo.value.user?.email || '')
+const boundEmail = computed(() => userInfo.value.user?.email || '')
+const emailDisplayText = computed(() => boundEmail.value || _t18('email_not_bound'))
+const hasBoundEmail = computed(() => !!boundEmail.value)
 const time = ref(0)
 const flag = ref(false)
 const handleSend = () => {
-  if (!email.value) {
+  if (!hasBoundEmail.value) {
     _toast('please_bind_email')
+    setTimeout(() => router.push('/email-authentication'), 500)
     return
   }
-  formData.email = email.value
-  emailCode('BIND', email.value).then((res) => {
+  formData.email = boundEmail.value
+  emailCode('BIND', boundEmail.value).then((res) => {
     if (res.code == '200') {
       flag.value = true
       time.value = 60 * 1000
@@ -338,7 +343,7 @@ onMounted(() => {
 })
 
 const submit = () => {
-  if (!email.value) {
+  if (!hasBoundEmail.value) {
     _toast('please_bind_email')
     setTimeout(() => router.push('/email-authentication'), 500)
     return
@@ -348,7 +353,7 @@ const submit = () => {
     return
   }
   let params = formData
-  formData.email = email.value
+  formData.email = boundEmail.value
   if (formData.cardNumber == '') {
     // showToast('请填写银行卡号')
     _toast('Bank_please_card')
@@ -432,13 +437,14 @@ const submit = () => {
   }
 
   .form {
-    padding: 6px 14px 16px;
+    padding: 6px 14px 8px;
     background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
-    border-bottom-left-radius: 14px;
-    border-bottom-right-radius: 14px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
     border: 1px solid #edf0f5;
     border-top: 0;
-    box-shadow: 0 6px 18px rgba(36, 58, 88, 0.06);
+    border-bottom: 0;
+    box-shadow: none;
 
     .formInput {
       margin-top: 16px;
@@ -508,32 +514,91 @@ const submit = () => {
     }
   }
 
-  .code-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  .verify-block {
+    padding: 8px 14px 16px;
+    background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
+    border: 1px solid #edf0f5;
+    border-top: 1px solid #edf0f5;
+    border-bottom-left-radius: 14px;
+    border-bottom-right-radius: 14px;
+    box-shadow: 0 6px 18px rgba(36, 58, 88, 0.06);
 
-    .code-input {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .code-box {
-      flex-shrink: 0;
-      min-width: 72px;
-      height: 46px;
-      padding: 0 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--ex-div-bgColor1, #17ac74);
-      border-radius: 10px;
-      color: var(--ex-font-color, #fff);
+    .tip {
+      display: block;
       font-size: 14px;
+      color: var(--ex-font-color16, #646566);
+      margin-bottom: 10px;
+      text-align: left;
     }
 
-    .send {
-      cursor: pointer;
+    .input {
+      padding: 0 15px;
+      width: 100%;
+      height: 50px;
+      background: var(--ex-default-background-color, #fff);
+      border-radius: 3px;
+      border: 1px solid var(--ex-border-color1, #ebedf0);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      box-sizing: border-box;
+
+      input {
+        flex: 1;
+        min-width: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        padding: 0 10px;
+        font-size: 14px;
+        color: var(--ex-default-font-color, #323233);
+        border: none;
+        background: transparent;
+        box-sizing: border-box;
+
+        &::placeholder {
+          color: var(--ex-bindcard-input-font-color, #c8c9cc);
+        }
+      }
+
+      .code-box {
+        min-width: 44px;
+        height: 30px;
+        background: var(--ex-div-bgColor1, #17ac74);
+        border-radius: 2px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: var(--ex-font-color, #fff);
+      }
+
+      .send-code {
+        font-size: 14px;
+        border-radius: 5px;
+        padding: 0 8px;
+        cursor: pointer;
+      }
+    }
+
+    .disabled {
+      background: #efefef;
+    }
+
+    .input--unbound input {
+      color: var(--ex-passive-font-color, #969799);
+    }
+
+    .icon {
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    :deep(.van-count-down) {
+      font-size: 14px;
+      color: var(--ex-font-color, #fff);
+      padding: 0;
     }
   }
 
