@@ -11,8 +11,10 @@ export const signUp = (parmas) => post('/api/user/register', parmas)
 // 用户登录
 export const signIn = (parmas) => post('/api/user/login', parmas)
 // 修改登录密码
-export const updateLoginPwd = (oldPwd, newPwd, userId) =>
-  post(`/api/user/updateUserLoginPwd?oldPwd=${oldPwd}&newPwd=${newPwd}&userId=${userId}`)
+export const updateLoginPwd = (oldPwd, newPwd, userId, email, emailCode) =>
+  post(
+    `/api/user/updateUserLoginPwd?oldPwd=${encodeURIComponent(oldPwd)}&newPwd=${encodeURIComponent(newPwd)}&userId=${userId}&email=${encodeURIComponent(email)}&emailCode=${encodeURIComponent(emailCode)}`
+  )
 // 添加登录密码
 export const addLoginPwd = (pwd) =>post(`/api/user/pwdSett?pwd=${pwd}`)
 /**

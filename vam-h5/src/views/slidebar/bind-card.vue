@@ -151,6 +151,27 @@
           </div>
         </div>
 
+        <template v-if="email">
+          <div class="formInput">
+            <p class="label">{{ _t18('login_emailCode') }}</p>
+            <input :value="email" class="form-input" readonly disabled />
+          </div>
+          <div class="formInput">
+            <p class="label">{{ _t18('verification_code') }}</p>
+            <div class="code-row">
+              <input
+                v-model="formData.emailCode"
+                class="form-input code-input"
+                :placeholder="_t18('login_please')"
+              />
+              <div v-if="flag" class="code-box">
+                <van-count-down :time="time" format="ss" @finish="finish" />
+              </div>
+              <div v-else class="code-box send" @click="handleSend">{{ _t18('login_send') }}</div>
+            </div>
+          </div>
+        </template>
+
         <div class="btnBox" @click="submit">
           <ButtonBar :btnValue="_t18('advanced_submit')" />
         </div>
@@ -188,6 +209,7 @@
 </template>
 <script setup>
 import { getBindCardList, bindCardSubmit } from '@/api/account.js'
+import { emailCode } from '@/api/user'
 import ButtonBar from '@/components/common/ButtonBar/index.vue'
 import BankItem from './components/bank-item.vue'
 import { ref, reactive, onMounted, computed } from 'vue'
@@ -196,9 +218,15 @@ import { showToast } from 'vant'
 import { _t18, _toView } from '@/utils/public'
 import { dict } from '@/api/common/index.js'
 import { useToast } from '@/hook/useToast'
+import { useUserStore } from '@/store/user/index'
+import { storeToRefs } from 'pinia'
+import { useRouter } from 'vue-router'
 import { INDONESIA_BANK_OPTIONS } from '@/constants/indonesiaBanks'
 
 const { _toast } = useToast()
+const userStore = useUserStore()
+const router = useRouter()
+const { userInfo } = storeToRefs(userStore)
 
 const formData = reactive({
   // userName: '',
@@ -208,8 +236,31 @@ const formData = reactive({
   bankAddress: '',
   bankCode: '',
   userAddress: '',
-  coin: ''
+  coin: '',
+  email: '',
+  emailCode: ''
 })
+const email = computed(() => userInfo.value.user?.email || '')
+const time = ref(0)
+const flag = ref(false)
+const handleSend = () => {
+  if (!email.value) {
+    _toast('please_bind_email')
+    return
+  }
+  formData.email = email.value
+  emailCode('BIND', email.value).then((res) => {
+    if (res.code == '200') {
+      flag.value = true
+      time.value = 60 * 1000
+    } else {
+      showToast(res.msg)
+    }
+  })
+}
+const finish = () => {
+  flag.value = false
+}
 // const bankList = reactive([
 //   {
 //     bankAddress: '美国花旗银行',
@@ -281,12 +332,23 @@ const onBankCoinConfirm = (item) => {
 
 
 onMounted(() => {
+  userStore.getUserInfo()
   getCardList()
   getBankCoinList()
 })
 
 const submit = () => {
+  if (!email.value) {
+    _toast('please_bind_email')
+    setTimeout(() => router.push('/email-authentication'), 500)
+    return
+  }
+  if (!formData.emailCode) {
+    _toast('verification_code')
+    return
+  }
   let params = formData
+  formData.email = email.value
   if (formData.cardNumber == '') {
     // showToast('请填写银行卡号')
     _toast('Bank_please_card')
@@ -327,6 +389,7 @@ const submit = () => {
         formData.bankCode =
         formData.userAddress =
         formData.coin =
+        formData.emailCode =
         ''
     } else {
       showToast(res.msg)
@@ -442,6 +505,35 @@ const submit = () => {
           font-size: 14px;
         }
       }
+    }
+  }
+
+  .code-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .code-input {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .code-box {
+      flex-shrink: 0;
+      min-width: 72px;
+      height: 46px;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--ex-div-bgColor1, #17ac74);
+      border-radius: 10px;
+      color: var(--ex-font-color, #fff);
+      font-size: 14px;
+    }
+
+    .send {
+      cursor: pointer;
     }
   }
 

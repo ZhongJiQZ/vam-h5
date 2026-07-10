@@ -1,19 +1,23 @@
 <!-- 普通方式修改密码 -->
 <script setup>
 import ButtonBar from '@/components/common/ButtonBar/index.vue'
-import { updateLoginPwd } from '@/api/user'
+import { updateLoginPwd, emailCode } from '@/api/user'
 import { showToast } from 'vant'
-import { ref, reactive } from 'vue'
-import { _toView } from '@/utils/public'
+import { ref } from 'vue'
 import { useUserStore } from '@/store/user/index'
+import { storeToRefs } from 'pinia'
 import { _t18 } from '@/utils/public'
 import { useToast } from '@/hook/useToast'
 const { _toast } = useToast()
 const userStore = useUserStore()
+userStore.getUserInfo()
+const { userInfo } = storeToRefs(userStore)
 const newPwd = ref(true)
 const oldPwd = ref(true)
 const NPwd = ref(true)
 const form = ref({
+  email: userInfo.value.user?.email || '',
+  code: '',
   newPwd: '',
   oldPwd: '',
   NPwd: ''
@@ -31,38 +35,83 @@ const showPwdDiff = ref(false)
 const pwdDiff = () => {
   showPwdDiff.value = !(form.value.newPwd == form.value.NPwd)
 }
+
+const time = ref(0)
+const flag = ref(false)
+const send = () => {
+  if (!form.value.email) {
+    _toast('please_bind_email')
+    return
+  }
+  emailCode('UPD_PASSWORD', form.value.email).then((res) => {
+    if (res.code == '200') {
+      flag.value = true
+      time.value = 60 * 1000
+    } else {
+      showToast(res.msg)
+    }
+  })
+}
+const finish = () => {
+  flag.value = false
+}
+
 const submit = () => {
+  if (!form.value.email) {
+    _toast('please_bind_email')
+    return
+  }
+  if (form.value.code == '') {
+    _toast('verification_code')
+    return
+  }
   if (form.value.oldPwd == '') {
-    // showToast('请输入旧密码')
     _toast('Fund_password_pleaseOld')
     return
   }
   if (form.value.newPwd == '') {
-    // showToast('请输入新密码')
     _toast('Fund_password_pleaseNew')
     return
   }
   if (form.value.newPwd !== form.value.NPwd) {
-    // showToast('两次密码不一致')
     _toast('register_pwd_diff')
     return
   }
 
-  updateLoginPwd(form.value.oldPwd, form.value.newPwd, userStore?.userInfo?.user?.userId).then(
-    (res) => {
-      if (res.code == '200') {
-        // showToast('修改成功')
-        _toast('Bank_update_success')
-        form.value.newPwd = form.value.NPwd = form.value.oldPwd = ''
-      } else {
-        showToast(res.msg)
-      }
+  updateLoginPwd(
+    form.value.oldPwd,
+    form.value.newPwd,
+    userStore?.userInfo?.user?.userId,
+    form.value.email,
+    form.value.code
+  ).then((res) => {
+    if (res.code == '200') {
+      _toast('Bank_update_success')
+      form.value.newPwd = form.value.NPwd = form.value.oldPwd = form.value.code = ''
+    } else {
+      showToast(res.msg)
     }
-  )
+  })
 }
 </script>
 <template>
   <div class="content">
+    <div class="tip">{{ _t18('login_emailCode') }}</div>
+    <div class="input disabled">
+      <svg-load name="youxiang-x" class="icon"></svg-load>
+      <input type="text" disabled v-model="form.email" />
+    </div>
+    <div class="tip">{{ _t18('verification_code') }}</div>
+    <div class="input">
+      <svg-load name="yanzhengma" class="icon"></svg-load>
+      <input type="text" v-model="form.code" :placeholder="_t18('login_please')" />
+      <div class="code-box">
+        <div class="wait-code" v-if="flag">
+          <van-count-down :time="time" format="ss" @finish="finish" />
+        </div>
+        <div class="send-code" v-else @click="send">{{ _t18('login_send') }}</div>
+      </div>
+    </div>
     <div class="tip">{{ _t18('Old_Password') }}</div>
     <div class="input">
       <input :type="oldPwd ? 'text' : 'password'" v-model="form.oldPwd" :placeholder="_t18('login_please')" />
@@ -134,6 +183,23 @@ const submit = () => {
       border: none;
       background: transparent;
     }
+    .code-box {
+      min-width: 44px;
+      height: 30px;
+      background: var(--ex-div-bgColor1);
+      border-radius: 2px 2px 2px 2px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--ex-font-color);
+    }
+    .send-code {
+      font-size: 14px;
+      border-radius: 5px;
+    }
+  }
+  .disabled {
+    background: #efefef;
   }
   .icon {
     font-size: 16px;
@@ -145,5 +211,10 @@ const submit = () => {
   .pwdDiff {
     color: var(--ex-font-color14);
   }
+}
+:deep(.van-count-down) {
+  font-size: 14px;
+  color: var(--ex-font-color);
+  padding: 0;
 }
 </style>

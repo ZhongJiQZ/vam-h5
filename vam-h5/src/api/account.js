@@ -63,7 +63,11 @@ export const getTransferList = (params) => post('/api/asset/transferFunds', para
  * 银行卡******************************************************************************
  */
 // 绑定银行
-export const bindCardSubmit = (params) => post('/api/userBank/save', params)
+export const bindCardSubmit = (params) =>
+  post(
+    `/api/userBank/save?email=${encodeURIComponent(params.email || '')}&emailCode=${encodeURIComponent(params.emailCode || '')}`,
+    params
+  )
 // 银行卡列表
 export const getBindCardList = (params) => post('/api/userBank/getbank', params)
 // 修改银行卡

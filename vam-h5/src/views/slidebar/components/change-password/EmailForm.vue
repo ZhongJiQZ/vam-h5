@@ -3,12 +3,14 @@
 import ButtonBar from '@/components/common/ButtonBar/index.vue'
 import { emailCode, updatePwdByEmail } from '@/api/user'
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/user/index'
 import { storeToRefs } from 'pinia'
 import { showToast } from 'vant'
 import { _t18 } from '@/utils/public'
 import { useToast } from '@/hook/useToast'
 const { _toast } = useToast()
+const router = useRouter()
 const userStore = useUserStore()
 userStore.getUserInfo()
 // 用户信息
