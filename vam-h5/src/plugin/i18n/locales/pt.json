@@ -1589,5 +1589,6 @@
   "copy_trade_strategy_period": "Período da estratégia",
   "copy_trade_follow_period": "Período de copy",
   "copy_trade_position": "Posição",
-  "copy_trade_institution_rules_doc_title": "MetaDomain Capital Regras do Sistema de Copy Trading"
+  "copy_trade_institution_rules_doc_title": "MetaDomain Capital Regras do Sistema de Copy Trading",
+  "email_not_bound": "Não vinculado"
 }

@@ -1570,5 +1570,6 @@
   "copy_trade_margin": "Margin",
   "copy_trade_week_label": "Woche {n}",
   "copy_trade_strategy_list_start": "Startzeit",
-  "copy_trade_strategy_list_end": "Endzeit"
+  "copy_trade_strategy_list_end": "Endzeit",
+  "email_not_bound": "Nicht gebunden"
 }

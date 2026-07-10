@@ -831,6 +831,7 @@
   "password_update_pwd": "使用原密码修改",
   "password_update_email": "使用邮箱修改",
   "please_bind_email": "请先绑定邮箱",
+  "email_not_bound": "未绑定",
   "email_bind_success": "恭喜您，邮箱绑定成功",
   "email_update": "更改邮箱",
   "backhome": "返回首页",

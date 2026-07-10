@@ -1573,5 +1573,6 @@
   "plug_today_sum": "आज के आमंत्रण",
   "plug_today_amount": "आज की छूट",
   "recharge_limit_range": "जमा सीमा",
-  "withdraw_limit_range": "निकासी सीमा"
+  "withdraw_limit_range": "निकासी सीमा",
+  "email_not_bound": "बाउंड नहीं"
 }

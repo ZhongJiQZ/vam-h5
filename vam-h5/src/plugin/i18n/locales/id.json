@@ -1573,5 +1573,6 @@
   "copy_trade_records_title": "Riwayat Copy Trade",
   "copy_trade_position": "Posisi",
   "copy_trade_institution_rules_doc_title": "MetaDomain Capital Peraturan Sistem Copy Trading",
-  "copy_trade_date_unknown": "Tanggal belum ditentukan"
+  "copy_trade_date_unknown": "Tanggal belum ditentukan",
+  "email_not_bound": "Belum terhubung"
 }

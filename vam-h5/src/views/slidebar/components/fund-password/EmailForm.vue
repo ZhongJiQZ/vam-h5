@@ -2,7 +2,7 @@
 <script setup>
 import ButtonBar from '@/components/common/ButtonBar/index.vue'
 import { emailCode, updateFundPwd } from '@/api/user'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useUserStore } from '@/store/user/index'
 import { storeToRefs } from 'pinia'
 import { showToast } from 'vant'
@@ -13,10 +13,12 @@ const { _toast } = useToast()
 const userStore = useUserStore()
 userStore.getUserInfo()
 const { userInfo } = storeToRefs(userStore)
+const boundEmail = computed(() => userInfo.value.user?.email || '')
+const emailDisplayText = computed(() => boundEmail.value || _t18('email_not_bound'))
+const hasBoundEmail = computed(() => !!boundEmail.value)
 const newPwd = ref(false)
 const NPwd = ref(false)
 const form = ref({
-  email: userInfo.value.user?.email || '',
   code: '',
   newPwd: '',
   NPwd: ''
@@ -36,11 +38,11 @@ const pwdDiff = () => {
 const time = ref(0)
 const flag = ref(false)
 const send = () => {
-  if (!form.value.email) {
+  if (!hasBoundEmail.value) {
     _toast('please_bind_email')
     return
   }
-  emailCode('UPD_PASSWORD', form.value.email).then((res) => {
+  emailCode('UPD_PASSWORD', boundEmail.value).then((res) => {
     if (res.code == '200') {
       flag.value = true
       time.value = 60 * 1000
@@ -55,7 +57,7 @@ const finish = () => {
 
 const emit = defineEmits(['setPwd'])
 const submit = () => {
-  if (!form.value.email) {
+  if (!hasBoundEmail.value) {
     _toast('please_bind_email')
     return
   }
@@ -71,7 +73,7 @@ const submit = () => {
     _toast('register_pwd_diff')
     return
   }
-  updateFundPwd('', form.value.newPwd, 2, form.value.email, form.value.code).then((res) => {
+  updateFundPwd('', form.value.newPwd, 2, boundEmail.value, form.value.code).then((res) => {
     if (res.code == '200') {
       _toast('Fund_password_update_success')
       emit('setPwd', true)
@@ -84,9 +86,9 @@ const submit = () => {
 <template>
   <div class="content">
     <div class="tip">{{ _t18('login_emailCode') }}</div>
-    <div class="input disabled">
+    <div class="input disabled" :class="{ 'input--unbound': !hasBoundEmail }">
       <svg-load name="youxiang-x" class="icon"></svg-load>
-      <input type="text" disabled v-model="form.email" />
+      <input type="text" disabled readonly :value="emailDisplayText" />
     </div>
     <div class="tip">{{ _t18('verification_code') }}</div>
     <div class="input">
@@ -180,6 +182,9 @@ const submit = () => {
   }
   .disabled {
     background: #efefef;
+  }
+  .input--unbound input {
+    color: var(--ex-passive-font-color, #969799);
   }
   .icon {
     font-size: 16px;

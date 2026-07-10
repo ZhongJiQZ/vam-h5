@@ -831,6 +831,7 @@
   "password_update_pwd": "Use original password to modify",
   "password_update_email": "Modify using email",
   "please_bind_email": "Please bind the email first",
+  "email_not_bound": "Not bound",
   "email_bind_success": "Congratulations, the email binding was successful",
   "email_update": "Change email",
   "backhome": "Return to homepage",

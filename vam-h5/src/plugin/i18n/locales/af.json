@@ -1564,5 +1564,6 @@
   "copy_trade_follow_period": "Kopieerperiode",
   "copy_trade_records_title": "Kopieerrekords",
   "copy_trade_position": "Posisie",
-  "copy_trade_institution_rules_doc_title": "MetaDomain Capital Kopieerhandel-stelselreëls"
+  "copy_trade_institution_rules_doc_title": "MetaDomain Capital Kopieerhandel-stelselreëls",
+  "email_not_bound": "Nie gebind nie"
 }

@@ -1574,5 +1574,6 @@
   "copy_trade_margin": "الهامش",
   "copy_trade_week_label": "الأسبوع {n}",
   "copy_trade_strategy_list_start": "وقت البدء",
-  "copy_trade_strategy_list_end": "وقت الانتهاء"
+  "copy_trade_strategy_list_end": "وقت الانتهاء",
+  "email_not_bound": "غير مربوط"
 }

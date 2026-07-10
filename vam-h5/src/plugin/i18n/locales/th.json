@@ -1570,5 +1570,6 @@
   "copy_trade_margin": "มาร์จิ้น",
   "copy_trade_week_label": "สัปดาห์ {n}",
   "copy_trade_strategy_list_start": "เวลาเริ่ม",
-  "copy_trade_strategy_list_end": "เวลาสิ้นสุด"
+  "copy_trade_strategy_list_end": "เวลาสิ้นสุด",
+  "email_not_bound": "ยังไม่ได้ผูก"
 }

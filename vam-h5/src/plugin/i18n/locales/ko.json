@@ -1570,5 +1570,6 @@
   "copy_trade_margin": "증거금",
   "copy_trade_week_label": "{n}주차",
   "copy_trade_strategy_list_start": "시작 시간",
-  "copy_trade_strategy_list_end": "종료 시간"
+  "copy_trade_strategy_list_end": "종료 시간",
+  "email_not_bound": "미연동"
 }

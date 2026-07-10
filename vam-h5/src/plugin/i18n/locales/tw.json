@@ -828,6 +828,7 @@
   "password_update_pwd": "使用原密碼修改",
   "password_update_email": "使用郵箱修改",
   "please_bind_email": "請先綁定郵箱",
+  "email_not_bound": "未綁定",
   "email_bind_success": "恭喜您，郵箱綁定成功",
   "email_update": "更改郵箱",
   "backhome": "返回首頁",

@@ -1573,5 +1573,6 @@
   "copy_trade_margin": "Ký quỹ",
   "copy_trade_week_label": "Tuần {n}",
   "copy_trade_strategy_list_start": "Thời gian bắt đầu",
-  "copy_trade_strategy_list_end": "Thời gian kết thúc"
+  "copy_trade_strategy_list_end": "Thời gian kết thúc",
+  "email_not_bound": "Chưa liên kết"
 }

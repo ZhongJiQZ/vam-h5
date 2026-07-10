@@ -1574,5 +1574,6 @@
   "withdraw_limit_range": "מגבלת משיכה",
   "open_time": "Opening time",
   "close_time": "Closing time",
-  "please_shareCode": "Please enter invitation code"
+  "please_shareCode": "Please enter invitation code",
+  "email_not_bound": "לא מקושר"
 }
