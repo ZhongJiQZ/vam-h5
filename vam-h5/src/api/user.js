@@ -53,8 +53,10 @@ export const getUserInfo = () => post('/api/user/getInfo')
 // 设置资金密码
 export const setFundPwd = (pwd) => post(`/api/user/tardPwdSet?pwd=${pwd}`)
 // 修改资金密码
-export const updateFundPwd = (oldPwd, newPwd, signType) =>
-  post(`/api/user/updatePwd?oldPwd=${oldPwd}&newPwd=${newPwd}&signType=${signType}`)
+export const updateFundPwd = (oldPwd, newPwd, signType, emailOrPhone = '', code = '') =>
+  post(
+    `/api/user/updatePwd?oldPwd=${encodeURIComponent(oldPwd || '')}&newPwd=${encodeURIComponent(newPwd)}&signType=${signType}&emailOrPhone=${encodeURIComponent(emailOrPhone)}&code=${encodeURIComponent(code)}`
+  )
 
 /**
  *

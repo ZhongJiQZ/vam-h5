@@ -4,35 +4,54 @@ import DarkHeaderBar from '@/components/DarkHeaderBar/index.vue'
 import ButtonBar from '@/components/common/ButtonBar/index.vue'
 import SetForm from './components/fund-password/SetForm.vue'
 import ChangeForm from './components/fund-password/ChangeForm.vue'
+import EmailForm from './components/fund-password/EmailForm.vue'
 import lockIcon from '@/assets/images/lock.png'
 import { useUserStore } from '@/store/user/index'
 import { storeToRefs } from 'pinia'
-import { showToast } from 'vant'
 import { _t18 } from '@/utils/public'
 import { useToast } from '@/hook/useToast'
+
 const { _toast } = useToast()
 const userStore = useUserStore()
 userStore.getUserInfo()
-// 用户信息
 const { userInfo } = storeToRefs(userStore)
-// 用户是否设置过资金密码(userInfo.detail?.userTardPwd)
 
-// const notPwd = ref(true)
 const notPwd = ref(userInfo.value.detail?.userTardPwd)
 const success = ref(true)
+// true=旧密码修改, false=邮箱验证码修改
+const updateFundPwdMethod = ref(true)
+
 const changePwd = () => {
+  if (!userInfo.value.user?.email) {
+    return _toast('please_bind_email')
+  }
   notPwd.value = true
   success.value = false
+  updateFundPwdMethod.value = true
   userStore.getUserInfo()
 }
+
+const forgotPwd = () => {
+  if (!userInfo.value.user?.email) {
+    return _toast('please_bind_email')
+  }
+  notPwd.value = true
+  success.value = false
+  updateFundPwdMethod.value = false
+}
+
+const toggleMethod = () => {
+  if (!userInfo.value.user?.email) {
+    return _toast('please_bind_email')
+  }
+  updateFundPwdMethod.value = !updateFundPwdMethod.value
+}
+
 const setPwd = (v) => {
   success.value = v
   notPwd.value = v
+  updateFundPwdMethod.value = true
   userStore.getUserInfo()
-}
-const toCustorm = () => {
-  // showToast('请联系客服')
-  _toast('custorm_service')
 }
 </script>
 <template>
@@ -50,7 +69,14 @@ const toCustorm = () => {
         <img :src="lockIcon" alt="" class="lock-icon" />
       </div>
       <SetForm v-if="!notPwd && success" @setPwd="setPwd"></SetForm>
-      <ChangeForm v-if="notPwd && !success" @setPwd="setPwd"></ChangeForm>
+      <ChangeForm v-if="notPwd && !success && updateFundPwdMethod" @setPwd="setPwd"></ChangeForm>
+      <EmailForm v-if="notPwd && !success && !updateFundPwdMethod" @setPwd="setPwd"></EmailForm>
+      <div class="footer-link" v-if="notPwd && !success">
+        <span v-if="!updateFundPwdMethod" class="link" @click="toggleMethod">{{
+          _t18('password_update_pwd')
+        }}</span>
+        <span v-else class="link" @click="toggleMethod">{{ _t18('password_update_email') }}</span>
+      </div>
       <Success
         v-if="notPwd && success"
         :text="_t18('Fund_password_has_set')"
@@ -61,7 +87,7 @@ const toCustorm = () => {
           <div class="btnBox" @click="changePwd">
             <ButtonBar :btnValue="_t18('Change_security_password')" />
           </div>
-          <div class="forgot" @click="toCustorm">{{ _t18('forgot_security_code') }}?</div>
+          <div class="forgot" @click="forgotPwd">{{ _t18('forgot_security_code') }}?</div>
         </template>
       </Success>
     </div>
@@ -79,7 +105,7 @@ const toCustorm = () => {
   min-height: calc(100vh - 60px - constant(safe-area-inset-top));
   min-height: calc(100vh - 60px - env(safe-area-inset-top, 0px));
   background: #fff;
-  
+
   padding: 20px 15px 28px;
   box-sizing: border-box;
 }
@@ -102,6 +128,16 @@ const toCustorm = () => {
   height: 22px;
   object-fit: contain;
   flex-shrink: 0;
+}
+
+.footer-link {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.footer-link .link {
+  font-size: 14px;
+  color: #17ac74;
 }
 
 .card :deep(.btnBox > div) {
