@@ -692,6 +692,7 @@
   "recharge_amount_usdt": "USDT amount",
   "recharge_fiat_transfer": "Fiat transfer amount",
   "recharge_i_paid": "I have recharged",
+  "recharge_scan_qr_pay": "Scan the QR code with your payment app to complete payment",
   "recharge_waiting_confirm": "Waiting for confirmation",
   "recharge_usually_need": "Usually takes about",
   "recharge_waiting_tip_1": "Already transferred? Please stay on this page, we will confirm shortly.",

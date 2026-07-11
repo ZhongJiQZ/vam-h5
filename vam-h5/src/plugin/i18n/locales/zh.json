@@ -692,6 +692,7 @@
   "recharge_amount_usdt": "USDT充值数量",
   "recharge_fiat_transfer": "法币转账金额",
   "recharge_i_paid": "我已充值",
+  "recharge_scan_qr_pay": "请使用支付应用扫描二维码完成付款",
   "recharge_waiting_confirm": "等待确认中",
   "recharge_usually_need": "通常需要约",
   "recharge_waiting_tip_1": "已经转账了？请留在此页面，我们会很快确认。",

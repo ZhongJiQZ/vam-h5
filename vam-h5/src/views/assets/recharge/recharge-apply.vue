@@ -8,18 +8,19 @@
     />
 
     <div class="page-body">
-      <div v-if="!isBankRecharge" class="qr-section">
+      <div v-if="showQrSection" class="qr-section">
         <div
           class="qr-bg"
           :style="{ backgroundImage: `url(${rechargeApplyBg})` }"
           aria-hidden="true"
         />
         <div class="qr-frame">
-          <QRCode :address="address"></QRCode>
+          <QRCode :address="qrPayContent"></QRCode>
         </div>
+        <p v-if="isThirdPartyQrPay" class="qr-tip">{{ _t18('recharge_scan_qr_pay') }}</p>
       </div>
 
-      <div class="applyMes" :class="{ 'applyMes--noqr': isBankRecharge }">
+      <div class="applyMes" :class="{ 'applyMes--noqr': !showQrSection }">
         <template v-if="isBankRecharge">
           <div class="info-row">
             <p class="top">{{ _t18('bank_name') }}</p>
@@ -62,7 +63,7 @@
             </div>
           </div>
         </template>
-        <div v-else class="address">
+        <div v-else-if="!isThirdPartyQrPay" class="address">
           <p class="top">{{ _t18('recharge_address', ['bitmake']) }}({{ route.query.type }})</p>
           <div class="bottom">
             <Copy :data="address" :fontSize="'16px'">
@@ -75,6 +76,7 @@
         <template
           v-if="
             isBankRecharge ||
+            isThirdPartyQrPay ||
             !['coinsexpto', 'rxce', 'gmtoin', 'aams', 'bitbyex', 'gmmoin'].includes(
               _getConfig('_APP_ENV')
             )
@@ -82,7 +84,11 @@
         >
           <div class="info-row">
             <p class="top">
-              {{ isBankRecharge ? _t18('recharge_amount_usdt') : _t18('recharge_number', ['bitmake']) }}
+              {{
+                isBankRecharge || isThirdPartyQrPay
+                  ? _t18('recharge_amount_usdt')
+                  : _t18('recharge_number', ['bitmake'])
+              }}
             </p>
             <div class="bottom ff-num">{{ submitAmountDisplay }}</div>
           </div>
@@ -147,7 +153,12 @@
         v-else-if="!isBankRecharge && ['aams', 'gmmoin'].includes(_getConfig('_APP_ENV'))"
       ></template>
       <template v-else>
-        <div class="btn-wrap">
+        <div v-if="isThirdPartyQrPay" class="btn-wrap">
+          <div class="btn btn--primary" @click="onIRecharged()">
+            <p>{{ _t18('recharge_i_paid') }}</p>
+          </div>
+        </div>
+        <div v-else class="btn-wrap">
           <div class="btn btn--primary" @click="isBankRecharge ? submitManualBank() : onIRecharged()">
             <p>
               {{
@@ -245,14 +256,16 @@ import { useRouter, useRoute } from 'vue-router'
 import { useMainStore } from '@/store'
 import { useAccountStore } from '@/store/account'
 import { dispatchCustomEvent } from '@/utils'
-import { reactive, computed, ref, watch, onUnmounted } from 'vue'
+import { reactive, computed, ref, watch, onMounted, onUnmounted } from 'vue'
 import { findRechargeListItem } from '@/utils/coinNetworkType'
 import { getRechargeAddressFromMap } from '@/utils/rechargeAddress'
 import { formatLocalTime } from '@/utils/time'
 import {
+  cacheThirdPartyPayPayload,
+  consumeThirdPartyPayPayload,
   getRechargePayMode,
-  getRechargePayUrl,
-  isManualBankRecharge
+  isManualBankRecharge,
+  resolveRechargePayAction
 } from '@/utils/rechargeChannel'
 
 const { _toast } = useToast()
@@ -289,6 +302,7 @@ const successReceived = ref('')
 const successArriveTime = ref('')
 const fileList = ref([])
 const submitting = ref(false)
+const thirdPartyPayPayload = ref(consumeThirdPartyPayPayload())
 const elapsedSeconds = ref(0)
 const polling = ref(false)
 let pollingTimer = null
@@ -406,6 +420,20 @@ const rechargeObj = computed(() =>
 
 const isBankRecharge = computed(() => isManualBankRecharge(rechargeObj.value))
 
+const isThirdPartyQrPay = computed(() => Boolean(thirdPartyPayPayload.value?.payQr))
+
+const showQrSection = computed(() => {
+  if (isThirdPartyQrPay.value) return true
+  return !isBankRecharge.value && Boolean(address.value)
+})
+
+const qrPayContent = computed(() => {
+  if (isThirdPartyQrPay.value) {
+    return String(thirdPartyPayPayload.value?.payQr || '').trim()
+  }
+  return address.value
+})
+
 const afterRead = async (file) => {
   file.status = 'uploading'
   const formData = new FormData()
@@ -455,9 +483,20 @@ const submitManualBank = async () => {
       _toast(res.msg || 'error')
       return
     }
-    const payUrl = getRechargePayUrl(res)
-    if (payUrl) {
-      window.location.href = payUrl
+    const payAction = resolveRechargePayAction(res)
+    if (payAction.type === 'url') {
+      window.location.href = payAction.value
+      return
+    }
+    if (payAction.type === 'qrcode') {
+      const responseData = res?.data?.data ?? res?.data ?? {}
+      thirdPartyPayPayload.value = {
+        payQr: payAction.value,
+        orderId: responseData.orderId ?? responseData.id ?? queryOrderId.value,
+        payDataType: payAction.payDataType
+      }
+      cacheThirdPartyPayPayload(thirdPartyPayPayload.value)
+      onIRecharged()
       return
     }
     if (getRechargePayMode(res) === 'MANUAL_BANK') {
@@ -521,7 +560,10 @@ const fiatCurrency = computed(() =>
   String(rechargeObj.value?.fiatCurrency || 'Rp').toUpperCase()
 )
 const showBankFiat = computed(
-  () => isBankRecharge.value && fiatRateNum.value != null && submitAmount.value > 0
+  () =>
+    (isBankRecharge.value || isThirdPartyQrPay.value) &&
+    fiatRateNum.value != null &&
+    submitAmount.value > 0
 )
 const estimatedFiatAmountRaw = computed(() => {
   if (!showBankFiat.value) return ''
@@ -532,7 +574,7 @@ const estimatedFiatPayment = computed(() => {
   return `${fiatCurrency.value} ${_numberWithCommas(estimatedFiatAmountRaw.value)}`
 })
 const netUsdtReceived = computed(() => {
-  if (!isBankRecharge.value || submitAmount.value <= 0) return ''
+  if ((!isBankRecharge.value && !isThirdPartyQrPay.value) || submitAmount.value <= 0) return ''
   const net = submitAmount.value * (1 - feeRatioNum.value / 100)
   return `${priceFormat(Math.max(net, 0))} USDT`
 })
@@ -554,6 +596,12 @@ const successReceivedDisplay = computed(() => {
 const successArriveTimeDisplay = computed(() => {
   if (!successArriveTime.value) return '--'
   return formatLocalTime(successArriveTime.value)
+})
+
+onMounted(() => {
+  if (isThirdPartyQrPay.value && queryOrderId.value) {
+    onIRecharged()
+  }
 })
 
 onUnmounted(() => {
@@ -615,6 +663,16 @@ onUnmounted(() => {
 
 .page-recharge-apply :deep(.qr-frame .box .erweima) {
   border-color: transparent;
+}
+
+.qr-tip {
+  position: relative;
+  z-index: 1;
+  margin: 14px 0 0;
+  text-align: center;
+  font-size: 14px;
+  color: #646566;
+  line-height: 1.5;
 }
 
 .applyMes {

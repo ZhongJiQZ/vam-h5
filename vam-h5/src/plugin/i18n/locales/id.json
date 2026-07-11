@@ -682,6 +682,7 @@
   "recharge_amount_usdt": "Jumlah USDT",
   "recharge_fiat_transfer": "Jumlah transfer fiat",
   "recharge_i_paid": "I have recharged",
+  "recharge_scan_qr_pay": "Pindai kode QR dengan aplikasi pembayaran Anda",
   "recharge_waiting_confirm": "Waiting for confirmation",
   "recharge_usually_need": "Usually takes about",
   "recharge_waiting_tip_1": "Already transferred? Please stay on this page, we will confirm shortly.",

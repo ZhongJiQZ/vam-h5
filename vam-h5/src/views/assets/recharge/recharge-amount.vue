@@ -89,11 +89,12 @@ import { findRechargeListItem } from '@/utils/coinNetworkType'
 import { getRechargeAddressFromMap, normalizeRechargeAddressFromApi } from '@/utils/rechargeAddress'
 import { useAccountStore } from '@/store/account'
 import {
+  cacheThirdPartyPayPayload,
   getRechargePayMode,
-  getRechargePayUrl,
   getRechargeResponseData,
   isBankRecharge,
-  isManualBankRecharge
+  isManualBankRecharge,
+  resolveRechargePayAction
 } from '@/utils/rechargeChannel'
 
 const route = useRoute()
@@ -251,7 +252,7 @@ const onNext = async () => {
   try {
     const res = await rechargeSubmit(payload)
     const responseData = getRechargeResponseData(res)
-    const submitPayUrl = getRechargePayUrl(res)
+    const payAction = resolveRechargePayAction(res)
     orderId =
       responseData.id ??
       responseData.orderId ??
@@ -262,8 +263,17 @@ const onNext = async () => {
       _toast(res.msg || 'error')
       return
     }
-    if (submitPayUrl) {
-      window.location.href = submitPayUrl
+    if (payAction.type === 'url') {
+      window.location.href = payAction.value
+      return
+    }
+    if (payAction.type === 'qrcode') {
+      cacheThirdPartyPayPayload({
+        payQr: payAction.value,
+        orderId,
+        payDataType: payAction.payDataType
+      })
+      jumpToApply(orderId)
       return
     }
     if (getRechargePayMode(res) === 'MANUAL_BANK') {
