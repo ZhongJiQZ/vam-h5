@@ -52,11 +52,11 @@ export function formatSignedRate(val, digits = 2) {
 }
 
 /** 盈亏率 % */
-export function calcPnlRate(profit, amount) {
+export function calcPnlRate(profit, amount, digits = 2) {
   const a = Number(amount)
   const p = Number(profit)
-  if (!a || !Number.isFinite(a) || !Number.isFinite(p)) return '0.00'
-  return formatSignedRate(_mul(_div(p, a), 100), 2)
+  if (!a || !Number.isFinite(a) || !Number.isFinite(p)) return formatSignedRate(0, digits)
+  return formatSignedRate(_mul(_div(p, a), 100), digits)
 }
 
 /** 跟单日期展示（兼容中文「年月日」、时间戳、ISO 字符串） */
@@ -134,8 +134,8 @@ export function copyTradeTradeCount(item) {
 }
 
 /** 跟单盈亏率 %：netProfit / amount * 100 */
-export function copyTradePnlRate(item) {
-  return calcPnlRate(copyTradeNetProfit(item), item?.amount)
+export function copyTradePnlRate(item, digits = 2) {
+  return calcPnlRate(copyTradeNetProfit(item), item?.amount, digits)
 }
 
 /** 跟单毛盈亏（未扣手续费、机构分润）：totalSettledProfit / actualProfit */
@@ -156,8 +156,8 @@ export function copyTradeGrossProfit(item) {
 }
 
 /** 跟单盈利率 %（毛盈亏 / 投入金额，不用 netProfit） */
-export function copyTradeGrossPnlRate(item) {
-  return calcPnlRate(copyTradeGrossProfit(item), item?.amount)
+export function copyTradeGrossPnlRate(item, digits = 2) {
+  return calcPnlRate(copyTradeGrossProfit(item), item?.amount, digits)
 }
 
 const MIN_AMOUNT_KEYS = [

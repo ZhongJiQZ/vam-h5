@@ -249,9 +249,9 @@ function orderNetProfit(order) {
 
 function orderPnlRate(order) {
   if (isCopyTradeOrderEnded(order)) {
-    return copyTradeGrossPnlRate(order)
+    return copyTradeGrossPnlRate(order, 3)
   }
-  return copyTradePnlRate(order)
+  return copyTradePnlRate(order, 3)
 }
 
 function profitShareRateText(rate) {

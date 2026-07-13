@@ -256,7 +256,7 @@ function orderPnl(item) {
 }
 
 function orderPnlRate(item) {
-  return copyTradeGrossPnlRate(item)
+  return copyTradeGrossPnlRate(item, 3)
 }
 
 const DAYJS_LOCALE_MAP = {
@@ -349,7 +349,7 @@ const institutionSummary = computed(() => {
     }
   }
 
-  const totalRate = totalAmount ? calcPnlRate(totalProfit, totalAmount) : '0.00'
+  const totalRate = calcPnlRate(totalProfit, totalAmount, 3)
 
   return {
     firstTime,
