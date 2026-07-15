@@ -157,6 +157,16 @@ export function copyTradeGrossProfit(item) {
 
 /** 跟单盈利率 %（毛盈亏 / 投入金额，不用 netProfit） */
 export function copyTradeGrossPnlRate(item, digits = 2) {
+  const params = item?.params || {}
+  const profitRate = params.profitRate ?? item?.profitRate
+  if (profitRate != null && profitRate !== '') {
+    const n = Number(profitRate)
+    if (Number.isFinite(n)) return formatSignedRate(n, digits)
+  }
+  const targetProfit = params.targetProfit ?? item?.targetProfit
+  if (targetProfit != null && targetProfit !== '') {
+    return calcPnlRate(targetProfit, item?.amount, digits)
+  }
   return calcPnlRate(copyTradeGrossProfit(item), item?.amount, digits)
 }
 
