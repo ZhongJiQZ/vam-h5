@@ -157,15 +157,18 @@ export function copyTradeGrossProfit(item) {
 
 /** 跟单盈利率 %（毛盈亏 / 投入金额，不用 netProfit） */
 export function copyTradeGrossPnlRate(item, digits = 2) {
-  const params = item?.params || {}
-  const profitRate = params.profitRate ?? item?.profitRate
-  if (profitRate != null && profitRate !== '') {
-    const n = Number(profitRate)
-    if (Number.isFinite(n)) return formatSignedRate(n, digits)
-  }
-  const targetProfit = params.targetProfit ?? item?.targetProfit
-  if (targetProfit != null && targetProfit !== '') {
-    return calcPnlRate(targetProfit, item?.amount, digits)
+  if (isCopyTradeOrderNotStarted(item)) return formatSignedRate(0, digits)
+  if (isCopyTradeOrderEnded(item)) {
+    const params = item?.params || {}
+    const profitRate = params.profitRate ?? item?.profitRate
+    if (profitRate != null && profitRate !== '') {
+      const n = Number(profitRate)
+      if (Number.isFinite(n)) return formatSignedRate(n, digits)
+    }
+    const targetProfit = params.targetProfit ?? item?.targetProfit
+    if (targetProfit != null && targetProfit !== '') {
+      return calcPnlRate(targetProfit, item?.amount, digits)
+    }
   }
   return calcPnlRate(copyTradeGrossProfit(item), item?.amount, digits)
 }
@@ -443,6 +446,16 @@ export function isCopyTradeStrategyEnded(item) {
   if (params.displayStatus === 1) return true
   if (params.strategySessionEnded != null) return Boolean(params.strategySessionEnded)
   return params.statusTextKey === 'copy.trade.order.status.exited'
+}
+
+/** 跟单尚未开始：开始前不展示目标收益率 */
+export function isCopyTradeOrderNotStarted(item) {
+  if (!item || item.status === 1) return false
+  const params = item.params || {}
+  const text = String(params.statusText || item.statusText || params.statusTextKey || '').trim()
+  if (/未开始|暂未开始|未开启|等待开启|尚未开始|not started|not open/i.test(text)) return true
+  const startMs = getStrategyStartMillis(item)
+  return startMs != null && startMs > Date.now() && copyTradeTradeCount(item) <= 0
 }
 
 /** 策略结束后、强平前可手动退出 */
