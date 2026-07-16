@@ -155,21 +155,13 @@ export function copyTradeGrossProfit(item) {
   return Number.isFinite(n) ? n : 0
 }
 
-/** 跟单盈利率 %（毛盈亏 / 投入金额，不用 netProfit） */
+/**
+ * 跟单盈利率 %（毛盈亏 / 投入金额，不用 netProfit）
+ * 注意：订单上的 profitRate / targetProfit 是策略目标收益率/目标盈利，不是实际 ROI，
+ * 不可直接展示；与分享页一致，一律用毛盈亏 / 投入金额现算。
+ */
 export function copyTradeGrossPnlRate(item, digits = 2) {
   if (isCopyTradeOrderNotStarted(item)) return formatSignedRate(0, digits)
-  if (isCopyTradeOrderEnded(item)) {
-    const params = item?.params || {}
-    const profitRate = params.profitRate ?? item?.profitRate
-    if (profitRate != null && profitRate !== '') {
-      const n = Number(profitRate)
-      if (Number.isFinite(n)) return formatSignedRate(n, digits)
-    }
-    const targetProfit = params.targetProfit ?? item?.targetProfit
-    if (targetProfit != null && targetProfit !== '') {
-      return calcPnlRate(targetProfit, item?.amount, digits)
-    }
-  }
   return calcPnlRate(copyTradeGrossProfit(item), item?.amount, digits)
 }
 
