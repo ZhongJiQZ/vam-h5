@@ -140,7 +140,7 @@ const periodProfit = computed(() => {
   const n = Number(props.item?.actualProfit)
   return Number.isFinite(n) ? n : 0
 })
-const rateStr = computed(() => copyTradeGrossPnlRate(props.item, 2))
+const rateStr = computed(() => copyTradeGrossPnlRate(props.item, 3))
 const profitClass = computed(() => pnlClass(shareNetProfit.value))
 
 async function buildCanvas() {
