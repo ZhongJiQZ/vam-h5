@@ -162,6 +162,12 @@ export function copyTradeGrossProfit(item) {
  */
 export function copyTradeGrossPnlRate(item, digits = 2) {
   if (isCopyTradeOrderNotStarted(item)) return formatSignedRate(0, digits)
+  const params = item?.params || {}
+  const serverRate = params.realtimeProfitRate ?? params.actualProfitRate
+  if (serverRate != null && serverRate !== '') {
+    const n = Number(serverRate)
+    if (Number.isFinite(n)) return formatSignedRate(n, digits)
+  }
   return calcPnlRate(copyTradeGrossProfit(item), item?.amount, digits)
 }
 

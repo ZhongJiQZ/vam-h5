@@ -115,7 +115,7 @@ import { ref, computed } from 'vue'
 import { showToast } from 'vant'
 import { _t18 } from '@/utils/public'
 import { priceFormat } from '@/utils/decimal'
-import { formatPnl, pnlClass, calcPnlRate, formatCopyTradeTime, COPY_TRADE_TIME_FIELD, copyTradeShareNetProfit } from '../utils'
+import { formatPnl, pnlClass, copyTradeGrossPnlRate, formatCopyTradeTime, COPY_TRADE_TIME_FIELD, copyTradeShareNetProfit } from '../utils'
 
 const props = defineProps({
   show: { type: Boolean, default: false },
@@ -140,7 +140,7 @@ const periodProfit = computed(() => {
   const n = Number(props.item?.actualProfit)
   return Number.isFinite(n) ? n : 0
 })
-const rateStr = computed(() => calcPnlRate(periodProfit.value, props.item.amount))
+const rateStr = computed(() => copyTradeGrossPnlRate(props.item, 2))
 const profitClass = computed(() => pnlClass(shareNetProfit.value))
 
 async function buildCanvas() {
