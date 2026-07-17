@@ -20,7 +20,7 @@
         <p
           class="status1"
           :class="{ 'st-ok': cardSurface }"
-          v-if="props.data.status == 1"
+          v-if="props.data.status == 1||props.data.status == 3"
         >
           {{ _t18('recharge_tab_success') }}
         </p>
